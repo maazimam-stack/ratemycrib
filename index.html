@@ -286,11 +286,17 @@ const SEED_LANDLORDS = [
     scores:{maintenance:2.4,communication:2.7,fairness:2.5,moveOut:2.9}, topTags:["Good Locations","Old Buildings","Pests"], dist:[10,22,38,40,32] },
   { id:8, name:"MHM Properties", props:15, rating:3.9, reviews:52, wouldRent:84, responseRate:"90%",
     scores:{maintenance:4.1,communication:3.8,fairness:3.7,moveOut:4.0}, topTags:["Responsive Owner","Quiet","Well-Maintained"], dist:[20,18,10,3,1] },
+  { id:9, name:"HERE Champaign", props:1, rating:0, reviews:0, wouldRent:0, responseRate:"—",
+    scores:{maintenance:0,communication:0,fairness:0,moveOut:0}, topTags:["New Listing"], dist:[0,0,0,0,0] },
+  { id:10, name:"Seven07", props:1, rating:0, reviews:0, wouldRent:0, responseRate:"—",
+    scores:{maintenance:0,communication:0,fairness:0,moveOut:0}, topTags:["New Listing"], dist:[0,0,0,0,0] },
+  { id:11, name:"The VUE", props:1, rating:0, reviews:0, wouldRent:0, responseRate:"—",
+    scores:{maintenance:0,communication:0,fairness:0,moveOut:0}, topTags:["New Listing"], dist:[0,0,0,0,0] },
 ];
 
 const SEED_PROPERTIES = [
   { id:1, name:"309 E Green St", landlordId:1, beds:2, price:950, hood:"Campustown", tags:["Laundry In-Unit"], rating:2.5, reviews:34 },
-  { id:2, name:"HERE Champaign", landlordId:2, beds:4, price:899, hood:"Campustown", tags:["Furnished","Gym","Pool"], rating:3.9, reviews:67 },
+  { id:2, name:"Smile HERE Champaign", landlordId:2, beds:4, price:899, hood:"Campustown", tags:["Furnished","Gym","Pool"], rating:3.9, reviews:67 },
   { id:3, name:"508 E White St", landlordId:3, beds:1, price:750, hood:"Campustown", tags:["Utilities Included"], rating:3.1, reviews:22 },
   { id:4, name:"Bankier at Lincoln", landlordId:4, beds:2, price:725, hood:"Lincoln Ave", tags:["Pet Friendly","Parking"], rating:3.6, reviews:18 },
   { id:5, name:"The Quad Apartments", landlordId:5, beds:3, price:550, hood:"South Campus", tags:["Cheap"], rating:1.9, reviews:45 },
@@ -301,34 +307,14 @@ const SEED_PROPERTIES = [
   { id:10, name:"501 E Daniel St", landlordId:1, beds:4, price:625, hood:"Campustown", tags:["Cheap"], rating:2.1, reviews:52 },
   { id:11, name:"Hendrick House", landlordId:2, beds:1, price:980, hood:"South Campus", tags:["Meal Plan","Furnished"], rating:3.7, reviews:29 },
   { id:12, name:"Illini Tower", landlordId:7, beds:2, price:825, hood:"Campustown", tags:["Near Alma Mater"], rating:2.4, reviews:63 },
+  { id:13, name:"HERE Champaign Tower", landlordId:9, beds:2, price:1050, hood:"Campustown", tags:["Luxury","Gym","Rooftop"], rating:0, reviews:0 },
+  { id:14, name:"Seven07 South 6th", landlordId:10, beds:4, price:775, hood:"Campustown", tags:["Furnished","Study Rooms"], rating:0, reviews:0 },
+  { id:15, name:"The VUE Apartments", landlordId:11, beds:2, price:950, hood:"Campustown", tags:["Modern","Parking"], rating:0, reviews:0 },
 ];
 
-const SEED_REVIEWS = [
-  { id:1, landlordId:1, property:"501 E Daniel St", author:"Anonymous Illini", date:"Feb 2026", rating:1.0, wouldRent:false,
-    text:"Worst experience of my college life. Submitted 14 maintenance requests over one semester. They fixed 3. Our heat went out in January and it took them 2 weeks to send someone. When we moved out they charged us $800 for 'damages' that were there when we moved in. Take photos of EVERYTHING.",
-    pos:[], neg:["Slow Maintenance","Unfair Charges","Unresponsive"], helpful:47 },
-  { id:2, landlordId:1, property:"309 E Green St", author:"Engineering '27", date:"Jan 2026", rating:3.0, wouldRent:false,
-    text:"Location is unbeatable if you want to be on Green Street. The apartment itself is dated but functional. Maintenance is hit or miss. My advice: document everything in writing, never call — always email so you have a paper trail.",
-    pos:["Great Location"], neg:["Slow Maintenance","Dated Units"], helpful:23 },
-  { id:3, landlordId:2, property:"HERE Champaign", author:"Business Major", date:"Mar 2026", rating:4.0, wouldRent:true,
-    text:"HERE is actually really nice. The amenities are solid — pool, gym, study rooms. Management responds to emails within 24 hours usually. Only knock is the price per person is higher than average and they nickel and dime on move-out. Still, best building I've lived in at UIUC.",
-    pos:["Great Amenities","Responsive","Modern"], neg:["Pricey","Move-out Fees"], helpful:31 },
-  { id:4, landlordId:5, property:"The Quad Apartments", author:"Broke Junior", date:"Dec 2025", rating:2.0, wouldRent:false,
-    text:"You get what you pay for. Rent is cheap but the building is falling apart. Saw a mouse in my kitchen twice. When I called CPM they said to 'buy traps.' The walls are paper thin. But honestly for $550/month near campus... I knew what I was getting into.",
-    pos:["Cheap Rent"], neg:["Pests","Poor Condition","Thin Walls"], helpful:38 },
-  { id:5, landlordId:6, property:"212 E Daniel St", author:"Grad Student", date:"Feb 2026", rating:5.0, wouldRent:true,
-    text:"Roland Realty is how all landlords should operate. When our dishwasher broke, they had a new one installed within 48 hours. The townhouse is beautifully renovated. Full deposit returned within 10 days with an itemized statement. I'm renewing for a third year.",
-    pos:["Fast Repairs","Fair Deposit","Renovated"], neg:[], helpful:55 },
-  { id:6, landlordId:3, property:"Presby Hall", author:"CS Major '26", date:"Jan 2026", rating:3.0, wouldRent:true,
-    text:"Presby is fine. Not amazing, not terrible. The building looks nice from outside but some units have issues with plumbing. JSM takes about a week to handle maintenance requests. The furnished option saved me money vs buying furniture. Location is perfect for campus.",
-    pos:["Good Location","Furnished"], neg:["Slow Plumbing Fixes"], helpful:15 },
-  { id:7, landlordId:8, property:"MHM on Springfield", author:"PhD Candidate", date:"Mar 2026", rating:4.0, wouldRent:true,
-    text:"MHM is a hidden gem. Small operation so you actually talk to the owner. He fixed our garbage disposal himself the same day we reported it. The apartment is quiet, clean, and well-maintained. Only downside is it's a bit far from campus, but if you have a car it's perfect.",
-    pos:["Responsive Owner","Quiet","Well-Maintained"], neg:["Far from Campus"], helpful:19 },
-  { id:8, landlordId:7, property:"Illini Tower", author:"Freshman Mistake", date:"Nov 2025", rating:2.0, wouldRent:false,
-    text:"Signed the lease because the location seemed great. The building is old and it shows. Elevator breaks down at least once a month. Had a roach problem that took 3 visits from pest control to fix. University Group's office is hard to reach — I've sat on hold for 45 minutes before.",
-    pos:["Central Location"], neg:["Old Building","Pests","Poor Communication"], helpful:42 },
-];
+// Seed reviews removed — all reviews now come from real student submissions via Supabase.
+// This eliminates any legal risk from fabricated reviews about real companies.
+const SEED_REVIEWS = [];
 
 const neighborhoods = [
   { name:"Campustown", type:"Most Popular", rent:875, walk:95, safety:3.2, nightlife:5, quiet:1.5 },
@@ -441,6 +427,15 @@ function getReviewCount() {
   return allReviews().length;
 }
 
+// Track total reviews submitted via Supabase
+async function getTotalDbReviewCount() {
+  try {
+    const { count, error } = await db.from('reviews').select('*', { count: 'exact', head: true });
+    if (error) throw error;
+    return count || 0;
+  } catch (e) { return dbReviews.length; }
+}
+
 // ===== COMPONENTS =====
 function Nav() {
   return `<div class="nav">
@@ -479,7 +474,7 @@ function Hero() {
     </div>
   </div>
   <div class="stats-bar">
-    <div class="stat-item"><div class="stat-num">${revCount}</div><div class="stat-label">Reviews</div></div>
+    <div class="stat-item"><div class="stat-num" id="live-review-count">${revCount}</div><div class="stat-label">Reviews</div></div>
     <div class="stat-item"><div class="stat-num">${SEED_LANDLORDS.length}</div><div class="stat-label">Landlords</div></div>
     <div class="stat-item"><div class="stat-num">${SEED_PROPERTIES.length}</div><div class="stat-label">Properties</div></div>
     <div class="stat-item"><div class="stat-num">100%</div><div class="stat-label">Student-Powered</div></div>
@@ -730,8 +725,20 @@ function Modal() {
       </div>
 
       <div class="field">
-        <label>Property (optional)</label>
-        <input type="text" id="rev-property" placeholder="e.g. 309 E Green St" />
+        <label>Property</label>
+        <select id="rev-property-select" onchange="toggleCustomAddress(this)">
+          <option value="">Select a property...</option>
+          ${(() => {
+            const lid = l ? l.id : null;
+            const props = lid ? SEED_PROPERTIES.filter(p=>p.landlordId===lid) : SEED_PROPERTIES;
+            return props.map(p => {
+              const ln = SEED_LANDLORDS.find(x=>x.id===p.landlordId);
+              return `<option value="${esc(p.name)}">${esc(p.name)}${!lid && ln ? ' ('+esc(ln.name)+')' : ''}</option>`;
+            }).join("");
+          })()}
+          <option value="__custom__">Other — type my address</option>
+        </select>
+        <input type="text" id="rev-property-custom" placeholder="e.g. 123 E Green St, Apt 4B" style="display:none;margin-top:8px" />
       </div>
 
       <div class="field">
@@ -782,12 +789,12 @@ function Footer() {
         <h4>Legal</h4>
         <a href="terms.html">Terms of Service</a>
         <a href="privacy.html">Privacy Policy</a>
-        <a>Know Your Rights</a>
+        <a href="rights.html">Know Your Rights</a>
       </div>
       <div class="footer-col">
         <h4>About</h4>
-        <a>Our Mission</a>
-        <a>For Landlords</a>
+        <a href="mission.html">Our Mission</a>
+        <a href="landlords.html">For Landlords</a>
         <a href="mailto:ratemycrib@proton.me">Contact</a>
       </div>
     </div>
@@ -799,6 +806,11 @@ function Footer() {
 }
 
 // ===== ACTIONS =====
+function toggleCustomAddress(sel) {
+  const custom = document.getElementById('rev-property-custom');
+  if (custom) custom.style.display = sel.value === '__custom__' ? 'block' : 'none';
+}
+
 async function submitReview(landlordIdFromDetail) {
   const landlordId = landlordIdFromDetail || parseInt(document.getElementById('rev-landlord')?.value);
   if (!landlordId) { toast('Please select a landlord.'); return; }
@@ -807,7 +819,9 @@ async function submitReview(landlordIdFromDetail) {
   const text = document.getElementById('rev-text')?.value?.trim();
   if (!text || text.length < 20) { toast('Please write at least 20 characters about your experience.'); return; }
 
-  const property = document.getElementById('rev-property')?.value?.trim() || 'Not specified';
+  const propSelect = document.getElementById('rev-property-select')?.value || '';
+  const propCustom = document.getElementById('rev-property-custom')?.value?.trim() || '';
+  const property = propSelect === '__custom__' ? (propCustom || 'Not specified') : (propSelect || 'Not specified');
   const email = document.getElementById('rev-email')?.value?.trim() || '';
 
   // Collect selected tags
