@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RateMyCrib — Honest UIUC Housing Reviews by Students</title>
+<meta name="description" content="The honest guide to off-campus housing at UIUC. Search landlords, read real student reviews, and compare prices. By students, for students.">
+<meta property="og:title" content="RateMyCrib — Honest UIUC Housing Reviews">
+<meta property="og:description" content="Search landlords, read real student reviews, compare prices. No landlord money. No sponsored rankings.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://ratemycrib.net">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="RateMyCrib — Honest UIUC Housing Reviews">
+<meta name="twitter:description" content="The honest guide to off-campus housing at UIUC. By students, for students.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏠</text></svg>">
+<style>
+  :root {
+    --black: #0A0A0A;
+    --dark: #1A1A2E;
+    --text: #2D2D2D;
+    --muted: #7C7C7C;
+    --light: #F5F5F5;
+    --white: #FFFFFF;
+    --border: #E8E8E8;
+    --blue: #2563EB;
+    --green: #16A34A;
+    --yellow: #EAB308;
+    --red: #DC2626;
+    --orange: #E84A27;
+    --teal: #0D9488;
+    --purple: #7C3AED;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--white); color: var(--text); }
+  a { text-decoration: none; color: inherit; }
+
+  /* ===== NAV ===== */
+  .nav { background: var(--black); height: 56px; display: flex; align-items: center; padding: 0 32px; position: sticky; top: 0; z-index: 100; }
+  .nav-brand { font-size: 22px; font-weight: 800; color: var(--white); cursor: pointer; }
+  .nav-brand em { font-style: normal; color: var(--orange); }
+  .nav-right { margin-left: auto; display: flex; align-items: center; gap: 16px; }
+  .nav-link { color: rgba(255,255,255,0.6); font-size: 14px; font-weight: 500; cursor: pointer; padding: 6px 12px; border-radius: 6px; transition: all 0.15s; }
+  .nav-link:hover, .nav-link.active { color: white; background: rgba(255,255,255,0.1); }
+  .nav-cta { background: var(--orange); color: white; border: none; padding: 8px 18px; border-radius: 6px; font-weight: 600; font-size: 13px; cursor: pointer; }
+  .nav-cta:hover { background: #D4401F; }
+
+  /* ===== HERO ===== */
+  .hero { padding: 80px 32px 64px; text-align: center; background: var(--white); }
+  .hero-badge { display: inline-block; background: #FFF7ED; color: var(--orange); font-size: 13px; font-weight: 600; padding: 6px 14px; border-radius: 50px; margin-bottom: 20px; }
+  .hero h1 { font-size: 56px; font-weight: 900; letter-spacing: -1.5px; line-height: 1.1; margin-bottom: 12px; }
+  .hero h1 em { font-style: normal; color: var(--orange); }
+  .hero p { font-size: 18px; color: var(--muted); max-width: 480px; margin: 0 auto 36px; line-height: 1.5; }
+  .search-wrap { max-width: 620px; margin: 0 auto; position: relative; }
+  .search-wrap input { width: 100%; padding: 18px 24px; padding-right: 120px; font-size: 17px; border: 2px solid var(--border); border-radius: 12px; outline: none; transition: border 0.2s; }
+  .search-wrap input:focus { border-color: var(--orange); }
+  .search-wrap input::placeholder { color: #B0B0B0; }
+  .search-btn { position: absolute; right: 6px; top: 6px; bottom: 6px; background: var(--black); color: white; border: none; padding: 0 28px; border-radius: 8px; font-weight: 600; font-size: 15px; cursor: pointer; }
+  .search-btn:hover { background: #333; }
+  .search-tags { display: flex; justify-content: center; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
+  .search-tag { padding: 6px 14px; border-radius: 50px; background: var(--light); color: var(--muted); font-size: 13px; cursor: pointer; transition: all 0.15s; border: 1px solid transparent; }
+  .search-tag:hover { border-color: var(--orange); color: var(--orange); }
+  .search-tag.active { background: var(--orange); color: white; }
+
+  /* ===== STATS BAR ===== */
+  .stats-bar { background: var(--light); padding: 20px 32px; display: flex; justify-content: center; gap: 48px; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .stat-item { text-align: center; }
+  .stat-num { font-size: 24px; font-weight: 800; color: var(--black); }
+  .stat-label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+
+  /* ===== RESULTS LIST ===== */
+  .container { max-width: 960px; margin: 0 auto; padding: 32px 24px; }
+  .results-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+  .results-count { font-size: 15px; color: var(--muted); }
+  .sort-select { padding: 8px 14px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; background: white; cursor: pointer; }
+
+  .result-card { display: flex; gap: 0; border: 1px solid var(--border); border-radius: 12px; margin-bottom: 16px; overflow: hidden; transition: box-shadow 0.2s; cursor: pointer; }
+  .result-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+
+  .result-rating-box { width: 120px; min-width: 120px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px 12px; gap: 4px; }
+  .result-rating-box.quality-high { background: #D1FAE5; }
+  .result-rating-box.quality-mid { background: #FEF3C7; }
+  .result-rating-box.quality-low { background: #FEE2E2; }
+  .result-rating-num { font-size: 42px; font-weight: 900; line-height: 1; }
+  .quality-high .result-rating-num { color: #065F46; }
+  .quality-mid .result-rating-num { color: #92400E; }
+  .quality-low .result-rating-num { color: #991B1B; }
+  .result-rating-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+  .quality-high .result-rating-label { color: #065F46; }
+  .quality-mid .result-rating-label { color: #92400E; }
+  .quality-low .result-rating-label { color: #991B1B; }
+
+  .result-body { flex: 1; padding: 20px 24px; }
+  .result-name { font-size: 20px; font-weight: 700; margin-bottom: 2px; }
+  .result-sub { font-size: 13px; color: var(--muted); margin-bottom: 12px; }
+  .result-metrics { display: flex; gap: 24px; margin-bottom: 12px; }
+  .result-metric { font-size: 13px; }
+  .result-metric strong { display: block; font-size: 15px; color: var(--black); }
+  .result-metric span { color: var(--muted); }
+  .result-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+  .rtag { padding: 4px 10px; border-radius: 50px; font-size: 11px; font-weight: 500; }
+  .rtag-pos { background: #D1FAE5; color: #065F46; }
+  .rtag-neg { background: #FEE2E2; color: #991B1B; }
+  .rtag-neutral { background: var(--light); color: var(--muted); }
+
+  .result-side { width: 140px; min-width: 140px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 16px; border-left: 1px solid var(--border); background: #FAFAFA; }
+  .would-rent { font-size: 28px; font-weight: 800; }
+  .would-rent-label { font-size: 11px; color: var(--muted); text-align: center; margin-top: 4px; line-height: 1.3; }
+  .result-price { font-size: 18px; font-weight: 700; color: var(--black); margin-top: 12px; }
+  .result-price span { font-size: 11px; font-weight: 400; color: var(--muted); }
+
+  /* ===== DETAIL PAGE ===== */
+  .detail-top { background: var(--light); padding: 40px 24px; border-bottom: 1px solid var(--border); }
+  .detail-inner { max-width: 960px; margin: 0 auto; }
+  .back-link { font-size: 14px; color: var(--orange); font-weight: 600; cursor: pointer; margin-bottom: 20px; display: inline-block; }
+  .back-link:hover { text-decoration: underline; }
+  .detail-head { display: flex; gap: 32px; align-items: flex-start; }
+  .detail-score-circle { width: 140px; height: 140px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0; }
+  .detail-score-circle.sc-high { background: #D1FAE5; }
+  .detail-score-circle.sc-mid { background: #FEF3C7; }
+  .detail-score-circle.sc-low { background: #FEE2E2; }
+  .detail-score-num { font-size: 52px; font-weight: 900; line-height: 1; }
+  .sc-high .detail-score-num { color: #065F46; }
+  .sc-mid .detail-score-num { color: #92400E; }
+  .sc-low .detail-score-num { color: #991B1B; }
+  .detail-score-label { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; }
+  .sc-high .detail-score-label { color: #065F46; }
+  .sc-mid .detail-score-label { color: #92400E; }
+  .sc-low .detail-score-label { color: #991B1B; }
+
+  .detail-info h1 { font-size: 32px; font-weight: 800; margin-bottom: 4px; }
+  .detail-info .subtitle { font-size: 15px; color: var(--muted); margin-bottom: 16px; }
+  .detail-sub-scores { display: flex; gap: 20px; flex-wrap: wrap; }
+  .sub-score { text-align: center; min-width: 80px; }
+  .sub-score-val { font-size: 22px; font-weight: 800; }
+  .sub-score-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.3px; }
+  .detail-would { display: flex; gap: 32px; margin-top: 20px; }
+  .detail-would-item { display: flex; align-items: center; gap: 8px; font-size: 14px; }
+  .detail-would-pct { font-size: 20px; font-weight: 800; }
+
+  .rating-dist { margin-top: 20px; }
+  .dist-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+  .dist-label { font-size: 13px; font-weight: 600; width: 60px; text-align: right; }
+  .dist-bar { flex: 1; height: 12px; background: #E5E7EB; border-radius: 6px; overflow: hidden; }
+  .dist-fill { height: 100%; border-radius: 6px; background: var(--orange); }
+  .dist-count { font-size: 12px; color: var(--muted); width: 24px; }
+
+  .reviews-section { max-width: 960px; margin: 0 auto; padding: 32px 24px; }
+  .reviews-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+  .reviews-header h2 { font-size: 22px; font-weight: 700; }
+  .write-btn { background: var(--black); color: white; border: none; padding: 10px 24px; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer; }
+  .write-btn:hover { background: #333; }
+
+  .review-item { border-bottom: 1px solid var(--border); padding: 24px 0; }
+  .review-item:last-child { border-bottom: none; }
+  .review-top { display: flex; gap: 16px; }
+  .review-score { width: 64px; height: 64px; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0; }
+  .review-score.rs-high { background: #D1FAE5; }
+  .review-score.rs-mid { background: #FEF3C7; }
+  .review-score.rs-low { background: #FEE2E2; }
+  .review-score-num { font-size: 24px; font-weight: 800; }
+  .rs-high .review-score-num { color: #065F46; }
+  .rs-mid .review-score-num { color: #92400E; }
+  .rs-low .review-score-num { color: #991B1B; }
+  .review-score-q { font-size: 9px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.3px; }
+  .rs-high .review-score-q { color: #065F46; }
+  .rs-mid .review-score-q { color: #92400E; }
+  .rs-low .review-score-q { color: #991B1B; }
+  .review-content { flex: 1; }
+  .review-meta { font-size: 13px; color: var(--muted); margin-bottom: 4px; }
+  .review-meta strong { color: var(--text); }
+  .review-property { font-size: 13px; color: var(--blue); font-weight: 500; margin-bottom: 8px; }
+  .review-text { font-size: 14px; line-height: 1.7; color: var(--text); margin-bottom: 12px; }
+  .review-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+  .review-actions { display: flex; gap: 12px; align-items: center; }
+  .review-actions button { background: none; border: 1px solid var(--border); border-radius: 6px; padding: 5px 14px; font-size: 12px; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: all 0.15s; }
+  .review-actions button:hover { border-color: var(--black); }
+
+  /* ===== WRITE REVIEW MODAL ===== */
+  .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 200; }
+  .modal-box { background: white; border-radius: 16px; padding: 36px; max-width: 540px; width: 92%; max-height: 90vh; overflow-y: auto; }
+  .modal-box h2 { font-size: 24px; font-weight: 800; margin-bottom: 4px; }
+  .modal-box .modal-sub { font-size: 14px; color: var(--muted); margin-bottom: 24px; }
+  .field { margin-bottom: 20px; }
+  .field label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: var(--text); }
+  .field input, .field textarea, .field select { width: 100%; padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 14px; font-family: inherit; outline: none; transition: border 0.15s; }
+  .field input:focus, .field textarea:focus, .field select:focus { border-color: var(--orange); }
+  .field textarea { height: 120px; resize: vertical; }
+  .star-row { display: flex; gap: 6px; }
+  .star-row span { font-size: 32px; cursor: pointer; color: #D1D5DB; transition: color 0.1s; user-select: none; }
+  .star-row span.on { color: var(--yellow); }
+  .chip-group { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip { padding: 5px 12px; border-radius: 50px; font-size: 12px; border: 1.5px solid var(--border); cursor: pointer; transition: all 0.15s; background: white; }
+  .chip:hover { border-color: var(--orange); }
+  .chip.sel-pos { background: #D1FAE5; border-color: #16A34A; color: #065F46; }
+  .chip.sel-neg { background: #FEE2E2; border-color: #DC2626; color: #991B1B; }
+  .submit-btn { width: 100%; padding: 14px; background: var(--orange); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 700; cursor: pointer; }
+  .submit-btn:hover { background: #D4401F; }
+  .submit-btn:disabled { background: #ccc; cursor: not-allowed; }
+  .note { font-size: 12px; color: var(--muted); text-align: center; margin-top: 12px; }
+
+  /* ===== TOAST ===== */
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--black); color: white; padding: 14px 28px; border-radius: 10px; font-size: 14px; font-weight: 600; z-index: 300; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+  .toast.show { opacity: 1; }
+
+  /* ===== SHARE BANNER ===== */
+  .share-banner { background: linear-gradient(135deg, var(--orange), #D4401F); padding: 16px 32px; display: flex; justify-content: center; align-items: center; gap: 16px; }
+  .share-banner p { color: white; font-size: 14px; font-weight: 500; }
+  .share-banner button { background: white; color: var(--orange); border: none; padding: 8px 20px; border-radius: 6px; font-weight: 700; font-size: 13px; cursor: pointer; }
+  .share-banner button:hover { background: #FFF7ED; }
+
+  /* ===== NEIGHBORHOODS ===== */
+  .hood-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+  .hood-card { border: 1px solid var(--border); border-radius: 12px; padding: 24px; transition: box-shadow 0.2s; }
+  .hood-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.06); }
+  .hood-name { font-size: 20px; font-weight: 700; margin-bottom: 2px; }
+  .hood-type { font-size: 13px; color: var(--muted); margin-bottom: 16px; }
+  .hood-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 14px; border-bottom: 1px solid #F3F4F6; }
+  .hood-row:last-of-type { border-bottom: none; }
+  .hood-row strong { font-weight: 700; }
+
+  /* ===== COMPARE ===== */
+  .compare-tbl { width: 100%; border-collapse: collapse; }
+  .compare-tbl th { text-align: left; padding: 12px 16px; background: var(--black); color: white; font-size: 13px; font-weight: 600; }
+  .compare-tbl td { padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 14px; }
+  .compare-tbl tr:hover td { background: #FAFAFA; }
+  .val-good { color: var(--green); font-weight: 700; }
+  .val-ok { color: var(--yellow); font-weight: 700; }
+  .val-bad { color: var(--red); font-weight: 700; }
+
+  /* ===== PROMO STRIP ===== */
+  .promo { background: var(--black); border-radius: 12px; padding: 28px 32px; margin: 32px 0; display: flex; justify-content: space-between; align-items: center; gap: 20px; }
+  .promo h3 { color: white; font-size: 18px; font-weight: 700; }
+  .promo p { color: rgba(255,255,255,0.5); font-size: 13px; margin-top: 4px; }
+  .promo button { background: var(--orange); color: white; border: none; padding: 10px 24px; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer; white-space: nowrap; }
+
+  /* ===== FOOTER ===== */
+  footer { border-top: 1px solid var(--border); padding: 40px 32px 28px; margin-top: 48px; }
+  .footer-inner { max-width: 960px; margin: 0 auto; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 32px; }
+  .footer-col h4 { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--black); margin-bottom: 12px; }
+  .footer-col a { display: block; font-size: 13px; color: var(--muted); padding: 3px 0; cursor: pointer; }
+  .footer-col a:hover { color: var(--black); }
+  .footer-bottom { max-width: 960px; margin: 20px auto 0; padding-top: 20px; border-top: 1px solid var(--border); font-size: 12px; color: var(--muted); display: flex; justify-content: space-between; }
+
+  .hidden { display: none !important; }
+  @media (max-width: 700px) {
+    .hero h1 { font-size: 36px; }
+    .result-card { flex-direction: column; }
+    .result-rating-box { width: 100%; flex-direction: row; padding: 12px 20px; }
+    .result-side { width: 100%; flex-direction: row; gap: 20px; border-left: none; border-top: 1px solid var(--border); }
+    .detail-head { flex-direction: column; align-items: center; text-align: center; }
+    .detail-sub-scores { justify-content: center; }
+    .promo { flex-direction: column; text-align: center; }
+    .stats-bar { gap: 24px; flex-wrap: wrap; }
+    .footer-inner { flex-direction: column; }
+    .footer-bottom { flex-direction: column; gap: 8px; }
+    .share-banner { flex-direction: column; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<div id="app"></div>
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+// ===== SUPABASE =====
+const SUPABASE_URL = 'https://expfrmknhdcwnccqjwnq.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV4cGZybWtuaGRjd25jY3Fqd25xIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwNTgyNjksImV4cCI6MjA4OTYzNDI2OX0.IDoYSa-Xpq_TAebacsl_TuI9u48ssia7imjG0ehB9Jg';
+const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+// ===== SEED DATA =====
+const SEED_LANDLORDS = [
+  { id:1, name:"Green Street Realty", props:42, rating:2.3, reviews:187, wouldRent:18, responseRate:"12%",
+    scores:{maintenance:2.1,communication:1.8,fairness:2.5,moveOut:2.8}, topTags:["Slow Maintenance","Unfair Charges","Great Locations"], dist:[8,12,22,45,100] },
+  { id:2, name:"Smile Student Living", props:28, rating:3.8, reviews:134, wouldRent:72, responseRate:"78%",
+    scores:{maintenance:3.6,communication:4.1,fairness:3.5,moveOut:3.9}, topTags:["Responsive","Modern Units","Move-Out Fees"], dist:[42,48,28,10,6] },
+  { id:3, name:"JSM Living", props:35, rating:2.9, reviews:156, wouldRent:41, responseRate:"45%",
+    scores:{maintenance:2.6,communication:3.0,fairness:2.8,moveOut:3.1}, topTags:["Prime Location","Slow Repairs","Hit or Miss"], dist:[18,30,48,35,25] },
+  { id:4, name:"Bankier Apartments", props:18, rating:3.5, reviews:89, wouldRent:62, responseRate:"62%",
+    scores:{maintenance:3.7,communication:3.4,fairness:3.3,moveOut:3.6}, topTags:["Solid Option","Older Buildings","Responsive"], dist:[22,30,20,12,5] },
+  { id:5, name:"CPM", props:54, rating:2.1, reviews:223, wouldRent:11, responseRate:"8%",
+    scores:{maintenance:1.9,communication:1.7,fairness:2.3,moveOut:2.4}, topTags:["Cheap Rent","Nightmare Maintenance","Avoid"], dist:[5,10,28,60,120] },
+  { id:6, name:"Roland Realty", props:22, rating:4.1, reviews:67, wouldRent:88, responseRate:"85%",
+    scores:{maintenance:4.0,communication:4.3,fairness:3.9,moveOut:4.2}, topTags:["Fast Repairs","Fair Deposits","Hidden Gem"], dist:[28,22,12,3,2] },
+  { id:7, name:"University Group", props:31, rating:2.6, reviews:142, wouldRent:28, responseRate:"34%",
+    scores:{maintenance:2.4,communication:2.7,fairness:2.5,moveOut:2.9}, topTags:["Good Locations","Old Buildings","Pests"], dist:[10,22,38,40,32] },
+  { id:8, name:"MHM Properties", props:15, rating:3.9, reviews:52, wouldRent:84, responseRate:"90%",
+    scores:{maintenance:4.1,communication:3.8,fairness:3.7,moveOut:4.0}, topTags:["Responsive Owner","Quiet","Well-Maintained"], dist:[20,18,10,3,1] },
+];
+
+const SEED_PROPERTIES = [
+  { id:1, name:"309 E Green St", landlordId:1, beds:2, price:950, hood:"Campustown", tags:["Laundry In-Unit"], rating:2.5, reviews:34 },
+  { id:2, name:"HERE Champaign", landlordId:2, beds:4, price:899, hood:"Campustown", tags:["Furnished","Gym","Pool"], rating:3.9, reviews:67 },
+  { id:3, name:"508 E White St", landlordId:3, beds:1, price:750, hood:"Campustown", tags:["Utilities Included"], rating:3.1, reviews:22 },
+  { id:4, name:"Bankier at Lincoln", landlordId:4, beds:2, price:725, hood:"Lincoln Ave", tags:["Pet Friendly","Parking"], rating:3.6, reviews:18 },
+  { id:5, name:"The Quad Apartments", landlordId:5, beds:3, price:550, hood:"South Campus", tags:["Cheap"], rating:1.9, reviews:45 },
+  { id:6, name:"212 E Daniel St", landlordId:6, beds:3, price:1200, hood:"Campustown", tags:["Renovated","Parking"], rating:4.3, reviews:28 },
+  { id:7, name:"707 S Sixth St", landlordId:7, beds:0, price:620, hood:"East Campus", tags:["Walk to Engineering"], rating:2.8, reviews:31 },
+  { id:8, name:"MHM on Springfield", landlordId:8, beds:2, price:875, hood:"North Champaign", tags:["Quiet","Pet Friendly"], rating:4.0, reviews:15 },
+  { id:9, name:"Presby Hall", landlordId:3, beds:2, price:1100, hood:"Campustown", tags:["Furnished","Gym"], rating:3.4, reviews:41 },
+  { id:10, name:"501 E Daniel St", landlordId:1, beds:4, price:625, hood:"Campustown", tags:["Cheap"], rating:2.1, reviews:52 },
+  { id:11, name:"Hendrick House", landlordId:2, beds:1, price:980, hood:"South Campus", tags:["Meal Plan","Furnished"], rating:3.7, reviews:29 },
+  { id:12, name:"Illini Tower", landlordId:7, beds:2, price:825, hood:"Campustown", tags:["Near Alma Mater"], rating:2.4, reviews:63 },
+];
+
+const SEED_REVIEWS = [
+  { id:1, landlordId:1, property:"501 E Daniel St", author:"Anonymous Illini", date:"Feb 2026", rating:1.0, wouldRent:false,
+    text:"Worst experience of my college life. Submitted 14 maintenance requests over one semester. They fixed 3. Our heat went out in January and it took them 2 weeks to send someone. When we moved out they charged us $800 for 'damages' that were there when we moved in. Take photos of EVERYTHING.",
+    pos:[], neg:["Slow Maintenance","Unfair Charges","Unresponsive"], helpful:47 },
+  { id:2, landlordId:1, property:"309 E Green St", author:"Engineering '27", date:"Jan 2026", rating:3.0, wouldRent:false,
+    text:"Location is unbeatable if you want to be on Green Street. The apartment itself is dated but functional. Maintenance is hit or miss. My advice: document everything in writing, never call — always email so you have a paper trail.",
+    pos:["Great Location"], neg:["Slow Maintenance","Dated Units"], helpful:23 },
+  { id:3, landlordId:2, property:"HERE Champaign", author:"Business Major", date:"Mar 2026", rating:4.0, wouldRent:true,
+    text:"HERE is actually really nice. The amenities are solid — pool, gym, study rooms. Management responds to emails within 24 hours usually. Only knock is the price per person is higher than average and they nickel and dime on move-out. Still, best building I've lived in at UIUC.",
+    pos:["Great Amenities","Responsive","Modern"], neg:["Pricey","Move-out Fees"], helpful:31 },
+  { id:4, landlordId:5, property:"The Quad Apartments", author:"Broke Junior", date:"Dec 2025", rating:2.0, wouldRent:false,
+    text:"You get what you pay for. Rent is cheap but the building is falling apart. Saw a mouse in my kitchen twice. When I called CPM they said to 'buy traps.' The walls are paper thin. But honestly for $550/month near campus... I knew what I was getting into.",
+    pos:["Cheap Rent"], neg:["Pests","Poor Condition","Thin Walls"], helpful:38 },
+  { id:5, landlordId:6, property:"212 E Daniel St", author:"Grad Student", date:"Feb 2026", rating:5.0, wouldRent:true,
+    text:"Roland Realty is how all landlords should operate. When our dishwasher broke, they had a new one installed within 48 hours. The townhouse is beautifully renovated. Full deposit returned within 10 days with an itemized statement. I'm renewing for a third year.",
+    pos:["Fast Repairs","Fair Deposit","Renovated"], neg:[], helpful:55 },
+  { id:6, landlordId:3, property:"Presby Hall", author:"CS Major '26", date:"Jan 2026", rating:3.0, wouldRent:true,
+    text:"Presby is fine. Not amazing, not terrible. The building looks nice from outside but some units have issues with plumbing. JSM takes about a week to handle maintenance requests. The furnished option saved me money vs buying furniture. Location is perfect for campus.",
+    pos:["Good Location","Furnished"], neg:["Slow Plumbing Fixes"], helpful:15 },
+  { id:7, landlordId:8, property:"MHM on Springfield", author:"PhD Candidate", date:"Mar 2026", rating:4.0, wouldRent:true,
+    text:"MHM is a hidden gem. Small operation so you actually talk to the owner. He fixed our garbage disposal himself the same day we reported it. The apartment is quiet, clean, and well-maintained. Only downside is it's a bit far from campus, but if you have a car it's perfect.",
+    pos:["Responsive Owner","Quiet","Well-Maintained"], neg:["Far from Campus"], helpful:19 },
+  { id:8, landlordId:7, property:"Illini Tower", author:"Freshman Mistake", date:"Nov 2025", rating:2.0, wouldRent:false,
+    text:"Signed the lease because the location seemed great. The building is old and it shows. Elevator breaks down at least once a month. Had a roach problem that took 3 visits from pest control to fix. University Group's office is hard to reach — I've sat on hold for 45 minutes before.",
+    pos:["Central Location"], neg:["Old Building","Pests","Poor Communication"], helpful:42 },
+];
+
+const neighborhoods = [
+  { name:"Campustown", type:"Most Popular", rent:875, walk:95, safety:3.2, nightlife:5, quiet:1.5 },
+  { name:"Lincoln Ave", type:"Residential", rent:740, walk:78, safety:3.8, nightlife:2, quiet:4 },
+  { name:"South Campus", type:"Budget-Friendly", rent:650, walk:70, safety:3.0, nightlife:1, quiet:3.5 },
+  { name:"East Campus", type:"Engineering Hub", rent:720, walk:85, safety:3.5, nightlife:2, quiet:3 },
+  { name:"North Champaign", type:"Off the Beaten Path", rent:680, walk:55, safety:4.2, nightlife:1, quiet:4.5 },
+  { name:"Urbana", type:"Alternative Vibe", rent:620, walk:65, safety:3.9, nightlife:1.5, quiet:4 },
+];
+
+// ===== PERSISTENCE (Supabase + local cache) =====
+let dbReviews = []; // reviews loaded from Supabase
+let dbLoaded = false;
+
+async function loadDbReviews() {
+  try {
+    const { data, error } = await db.from('reviews').select('*').order('created_at', { ascending: false });
+    if (error) throw error;
+    dbReviews = (data || []).map(r => ({
+      id: r.id,
+      landlordId: r.landlord_id,
+      property: r.property || 'Not specified',
+      author: r.author || 'Anonymous Student',
+      date: new Date(r.created_at).toLocaleDateString('en-US', {month:'short', year:'numeric'}),
+      rating: parseFloat(r.rating),
+      wouldRent: r.would_rent,
+      text: r.review_text,
+      pos: r.positive_tags || [],
+      neg: r.negative_tags || [],
+      helpful: r.helpful_count || 0
+    }));
+    dbLoaded = true;
+    render();
+  } catch (e) {
+    console.warn('Supabase load failed, using seed data only:', e.message);
+    dbLoaded = true;
+    render();
+  }
+}
+
+async function saveReviewToDb(review) {
+  try {
+    const { error } = await db.from('reviews').insert({
+      landlord_id: review.landlordId,
+      property: review.property,
+      author: review.author,
+      rating: review.rating,
+      would_rent: review.wouldRent,
+      review_text: review.text,
+      positive_tags: review.pos,
+      negative_tags: review.neg,
+      helpful_count: 0
+    });
+    if (error) throw error;
+    await loadDbReviews(); // reload to get the new review with server-assigned id
+    return true;
+  } catch (e) {
+    console.error('Save failed:', e.message);
+    return false;
+  }
+}
+
+async function incrementHelpful(reviewId) {
+  // Only works for Supabase reviews (UUID ids), not seed reviews
+  if (typeof reviewId === 'string' && reviewId.length > 10) {
+    try {
+      const existing = dbReviews.find(r => r.id === reviewId);
+      if (!existing) return;
+      await db.from('reviews').update({ helpful_count: existing.helpful + 1 }).eq('id', reviewId);
+    } catch (e) { console.warn('Helpful update failed:', e.message); }
+  }
+}
+
+function loadHelpful() {
+  try { return JSON.parse(localStorage.getItem('ratemycrib_helpful') || '{}'); } catch { return {}; }
+}
+function saveHelpful(id) {
+  const h = loadHelpful();
+  h[id] = true;
+  localStorage.setItem('ratemycrib_helpful', JSON.stringify(h));
+}
+
+// Merge seed + Supabase reviews
+function allReviews() {
+  return [...SEED_REVIEWS, ...dbReviews];
+}
+
+// Load reviews from Supabase on page load
+loadDbReviews();
+
+// ===== STATE =====
+let S = { page:"home", query:"", filter:"all", sort:"rating", detail:null, modal:false, stars:0, wouldRentChoice:null };
+const go = u => { Object.assign(S, u); render(); };
+
+// ===== HELPERS =====
+const qClass = r => r >= 3.5 ? "high" : r >= 2.5 ? "mid" : "low";
+const qLabel = r => r >= 4.0 ? "AWESOME" : r >= 3.5 ? "GOOD" : r >= 2.5 ? "OK" : r >= 2.0 ? "POOR" : "AWFUL";
+const valClass = (v, good, ok) => v >= good ? "val-good" : v >= ok ? "val-ok" : "val-bad";
+const scoreColor = s => s >= 3.5 ? "#16A34A" : s >= 2.5 ? "#EAB308" : "#DC2626";
+const esc = s => s.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+function getReviewCount() {
+  return allReviews().length;
+}
+
+// ===== COMPONENTS =====
+function Nav() {
+  return `<div class="nav">
+    <div class="nav-brand" onclick="go({page:'home',detail:null})">Rate<em>My</em>Crib</div>
+    <div class="nav-right">
+      <span class="nav-link ${S.page==='home'&&!S.detail?'active':''}" onclick="go({page:'home',detail:null})">Landlords</span>
+      <span class="nav-link ${S.page==='hoods'?'active':''}" onclick="go({page:'hoods'})">Neighborhoods</span>
+      <span class="nav-link ${S.page==='compare'?'active':''}" onclick="go({page:'compare'})">Compare</span>
+      <button class="nav-cta" onclick="go({page:'home',modal:true,stars:0,wouldRentChoice:null})">Rate a Landlord</button>
+    </div>
+  </div>`;
+}
+
+function ShareBanner() {
+  return `<div class="share-banner">
+    <p>Know someone looking for housing? Share RateMyCrib and help them avoid getting burned.</p>
+    <button onclick="copyShareLink()">Copy Link to Share</button>
+  </div>`;
+}
+
+function Hero() {
+  const revCount = getReviewCount();
+  return `<div class="hero">
+    <div class="hero-badge">By students. For students. No landlord money.</div>
+    <h1>Rate<em>My</em>Crib</h1>
+    <p>The honest guide to off-campus housing at UIUC. Search ${SEED_LANDLORDS.length} landlords and ${revCount} student reviews.</p>
+    <div class="search-wrap">
+      <input type="text" placeholder="Search landlords or properties..." value="${esc(S.query)}" oninput="go({query:this.value})" />
+      <button class="search-btn" onclick="void 0">Search</button>
+    </div>
+    <div class="search-tags">
+      <span class="search-tag ${S.filter==='all'?'active':''}" onclick="go({filter:'all'})">All</span>
+      <span class="search-tag ${S.filter==='top'?'active':''}" onclick="go({filter:'top'})">Top Rated</span>
+      <span class="search-tag ${S.filter==='avoid'?'active':''}" onclick="go({filter:'avoid'})">Avoid These</span>
+      <span class="search-tag ${S.filter==='responsive'?'active':''}" onclick="go({filter:'responsive'})">Most Responsive</span>
+    </div>
+  </div>
+  <div class="stats-bar">
+    <div class="stat-item"><div class="stat-num">${revCount}</div><div class="stat-label">Reviews</div></div>
+    <div class="stat-item"><div class="stat-num">${SEED_LANDLORDS.length}</div><div class="stat-label">Landlords</div></div>
+    <div class="stat-item"><div class="stat-num">${SEED_PROPERTIES.length}</div><div class="stat-label">Properties</div></div>
+    <div class="stat-item"><div class="stat-num">100%</div><div class="stat-label">Student-Powered</div></div>
+  </div>`;
+}
+
+function ResultCard(l) {
+  const q = qClass(l.rating);
+  const lprops = SEED_PROPERTIES.filter(p=>p.landlordId===l.id);
+  const avgPrice = lprops.length ? lprops.reduce((s,p)=>s+p.price,0) / lprops.length : 0;
+  return `<div class="result-card" onclick="go({page:'detail',detail:${l.id}})">
+    <div class="result-rating-box quality-${q}">
+      <div class="result-rating-num">${l.rating.toFixed(1)}</div>
+      <div class="result-rating-label">${qLabel(l.rating)}</div>
+    </div>
+    <div class="result-body">
+      <div class="result-name">${esc(l.name)}</div>
+      <div class="result-sub">${l.props} properties · ${l.reviews} reviews</div>
+      <div class="result-metrics">
+        <div class="result-metric"><strong style="color:${scoreColor(l.scores.maintenance)}">${l.scores.maintenance.toFixed(1)}</strong><span>Maintenance</span></div>
+        <div class="result-metric"><strong style="color:${scoreColor(l.scores.communication)}">${l.scores.communication.toFixed(1)}</strong><span>Communication</span></div>
+        <div class="result-metric"><strong style="color:${scoreColor(l.scores.fairness)}">${l.scores.fairness.toFixed(1)}</strong><span>Fairness</span></div>
+        <div class="result-metric"><strong style="color:${scoreColor(l.scores.moveOut)}">${l.scores.moveOut.toFixed(1)}</strong><span>Move-Out</span></div>
+      </div>
+      <div class="result-tags">
+        ${l.topTags.map(t => {
+          const isNeg = ["Slow Maintenance","Unfair Charges","Nightmare Maintenance","Avoid","Pests","Old Buildings","Move-Out Fees","Hit or Miss"].includes(t);
+          const isPos = ["Responsive","Fast Repairs","Fair Deposits","Hidden Gem","Modern Units","Great Locations","Responsive Owner","Quiet","Well-Maintained","Solid Option","Prime Location","Good Locations","Cheap Rent"].includes(t);
+          return `<span class="rtag ${isNeg?'rtag-neg':isPos?'rtag-pos':'rtag-neutral'}">${esc(t)}</span>`;
+        }).join("")}
+      </div>
+    </div>
+    <div class="result-side">
+      <div class="would-rent" style="color:${l.wouldRent>=50?'#16A34A':'#DC2626'}">${l.wouldRent}%</div>
+      <div class="would-rent-label">would rent<br>again</div>
+      ${avgPrice ? `<div class="result-price">~$${Math.round(avgPrice)}<span>/mo</span></div>` : ''}
+    </div>
+  </div>`;
+}
+
+function ResultsList() {
+  let list = [...SEED_LANDLORDS];
+  if (S.query) {
+    const q = S.query.toLowerCase();
+    list = list.filter(l => l.name.toLowerCase().includes(q) || l.topTags.some(t=>t.toLowerCase().includes(q)));
+  }
+  if (S.filter === "top") list = list.filter(l => l.rating >= 3.5);
+  if (S.filter === "avoid") list = list.filter(l => l.rating < 2.5);
+  if (S.filter === "responsive") list = list.filter(l => parseInt(l.responseRate) >= 60);
+
+  if (S.sort === "rating") list.sort((a,b) => b.rating - a.rating);
+  else if (S.sort === "reviews") list.sort((a,b) => b.reviews - a.reviews);
+  else if (S.sort === "wouldRent") list.sort((a,b) => b.wouldRent - a.wouldRent);
+
+  return `<div class="container">
+    <div class="results-header">
+      <div class="results-count">${list.length} landlord${list.length!==1?'s':''} found</div>
+      <select class="sort-select" onchange="go({sort:this.value})">
+        <option value="rating" ${S.sort==='rating'?'selected':''}>Highest Rated</option>
+        <option value="reviews" ${S.sort==='reviews'?'selected':''}>Most Reviews</option>
+        <option value="wouldRent" ${S.sort==='wouldRent'?'selected':''}>Would Rent Again %</option>
+      </select>
+    </div>
+    ${list.map(ResultCard).join("")}
+    ${list.length===0?'<p style="text-align:center;color:#7C7C7C;padding:48px">No landlords match your search.</p>':''}
+    <div class="promo">
+      <div><h3>Get the Full Housing Report</h3><p>Price history, lease red flags, neighborhood deep-dives. Coming soon.</p></div>
+      <button onclick="toast('Premium reports launching Fall 2026!')">Unlock Reports</button>
+    </div>
+  </div>`;
+}
+
+function DetailPage() {
+  const l = SEED_LANDLORDS.find(x=>x.id===S.detail);
+  if (!l) return '';
+  const q = qClass(l.rating);
+  const revs = allReviews().filter(r=>r.landlordId===l.id);
+  const lprops = SEED_PROPERTIES.filter(p=>p.landlordId===l.id);
+  const maxDist = Math.max(...l.dist);
+  const helped = loadHelpful();
+
+  return `<div class="detail-top">
+    <div class="detail-inner">
+      <span class="back-link" onclick="go({page:'home',detail:null})">&#8592; Back to all landlords</span>
+      <div class="detail-head">
+        <div class="detail-score-circle sc-${q}">
+          <div class="detail-score-num">${l.rating.toFixed(1)}</div>
+          <div class="detail-score-label">${qLabel(l.rating)}</div>
+        </div>
+        <div class="detail-info">
+          <h1>${esc(l.name)}</h1>
+          <div class="subtitle">${l.props} properties · ${l.reviews} ratings · Response rate: ${l.responseRate}</div>
+          <div class="detail-sub-scores">
+            ${Object.entries(l.scores).map(([k,v]) => `
+              <div class="sub-score">
+                <div class="sub-score-val" style="color:${scoreColor(v)}">${v.toFixed(1)}</div>
+                <div class="sub-score-label">${k==='moveOut'?'Move-Out':k.charAt(0).toUpperCase()+k.slice(1)}</div>
+              </div>
+            `).join("")}
+          </div>
+          <div class="detail-would">
+            <div class="detail-would-item">
+              <span class="detail-would-pct" style="color:${l.wouldRent>=50?'#16A34A':'#DC2626'}">${l.wouldRent}%</span>
+              <span style="color:#7C7C7C;font-size:13px">would rent again</span>
+            </div>
+          </div>
+          <div class="rating-dist" style="max-width:320px;margin-top:16px">
+            ${[5,4,3,2,1].map((star,i) => `
+              <div class="dist-row">
+                <div class="dist-label">${star} star</div>
+                <div class="dist-bar"><div class="dist-fill" style="width:${Math.round(l.dist[i]/maxDist*100)}%"></div></div>
+                <div class="dist-count">${l.dist[i]}</div>
+              </div>
+            `).join("")}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="reviews-section">
+    <div class="reviews-header">
+      <h2>${revs.length} Student Review${revs.length!==1?'s':''}</h2>
+      <button class="write-btn" onclick="go({modal:true,stars:0,wouldRentChoice:null})">+ Rate This Landlord</button>
+    </div>
+    ${revs.map(r => {
+      const rq = qClass(r.rating);
+      const isHelped = helped[r.id];
+      return `<div class="review-item">
+        <div class="review-top">
+          <div class="review-score rs-${rq}">
+            <div class="review-score-num">${r.rating.toFixed(1)}</div>
+            <div class="review-score-q">${qLabel(r.rating)}</div>
+          </div>
+          <div class="review-content">
+            <div class="review-meta"><strong>${esc(r.author)}</strong> · ${esc(r.date)} · ${r.wouldRent ? '<span style="color:#16A34A;font-weight:600">Would rent again</span>' : '<span style="color:#DC2626;font-weight:600">Would NOT rent again</span>'}</div>
+            <div class="review-property">${esc(r.property)}</div>
+            <div class="review-text">${esc(r.text)}</div>
+            <div class="review-tags">
+              ${(r.pos||[]).map(t=>`<span class="rtag rtag-pos">${esc(t)}</span>`).join("")}
+              ${(r.neg||[]).map(t=>`<span class="rtag rtag-neg">${esc(t)}</span>`).join("")}
+            </div>
+            <div class="review-actions">
+              <button ${isHelped?'style="border-color:#16A34A;color:#16A34A"':''} onclick="event.stopPropagation();markHelpful('${r.id}',this,${r.helpful||0})">&#128077; Helpful (${isHelped?(r.helpful||0)+1:r.helpful||0})</button>
+              <button onclick="event.stopPropagation();toast('Review reported. We\\'ll look into it.')">&#128681; Report</button>
+            </div>
+          </div>
+        </div>
+      </div>`;
+    }).join("")}
+    ${revs.length===0?'<p style="text-align:center;color:#7C7C7C;padding:48px">No reviews yet. Be the first!</p>':''}
+
+    <h3 style="font-size:18px;font-weight:700;margin-top:40px;margin-bottom:16px">Properties by ${esc(l.name)}</h3>
+    ${lprops.map(p => `
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid #E8E8E8">
+        <div>
+          <div style="font-weight:700">${esc(p.name)}</div>
+          <div style="font-size:13px;color:#7C7C7C">${p.beds===0?'Studio':p.beds+'bd'} · ${esc(p.hood)} · ${p.tags.map(esc).join(', ')}</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-weight:700;font-size:18px">$${p.price}<span style="font-size:12px;color:#7C7C7C;font-weight:400">/mo</span></div>
+          <div style="font-size:13px;color:${scoreColor(p.rating)};font-weight:600">${p.rating.toFixed(1)} / 5.0</div>
+        </div>
+      </div>
+    `).join("")}
+
+    <div class="promo" style="margin-top:32px">
+      <div><h3>Lease Red Flag Scanner</h3><p>Upload your lease. We'll flag predatory clauses before you sign. Coming soon.</p></div>
+      <button onclick="toast('Lease scanner launching Fall 2026!')">Scan My Lease</button>
+    </div>
+  </div>`;
+}
+
+function Hoods() {
+  return `<div class="container" style="padding-top:40px">
+    <h2 style="font-size:28px;font-weight:800;margin-bottom:4px">Neighborhoods</h2>
+    <p style="color:#7C7C7C;font-size:15px;margin-bottom:24px">Every area around UIUC, scored on what matters to students.</p>
+    <div class="hood-grid">
+      ${neighborhoods.map(h => `
+        <div class="hood-card">
+          <div class="hood-name">${esc(h.name)}</div>
+          <div class="hood-type">${esc(h.type)}</div>
+          <div class="hood-row"><span>Avg Rent</span><strong>$${h.rent}/mo</strong></div>
+          <div class="hood-row"><span>Walk Score</span><strong>${h.walk}/100</strong></div>
+          <div class="hood-row"><span>Safety</span><strong class="${valClass(h.safety,3.5,2.5)}">${h.safety}/5</strong></div>
+          <div class="hood-row"><span>Nightlife</span><strong>${h.nightlife}/5</strong></div>
+          <div class="hood-row"><span>Quiet</span><strong>${h.quiet}/5</strong></div>
+        </div>
+      `).join("")}
+    </div>
+  </div>`;
+}
+
+function Compare() {
+  const sorted = [...SEED_PROPERTIES].sort((a,b)=>a.price-b.price);
+  return `<div class="container" style="padding-top:40px">
+    <h2 style="font-size:28px;font-weight:800;margin-bottom:4px">Compare Properties</h2>
+    <p style="color:#7C7C7C;font-size:15px;margin-bottom:24px">Side-by-side. Every property. No hidden fees.</p>
+    <div style="overflow-x:auto">
+      <table class="compare-tbl">
+        <thead><tr><th>Property</th><th>Landlord</th><th>Beds</th><th>Neighborhood</th><th>Price/mo</th><th>Rating</th><th>Value*</th></tr></thead>
+        <tbody>
+          ${sorted.map(p => {
+            const l = SEED_LANDLORDS.find(x=>x.id===p.landlordId);
+            const val = (p.rating/p.price*1000).toFixed(1);
+            return `<tr style="cursor:pointer" onclick="go({page:'detail',detail:${p.landlordId}})">
+              <td><strong>${esc(p.name)}</strong></td>
+              <td>${l?esc(l.name):''}</td>
+              <td>${p.beds===0?'Studio':p.beds}</td>
+              <td>${esc(p.hood)}</td>
+              <td><strong>$${p.price}</strong></td>
+              <td class="${valClass(p.rating,3.5,2.5)}">${p.rating.toFixed(1)}</td>
+              <td class="${valClass(parseFloat(val),4,3)}">${val}</td>
+            </tr>`;
+          }).join("")}
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:12px;color:#7C7C7C;margin-top:8px">*Value = Rating per $1,000/mo. Higher is better.</p>
+  </div>`;
+}
+
+function Modal() {
+  if (!S.modal) return '';
+  const l = S.detail ? SEED_LANDLORDS.find(x=>x.id===S.detail) : null;
+  return `<div class="modal-bg" onclick="if(event.target===this)go({modal:false})">
+    <div class="modal-box">
+      <h2>Rate ${l ? esc(l.name) : 'a Landlord'}</h2>
+      <p class="modal-sub">Your review is anonymous and helps other students make better decisions.</p>
+
+      ${!l ? `<div class="field">
+        <label>Landlord</label>
+        <select id="rev-landlord"><option value="">Select landlord...</option>${SEED_LANDLORDS.map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join("")}</select>
+      </div>` : ''}
+
+      <div class="field">
+        <label>Overall Rating</label>
+        <div class="star-row">
+          ${[1,2,3,4,5].map(n=>`<span class="${n<=S.stars?'on':''}" onclick="go({stars:${n}})">&#9733;</span>`).join("")}
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Would you rent from them again?</label>
+        <div style="display:flex;gap:8px">
+          <span class="chip ${S.wouldRentChoice===true?'sel-pos':''}" onclick="go({wouldRentChoice:true})">Yes</span>
+          <span class="chip ${S.wouldRentChoice===false?'sel-neg':''}" onclick="go({wouldRentChoice:false})">No</span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Property (optional)</label>
+        <input type="text" id="rev-property" placeholder="e.g. 309 E Green St" />
+      </div>
+
+      <div class="field">
+        <label>Your Experience</label>
+        <textarea id="rev-text" placeholder="Be specific: maintenance speed, communication, deposit fairness, overall condition..."></textarea>
+      </div>
+
+      <div class="field">
+        <label>Tags — select all that apply</label>
+        <div class="chip-group" id="pos-tags">
+          ${["Great Location","Responsive","Fast Repairs","Modern","Quiet","Pet Friendly","Fair Deposit","Furnished","Good Amenities","Cheap Rent"].map(t=>
+            `<span class="chip" data-tag="${esc(t)}" data-type="pos" onclick="this.classList.toggle('sel-pos')">${esc(t)}</span>`
+          ).join("")}
+        </div>
+        <div class="chip-group" id="neg-tags" style="margin-top:8px">
+          ${["Slow Maintenance","Unfair Charges","Pests","Poor Communication","Old Building","Noisy","Hidden Fees","Thin Walls"].map(t=>
+            `<span class="chip" data-tag="${esc(t)}" data-type="neg" onclick="this.classList.toggle('sel-neg')">${esc(t)}</span>`
+          ).join("")}
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Verify you're a student (optional, adds trust badge)</label>
+        <input type="email" id="rev-email" placeholder="netid@illinois.edu" />
+      </div>
+
+      <button class="submit-btn" onclick="submitReview(${l?l.id:'null'})" ${S.stars===0?'disabled':''}>Submit My Review</button>
+      <p class="note">Reviews are anonymous. Email is only used for verification, never displayed.</p>
+    </div>
+  </div>`;
+}
+
+function Footer() {
+  return `<footer>
+    <div class="footer-inner">
+      <div class="footer-col">
+        <h4>RateMyCrib</h4>
+        <a>Built by students who got burned.</a>
+        <a>No landlord money. No sponsored rankings.</a>
+      </div>
+      <div class="footer-col">
+        <h4>Browse</h4>
+        <a onclick="go({page:'home',detail:null})">All Landlords</a>
+        <a onclick="go({page:'hoods'})">Neighborhoods</a>
+        <a onclick="go({page:'compare'})">Compare Prices</a>
+      </div>
+      <div class="footer-col">
+        <h4>Legal</h4>
+        <a href="terms.html">Terms of Service</a>
+        <a href="privacy.html">Privacy Policy</a>
+        <a>Know Your Rights</a>
+      </div>
+      <div class="footer-col">
+        <h4>About</h4>
+        <a>Our Mission</a>
+        <a>For Landlords</a>
+        <a href="mailto:ratemycrib@proton.me">Contact</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>Not affiliated with the University of Illinois. Student-run project.</span>
+      <span>&copy; ${new Date().getFullYear()} RateMyCrib. All rights reserved. <a href="terms.html" style="color:#7C7C7C;text-decoration:underline">Terms</a> · <a href="privacy.html" style="color:#7C7C7C;text-decoration:underline">Privacy</a></span>
+    </div>
+  </footer>`;
+}
+
+// ===== ACTIONS =====
+async function submitReview(landlordIdFromDetail) {
+  const landlordId = landlordIdFromDetail || parseInt(document.getElementById('rev-landlord')?.value);
+  if (!landlordId) { toast('Please select a landlord.'); return; }
+  if (S.stars === 0) { toast('Please select a star rating.'); return; }
+
+  const text = document.getElementById('rev-text')?.value?.trim();
+  if (!text || text.length < 20) { toast('Please write at least 20 characters about your experience.'); return; }
+
+  const property = document.getElementById('rev-property')?.value?.trim() || 'Not specified';
+  const email = document.getElementById('rev-email')?.value?.trim() || '';
+
+  // Collect selected tags
+  const posTags = [...document.querySelectorAll('#pos-tags .sel-pos')].map(el => el.dataset.tag);
+  const negTags = [...document.querySelectorAll('#neg-tags .sel-neg')].map(el => el.dataset.tag);
+
+  const review = {
+    landlordId: landlordId,
+    property: property,
+    author: email.endsWith('@illinois.edu') ? 'Verified Illini' : 'Anonymous Student',
+    rating: S.stars,
+    wouldRent: S.wouldRentChoice === true,
+    text: text,
+    pos: posTags,
+    neg: negTags,
+  };
+
+  // Disable button while saving
+  const btn = document.querySelector('.submit-btn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Submitting...'; }
+
+  const success = await saveReviewToDb(review);
+  if (success) {
+    go({modal:false, stars:0, wouldRentChoice:null});
+    toast('Review submitted! Everyone can see it now.');
+  } else {
+    if (btn) { btn.disabled = false; btn.textContent = 'Submit My Review'; }
+    toast('Something went wrong. Try again.');
+  }
+}
+
+async function markHelpful(reviewId, btn, currentCount) {
+  const helped = loadHelpful();
+  if (helped[reviewId]) return;
+  saveHelpful(reviewId);
+  btn.style.borderColor = '#16A34A';
+  btn.style.color = '#16A34A';
+  btn.innerHTML = `&#128077; Helpful (${currentCount + 1})`;
+  await incrementHelpful(reviewId);
+}
+
+function copyShareLink() {
+  const url = window.location.href;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(url).then(() => toast('Link copied! Share it with your friends.'));
+  } else {
+    const ta = document.createElement('textarea');
+    ta.value = url;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    toast('Link copied! Share it with your friends.');
+  }
+}
+
+// ===== MAIN RENDER =====
+function render() {
+  let html = Nav();
+  if (S.page === 'home' && !S.detail) html += ShareBanner() + Hero() + ResultsList();
+  else if (S.page === 'detail' || S.detail) html += DetailPage();
+  else if (S.page === 'hoods') html += Hoods();
+  else if (S.page === 'compare') html += Compare();
+  html += Modal() + Footer();
+  document.getElementById('app').innerHTML = html;
+  if (!S.detail && !S.modal) window.scrollTo(0, 0);
+}
+
+// Handle browser back/forward
+window.addEventListener('hashchange', () => {
+  const hash = location.hash.slice(1);
+  if (hash.startsWith('landlord-')) {
+    const id = parseInt(hash.split('-')[1]);
+    if (id) go({page:'detail', detail:id});
+  } else if (hash === 'neighborhoods') go({page:'hoods', detail:null});
+  else if (hash === 'compare') go({page:'compare', detail:null});
+  else go({page:'home', detail:null});
+});
+
+// Update hash on navigation
+const _origGo = go;
+
+render();
+</script>
+</body>
+</html>
