@@ -300,36 +300,70 @@ const SEED_LANDLORDS = [
     scores:{maintenance:0,communication:0,fairness:0,moveOut:0}, topTags:["New Listing"], dist:[0,0,0,0,0] },
 ];
 
+// Addresses and prices verified from apartments.com, landlord websites (March 2026)
+// Prices shown are per-person/month for the listed bed count
 const SEED_PROPERTIES = [
-  { id:1, name:"309 E Green St", landlordId:1, beds:2, price:950, hood:"Campustown", tags:["Laundry In-Unit"], rating:0, reviews:0 },
-  { id:2, name:"Smile HERE Champaign", landlordId:2, beds:4, price:899, hood:"Campustown", tags:["Furnished","Gym","Pool"], rating:0, reviews:0 },
+  { id:1, name:"309 E Green St", landlordId:1, beds:4, price:669, hood:"Campustown", tags:["Utilities Included","Pool","Gym"], rating:0, reviews:0 },
+  { id:2, name:"615 S Wright St", landlordId:2, beds:4, price:545, hood:"Campustown", tags:["Furnished","Near Quad"], rating:0, reviews:0 },
   { id:3, name:"508 E White St", landlordId:3, beds:1, price:750, hood:"Campustown", tags:["Utilities Included"], rating:0, reviews:0 },
-  { id:4, name:"Bankier at Lincoln", landlordId:4, beds:2, price:725, hood:"Lincoln Ave", tags:["Pet Friendly","Parking"], rating:0, reviews:0 },
-  { id:5, name:"The Quad Apartments", landlordId:5, beds:3, price:550, hood:"South Campus", tags:["Cheap"], rating:0, reviews:0 },
-  { id:6, name:"212 E Daniel St", landlordId:6, beds:3, price:1200, hood:"Campustown", tags:["Renovated","Parking"], rating:0, reviews:0 },
-  { id:7, name:"707 S Sixth St", landlordId:7, beds:0, price:620, hood:"East Campus", tags:["Walk to Engineering"], rating:0, reviews:0 },
-  { id:8, name:"MHM on Springfield", landlordId:8, beds:2, price:875, hood:"North Champaign", tags:["Quiet","Pet Friendly"], rating:0, reviews:0 },
-  { id:9, name:"Presby Hall", landlordId:3, beds:2, price:1100, hood:"Campustown", tags:["Furnished","Gym"], rating:0, reviews:0 },
+  { id:4, name:"509 E Green St", landlordId:4, beds:2, price:900, hood:"Campustown", tags:["Utilities Included","Parking"], rating:0, reviews:0 },
+  { id:5, name:"305 E John St", landlordId:5, beds:4, price:499, hood:"Campustown", tags:["Cheap"], rating:0, reviews:0 },
+  { id:6, name:"901 S 1st St", landlordId:6, beds:1, price:875, hood:"Campustown", tags:["Renovated"], rating:0, reviews:0 },
+  { id:7, name:"707 S 6th St", landlordId:7, beds:0, price:620, hood:"East Campus", tags:["Walk to Engineering"], rating:0, reviews:0 },
+  { id:8, name:"606 E White St", landlordId:8, beds:2, price:875, hood:"Campustown", tags:["Quiet","Luxury"], rating:0, reviews:0 },
+  { id:9, name:"502 E Stoughton St", landlordId:3, beds:2, price:1100, hood:"Campustown", tags:["Furnished","Gym"], rating:0, reviews:0 },
   { id:10, name:"501 E Daniel St", landlordId:1, beds:4, price:625, hood:"Campustown", tags:["Cheap"], rating:0, reviews:0 },
-  { id:11, name:"Hendrick House", landlordId:2, beds:1, price:980, hood:"South Campus", tags:["Meal Plan","Furnished"], rating:0, reviews:0 },
-  { id:12, name:"Illini Tower", landlordId:7, beds:2, price:825, hood:"Campustown", tags:["Near Alma Mater"], rating:0, reviews:0 },
-  { id:13, name:"HERE Champaign Tower", landlordId:9, beds:2, price:1050, hood:"Campustown", tags:["Luxury","Gym","Rooftop"], rating:0, reviews:0 },
-  { id:14, name:"Seven07 South 6th", landlordId:10, beds:4, price:775, hood:"Campustown", tags:["Furnished","Study Rooms"], rating:0, reviews:0 },
-  { id:15, name:"The VUE Apartments", landlordId:11, beds:2, price:950, hood:"Campustown", tags:["Modern","Parking"], rating:0, reviews:0 },
+  { id:11, name:"1002 S Lincoln Ave", landlordId:2, beds:1, price:980, hood:"South Campus", tags:["Meal Plan","Furnished"], rating:0, reviews:0 },
+  { id:12, name:"409 E Chalmers St", landlordId:7, beds:2, price:1250, hood:"Campustown", tags:["Dining Hall","Furnished"], rating:0, reviews:0 },
+  { id:13, name:"308 E Green St", landlordId:9, beds:2, price:959, hood:"Campustown", tags:["Luxury","Gym","Pool"], rating:0, reviews:0 },
+  { id:14, name:"707 S 4th St", landlordId:10, beds:4, price:949, hood:"Campustown", tags:["Furnished","Pool","Basketball Court"], rating:0, reviews:0 },
+  { id:15, name:"711 S 4th St", landlordId:11, beds:2, price:1500, hood:"Campustown", tags:["Modern","Parking","Built 2021"], rating:0, reviews:0 },
 ];
 
 // Seed reviews removed — all reviews now come from real student submissions via Supabase.
 // This eliminates any legal risk from fabricated reviews about real companies.
 const SEED_REVIEWS = [];
 
-const neighborhoods = [
-  { name:"Campustown", type:"Most Popular", rent:875, walk:95, safety:3.2, nightlife:5, quiet:1.5 },
-  { name:"Lincoln Ave", type:"Residential", rent:740, walk:78, safety:3.8, nightlife:2, quiet:4 },
-  { name:"South Campus", type:"Budget-Friendly", rent:650, walk:70, safety:3.0, nightlife:1, quiet:3.5 },
-  { name:"East Campus", type:"Engineering Hub", rent:720, walk:85, safety:3.5, nightlife:2, quiet:3 },
-  { name:"North Champaign", type:"Off the Beaten Path", rent:680, walk:55, safety:4.2, nightlife:1, quiet:4.5 },
-  { name:"Urbana", type:"Alternative Vibe", rent:620, walk:65, safety:3.9, nightlife:1.5, quiet:4 },
-];
+// Neighborhood data — scores are computed live from user reviews
+const HOOD_NAMES = ["Campustown","Lincoln Ave","South Campus","East Campus","North Champaign","Urbana"];
+const HOOD_TYPES = { "Campustown":"Most Popular", "Lincoln Ave":"Residential", "South Campus":"Budget-Friendly",
+  "East Campus":"Engineering Hub", "North Champaign":"Off the Beaten Path", "Urbana":"Alternative Vibe" };
+
+function getHoodStats() {
+  return HOOD_NAMES.map(name => {
+    // Compute avg rent from seed properties in this hood
+    const hoodProps = SEED_PROPERTIES.filter(p => p.hood === name);
+    const seedRent = hoodProps.length ? Math.round(hoodProps.reduce((s,p)=>s+p.price,0)/hoodProps.length) : 0;
+
+    // Compute scores from Supabase reviews that have hood ratings
+    const hoodReviews = dbReviews.filter(r => {
+      const prop = SEED_PROPERTIES.find(p => p.name === r.property);
+      if (prop && prop.hood === name) return true;
+      // Also check if the review has hood_name matching
+      return r.hoodName === name;
+    });
+
+    const avg = (arr, key) => {
+      const vals = arr.map(r => r[key]).filter(v => v && v > 0);
+      return vals.length ? (vals.reduce((s,v)=>s+v,0)/vals.length) : 0;
+    };
+
+    // Get avg rent from reviews if available, otherwise use seed property prices
+    const reviewRents = hoodReviews.map(r => r.monthlyRent).filter(v => v && v > 0);
+    const avgRent = reviewRents.length ? Math.round(reviewRents.reduce((s,v)=>s+v,0)/reviewRents.length) : seedRent;
+
+    return {
+      name: name,
+      type: HOOD_TYPES[name],
+      rent: avgRent,
+      safety: parseFloat(avg(hoodReviews, 'hoodSafety').toFixed(1)),
+      nightlife: parseFloat(avg(hoodReviews, 'hoodNightlife').toFixed(1)),
+      quiet: parseFloat(avg(hoodReviews, 'hoodQuiet').toFixed(1)),
+      walk: parseFloat(avg(hoodReviews, 'hoodWalkability').toFixed(1)),
+      reviewCount: hoodReviews.length
+    };
+  });
+}
 
 // ===== PERSISTENCE (Supabase + local cache) =====
 let dbReviews = []; // reviews loaded from Supabase
@@ -350,7 +384,13 @@ async function loadDbReviews() {
       text: r.review_text,
       pos: r.positive_tags || [],
       neg: r.negative_tags || [],
-      helpful: r.helpful_count || 0
+      helpful: r.helpful_count || 0,
+      monthlyRent: r.monthly_rent || 0,
+      hoodName: r.hood_name || '',
+      hoodSafety: r.hood_safety || 0,
+      hoodWalkability: r.hood_walkability || 0,
+      hoodQuiet: r.hood_quiet || 0,
+      hoodNightlife: r.hood_nightlife || 0,
     }));
     dbLoaded = true;
     render();
@@ -363,7 +403,7 @@ async function loadDbReviews() {
 
 async function saveReviewToDb(review) {
   try {
-    const { error } = await db.from('reviews').insert({
+    const row = {
       landlord_id: review.landlordId,
       property: review.property,
       author: review.author,
@@ -372,8 +412,16 @@ async function saveReviewToDb(review) {
       review_text: review.text,
       positive_tags: review.pos,
       negative_tags: review.neg,
-      helpful_count: 0
-    });
+      helpful_count: 0,
+    };
+    // Add new fields only if they have values (columns may not exist yet)
+    if (review.monthlyRent > 0) row.monthly_rent = review.monthlyRent;
+    if (review.hoodName) row.hood_name = review.hoodName;
+    if (review.hoodSafety > 0) row.hood_safety = review.hoodSafety;
+    if (review.hoodWalkability > 0) row.hood_walkability = review.hoodWalkability;
+    if (review.hoodQuiet > 0) row.hood_quiet = review.hoodQuiet;
+    if (review.hoodNightlife > 0) row.hood_nightlife = review.hoodNightlife;
+    const { error } = await db.from('reviews').insert(row);
     if (error) throw error;
     await loadDbReviews(); // reload to get the new review with server-assigned id
     return true;
@@ -440,6 +488,24 @@ async function getTotalDbReviewCount() {
     if (error) throw error;
     return count || 0;
   } catch (e) { return dbReviews.length; }
+}
+
+// Dynamically compute landlord stats from real Supabase reviews
+function getLandlordStats(landlord) {
+  const revs = allReviews().filter(r => r.landlordId === landlord.id);
+  if (revs.length === 0) {
+    return { ...landlord, rating: 0, reviews: 0, wouldRent: 0, responseRate: "—",
+      scores:{maintenance:0,communication:0,fairness:0,moveOut:0}, dist:[0,0,0,0,0] };
+  }
+  const avg = revs.reduce((s,r) => s + r.rating, 0) / revs.length;
+  const wouldRentPct = Math.round(revs.filter(r => r.wouldRent).length / revs.length * 100);
+  const dist = [0,0,0,0,0];
+  revs.forEach(r => {
+    const star = Math.round(r.rating);
+    if (star >= 1 && star <= 5) dist[5 - star]++;
+  });
+  return { ...landlord, rating: avg, reviews: revs.length, wouldRent: wouldRentPct,
+    scores:{maintenance:0,communication:0,fairness:0,moveOut:0}, dist: dist };
 }
 
 // ===== COMPONENTS =====
@@ -523,7 +589,7 @@ function ResultCard(l) {
 }
 
 function ResultsList() {
-  let list = [...SEED_LANDLORDS];
+  let list = SEED_LANDLORDS.map(getLandlordStats);
   if (S.query) {
     const q = S.query.toLowerCase();
     list = list.filter(l => l.name.toLowerCase().includes(q) || l.topTags.some(t=>t.toLowerCase().includes(q)));
@@ -555,12 +621,13 @@ function ResultsList() {
 }
 
 function DetailPage() {
-  const l = SEED_LANDLORDS.find(x=>x.id===S.detail);
-  if (!l) return '';
+  const raw = SEED_LANDLORDS.find(x=>x.id===S.detail);
+  if (!raw) return '';
+  const l = getLandlordStats(raw);
   const q = qClass(l.rating);
   const revs = allReviews().filter(r=>r.landlordId===l.id);
   const lprops = SEED_PROPERTIES.filter(p=>p.landlordId===l.id);
-  const maxDist = Math.max(...l.dist);
+  const maxDist = Math.max(...l.dist) || 1;
   const helped = loadHelpful();
 
   return `<div class="detail-top">
@@ -655,21 +722,24 @@ function DetailPage() {
 }
 
 function Hoods() {
+  const hoods = getHoodStats();
   return `<div class="container" style="padding-top:40px">
     <h2 style="font-size:28px;font-weight:800;margin-bottom:4px">Neighborhoods</h2>
-    <p style="color:#7C7C7C;font-size:15px;margin-bottom:24px">Every area around UIUC, scored on what matters to students.</p>
+    <p style="color:#7C7C7C;font-size:15px;margin-bottom:24px">Every area around UIUC, scored by students who live there.</p>
     <div class="hood-grid">
-      ${neighborhoods.map(h => `
-        <div class="hood-card">
+      ${hoods.map(h => {
+        const hasReviews = h.reviewCount > 0;
+        return `<div class="hood-card">
           <div class="hood-name">${esc(h.name)}</div>
-          <div class="hood-type">${esc(h.type)}</div>
-          <div class="hood-row"><span>Avg Rent</span><strong>$${h.rent}/mo</strong></div>
-          <div class="hood-row"><span>Walk Score</span><strong>${h.walk}/100</strong></div>
-          <div class="hood-row"><span>Safety</span><strong class="${valClass(h.safety,3.5,2.5)}">${h.safety}/5</strong></div>
-          <div class="hood-row"><span>Nightlife</span><strong>${h.nightlife}/5</strong></div>
-          <div class="hood-row"><span>Quiet</span><strong>${h.quiet}/5</strong></div>
-        </div>
-      `).join("")}
+          <div class="hood-type">${esc(h.type)}${hasReviews ? ` · ${h.reviewCount} review${h.reviewCount!==1?'s':''}` : ''}</div>
+          <div class="hood-row"><span>Avg Rent</span><strong>${h.rent > 0 ? '$'+h.rent+'/mo' : '—'}</strong></div>
+          <div class="hood-row"><span>Walkability</span><strong>${h.walk > 0 ? h.walk+'/5' : '—'}</strong></div>
+          <div class="hood-row"><span>Safety</span><strong ${h.safety > 0 ? 'class="'+valClass(h.safety,3.5,2.5)+'"' : ''}>${h.safety > 0 ? h.safety+'/5' : '—'}</strong></div>
+          <div class="hood-row"><span>Nightlife</span><strong>${h.nightlife > 0 ? h.nightlife+'/5' : '—'}</strong></div>
+          <div class="hood-row"><span>Quiet</span><strong>${h.quiet > 0 ? h.quiet+'/5' : '—'}</strong></div>
+          ${!hasReviews ? '<p style="font-size:11px;color:#7C7C7C;margin-top:8px;text-align:center">Scores appear when students rate this neighborhood.</p>' : ''}
+        </div>`;
+      }).join("")}
     </div>
   </div>`;
 }
@@ -765,6 +835,27 @@ function Modal() {
       </div>
 
       <div class="field">
+        <label>Monthly Rent (per person)</label>
+        <div style="display:flex;align-items:center;gap:4px">
+          <span style="font-size:18px;font-weight:700">$</span>
+          <input type="number" id="rev-rent" placeholder="e.g. 750" min="100" max="5000" style="flex:1" />
+          <span style="font-size:13px;color:#7C7C7C">/month</span>
+        </div>
+        <p style="font-size:11px;color:#7C7C7C;margin-top:4px">What you actually pay per month. Helps other students compare real costs.</p>
+      </div>
+
+      <div class="field">
+        <label>Rate the Neighborhood (optional)</label>
+        <p style="font-size:12px;color:#7C7C7C;margin-bottom:8px">Help future students know what the area is like.</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <div><label style="font-size:12px">Safety</label><select id="rev-hood-safety"><option value="0">—</option>${[1,2,3,4,5].map(n=>`<option value="${n}">${n}/5${n===1?' (Unsafe)':n===3?' (Average)':n===5?' (Very Safe)':''}</option>`).join("")}</select></div>
+          <div><label style="font-size:12px">Walkability</label><select id="rev-hood-walk"><option value="0">—</option>${[1,2,3,4,5].map(n=>`<option value="${n}">${n}/5${n===1?' (Need Car)':n===3?' (Decent)':n===5?' (Walk Everywhere)':''}</option>`).join("")}</select></div>
+          <div><label style="font-size:12px">Noise Level</label><select id="rev-hood-quiet"><option value="0">—</option>${[1,2,3,4,5].map(n=>`<option value="${n}">${n}/5${n===1?' (Very Loud)':n===3?' (Average)':n===5?' (Very Quiet)':''}</option>`).join("")}</select></div>
+          <div><label style="font-size:12px">Nightlife</label><select id="rev-hood-nightlife"><option value="0">—</option>${[1,2,3,4,5].map(n=>`<option value="${n}">${n}/5${n===1?' (Dead)':n===3?' (Some)':n===5?' (Party Central)':''}</option>`).join("")}</select></div>
+        </div>
+      </div>
+
+      <div class="field">
         <label>Your Experience</label>
         <textarea id="rev-text" placeholder="Be specific: maintenance speed, communication, deposit fairness, overall condition..."></textarea>
       </div>
@@ -850,6 +941,17 @@ async function submitReview(landlordIdFromDetail) {
   const leaseEnd = document.getElementById('rev-lease-end')?.value || '';
   const leasePeriod = (leaseStart && leaseEnd) ? leaseStart + ' – ' + leaseEnd : '';
 
+  // Collect rent + neighborhood ratings
+  const monthlyRent = parseInt(document.getElementById('rev-rent')?.value) || 0;
+  const hoodSafety = parseInt(document.getElementById('rev-hood-safety')?.value) || 0;
+  const hoodWalk = parseInt(document.getElementById('rev-hood-walk')?.value) || 0;
+  const hoodQuiet = parseInt(document.getElementById('rev-hood-quiet')?.value) || 0;
+  const hoodNightlife = parseInt(document.getElementById('rev-hood-nightlife')?.value) || 0;
+
+  // Determine which neighborhood this property is in
+  const matchedProp = SEED_PROPERTIES.find(p => p.name === property);
+  const hoodName = matchedProp ? matchedProp.hood : '';
+
   // Collect selected tags
   const posTags = [...document.querySelectorAll('#pos-tags .sel-pos')].map(el => el.dataset.tag);
   const negTags = [...document.querySelectorAll('#neg-tags .sel-neg')].map(el => el.dataset.tag);
@@ -866,6 +968,12 @@ async function submitReview(landlordIdFromDetail) {
     text: fullText,
     pos: posTags,
     neg: negTags,
+    monthlyRent: monthlyRent,
+    hoodName: hoodName,
+    hoodSafety: hoodSafety,
+    hoodWalkability: hoodWalk,
+    hoodQuiet: hoodQuiet,
+    hoodNightlife: hoodNightlife,
   };
 
   // Disable button while saving
