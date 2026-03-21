@@ -12,7 +12,41 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="RateMyCrib — Honest UIUC Housing Reviews">
 <meta name="twitter:description" content="The honest guide to off-campus housing at UIUC. By students, for students.">
+<meta name="keywords" content="UIUC housing reviews, UIUC landlord reviews, Champaign apartments, Urbana housing, UIUC off-campus housing, rate my landlord UIUC, best landlords UIUC, worst landlords UIUC, student housing reviews, University of Illinois apartments, Campustown apartments, lease scanner Illinois, UIUC rent prices">
+<meta name="author" content="RateMyCrib LLC">
+<meta name="robots" content="index, follow">
+<meta property="og:site_name" content="RateMyCrib">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:site" content="@ratemycrib">
+<link rel="canonical" href="https://ratemycrib.net">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏠</text></svg>">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "RateMyCrib",
+  "url": "https://ratemycrib.net",
+  "description": "The honest guide to off-campus housing at UIUC. Search landlords, read real student reviews, and compare prices. By students, for students.",
+  "applicationCategory": "LifestyleApplication",
+  "operatingSystem": "Web",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "creator": { "@type": "Organization", "name": "RateMyCrib LLC", "url": "https://ratemycrib.net" },
+  "audience": { "@type": "EducationalAudience", "educationalRole": "student" },
+  "areaServed": { "@type": "City", "name": "Champaign-Urbana", "containedInPlace": { "@type": "State", "name": "Illinois" } }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  "name": "RateMyCrib",
+  "description": "Honest landlord reviews for UIUC students. Search, compare, and rate off-campus housing.",
+  "url": "https://ratemycrib.net",
+  "email": "ratemycrib@proton.me",
+  "areaServed": "Champaign-Urbana, Illinois",
+  "priceRange": "Free"
+}
+</script>
 <style>
   :root {
     --black: #0A0A0A;
@@ -289,6 +323,10 @@
   .hidden { display: none !important; }
   @media (max-width: 700px) {
     .hero h1 { font-size: 36px; }
+    .hero { padding: 48px 16px 40px; }
+    .hero p { font-size: 16px; }
+    .search-wrap input { font-size: 15px; padding: 14px 16px; padding-right: 90px; }
+    .search-btn { padding: 0 16px; font-size: 13px; }
     .result-card { flex-direction: column; }
     .result-rating-box { width: 100%; flex-direction: row; padding: 12px 20px; }
     .result-side { width: 100%; flex-direction: row; gap: 20px; border-left: none; border-top: 1px solid var(--border); }
@@ -299,6 +337,25 @@
     .footer-inner { flex-direction: column; }
     .footer-bottom { flex-direction: column; gap: 8px; }
     .share-banner { flex-direction: column; text-align: center; }
+    .nav { padding: 0 12px; flex-wrap: wrap; height: auto; min-height: 56px; padding-top: 8px; padding-bottom: 8px; }
+    .nav-right { gap: 6px; flex-wrap: wrap; justify-content: center; width: 100%; margin-top: 4px; }
+    .nav-link { font-size: 12px; padding: 4px 8px; }
+    .nav-cta { font-size: 12px; padding: 6px 12px; }
+    .nav-brand { font-size: 18px; }
+    .container { padding: 24px 16px; }
+    .scanner-wrap { padding: 24px 16px; }
+    .scanner-textarea { min-height: 150px; font-size: 13px; }
+    .scan-btn { width: 100%; justify-content: center; }
+    .scan-summary { flex-direction: column; }
+    .flag-card { padding: 14px; }
+    .flag-match { font-size: 12px; word-break: break-word; }
+    .compare-tbl { font-size: 12px; }
+    .compare-tbl th, .compare-tbl td { padding: 8px 10px; }
+    .hood-grid { grid-template-columns: 1fr; }
+    .modal-box { padding: 24px 16px; width: 96%; }
+    .detail-top { padding: 24px 16px; }
+    .result-body { padding: 16px; }
+    .result-metrics { flex-wrap: wrap; gap: 12px; }
   }
 </style>
 </head>
