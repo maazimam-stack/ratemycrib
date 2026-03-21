@@ -247,6 +247,45 @@
   .footer-col a:hover { color: var(--black); }
   .footer-bottom { max-width: 960px; margin: 20px auto 0; padding-top: 20px; border-top: 1px solid var(--border); font-size: 12px; color: var(--muted); display: flex; justify-content: space-between; }
 
+  /* ===== LEASE SCANNER ===== */
+  .scanner-wrap { max-width: 720px; margin: 0 auto; padding: 40px 24px; }
+  .scanner-wrap h2 { font-size: 28px; font-weight: 800; margin-bottom: 4px; }
+  .scanner-desc { color: var(--muted); font-size: 15px; margin-bottom: 24px; line-height: 1.5; }
+  .scanner-disclaimer { background: #FFF7ED; border: 1px solid #FDBA74; border-radius: 10px; padding: 16px 20px; margin-bottom: 24px; font-size: 13px; color: #92400E; line-height: 1.6; }
+  .scanner-disclaimer strong { color: #C2410C; }
+  .scanner-textarea { width: 100%; min-height: 200px; padding: 16px; border: 2px solid var(--border); border-radius: 12px; font-size: 14px; font-family: inherit; line-height: 1.6; resize: vertical; outline: none; transition: border 0.2s; }
+  .scanner-textarea:focus { border-color: var(--orange); }
+  .scanner-textarea::placeholder { color: #B0B0B0; }
+  .scan-btn { display: inline-flex; align-items: center; gap: 8px; background: var(--black); color: white; border: none; padding: 14px 32px; border-radius: 10px; font-size: 16px; font-weight: 700; cursor: pointer; margin-top: 16px; }
+  .scan-btn:hover { background: #333; }
+  .scan-btn:disabled { background: #ccc; cursor: not-allowed; }
+  .scan-results { margin-top: 32px; }
+  .scan-summary { display: flex; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
+  .scan-stat { flex: 1; min-width: 120px; border-radius: 10px; padding: 16px; text-align: center; }
+  .scan-stat-num { font-size: 28px; font-weight: 800; }
+  .scan-stat-label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+  .scan-stat.red { background: #FEE2E2; }
+  .scan-stat.red .scan-stat-num { color: #DC2626; }
+  .scan-stat.yellow { background: #FEF3C7; }
+  .scan-stat.yellow .scan-stat-num { color: #D97706; }
+  .scan-stat.green { background: #D1FAE5; }
+  .scan-stat.green .scan-stat-num { color: #16A34A; }
+  .flag-card { border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin-bottom: 12px; border-left: 4px solid; }
+  .flag-card.severity-high { border-left-color: #DC2626; background: #FFF5F5; }
+  .flag-card.severity-medium { border-left-color: #D97706; background: #FFFBEB; }
+  .flag-card.severity-low { border-left-color: #2563EB; background: #EFF6FF; }
+  .flag-severity { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+  .flag-card.severity-high .flag-severity { color: #DC2626; }
+  .flag-card.severity-medium .flag-severity { color: #D97706; }
+  .flag-card.severity-low .flag-severity { color: #2563EB; }
+  .flag-title { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+  .flag-match { font-size: 13px; background: rgba(0,0,0,0.05); padding: 8px 12px; border-radius: 6px; margin-bottom: 8px; font-family: monospace; line-height: 1.5; }
+  .flag-explain { font-size: 14px; line-height: 1.6; color: var(--text); margin-bottom: 8px; }
+  .flag-statute { font-size: 12px; color: var(--blue); font-weight: 600; }
+  .scan-clean { text-align: center; padding: 40px; background: #D1FAE5; border-radius: 12px; margin-top: 24px; }
+  .scan-clean h3 { font-size: 22px; font-weight: 700; color: #065F46; margin-bottom: 8px; }
+  .scan-clean p { font-size: 14px; color: #065F46; }
+
   .hidden { display: none !important; }
   @media (max-width: 700px) {
     .hero h1 { font-size: 36px; }
@@ -460,7 +499,7 @@ function allReviews() {
 loadDbReviews();
 
 // ===== STATE =====
-let S = { page:"home", query:"", filter:"all", sort:"rating", detail:null, modal:false, stars:0, wouldRentChoice:null };
+let S = { page:"home", query:"", filter:"all", sort:"rating", detail:null, modal:false, stars:0, wouldRentChoice:null, cmpBeds:'all', cmpHood:'all', cmpMaxRent:0 };
 const go = u => { Object.assign(S, u); render(); };
 
 // ===== HELPERS =====
@@ -516,6 +555,7 @@ function Nav() {
       <span class="nav-link ${S.page==='home'&&!S.detail?'active':''}" onclick="go({page:'home',detail:null})">Landlords</span>
       <span class="nav-link ${S.page==='hoods'?'active':''}" onclick="go({page:'hoods'})">Neighborhoods</span>
       <span class="nav-link ${S.page==='compare'?'active':''}" onclick="go({page:'compare'})">Compare</span>
+      <span class="nav-link ${S.page==='scanner'?'active':''}" onclick="go({page:'scanner'})">Lease Scanner</span>
       <button class="nav-cta" onclick="go({page:'home',modal:true,stars:0,wouldRentChoice:null})">Rate a Landlord</button>
     </div>
   </div>`;
@@ -614,8 +654,8 @@ function ResultsList() {
     ${list.map(ResultCard).join("")}
     ${list.length===0?'<p style="text-align:center;color:#7C7C7C;padding:48px">No landlords match your search.</p>':''}
     <div class="promo">
-      <div><h3>Get the Full Housing Report</h3><p>Price history, lease red flags, neighborhood deep-dives. Coming soon.</p></div>
-      <button onclick="toast('Premium reports launching Fall 2026!')">Unlock Reports</button>
+      <div><h3>Free Lease Scanner</h3><p>Paste your lease and we'll flag clauses that may conflict with Illinois tenant law.</p></div>
+      <button onclick="go({page:'scanner'})">Scan My Lease</button>
     </div>
   </div>`;
 }
@@ -683,7 +723,7 @@ function DetailPage() {
             <div class="review-score-q">${qLabel(r.rating)}</div>
           </div>
           <div class="review-content">
-            <div class="review-meta"><strong>${esc(r.author)}</strong> · ${esc(r.date)} · ${r.wouldRent ? '<span style="color:#16A34A;font-weight:600">Would rent again</span>' : '<span style="color:#DC2626;font-weight:600">Would NOT rent again</span>'}</div>
+            <div class="review-meta"><strong>${esc(r.author)}</strong> · ${esc(r.date)} · ${r.wouldRent ? '<span style="color:#16A34A;font-weight:600">Would rent again</span>' : '<span style="color:#DC2626;font-weight:600">Would NOT rent again</span>'}${r.monthlyRent > 0 ? ' · <span style="color:#2563EB;font-weight:600">$'+r.monthlyRent+'/mo</span>' : ''}</div>
             <div class="review-property">${esc(r.property)}</div>
             <div class="review-text">${esc(r.text)}</div>
             <div class="review-tags">
@@ -709,14 +749,14 @@ function DetailPage() {
         </div>
         <div style="text-align:right">
           <div style="font-weight:700;font-size:18px">$${p.price}<span style="font-size:12px;color:#7C7C7C;font-weight:400">/mo</span></div>
-          <div style="font-size:13px;color:${scoreColor(p.rating)};font-weight:600">${p.rating.toFixed(1)} / 5.0</div>
+          <div style="font-size:13px;color:${scoreColor(p.rating)};font-weight:600">${p.rating > 0 ? p.rating.toFixed(1)+' / 5.0' : 'No ratings'}</div>
         </div>
       </div>
     `).join("")}
 
     <div class="promo" style="margin-top:32px">
-      <div><h3>Lease Red Flag Scanner</h3><p>Upload your lease. We'll flag predatory clauses before you sign. Coming soon.</p></div>
-      <button onclick="toast('Lease scanner launching Fall 2026!')">Scan My Lease</button>
+      <div><h3>Lease Red Flag Scanner</h3><p>Paste your lease. We'll flag clauses worth reviewing before you sign.</p></div>
+      <button onclick="go({page:'scanner'})">Scan My Lease</button>
     </div>
   </div>`;
 }
@@ -745,31 +785,81 @@ function Hoods() {
 }
 
 function Compare() {
-  const sorted = [...SEED_PROPERTIES].sort((a,b)=>a.price-b.price);
+  let filtered = [...SEED_PROPERTIES];
+
+  // Apply filters from state
+  if (S.cmpBeds !== undefined && S.cmpBeds !== 'all') {
+    filtered = filtered.filter(p => S.cmpBeds === '0' ? p.beds === 0 : p.beds === parseInt(S.cmpBeds));
+  }
+  if (S.cmpHood && S.cmpHood !== 'all') {
+    filtered = filtered.filter(p => p.hood === S.cmpHood);
+  }
+  if (S.cmpMaxRent && S.cmpMaxRent > 0) {
+    filtered = filtered.filter(p => p.price <= S.cmpMaxRent);
+  }
+
+  const sorted = filtered.sort((a,b)=>a.price-b.price);
+  const allHoods = [...new Set(SEED_PROPERTIES.map(p=>p.hood))];
+
   return `<div class="container" style="padding-top:40px">
     <h2 style="font-size:28px;font-weight:800;margin-bottom:4px">Compare Properties</h2>
-    <p style="color:#7C7C7C;font-size:15px;margin-bottom:24px">Side-by-side. Every property. No hidden fees.</p>
+    <p style="color:#7C7C7C;font-size:15px;margin-bottom:24px">Side-by-side. Every property. Filter by what matters to you.</p>
+
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px;align-items:center">
+      <div style="display:flex;align-items:center;gap:6px">
+        <label style="font-size:13px;font-weight:600;color:#7C7C7C">Beds:</label>
+        <select style="padding:6px 10px;border:1px solid #E8E8E8;border-radius:6px;font-size:13px" onchange="go({cmpBeds:this.value})">
+          <option value="all">All</option>
+          <option value="0" ${S.cmpBeds==='0'?'selected':''}>Studio</option>
+          <option value="1" ${S.cmpBeds==='1'?'selected':''}>1 bed</option>
+          <option value="2" ${S.cmpBeds==='2'?'selected':''}>2 bed</option>
+          <option value="3" ${S.cmpBeds==='3'?'selected':''}>3 bed</option>
+          <option value="4" ${S.cmpBeds==='4'?'selected':''}>4 bed</option>
+        </select>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px">
+        <label style="font-size:13px;font-weight:600;color:#7C7C7C">Area:</label>
+        <select style="padding:6px 10px;border:1px solid #E8E8E8;border-radius:6px;font-size:13px" onchange="go({cmpHood:this.value})">
+          <option value="all">All</option>
+          ${allHoods.map(h => `<option value="${esc(h)}" ${S.cmpHood===h?'selected':''}>${esc(h)}</option>`).join('')}
+        </select>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px">
+        <label style="font-size:13px;font-weight:600;color:#7C7C7C">Max Rent:</label>
+        <select style="padding:6px 10px;border:1px solid #E8E8E8;border-radius:6px;font-size:13px" onchange="go({cmpMaxRent:parseInt(this.value)||0})">
+          <option value="0">No limit</option>
+          <option value="600" ${S.cmpMaxRent===600?'selected':''}>Under $600</option>
+          <option value="800" ${S.cmpMaxRent===800?'selected':''}>Under $800</option>
+          <option value="1000" ${S.cmpMaxRent===1000?'selected':''}>Under $1,000</option>
+          <option value="1200" ${S.cmpMaxRent===1200?'selected':''}>Under $1,200</option>
+        </select>
+      </div>
+    </div>
+
     <div style="overflow-x:auto">
       <table class="compare-tbl">
         <thead><tr><th>Property</th><th>Landlord</th><th>Beds</th><th>Neighborhood</th><th>Price/mo</th><th>Rating</th><th>Value*</th></tr></thead>
         <tbody>
           ${sorted.map(p => {
             const l = SEED_LANDLORDS.find(x=>x.id===p.landlordId);
-            const val = p.rating > 0 ? (p.rating/p.price*1000).toFixed(1) : '—';
+            const lStats = l ? getLandlordStats(l) : null;
+            const rating = lStats && lStats.reviews > 0 ? lStats.rating : 0;
+            const val = rating > 0 ? (rating/p.price*1000).toFixed(1) : '—';
             return `<tr style="cursor:pointer" onclick="go({page:'detail',detail:${p.landlordId}})">
               <td><strong>${esc(p.name)}</strong></td>
               <td>${l?esc(l.name):''}</td>
               <td>${p.beds===0?'Studio':p.beds}</td>
               <td>${esc(p.hood)}</td>
               <td><strong>$${p.price}</strong></td>
-              <td style="color:#6B7280">${p.rating > 0 ? p.rating.toFixed(1) : '—'}</td>
+              <td style="color:${rating > 0 ? scoreColor(rating) : '#6B7280'};font-weight:${rating > 0 ? '600' : '400'}">${rating > 0 ? rating.toFixed(1) : '—'}</td>
               <td style="color:#6B7280">${val}</td>
             </tr>`;
           }).join("")}
         </tbody>
       </table>
     </div>
-    <p style="font-size:12px;color:#7C7C7C;margin-top:8px">*Value = Rating per $1,000/mo. Higher is better.</p>
+    ${sorted.length===0 ? '<p style="text-align:center;color:#7C7C7C;padding:32px">No properties match your filters. Try adjusting them.</p>' : ''}
+    <p style="font-size:12px;color:#7C7C7C;margin-top:8px">*Value = Rating per $1,000/mo. Higher is better. Prices are per person/month.</p>
   </div>`;
 }
 
@@ -883,6 +973,254 @@ function Modal() {
       <p class="note">Reviews are anonymous. Email is only used for verification, never displayed.</p>
     </div>
   </div>`;
+}
+
+// ===== LEASE SCANNER =====
+const LEASE_FLAGS = [
+  // HIGH SEVERITY — likely unenforceable or illegal under Illinois law
+  {
+    id: 'nonrefundable-deposit',
+    patterns: [/non[\s-]?refundable\s+(security\s+)?deposit/i, /deposit.*(?:will\s+not|shall\s+not|cannot|won'?t)\s+be\s+returned/i],
+    severity: 'high',
+    title: 'Potentially Non-Refundable Security Deposit',
+    explain: 'Illinois law requires landlords to return security deposits (minus documented deductions for actual damages) within 30 days for properties with 5+ units, or 45 days for smaller properties. A clause making a deposit entirely non-refundable may conflict with this requirement.',
+    statute: '765 ILCS 710 — Security Deposit Return Act'
+  },
+  {
+    id: 'waive-rights',
+    patterns: [/waive.*(?:right|rights|remedies)/i, /tenant\s+(?:hereby\s+)?waives/i, /waiver\s+of\s+(?:tenant|all|any)\s+rights/i],
+    severity: 'high',
+    title: 'Waiver of Tenant Rights',
+    explain: 'Under Illinois law, lease provisions that attempt to waive tenants\u2019 rights under the Security Deposit Return Act or local housing codes are generally void and unenforceable. You cannot be required to waive your statutory protections.',
+    statute: '765 ILCS 710/6 — Provisions waiving tenant rights are void'
+  },
+  {
+    id: 'no-repairs',
+    patterns: [/tenant\s+(?:is\s+)?responsible\s+for\s+all\s+(?:repairs|maintenance)/i, /landlord.*(?:not|no)\s+(?:responsible|liable|obligat).*(?:repair|maintain|habitab)/i, /as[\s-]?is\s+condition/i, /accept.*premises.*(?:as[\s-]?is|current\s+condition)/i],
+    severity: 'high',
+    title: 'Potential Habitability Waiver',
+    explain: 'Illinois landlords have an implied warranty of habitability — they must maintain the property in a livable condition regardless of what the lease says. Clauses that try to shift all repair responsibility to tenants or disclaim habitability obligations may be unenforceable.',
+    statute: 'Jack Spring, Inc. v. Little (1972) — Implied Warranty of Habitability'
+  },
+  {
+    id: 'lockout',
+    patterns: [/lock[\s-]?out/i, /change.*locks.*(?:without|if|upon|for)/i, /deny\s+(?:access|entry).*(?:late|unpaid|overdue)/i, /remove\s+tenant.*property.*(?:unpaid|nonpayment)/i],
+    severity: 'high',
+    title: 'Potential Self-Help Eviction / Lockout',
+    explain: 'Illinois law prohibits landlords from locking out tenants or removing their belongings without a court order, even if rent is unpaid. Only a court-ordered eviction process is legal. Clauses permitting lockouts are unenforceable.',
+    statute: '735 ILCS 5/9-101 et seq. — Forcible Entry and Detainer Act'
+  },
+  {
+    id: 'liability-waiver',
+    patterns: [/tenant.*(?:waives?|releases?|holds?\s+harmless).*(?:landlord|owner|management).*(?:injury|damage|loss|negligence)/i, /(?:landlord|owner|management).*not\s+(?:liable|responsible).*(?:injury|personal|damage|theft|loss)/i],
+    severity: 'high',
+    title: 'Broad Liability Waiver',
+    explain: 'Clauses that attempt to completely waive a landlord\u2019s liability for their own negligence (e.g., injuries caused by failure to maintain the property) may be unenforceable under Illinois law. Landlords generally cannot disclaim liability for negligence.',
+    statute: 'Illinois common law — Public policy against negligence waivers in residential leases'
+  },
+  // MEDIUM SEVERITY — worth reviewing, potentially problematic
+  {
+    id: 'late-fee-excessive',
+    patterns: [/late\s+fee.*\$\s*(?:[1-9]\d{2,}|[5-9]\d)/i, /(?:\$\s*(?:[1-9]\d{2,}|[5-9]\d)).*late\s+(?:fee|charge|penalty)/i, /late\s+(?:fee|charge|penalty).*(?:per\s+day|daily|compounding|10%|15%|20%)/i],
+    severity: 'medium',
+    title: 'Potentially Excessive Late Fee',
+    explain: 'While Illinois doesn\u2019t set a specific dollar cap on late fees, Champaign city code and courts generally require that late fees be "reasonable" and proportional to actual damages from late payment. Fees that exceed 5% of monthly rent or include daily compounding penalties may be challenged as excessive.',
+    statute: 'Champaign Municipal Code Ch. 12.5 — Landlord-Tenant Relationships'
+  },
+  {
+    id: 'entry-no-notice',
+    patterns: [/(?:landlord|owner|management|agent).*(?:may|shall|can|right\s+to)\s+enter.*(?:at\s+any\s+time|without\s+(?:notice|consent|permission))/i, /entry\s+without\s+(?:prior\s+)?notice/i, /unrestricted\s+(?:access|entry)/i],
+    severity: 'medium',
+    title: 'Entry Without Notice',
+    explain: 'While Illinois state law doesn\u2019t specify a notice period for landlord entry, Champaign\u2019s local ordinance and standard practice require reasonable notice (typically 24 hours) before entering a tenant\u2019s unit, except in genuine emergencies. Clauses granting unrestricted entry may conflict with your privacy rights.',
+    statute: 'Champaign Municipal Code Ch. 12.5; General tenant privacy rights'
+  },
+  {
+    id: 'auto-renewal',
+    patterns: [/auto(?:matic(?:ally)?)?[\s-]?renew/i, /lease\s+(?:shall|will)\s+(?:automatically\s+)?(?:renew|extend|continue)/i, /(?:renew|extend).*(?:unless.*(?:written|notice).*(?:\d+)\s+days)/i],
+    severity: 'medium',
+    title: 'Automatic Lease Renewal',
+    explain: 'Some leases automatically renew for another full term unless you give written notice 60-90+ days in advance. This isn\u2019t illegal, but it\u2019s a common trap — many students forget the deadline and get locked into another year. Check the exact notice deadline and mark your calendar.',
+    statute: 'Review notice period carefully — this is a common source of disputes'
+  },
+  {
+    id: 'joint-several',
+    patterns: [/joint\s+and\s+several\s+liability/i, /each\s+tenant.*(?:liable|responsible).*(?:full|entire|total)\s+(?:amount|rent|balance)/i, /roommate.*(?:liable|responsible).*(?:share|portion|rent)/i],
+    severity: 'medium',
+    title: 'Joint and Several Liability',
+    explain: 'This means if your roommate doesn\u2019t pay rent, YOU are responsible for the full amount. This is legal and very common in student leases, but you should understand the risk. If one roommate moves out or stops paying, the landlord can come after you for the entire rent — not just your share.',
+    statute: 'Legal but important — consider a separate roommate agreement'
+  },
+  {
+    id: 'sublease-ban',
+    patterns: [/(?:no|prohibit|not\s+permit|shall\s+not|may\s+not)\s+(?:sublease|sublet|assign)/i, /subleas(?:e|ing).*(?:prohibited|not\s+(?:allowed|permitted))/i],
+    severity: 'medium',
+    title: 'Sublease Restrictions',
+    explain: 'Many student leases prohibit or restrict subleasing. This means if you need to leave early (study abroad, internship, emergency), you may be stuck paying rent for an empty apartment. Check whether subletting is completely banned or allowed with landlord approval.',
+    statute: 'Legal but check flexibility — this matters for summer and study abroad'
+  },
+  {
+    id: 'early-termination-fee',
+    patterns: [/early\s+termination\s+fee/i, /(?:break|cancel|terminat).*lease.*(?:\$|fee|penalty|remaining\s+rent|liquidated\s+damages)/i, /(?:responsible|liable).*(?:remaining|rest\s+of|balance\s+of)\s+(?:the\s+)?(?:lease|rent|term)/i],
+    severity: 'medium',
+    title: 'Early Termination Penalty',
+    explain: 'If you break the lease early, this clause determines what you owe. Being liable for "all remaining rent" on a 12-month lease could mean thousands of dollars. Check whether there\u2019s a reasonable buyout option (e.g., 2 months\u2019 rent) or whether the landlord is required to mitigate damages by finding a new tenant.',
+    statute: 'Illinois law requires landlord mitigation — they must try to re-rent the unit'
+  },
+  // LOW SEVERITY — informational, standard but worth knowing
+  {
+    id: 'pet-policy',
+    patterns: [/(?:no|not?\s+)(?:pets?|animals?)\s+(?:allowed|permitted)/i, /pet\s+(?:deposit|fee|rent).*\$\s*\d+/i, /(?:\$\s*\d+).*pet\s+(?:deposit|fee|rent)/i],
+    severity: 'low',
+    title: 'Pet Policy',
+    explain: 'Note the specific terms around pets — is there a one-time pet deposit, monthly pet rent, weight/breed restrictions, or a total ban? Pet deposits are separate from security deposits under Illinois law. Also note: emotional support animals (ESAs) are generally exempt from pet policies under fair housing law if you have documentation.',
+    statute: 'Fair Housing Act — ESA accommodations; 765 ILCS 710 — pet deposits are separate'
+  },
+  {
+    id: 'move-out-charges',
+    patterns: [/(?:cleaning|move[\s-]?out|carpet|painting)\s+(?:fee|charge).*\$\s*\d+/i, /(?:\$\s*\d+).*(?:cleaning|move[\s-]?out|carpet|painting)\s+(?:fee|charge)/i, /(?:mandatory|required|non[\s-]?refundable)\s+(?:cleaning|move[\s-]?out)\s+fee/i],
+    severity: 'low',
+    title: 'Move-Out / Cleaning Fees',
+    explain: 'Check whether cleaning or move-out fees are mandatory regardless of condition, or only charged if needed. Under Illinois law, landlords can only deduct from your security deposit for actual damages beyond normal wear and tear — not for routine cleaning that would happen between any tenants.',
+    statute: '765 ILCS 710 — Deductions limited to actual damages beyond normal wear'
+  },
+  {
+    id: 'utility-responsibility',
+    patterns: [/tenant.*(?:responsible|liable|pay).*(?:all|every|any)\s+utilit/i, /utilit.*(?:tenant|resident|lessee).*(?:responsibility|expense|cost)/i],
+    severity: 'low',
+    title: 'Utility Responsibilities',
+    explain: 'Make sure you understand exactly which utilities you\u2019re paying for. Common gotchas: some buildings have shared water meters where costs are split (sometimes unfairly), trash/sewer fees that aren\u2019t mentioned upfront, or "utility packages" that cost more than actual usage.',
+    statute: 'Informational — compare against advertised "utilities included" claims'
+  },
+  {
+    id: 'guest-policy',
+    patterns: [/guest.*(?:no\s+more\s+than|limit|maximum|exceed|consecutive)\s*\d+\s*(?:day|night|hour)/i, /(?:overnight|extended)\s+guest.*(?:prohibited|not\s+(?:allowed|permitted)|approval|permission)/i],
+    severity: 'low',
+    title: 'Guest Restrictions',
+    explain: 'Some leases limit how many nights a guest can stay (commonly 3-7 consecutive nights or 14 nights per month). While landlords can set reasonable guest policies, overly restrictive rules that effectively prevent you from having visitors may be challengeable.',
+    statute: 'Informational — common in student leases, check if restrictions are reasonable'
+  }
+];
+
+function scanLease(text) {
+  const results = [];
+  const lowerText = text.toLowerCase();
+
+  LEASE_FLAGS.forEach(flag => {
+    for (const pattern of flag.patterns) {
+      const match = text.match(pattern);
+      if (match) {
+        // Extract surrounding context (up to 100 chars each side)
+        const idx = match.index;
+        const start = Math.max(0, idx - 80);
+        const end = Math.min(text.length, idx + match[0].length + 80);
+        let snippet = text.slice(start, end).trim();
+        if (start > 0) snippet = '...' + snippet;
+        if (end < text.length) snippet = snippet + '...';
+
+        results.push({
+          ...flag,
+          matchedText: snippet,
+          matchedTerm: match[0]
+        });
+        break; // Only flag once per rule
+      }
+    }
+  });
+
+  return results;
+}
+
+let scanResults = null;
+
+function LeaseScanner() {
+  return `<div class="scanner-wrap">
+    <h2>Lease Clause Scanner</h2>
+    <p class="scanner-desc">Paste your lease text below and we'll flag clauses that may conflict with Illinois tenant law or that you should review carefully before signing.</p>
+
+    <div class="scanner-disclaimer">
+      <strong>Important:</strong> RateMyCrib is not a law firm and this is not legal advice. This tool provides general educational information about common lease terms and relevant Illinois statutes. It does not replace professional legal review. For questions about your specific lease, contact the <a href="https://odos.illinois.edu/student-legal-service/" target="_blank" style="color:#C2410C;text-decoration:underline;font-weight:600">UIUC Student Legal Service</a> — it's free for enrolled students.
+    </div>
+
+    <textarea class="scanner-textarea" id="lease-text" placeholder="Paste your lease text here...&#10;&#10;Tip: Open your lease PDF, select all text (Ctrl+A / Cmd+A), copy (Ctrl+C / Cmd+C), and paste here."></textarea>
+
+    <button class="scan-btn" onclick="runScan()">
+      <span style="font-size:20px">&#128269;</span> Scan My Lease
+    </button>
+
+    <div id="scan-results">
+      ${scanResults !== null ? renderScanResults() : ''}
+    </div>
+
+    <div style="margin-top:40px;padding:24px;background:var(--light);border-radius:12px">
+      <h3 style="font-size:18px;font-weight:700;margin-bottom:8px">Know Your Rights as a UIUC Tenant</h3>
+      <p style="font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:12px">Illinois has strong tenant protections. Key things every student renter should know:</p>
+      <div style="font-size:14px;line-height:1.8;color:var(--text)">
+        <strong>Security Deposits:</strong> Must be returned within 30 days (5+ unit buildings) with an itemized list of any deductions.<br>
+        <strong>Habitability:</strong> Your landlord must maintain heat, water, electricity, and structural safety — you can't waive this.<br>
+        <strong>Retaliation:</strong> Landlords cannot raise rent, reduce services, or evict you for reporting code violations.<br>
+        <strong>Eviction:</strong> Only a court can order an eviction. Self-help lockouts are illegal in Illinois.
+      </div>
+      <div style="margin-top:16px;display:flex;gap:12px;flex-wrap:wrap">
+        <a href="rights.html" style="display:inline-block;padding:8px 16px;background:var(--black);color:white;border-radius:8px;font-size:13px;font-weight:600">Full Tenant Rights Guide</a>
+        <a href="https://odos.illinois.edu/student-legal-service/" target="_blank" style="display:inline-block;padding:8px 16px;background:var(--orange);color:white;border-radius:8px;font-size:13px;font-weight:600">Free UIUC Legal Help</a>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderScanResults() {
+  if (!scanResults) return '';
+  const flags = scanResults;
+  const high = flags.filter(f => f.severity === 'high').length;
+  const medium = flags.filter(f => f.severity === 'medium').length;
+  const low = flags.filter(f => f.severity === 'low').length;
+
+  if (flags.length === 0) {
+    return `<div class="scan-clean">
+      <h3>&#9989; No Common Red Flags Detected</h3>
+      <p>We didn't find any commonly flagged clauses, but this doesn't mean your lease is perfect. We recommend having the <a href="https://odos.illinois.edu/student-legal-service/" target="_blank" style="color:#065F46;text-decoration:underline">UIUC Student Legal Service</a> review it — it's free.</p>
+    </div>`;
+  }
+
+  return `
+    <div class="scan-summary">
+      <div class="scan-stat red"><div class="scan-stat-num">${high}</div><div class="scan-stat-label">Review Carefully</div></div>
+      <div class="scan-stat yellow"><div class="scan-stat-num">${medium}</div><div class="scan-stat-label">Worth Checking</div></div>
+      <div class="scan-stat green"><div class="scan-stat-num">${low}</div><div class="scan-stat-label">Good to Know</div></div>
+    </div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:20px">Found ${flags.length} clause${flags.length!==1?'s':''} worth reviewing. Items are sorted by importance — red items first.</p>
+    ${flags.sort((a,b) => {
+      const sev = {high:0,medium:1,low:2};
+      return sev[a.severity] - sev[b.severity];
+    }).map(f => `
+      <div class="flag-card severity-${f.severity}">
+        <div class="flag-severity">${f.severity === 'high' ? '&#9888;&#65039; Review Carefully' : f.severity === 'medium' ? '&#9888; Worth Checking' : '&#8505;&#65039; Good to Know'}</div>
+        <div class="flag-title">${esc(f.title)}</div>
+        <div class="flag-match">"...${esc(f.matchedTerm)}..."</div>
+        <div class="flag-explain">${f.explain}</div>
+        <div class="flag-statute">&#128218; ${esc(f.statute)}</div>
+      </div>
+    `).join('')}
+    <div class="scanner-disclaimer" style="margin-top:24px">
+      <strong>Next step:</strong> If any red or yellow items concern you, bring your lease to the <a href="https://odos.illinois.edu/student-legal-service/" target="_blank" style="color:#C2410C;text-decoration:underline;font-weight:600">UIUC Student Legal Service</a> (Turner Student Services Building, Room 324) for a free review. They can tell you whether specific clauses are enforceable and help you negotiate changes before you sign.
+    </div>
+  `;
+}
+
+function runScan() {
+  const text = document.getElementById('lease-text')?.value?.trim();
+  if (!text || text.length < 50) {
+    toast('Please paste your lease text (at least a few paragraphs).');
+    return;
+  }
+  scanResults = scanLease(text);
+  render();
+  // Scroll to results
+  setTimeout(() => {
+    const el = document.getElementById('scan-results');
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 100);
 }
 
 function Footer() {
@@ -1022,6 +1360,7 @@ function render() {
   else if (S.page === 'detail' || S.detail) html += DetailPage();
   else if (S.page === 'hoods') html += Hoods();
   else if (S.page === 'compare') html += Compare();
+  else if (S.page === 'scanner') html += LeaseScanner();
   html += Modal() + Footer();
   document.getElementById('app').innerHTML = html;
   if (!S.detail && !S.modal) window.scrollTo(0, 0);
@@ -1035,6 +1374,7 @@ window.addEventListener('hashchange', () => {
     if (id) go({page:'detail', detail:id});
   } else if (hash === 'neighborhoods') go({page:'hoods', detail:null});
   else if (hash === 'compare') go({page:'compare', detail:null});
+  else if (hash === 'scanner') go({page:'scanner', detail:null});
   else go({page:'home', detail:null});
 });
 
