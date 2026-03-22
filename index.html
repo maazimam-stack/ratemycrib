@@ -109,28 +109,30 @@
   .nav-cta:hover { background: #D4401F; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(232,74,39,0.3); }
 
   /* ===== HERO ===== */
-  .hero { padding: 72px 32px 56px; text-align: center; background: linear-gradient(180deg, #FFFBF7 0%, var(--white) 100%); position: relative; overflow: hidden; }
-  .hero::before { content: ''; position: absolute; top: -120px; left: 50%; transform: translateX(-50%); width: 800px; height: 800px; background: radial-gradient(circle, rgba(232,74,39,0.04) 0%, transparent 70%); pointer-events: none; }
-  .hero-badge { display: inline-flex; align-items: center; gap: 6px; background: linear-gradient(135deg, #FFF7ED, #FEF3C7); color: var(--orange); font-size: 13px; font-weight: 600; padding: 7px 16px; border-radius: 50px; margin-bottom: 24px; border: 1px solid rgba(232,74,39,0.15); animation: fadeUp 0.5s ease; }
-  .hero h1 { font-size: 52px; font-weight: 900; letter-spacing: -2px; line-height: 1.08; margin-bottom: 16px; animation: fadeUp 0.5s ease 0.1s both; }
+  .hero { padding: 80px 32px 64px; text-align: center; background: var(--black); position: relative; overflow: hidden; }
+  .hero::before { content: ''; position: absolute; top: -200px; left: 50%; transform: translateX(-50%); width: 1000px; height: 1000px; background: radial-gradient(circle, rgba(232,74,39,0.15) 0%, rgba(232,74,39,0.05) 30%, transparent 60%); pointer-events: none; }
+  .hero::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(232,74,39,0.3), transparent); }
+  .hero-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(232,74,39,0.12); color: var(--orange); font-size: 13px; font-weight: 600; padding: 8px 18px; border-radius: 50px; margin-bottom: 24px; border: 1px solid rgba(232,74,39,0.2); animation: fadeUp 0.6s ease; backdrop-filter: blur(8px); }
+  .hero h1 { font-size: 52px; font-weight: 900; letter-spacing: -2px; line-height: 1.08; margin-bottom: 16px; animation: fadeUp 0.6s ease 0.1s both; color: white; }
   .hero h1 em { font-style: normal; color: var(--orange); }
-  .hero p { font-size: 17px; color: var(--muted); max-width: 440px; margin: 0 auto 32px; line-height: 1.6; animation: fadeUp 0.5s ease 0.2s both; }
-  .search-wrap { max-width: 580px; margin: 0 auto; position: relative; animation: fadeUp 0.5s ease 0.3s both; }
-  .search-wrap input { width: 100%; padding: 16px 22px; padding-right: 120px; font-size: 16px; border: 2px solid var(--border); border-radius: var(--radius); outline: none; transition: all 0.25s ease; background: var(--white); box-shadow: var(--shadow-sm); font-family: inherit; }
-  .search-wrap input:focus { border-color: var(--orange); box-shadow: 0 0 0 4px rgba(232,74,39,0.1); }
-  .search-wrap input::placeholder { color: #B0B0B0; }
-  .search-btn { position: absolute; right: 6px; top: 6px; bottom: 6px; background: var(--black); color: white; border: none; padding: 0 24px; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer; transition: all 0.2s; font-family: inherit; }
-  .search-btn:hover { background: #222; }
-  .search-tags { display: flex; justify-content: center; gap: 8px; margin-top: 16px; flex-wrap: wrap; animation: fadeUp 0.5s ease 0.4s both; }
-  .search-tag { padding: 7px 16px; border-radius: 50px; background: var(--white); color: var(--muted); font-size: 13px; cursor: pointer; transition: all 0.2s ease; border: 1px solid var(--border); font-weight: 500; }
-  .search-tag:hover { border-color: var(--orange); color: var(--orange); background: #FFF7ED; }
-  .search-tag.active { background: var(--orange); color: white; border-color: var(--orange); box-shadow: 0 2px 8px rgba(232,74,39,0.25); }
+  .hero p { font-size: 17px; color: rgba(255,255,255,0.55); max-width: 460px; margin: 0 auto 36px; line-height: 1.6; animation: fadeUp 0.6s ease 0.2s both; }
+  .search-wrap { max-width: 580px; margin: 0 auto; position: relative; animation: fadeUp 0.6s ease 0.3s both; }
+  .search-wrap input { width: 100%; padding: 18px 22px; padding-right: 120px; font-size: 16px; border: 2px solid rgba(255,255,255,0.1); border-radius: var(--radius); outline: none; transition: all 0.25s ease; background: rgba(255,255,255,0.08); box-shadow: 0 4px 24px rgba(0,0,0,0.2); font-family: inherit; color: white; }
+  .search-wrap input:focus { border-color: var(--orange); background: rgba(255,255,255,0.12); box-shadow: 0 4px 24px rgba(0,0,0,0.2), 0 0 0 4px rgba(232,74,39,0.15); }
+  .search-wrap input::placeholder { color: rgba(255,255,255,0.35); }
+  .search-btn { position: absolute; right: 6px; top: 6px; bottom: 6px; background: var(--orange); color: white; border: none; padding: 0 24px; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer; transition: all 0.2s; font-family: inherit; }
+  .search-btn:hover { background: #D4401F; box-shadow: 0 4px 12px rgba(232,74,39,0.4); }
+  .search-tags { display: flex; justify-content: center; gap: 8px; margin-top: 18px; flex-wrap: wrap; animation: fadeUp 0.6s ease 0.4s both; }
+  .search-tag { padding: 7px 16px; border-radius: 50px; background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.45); font-size: 13px; cursor: pointer; transition: all 0.2s ease; border: 1px solid rgba(255,255,255,0.08); font-weight: 500; }
+  .search-tag:hover { border-color: rgba(232,74,39,0.4); color: var(--orange); background: rgba(232,74,39,0.1); }
+  .search-tag.active { background: var(--orange); color: white; border-color: var(--orange); box-shadow: 0 2px 12px rgba(232,74,39,0.4); }
 
   /* ===== STATS BAR ===== */
-  .stats-bar { background: var(--white); padding: 24px 32px; display: flex; justify-content: center; gap: 48px; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
-  .stat-item { text-align: center; }
-  .stat-num { font-size: 26px; font-weight: 800; color: var(--black); letter-spacing: -0.5px; }
-  .stat-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; margin-top: 4px; font-weight: 500; }
+  .stats-bar { background: var(--light); padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); border-bottom: 1px solid var(--border); }
+  .stat-item { text-align: center; padding: 24px 16px; border-right: 1px solid var(--border); }
+  .stat-item:last-child { border-right: none; }
+  .stat-num { font-size: 28px; font-weight: 800; color: var(--black); letter-spacing: -0.5px; }
+  .stat-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; font-weight: 600; }
 
   /* ===== RESULTS LIST ===== */
   .container { max-width: 960px; margin: 0 auto; padding: 36px 24px; }
@@ -138,8 +140,8 @@
   .results-count { font-size: 14px; color: var(--muted); font-weight: 500; }
   .sort-select { padding: 9px 16px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; background: white; cursor: pointer; font-family: inherit; color: var(--text); }
 
-  .result-card { display: flex; gap: 0; border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 12px; overflow: hidden; transition: all 0.25s ease; cursor: pointer; background: var(--white); }
-  .result-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); border-color: #D1D5DB; }
+  .result-card { display: flex; gap: 0; border: 1px solid var(--border); border-radius: 16px; margin-bottom: 14px; overflow: hidden; transition: all 0.25s ease; cursor: pointer; background: var(--white); box-shadow: var(--shadow-sm); }
+  .result-card:hover { box-shadow: 0 12px 40px rgba(0,0,0,0.1); transform: translateY(-3px); border-color: rgba(232,74,39,0.2); }
 
   .result-rating-box { width: 110px; min-width: 110px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px 12px; gap: 4px; }
   .result-rating-box.quality-high { background: linear-gradient(135deg, #D1FAE5, #A7F3D0); }
@@ -177,9 +179,10 @@
   .result-price span { font-size: 11px; font-weight: 400; color: var(--muted); }
 
   /* ===== DETAIL PAGE ===== */
-  .detail-top { background: linear-gradient(180deg, var(--light) 0%, var(--white) 100%); padding: 40px 24px 48px; border-bottom: 1px solid var(--border); }
+  .detail-top { background: var(--black); padding: 40px 24px 48px; border-bottom: 1px solid rgba(255,255,255,0.06); position: relative; overflow: hidden; }
+  .detail-top::before { content: ''; position: absolute; top: -100px; right: -100px; width: 400px; height: 400px; background: radial-gradient(circle, rgba(232,74,39,0.1) 0%, transparent 60%); pointer-events: none; }
   .detail-inner { max-width: 960px; margin: 0 auto; }
-  .back-link { font-size: 13px; color: var(--muted); font-weight: 600; cursor: pointer; margin-bottom: 24px; display: inline-flex; align-items: center; gap: 6px; transition: color 0.2s; }
+  .back-link { font-size: 13px; color: rgba(255,255,255,0.5); font-weight: 600; cursor: pointer; margin-bottom: 24px; display: inline-flex; align-items: center; gap: 6px; transition: color 0.2s; }
   .back-link:hover { color: var(--orange); }
   .detail-head { display: flex; gap: 32px; align-items: flex-start; }
   .detail-score-circle { width: 130px; height: 130px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: var(--shadow-md); }
@@ -198,22 +201,22 @@
   .sc-low .detail-score-label { color: #991B1B; }
   .sc-neutral .detail-score-label { color: #9CA3AF; }
 
-  .detail-info h1 { font-size: 30px; font-weight: 800; margin-bottom: 6px; letter-spacing: -0.5px; }
-  .detail-info .subtitle { font-size: 14px; color: var(--muted); margin-bottom: 20px; }
+  .detail-info h1 { font-size: 30px; font-weight: 800; margin-bottom: 6px; letter-spacing: -0.5px; color: white; }
+  .detail-info .subtitle { font-size: 14px; color: rgba(255,255,255,0.45); margin-bottom: 20px; }
   .detail-sub-scores { display: flex; gap: 20px; flex-wrap: wrap; }
-  .sub-score { text-align: center; min-width: 80px; background: var(--white); padding: 12px 16px; border-radius: 10px; border: 1px solid var(--border); }
+  .sub-score { text-align: center; min-width: 80px; background: rgba(255,255,255,0.06); padding: 12px 16px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.08); }
   .sub-score-val { font-size: 22px; font-weight: 800; }
-  .sub-score-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-top: 2px; }
+  .sub-score-label { font-size: 10px; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-top: 2px; }
   .detail-would { display: flex; gap: 32px; margin-top: 20px; }
   .detail-would-item { display: flex; align-items: center; gap: 8px; font-size: 14px; }
   .detail-would-pct { font-size: 20px; font-weight: 800; }
 
   .rating-dist { margin-top: 20px; }
   .dist-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
-  .dist-label { font-size: 13px; font-weight: 600; width: 60px; text-align: right; color: var(--muted); }
-  .dist-bar { flex: 1; height: 10px; background: #E5E7EB; border-radius: 5px; overflow: hidden; }
+  .dist-label { font-size: 13px; font-weight: 600; width: 60px; text-align: right; color: rgba(255,255,255,0.5); }
+  .dist-bar { flex: 1; height: 10px; background: rgba(255,255,255,0.08); border-radius: 5px; overflow: hidden; }
   .dist-fill { height: 100%; border-radius: 5px; background: linear-gradient(90deg, var(--orange), #F97316); transition: width 0.5s ease; }
-  .dist-count { font-size: 12px; color: var(--muted); width: 24px; font-weight: 600; }
+  .dist-count { font-size: 12px; color: rgba(255,255,255,0.4); width: 24px; font-weight: 600; }
 
   .reviews-section { max-width: 960px; margin: 0 auto; padding: 32px 24px; }
   .reviews-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
@@ -275,17 +278,17 @@
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
   /* ===== SHARE BANNER ===== */
-  .share-banner { background: linear-gradient(135deg, var(--orange), #D4401F); padding: 14px 32px; display: flex; justify-content: center; align-items: center; gap: 16px; }
-  .share-banner p { color: rgba(255,255,255,0.9); font-size: 13.5px; font-weight: 500; }
-  .share-banner button { background: rgba(255,255,255,0.95); color: var(--orange); border: none; padding: 7px 18px; border-radius: 6px; font-weight: 700; font-size: 12.5px; cursor: pointer; transition: all 0.2s; font-family: inherit; }
-  .share-banner button:hover { background: white; transform: translateY(-1px); }
+  .share-banner { background: var(--orange); padding: 12px 32px; display: flex; justify-content: center; align-items: center; gap: 14px; }
+  .share-banner p { color: white; font-size: 13px; font-weight: 500; }
+  .share-banner button { background: white; color: var(--orange); border: none; padding: 6px 16px; border-radius: 6px; font-weight: 700; font-size: 12px; cursor: pointer; transition: all 0.2s; font-family: inherit; }
+  .share-banner button:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
 
   /* ===== NEIGHBORHOODS ===== */
   .hood-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
-  .hood-card { border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; transition: all 0.25s ease; background: var(--white); }
-  .hood-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); border-color: #D1D5DB; }
-  .hood-name { font-size: 18px; font-weight: 700; margin-bottom: 2px; letter-spacing: -0.3px; }
-  .hood-type { font-size: 12px; color: var(--muted); margin-bottom: 16px; font-weight: 500; }
+  .hood-card { border: 1px solid var(--border); border-radius: 16px; padding: 24px; transition: all 0.25s ease; background: var(--white); box-shadow: var(--shadow-sm); }
+  .hood-card:hover { box-shadow: 0 12px 40px rgba(0,0,0,0.08); transform: translateY(-3px); border-color: rgba(232,74,39,0.2); }
+  .hood-name { font-size: 18px; font-weight: 700; margin-bottom: 4px; letter-spacing: -0.3px; }
+  .hood-type { font-size: 12px; color: var(--orange); margin-bottom: 16px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; }
   .hood-row { display: flex; justify-content: space-between; padding: 8px 0; font-size: 13.5px; border-bottom: 1px solid #F3F4F6; }
   .hood-row:last-of-type { border-bottom: none; }
   .hood-row span { color: var(--muted); }
@@ -302,11 +305,12 @@
   .val-bad { color: var(--red); font-weight: 700; }
 
   /* ===== PROMO STRIP ===== */
-  .promo { background: linear-gradient(135deg, #0A0A0A 0%, #1A1A2E 100%); border-radius: 16px; padding: 32px 36px; margin: 36px 0; display: flex; justify-content: space-between; align-items: center; gap: 24px; border: 1px solid rgba(255,255,255,0.06); }
-  .promo h3 { color: white; font-size: 18px; font-weight: 700; letter-spacing: -0.3px; }
-  .promo p { color: rgba(255,255,255,0.45); font-size: 13px; margin-top: 6px; line-height: 1.5; }
-  .promo button { background: var(--orange); color: white; border: none; padding: 11px 28px; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer; white-space: nowrap; transition: all 0.2s; font-family: inherit; }
-  .promo button:hover { background: #D4401F; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(232,74,39,0.3); }
+  .promo { background: linear-gradient(135deg, #0A0A0A 0%, #1A1A2E 100%); border-radius: 20px; padding: 36px 40px; margin: 40px 0; display: flex; justify-content: space-between; align-items: center; gap: 24px; position: relative; overflow: hidden; }
+  .promo::before { content: ''; position: absolute; top: -50%; right: -10%; width: 300px; height: 300px; background: radial-gradient(circle, rgba(232,74,39,0.15) 0%, transparent 70%); pointer-events: none; }
+  .promo h3 { color: white; font-size: 20px; font-weight: 800; letter-spacing: -0.3px; }
+  .promo p { color: rgba(255,255,255,0.45); font-size: 14px; margin-top: 6px; line-height: 1.5; }
+  .promo button { background: var(--orange); color: white; border: none; padding: 12px 28px; border-radius: 10px; font-weight: 700; font-size: 14px; cursor: pointer; white-space: nowrap; transition: all 0.2s; font-family: inherit; position: relative; z-index: 1; }
+  .promo button:hover { background: #D4401F; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(232,74,39,0.4); }
 
   /* ===== FOOTER ===== */
   footer { background: var(--light); border-top: 1px solid var(--border); padding: 48px 32px 32px; margin-top: 48px; }
@@ -317,7 +321,11 @@
   .footer-bottom { max-width: 960px; margin: 24px auto 0; padding-top: 24px; border-top: 1px solid var(--border); font-size: 12px; color: var(--muted); display: flex; justify-content: space-between; }
 
   /* ===== LEASE SCANNER ===== */
-  .scanner-wrap { max-width: 720px; margin: 0 auto; padding: 48px 24px; }
+  .scanner-header { background: var(--black); padding: 48px 24px 40px; text-align: center; margin-bottom: 0; position: relative; overflow: hidden; }
+  .scanner-header::before { content: ''; position: absolute; top: -100px; left: 50%; transform: translateX(-50%); width: 600px; height: 600px; background: radial-gradient(circle, rgba(232,74,39,0.12) 0%, transparent 60%); pointer-events: none; }
+  .scanner-header h2 { font-size: 32px; font-weight: 900; color: white; letter-spacing: -1px; margin-bottom: 8px; position: relative; }
+  .scanner-header p { color: rgba(255,255,255,0.5); font-size: 15px; line-height: 1.6; max-width: 500px; margin: 0 auto; position: relative; }
+  .scanner-wrap { max-width: 720px; margin: 0 auto; padding: 32px 24px; }
   .scanner-wrap h2 { font-size: 28px; font-weight: 800; margin-bottom: 6px; letter-spacing: -0.5px; }
   .scanner-desc { color: var(--muted); font-size: 15px; margin-bottom: 24px; line-height: 1.6; }
   .scanner-disclaimer { background: #FFF7ED; border: 1px solid #FDBA74; border-radius: 10px; padding: 16px 20px; margin-bottom: 24px; font-size: 13px; color: #92400E; line-height: 1.6; }
@@ -356,6 +364,36 @@
   .scan-clean h3 { font-size: 22px; font-weight: 700; color: #065F46; margin-bottom: 8px; }
   .scan-clean p { font-size: 14px; color: #065F46; line-height: 1.6; }
 
+  /* ===== SCANNER ENHANCEMENTS ===== */
+  .scanner-upload-zone { border: 2px dashed var(--border); border-radius: var(--radius); padding: 28px; text-align: center; margin-bottom: 16px; cursor: pointer; transition: all 0.25s; background: var(--light); }
+  .scanner-upload-zone:hover, .scanner-upload-zone.dragover { border-color: var(--orange); background: #FFF7ED; }
+  .scanner-upload-zone .upload-icon { font-size: 32px; margin-bottom: 8px; }
+  .scanner-upload-zone .upload-text { font-size: 14px; color: var(--muted); line-height: 1.6; }
+  .scanner-upload-zone .upload-text strong { color: var(--orange); cursor: pointer; }
+  .scanner-or-divider { text-align: center; color: var(--muted); font-size: 13px; font-weight: 600; margin: 12px 0; position: relative; }
+  .scanner-or-divider::before, .scanner-or-divider::after { content: ''; position: absolute; top: 50%; width: 40%; height: 1px; background: var(--border); }
+  .scanner-or-divider::before { left: 0; }
+  .scanner-or-divider::after { right: 0; }
+  .scanner-progress { margin-top: 16px; display: none; }
+  .scanner-progress-bar { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+  .scanner-progress-fill { height: 100%; background: var(--orange); border-radius: 3px; transition: width 0.3s; width: 0%; }
+  .scanner-progress-text { font-size: 12px; color: var(--muted); margin-top: 6px; text-align: center; }
+  .interest-modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 9998; display: flex; align-items: center; justify-content: center; animation: fadeIn 0.2s; }
+  .interest-modal { background: white; border-radius: 16px; padding: 32px; max-width: 440px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.2); animation: fadeUp 0.3s; }
+  .interest-modal h3 { font-size: 20px; font-weight: 800; margin-bottom: 8px; letter-spacing: -0.3px; }
+  .interest-modal p { font-size: 14px; color: var(--muted); line-height: 1.6; margin-bottom: 20px; }
+  .interest-modal input[type="email"] { width: 100%; padding: 12px 16px; border: 2px solid var(--border); border-radius: 10px; font-size: 14px; font-family: inherit; outline: none; transition: border-color 0.2s; margin-bottom: 12px; }
+  .interest-modal input[type="email"]:focus { border-color: var(--orange); }
+  .interest-modal-btns { display: flex; gap: 10px; }
+  .interest-modal-btns button { flex: 1; padding: 12px; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; border: none; font-family: inherit; transition: all 0.2s; }
+  .interest-modal-btns .btn-primary { background: var(--black); color: white; }
+  .interest-modal-btns .btn-primary:hover { background: #222; }
+  .interest-modal-btns .btn-secondary { background: var(--light); color: var(--muted); border: 1px solid var(--border); }
+  .interest-modal-btns .btn-secondary:hover { background: #eee; }
+  .scanner-cta-bar { display: flex; gap: 12px; margin-top: 16px; flex-wrap: wrap; }
+  .scanner-cta-bar button { display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; font-family: inherit; transition: all 0.2s; }
+  .scanner-cta-bar .cta-notify { background: var(--orange); color: white; }
+  .scanner-cta-bar .cta-notify:hover { background: #d4431f; transform: translateY(-1px); }
   .hidden { display: none !important; }
 
   /* ===== RESPONSIVE ===== */
@@ -393,6 +431,10 @@
     .hood-grid { grid-template-columns: 1fr; }
     .modal-box { padding: 24px 16px; width: 96%; }
     .detail-top { padding: 24px 16px 32px; }
+    .scanner-header { padding: 36px 16px 32px; }
+    .scanner-header h2 { font-size: 26px; }
+    .stats-bar { grid-template-columns: repeat(2, 1fr); }
+    .stat-item:nth-child(2) { border-right: none; }
     .result-body { padding: 16px; }
     .result-metrics { flex-wrap: wrap; gap: 12px; }
     .result-name { font-size: 16px; }
@@ -405,6 +447,8 @@
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>if(window.pdfjsLib)pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';</script>
 <script>
 // ===== SUPABASE =====
 const SUPABASE_URL = 'https://expfrmknhdcwnccqjwnq.supabase.co';
@@ -434,6 +478,10 @@ const SEED_LANDLORDS = [
     scores:{maintenance:0,communication:0,fairness:0,moveOut:0}, topTags:["New Listing"], dist:[0,0,0,0,0] },
   { id:11, name:"The VUE", props:1, rating:0, reviews:0, wouldRent:0, responseRate:"—",
     scores:{maintenance:0,communication:0,fairness:0,moveOut:0}, topTags:["New Listing"], dist:[0,0,0,0,0] },
+  { id:12, name:"The Cottages at Illinois", props:1, rating:0, reviews:0, wouldRent:0, responseRate:"—",
+    scores:{maintenance:0,communication:0,fairness:0,moveOut:0}, topTags:["New Listing"], dist:[0,0,0,0,0] },
+  { id:13, name:"Ramshaw Real Estate", props:30, rating:0, reviews:0, wouldRent:0, responseRate:"—",
+    scores:{maintenance:0,communication:0,fairness:0,moveOut:0}, topTags:["New Listing"], dist:[0,0,0,0,0] },
 ];
 
 // Addresses and prices verified from apartments.com, landlord websites (March 2026)
@@ -454,6 +502,8 @@ const SEED_PROPERTIES = [
   { id:13, name:"308 E Green St", landlordId:9, beds:2, price:959, hood:"Campustown", tags:["Luxury","Gym","Pool"], rating:0, reviews:0 },
   { id:14, name:"707 S 4th St", landlordId:10, beds:4, price:949, hood:"Campustown", tags:["Furnished","Pool","Basketball Court"], rating:0, reviews:0 },
   { id:15, name:"711 S 4th St", landlordId:11, beds:2, price:1500, hood:"Campustown", tags:["Modern","Parking","Built 2021"], rating:0, reviews:0 },
+  { id:16, name:"905 Welch Dr", landlordId:12, beds:4, price:685, hood:"Urbana", tags:["Furnished","Pool","Gym","Townhome"], rating:0, reviews:0 },
+  { id:17, name:"1901 N Lincoln Ave (Capstone Quarters)", landlordId:13, beds:2, price:925, hood:"Urbana", tags:["Pool","Parking","A/C"], rating:0, reviews:0 },
 ];
 
 // Seed reviews removed — all reviews now come from real student submissions via Supabase.
@@ -652,7 +702,7 @@ function Nav() {
       <span class="nav-link ${S.page==='home'&&!S.detail?'active':''}" onclick="go({page:'home',detail:null})">Landlords</span>
       <span class="nav-link ${S.page==='hoods'?'active':''}" onclick="go({page:'hoods'})">Neighborhoods</span>
       <span class="nav-link ${S.page==='compare'?'active':''}" onclick="go({page:'compare'})">Compare</span>
-      <span class="nav-link ${S.page==='scanner'?'active':''}" onclick="go({page:'scanner'})">Lease Scanner</span>
+      <span class="nav-link ${S.page==='scanner'?'active':''}" onclick="trackScannerEvent('nav_click',{source:'navbar'});go({page:'scanner'})">Lease Scanner</span>
       <button class="nav-cta" onclick="go({page:'home',modal:true,stars:0,wouldRentChoice:null})">Rate a Landlord</button>
     </div>
   </div>`;
@@ -751,8 +801,8 @@ function ResultsList() {
     ${list.map(ResultCard).join("")}
     ${list.length===0?'<p style="text-align:center;color:#7C7C7C;padding:48px">No landlords match your search.</p>':''}
     <div class="promo">
-      <div><h3>Free Lease Scanner</h3><p>Paste your lease and we'll flag clauses that may conflict with Illinois tenant law.</p></div>
-      <button onclick="go({page:'scanner'})">Scan My Lease</button>
+      <div><h3>Free Lease Scanner</h3><p>Upload your lease PDF or paste the text — we'll flag clauses that may conflict with Illinois tenant law.</p></div>
+      <button onclick="trackScannerEvent('cta_click',{source:'home_promo'});go({page:'scanner'})">Scan My Lease</button>
     </div>
   </div>`;
 }
@@ -778,7 +828,7 @@ function DetailPage() {
         <div class="detail-info">
           <h1>${esc(l.name)}</h1>
           <div class="subtitle">${l.props} properties · ${l.reviews===0?'No ratings yet':l.reviews+' ratings'} · Response rate: ${l.responseRate}</div>
-          ${l.reviews===0 ? `<div style="color:#6B7280;font-size:14px;margin:12px 0">No reviews yet — scores will appear after students submit reviews.</div>` : `<div class="detail-sub-scores">
+          ${l.reviews===0 ? `<div style="color:rgba(255,255,255,0.4);font-size:14px;margin:12px 0">No reviews yet — scores will appear after students submit reviews.</div>` : `<div class="detail-sub-scores">
             ${Object.entries(l.scores).map(([k,v]) => `
               <div class="sub-score">
                 <div class="sub-score-val" style="color:${scoreColor(v)}">${v.toFixed(1)}</div>
@@ -789,7 +839,7 @@ function DetailPage() {
           <div class="detail-would">
             <div class="detail-would-item">
               <span class="detail-would-pct" style="color:${l.wouldRent>=50?'#16A34A':'#DC2626'}">${l.wouldRent}%</span>
-              <span style="color:#7C7C7C;font-size:13px">would rent again</span>
+              <span style="color:rgba(255,255,255,0.4);font-size:13px">would rent again</span>
             </div>
           </div>`}
           <div class="rating-dist" style="max-width:320px;margin-top:16px">
@@ -852,17 +902,20 @@ function DetailPage() {
     `).join("")}
 
     <div class="promo" style="margin-top:32px">
-      <div><h3>Lease Red Flag Scanner</h3><p>Paste your lease. We'll flag clauses worth reviewing before you sign.</p></div>
-      <button onclick="go({page:'scanner'})">Scan My Lease</button>
+      <div><h3>Lease Red Flag Scanner</h3><p>Upload your lease PDF or paste the text. We'll flag clauses worth reviewing before you sign.</p></div>
+      <button onclick="trackScannerEvent('cta_click',{source:'detail_promo'});go({page:'scanner'})">Scan My Lease</button>
     </div>
   </div>`;
 }
 
 function Hoods() {
   const hoods = getHoodStats();
-  return `<div class="container" style="padding-top:48px">
-    <h2 style="font-size:26px;font-weight:800;margin-bottom:6px;letter-spacing:-0.5px">Neighborhoods</h2>
-    <p style="color:var(--muted);font-size:14px;margin-bottom:28px;line-height:1.5">Every area around UIUC, scored by students who actually live there.</p>
+  return `<div style="background:var(--black);padding:48px 24px 40px;text-align:center;position:relative;overflow:hidden">
+    <div style="position:absolute;top:-100px;left:50%;transform:translateX(-50%);width:600px;height:600px;background:radial-gradient(circle,rgba(232,74,39,0.12) 0%,transparent 60%);pointer-events:none"></div>
+    <h2 style="font-size:32px;font-weight:900;color:white;letter-spacing:-1px;margin-bottom:8px;position:relative">Neighborhoods</h2>
+    <p style="color:rgba(255,255,255,0.5);font-size:15px;position:relative">Every area around UIUC, scored by students who actually live there.</p>
+  </div>
+  <div class="container" style="padding-top:32px">
     <div class="hood-grid">
       ${hoods.map(h => {
         const hasReviews = h.reviewCount > 0;
@@ -898,9 +951,12 @@ function Compare() {
   const sorted = filtered.sort((a,b)=>a.price-b.price);
   const allHoods = [...new Set(SEED_PROPERTIES.map(p=>p.hood))];
 
-  return `<div class="container" style="padding-top:48px">
-    <h2 style="font-size:26px;font-weight:800;margin-bottom:6px;letter-spacing:-0.5px">Compare Properties</h2>
-    <p style="color:var(--muted);font-size:14px;margin-bottom:28px;line-height:1.5">Side-by-side. Every property. Filter by what matters to you.</p>
+  return `<div style="background:var(--black);padding:48px 24px 40px;text-align:center;position:relative;overflow:hidden">
+    <div style="position:absolute;top:-100px;left:50%;transform:translateX(-50%);width:600px;height:600px;background:radial-gradient(circle,rgba(232,74,39,0.12) 0%,transparent 60%);pointer-events:none"></div>
+    <h2 style="font-size:32px;font-weight:900;color:white;letter-spacing:-1px;margin-bottom:8px;position:relative">Compare Properties</h2>
+    <p style="color:rgba(255,255,255,0.5);font-size:15px;position:relative">Side-by-side. Every property. Filter by what matters to you.</p>
+  </div>
+  <div class="container" style="padding-top:32px">
 
     <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:24px;align-items:center;background:var(--light);padding:16px 20px;border-radius:12px;border:1px solid var(--border)">
       <div style="display:flex;align-items:center;gap:6px">
@@ -1196,6 +1252,65 @@ const LEASE_FLAGS = [
     title: 'Guest Restrictions',
     explain: 'Some leases limit how many nights a guest can stay (commonly 3-7 consecutive nights or 14 nights per month). While landlords can set reasonable guest policies, overly restrictive rules that effectively prevent you from having visitors may be challengeable.',
     statute: 'Informational — common in student leases, check if restrictions are reasonable'
+  },
+  // ADDITIONAL HIGH-SEVERITY FLAGS
+  {
+    id: 'confession-judgment',
+    patterns: [/confess(?:ion)?\s+(?:of\s+)?judgment/i, /cognovit/i, /warrant\s+of\s+attorney/i],
+    severity: 'high',
+    title: 'Confession of Judgment Clause',
+    explain: 'A confession of judgment clause lets your landlord get a court judgment against you without notifying you or giving you a chance to defend yourself. These clauses are void and unenforceable in Illinois residential leases under the Code of Civil Procedure.',
+    statute: '735 ILCS 5/2-1301 — Confession of judgment provisions'
+  },
+  {
+    id: 'penalty-provision',
+    patterns: [/liquidated\s+damages.*(?:\$\s*(?:[2-9]\d{3,}|\d{4,})|(?:two|three|four|five)\s+(?:months?|times?))/i, /penalty.*(?:equal\s+to|amount\s+of).*(?:remaining|total|full)\s+(?:rent|lease)/i],
+    severity: 'high',
+    title: 'Potentially Punitive Penalty Clause',
+    explain: 'Illinois courts distinguish between reasonable liquidated damages and punitive penalties. If a clause requires you to pay an amount wildly disproportionate to actual damages (e.g., the entire remaining lease balance with no duty to re-rent), it may be unenforceable as a penalty.',
+    statute: 'Illinois common law — Penalty clauses vs. liquidated damages'
+  },
+  // ADDITIONAL MEDIUM-SEVERITY FLAGS
+  {
+    id: 'rent-increase',
+    patterns: [/(?:landlord|owner|management).*(?:may|shall|can|right\s+to)\s+(?:increase|raise|adjust).*rent.*(?:at\s+any\s+time|without\s+(?:notice|consent)|during\s+the\s+(?:term|lease))/i],
+    severity: 'medium',
+    title: 'Mid-Lease Rent Increase',
+    explain: 'If your lease allows rent increases during the fixed term (not just at renewal), that could mean unexpected cost increases. In a standard fixed-term lease, your rent should be locked for the entire lease period unless you explicitly agree to a variable rate.',
+    statute: 'Review carefully — fixed-term leases generally lock in the rent amount'
+  },
+  {
+    id: 'mold-disclaimer',
+    patterns: [/mold.*(?:not\s+(?:responsible|liable)|at\s+(?:own|your)\s+risk|tenant.*(?:responsible|liable).*mold)/i, /(?:landlord|owner).*(?:not|no)\s+(?:responsible|liable|warrant).*mold/i],
+    severity: 'medium',
+    title: 'Mold Liability Disclaimer',
+    explain: 'While Illinois does not have specific mold statutes, landlords still have a duty to maintain habitable premises. A blanket mold disclaimer does not override the implied warranty of habitability — if mold results from a structural or plumbing issue the landlord failed to fix, they may still be liable.',
+    statute: 'Implied Warranty of Habitability — landlord duty to maintain premises'
+  },
+  {
+    id: 'mandatory-arbitration',
+    patterns: [/(?:mandatory|binding|compulsory)\s+arbitration/i, /(?:waive|waiver).*(?:right\s+to).*(?:jury|trial|court|sue|litigation)/i, /(?:dispute|claim|controversy).*(?:shall|must|will)\s+be\s+(?:resolved|settled|determined)\s+(?:by|through)\s+arbitration/i],
+    severity: 'medium',
+    title: 'Mandatory Arbitration Clause',
+    explain: 'This clause forces you to resolve disputes through private arbitration rather than going to court. Arbitration can limit your ability to present evidence, appeal decisions, or join class actions. While generally enforceable, the fairness of the specific arbitration terms matters — watch for clauses that make you pay all arbitration fees or select the arbitrator.',
+    statute: 'Federal Arbitration Act; review fairness of specific terms'
+  },
+  // ADDITIONAL LOW-SEVERITY FLAGS
+  {
+    id: 'renters-insurance',
+    patterns: [/(?:renter'?s?|tenant'?s?)\s+insurance.*(?:required|mandatory|must|shall)/i, /(?:required|must|shall).*(?:obtain|maintain|carry|purchase).*(?:renter'?s?|tenant'?s?|liability)\s+insurance/i],
+    severity: 'low',
+    title: 'Renters Insurance Required',
+    explain: 'Many landlords require renters insurance — this is legal and actually protects you too. Typical cost is $10-20/month for students. It covers your belongings (theft, fire, water damage) and personal liability. If required, make sure you understand the minimum coverage amounts specified.',
+    statute: 'Informational — generally a good idea regardless of lease requirements'
+  },
+  {
+    id: 'parking-fee',
+    patterns: [/parking.*(?:fee|charge|additional|extra|separate).*\$\s*\d+/i, /(?:\$\s*\d+).*(?:per|monthly).*parking/i],
+    severity: 'low',
+    title: 'Separate Parking Fee',
+    explain: 'Parking is often charged separately from rent. Make sure the advertised rent price included or excluded parking before you committed, and check whether the parking fee can increase separately from rent during your lease term.',
+    statute: 'Informational — compare against what was advertised'
   }
 ];
 
@@ -1229,21 +1344,190 @@ function scanLease(text) {
 }
 
 let scanResults = null;
+let scannerClicks = 0;
+let pdfExtracting = false;
+
+// ===== SCANNER ANALYTICS =====
+async function trackScannerEvent(eventType, metadata = {}) {
+  try {
+    await db.from('scanner_events').insert({
+      event_type: eventType,
+      metadata: metadata,
+      created_at: new Date().toISOString(),
+      user_agent: navigator.userAgent
+    });
+  } catch(e) {
+    // Silent fail — analytics should never block UX
+    console.log('Analytics event:', eventType, metadata);
+  }
+}
+
+// ===== PDF TEXT EXTRACTION =====
+async function extractPdfText(file) {
+  if (!window.pdfjsLib) {
+    toast('PDF reader is loading. Please try again in a moment.');
+    return null;
+  }
+  const arrayBuffer = await file.arrayBuffer();
+  const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+  let fullText = '';
+  const totalPages = pdf.numPages;
+  const progressEl = document.getElementById('scanner-progress');
+  const progressFill = document.getElementById('scanner-progress-fill');
+  const progressText = document.getElementById('scanner-progress-text');
+  if (progressEl) { progressEl.style.display = 'block'; }
+
+  for (let i = 1; i <= totalPages; i++) {
+    const page = await pdf.getPage(i);
+    const content = await page.getTextContent();
+    const pageText = content.items.map(item => item.str).join(' ');
+    fullText += pageText + '\n\n';
+    if (progressFill) progressFill.style.width = ((i / totalPages) * 100) + '%';
+    if (progressText) progressText.textContent = 'Reading page ' + i + ' of ' + totalPages + '...';
+  }
+  if (progressEl) { setTimeout(() => { progressEl.style.display = 'none'; }, 500); }
+  return fullText.trim();
+}
+
+async function handlePdfUpload(file) {
+  if (!file || file.type !== 'application/pdf') {
+    toast('Please upload a PDF file.');
+    return;
+  }
+  if (file.size > 20 * 1024 * 1024) {
+    toast('File too large. Maximum size is 20MB.');
+    return;
+  }
+  pdfExtracting = true;
+  const textarea = document.getElementById('lease-text');
+  const uploadZone = document.getElementById('upload-zone');
+  if (uploadZone) uploadZone.innerHTML = '<div class="upload-icon">&#9203;</div><div class="upload-text">Extracting text from <strong>' + esc(file.name) + '</strong>...</div>';
+
+  try {
+    const text = await extractPdfText(file);
+    if (text && text.length > 50) {
+      if (textarea) textarea.value = text;
+      toast('PDF text extracted (' + text.length.toLocaleString() + ' characters). Ready to scan!');
+      trackScannerEvent('pdf_upload', { filename: file.name, chars: text.length });
+    } else {
+      toast('Could not extract enough text from this PDF. It may be a scanned image. Try pasting the text manually.');
+      trackScannerEvent('pdf_upload_fail', { filename: file.name, reason: 'insufficient_text' });
+    }
+  } catch(err) {
+    toast('Error reading PDF: ' + err.message);
+    trackScannerEvent('pdf_upload_fail', { filename: file.name, reason: err.message });
+  }
+  pdfExtracting = false;
+  if (uploadZone) uploadZone.innerHTML = '<div class="upload-icon">&#128196;</div><div class="upload-text"><strong>Click to upload</strong> or drag & drop your lease PDF<br>PDF files up to 20MB</div>';
+}
+
+function setupUploadZone() {
+  setTimeout(() => {
+    const zone = document.getElementById('upload-zone');
+    const fileInput = document.getElementById('pdf-file-input');
+    if (!zone || !fileInput) return;
+    zone.addEventListener('click', () => fileInput.click());
+    zone.addEventListener('dragover', (e) => { e.preventDefault(); zone.classList.add('dragover'); });
+    zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
+    zone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      zone.classList.remove('dragover');
+      const file = e.dataTransfer.files[0];
+      if (file) handlePdfUpload(file);
+    });
+    fileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) handlePdfUpload(file);
+    });
+  }, 50);
+}
+
+// ===== INTEREST POPUP =====
+function showInterestPopup() {
+  trackScannerEvent('interest_popup_shown');
+  const overlay = document.createElement('div');
+  overlay.className = 'interest-modal-overlay';
+  overlay.id = 'interest-overlay';
+  overlay.innerHTML = `
+    <div class="interest-modal">
+      <h3>&#128274; Want a Smarter Lease Scanner?</h3>
+      <p>We're building an AI-powered version that gives you a detailed clause-by-clause analysis, specific to your landlord and Illinois law. Drop your email to get early access when it launches.</p>
+      <input type="email" id="interest-email" placeholder="your@illinois.edu" />
+      <div class="interest-modal-btns">
+        <button class="btn-secondary" onclick="closeInterestPopup()">No thanks</button>
+        <button class="btn-primary" onclick="submitInterest()">Notify Me</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) closeInterestPopup(); });
+  setTimeout(() => { const inp = document.getElementById('interest-email'); if(inp) inp.focus(); }, 100);
+}
+
+function closeInterestPopup() {
+  const overlay = document.getElementById('interest-overlay');
+  if (overlay) overlay.remove();
+  trackScannerEvent('interest_popup_dismissed');
+}
+
+async function submitInterest() {
+  const email = document.getElementById('interest-email')?.value?.trim();
+  if (!email || !email.includes('@')) {
+    toast('Please enter a valid email address.');
+    return;
+  }
+  try {
+    await db.from('scanner_interest').insert({
+      email: email,
+      created_at: new Date().toISOString(),
+      source: 'scanner_popup'
+    });
+    trackScannerEvent('interest_submitted', { email_domain: email.split('@')[1] });
+    toast('You\'re on the list! We\'ll email you when the AI scanner launches.');
+    closeInterestPopup();
+  } catch(e) {
+    // Fallback — log even if table doesn't exist yet
+    trackScannerEvent('interest_submitted_fallback', { email: email });
+    toast('Thanks! We\'ll be in touch.');
+    closeInterestPopup();
+  }
+}
 
 function LeaseScanner() {
-  return `<div class="scanner-wrap">
-    <h2>Lease Clause Scanner</h2>
-    <p class="scanner-desc">Paste your lease text below and we'll flag clauses that may conflict with Illinois tenant law or that you should review carefully before signing.</p>
+  setupUploadZone();
+  return `<div class="scanner-header">
+    <h2>&#128269; Lease Clause Scanner</h2>
+    <p>Upload your lease PDF or paste the text — we'll flag clauses that may conflict with Illinois tenant law.</p>
+  </div>
+  <div class="scanner-wrap">
 
     <div class="scanner-disclaimer">
       <strong>Important:</strong> RateMyCrib is not a law firm and this is not legal advice. This tool provides general educational information about common lease terms and relevant Illinois statutes. It does not replace professional legal review. For questions about your specific lease, contact the <a href="https://odos.illinois.edu/student-legal-service/" target="_blank" style="color:#C2410C;text-decoration:underline;font-weight:600">UIUC Student Legal Service</a> — it's free for enrolled students.
     </div>
 
+    <div class="scanner-upload-zone" id="upload-zone">
+      <div class="upload-icon">&#128196;</div>
+      <div class="upload-text"><strong>Click to upload</strong> or drag & drop your lease PDF<br>PDF files up to 20MB</div>
+    </div>
+    <input type="file" id="pdf-file-input" accept=".pdf" style="display:none">
+
+    <div class="scanner-progress" id="scanner-progress">
+      <div class="scanner-progress-bar"><div class="scanner-progress-fill" id="scanner-progress-fill"></div></div>
+      <div class="scanner-progress-text" id="scanner-progress-text">Reading PDF...</div>
+    </div>
+
+    <div class="scanner-or-divider">OR PASTE TEXT</div>
+
     <textarea class="scanner-textarea" id="lease-text" placeholder="Paste your lease text here...&#10;&#10;Tip: Open your lease PDF, select all text (Ctrl+A / Cmd+A), copy (Ctrl+C / Cmd+C), and paste here."></textarea>
 
-    <button class="scan-btn" onclick="runScan()">
-      <span style="font-size:20px">&#128269;</span> Scan My Lease
-    </button>
+    <div class="scanner-cta-bar">
+      <button class="scan-btn" onclick="runScan()">
+        <span style="font-size:20px">&#128269;</span> Scan My Lease
+      </button>
+      <button class="cta-notify" onclick="showInterestPopup()" style="display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;border:none;font-family:inherit;background:var(--orange);color:white;transition:all 0.2s;">
+        <span style="font-size:16px">&#128276;</span> Get AI Scanner Early Access
+      </button>
+    </div>
 
     <div id="scan-results">
       ${scanResults !== null ? renderScanResults() : ''}
@@ -1311,7 +1595,17 @@ function runScan() {
     toast('Please paste your lease text (at least a few paragraphs).');
     return;
   }
+  scannerClicks++;
   scanResults = scanLease(text);
+  // Track scan event
+  trackScannerEvent('scan_executed', {
+    text_length: text.length,
+    flags_found: scanResults.length,
+    high_flags: scanResults.filter(f => f.severity === 'high').length,
+    medium_flags: scanResults.filter(f => f.severity === 'medium').length,
+    low_flags: scanResults.filter(f => f.severity === 'low').length,
+    scan_number: scannerClicks
+  });
   render();
   // Scroll to results
   setTimeout(() => {
