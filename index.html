@@ -720,7 +720,7 @@ function Hero() {
   return `<div class="hero">
     <div class="hero-badge">&#127979; By students, for students — zero landlord influence</div>
     <h1>The Honest Guide to<br>UIUC <em>Housing</em></h1>
-    <p>Search ${SEED_LANDLORDS.length} landlords. Read ${revCount || 'real'} student reviews. Compare prices. No sponsored rankings — ever.</p>
+    <p>Search landlords. Read student reviews. Compare prices. No sponsored rankings — ever.</p>
     <div class="search-wrap">
       <input type="text" placeholder="Search landlords or properties..." value="${esc(S.query)}" oninput="go({query:this.value})" />
       <button class="search-btn" onclick="void 0">Search</button>
@@ -732,12 +732,7 @@ function Hero() {
       <span class="search-tag ${S.filter==='responsive'?'active':''}" onclick="go({filter:'responsive'})">Most Responsive</span>
     </div>
   </div>
-  <div class="stats-bar">
-    <div class="stat-item"><div class="stat-num" id="live-review-count">${revCount}</div><div class="stat-label">Reviews</div></div>
-    <div class="stat-item"><div class="stat-num">${SEED_LANDLORDS.length}</div><div class="stat-label">Landlords</div></div>
-    <div class="stat-item"><div class="stat-num">${SEED_PROPERTIES.length}</div><div class="stat-label">Properties</div></div>
-    <div class="stat-item"><div class="stat-num">Free</div><div class="stat-label">Always</div></div>
-  </div>`;
+  `;
 }
 
 function ResultCard(l) {
@@ -1026,7 +1021,13 @@ function Modal() {
 
       ${!l ? `<div class="field">
         <label>Landlord</label>
-        <select id="rev-landlord"><option value="">Select landlord...</option>${SEED_LANDLORDS.map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join("")}</select>
+        <select id="rev-landlord" onchange="onLandlordChange(this)">
+          <option value="">Select landlord...</option>
+          ${SEED_LANDLORDS.map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join("")}
+          ${(userLandlords||[]).map(x=>`<option value="user_${x.id}">${esc(x.name)}</option>`).join("")}
+          <option value="__other__">Other — my landlord isn't listed</option>
+        </select>
+        <input type="text" id="rev-landlord-custom" placeholder="e.g. Smith Property Management" style="display:none;margin-top:8px;width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-family:inherit;outline:none;" />
       </div>` : ''}
 
       <div class="field">
@@ -1045,20 +1046,15 @@ function Modal() {
       </div>
 
       <div class="field">
-        <label>Property</label>
-        <select id="rev-property-select" onchange="toggleCustomAddress(this)">
-          <option value="">Select a property...</option>
-          ${(() => {
-            const lid = l ? l.id : null;
-            const props = lid ? SEED_PROPERTIES.filter(p=>p.landlordId===lid) : SEED_PROPERTIES;
-            return props.map(p => {
-              const ln = SEED_LANDLORDS.find(x=>x.id===p.landlordId);
-              return `<option value="${esc(p.name)}">${esc(p.name)}${!lid && ln ? ' ('+esc(ln.name)+')' : ''}</option>`;
-            }).join("");
-          })()}
-          <option value="__custom__">Other — type my address</option>
+        <label>Property Address</label>
+        <div id="rev-property-container">
+          ${buildPropertyDropdown(l ? l.id : null)}
+        </div>
+        <input type="text" id="rev-property-custom" placeholder="e.g. 123 E Green St, Apt 4B" style="display:none;margin-top:8px;width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-family:inherit;outline:none;" />
+        <select id="rev-hood-select" style="display:none;margin-top:8px">
+          <option value="">What neighborhood? (helps others find it)</option>
+          ${HOOD_NAMES.map(h=>`<option value="${h}">${h}</option>`).join("")}
         </select>
-        <input type="text" id="rev-property-custom" placeholder="e.g. 123 E Green St, Apt 4B" style="display:none;margin-top:8px" />
       </div>
 
       <div class="field">
@@ -1648,15 +1644,113 @@ function Footer() {
   </footer>`;
 }
 
+// ===== USER-SUBMITTED LANDLORDS & PROPERTIES =====
+let userLandlords = []; // loaded from Supabase on init
+let userProperties = []; // loaded from Supabase on init
+
+async function loadUserSubmissions() {
+  try {
+    const { data: ld } = await db.from('user_landlords').select('*').order('name');
+    if (ld) userLandlords = ld;
+    const { data: pp } = await db.from('user_properties').select('*').order('address');
+    if (pp) userProperties = pp;
+  } catch(e) { /* tables may not exist yet — silent fail */ }
+}
+
+function buildPropertyDropdown(landlordId) {
+  // Combine seed + user-submitted properties, filtered by landlord if one is selected
+  let props = [];
+  if (landlordId && typeof landlordId === 'number') {
+    props = SEED_PROPERTIES.filter(p => p.landlordId === landlordId).map(p => ({ address: p.name, hood: p.hood }));
+    // Also add user-submitted properties for this landlord
+    const match = SEED_LANDLORDS.find(x => x.id === landlordId);
+    if (match) {
+      const userProps = userProperties.filter(p => p.landlord_name && p.landlord_name.toLowerCase() === match.name.toLowerCase());
+      userProps.forEach(p => props.push({ address: p.address, hood: p.hood_name || '' }));
+    }
+  } else if (landlordId && typeof landlordId === 'string' && landlordId.startsWith('user_')) {
+    // User-submitted landlord
+    const ul = userLandlords.find(x => 'user_' + x.id === landlordId);
+    if (ul) {
+      const userProps = userProperties.filter(p => p.landlord_name && p.landlord_name.toLowerCase() === ul.name.toLowerCase());
+      userProps.forEach(p => props.push({ address: p.address, hood: p.hood_name || '' }));
+    }
+  } else {
+    // No landlord selected — show all
+    props = SEED_PROPERTIES.map(p => {
+      const ln = SEED_LANDLORDS.find(x => x.id === p.landlordId);
+      return { address: p.name, hood: p.hood, landlordName: ln ? ln.name : '' };
+    });
+  }
+
+  const showLandlordName = !landlordId;
+  return `<select id="rev-property-select" onchange="toggleCustomAddress(this)">
+    <option value="">Select a property...</option>
+    ${props.map(p => `<option value="${esc(p.address)}">${esc(p.address)}${showLandlordName && p.landlordName ? ' (' + esc(p.landlordName) + ')' : ''}</option>`).join("")}
+    <option value="__custom__">Other — type my address</option>
+  </select>`;
+}
+
 // ===== ACTIONS =====
+function onLandlordChange(sel) {
+  const customInput = document.getElementById('rev-landlord-custom');
+  const propContainer = document.getElementById('rev-property-container');
+  if (sel.value === '__other__') {
+    if (customInput) customInput.style.display = 'block';
+    // Show all properties since we don't know the landlord
+    if (propContainer) propContainer.innerHTML = buildPropertyDropdown(null);
+  } else {
+    if (customInput) customInput.style.display = 'none';
+    // Filter properties to selected landlord
+    const lid = sel.value.startsWith('user_') ? sel.value : parseInt(sel.value);
+    if (propContainer) propContainer.innerHTML = buildPropertyDropdown(lid || null);
+  }
+  // Reset custom address field
+  const customAddr = document.getElementById('rev-property-custom');
+  if (customAddr) customAddr.style.display = 'none';
+  const hoodSelect = document.getElementById('rev-hood-select');
+  if (hoodSelect) hoodSelect.style.display = 'none';
+}
+
 function toggleCustomAddress(sel) {
   const custom = document.getElementById('rev-property-custom');
+  const hoodSelect = document.getElementById('rev-hood-select');
   if (custom) custom.style.display = sel.value === '__custom__' ? 'block' : 'none';
+  if (hoodSelect) hoodSelect.style.display = sel.value === '__custom__' ? 'block' : 'none';
 }
 
 async function submitReview(landlordIdFromDetail) {
-  const landlordId = landlordIdFromDetail || parseInt(document.getElementById('rev-landlord')?.value);
-  if (!landlordId) { toast('Please select a landlord.'); return; }
+  // Handle landlord selection — could be seed, user-submitted, or custom new
+  let landlordId = landlordIdFromDetail;
+  let landlordName = '';
+  let isCustomLandlord = false;
+
+  if (!landlordId) {
+    const landlordSelect = document.getElementById('rev-landlord');
+    const landlordVal = landlordSelect?.value || '';
+    const landlordCustom = document.getElementById('rev-landlord-custom')?.value?.trim() || '';
+
+    if (landlordVal === '__other__') {
+      if (!landlordCustom) { toast('Please type your landlord\'s name.'); return; }
+      isCustomLandlord = true;
+      landlordName = landlordCustom;
+      // We'll save this new landlord to user_landlords after the review
+      landlordId = -1; // placeholder
+    } else if (landlordVal.startsWith('user_')) {
+      const ul = userLandlords.find(x => 'user_' + x.id === landlordVal);
+      landlordId = parseInt(landlordVal.replace('user_', ''));
+      landlordName = ul ? ul.name : '';
+    } else {
+      landlordId = parseInt(landlordVal);
+      const match = SEED_LANDLORDS.find(x => x.id === landlordId);
+      landlordName = match ? match.name : '';
+    }
+  } else {
+    const match = SEED_LANDLORDS.find(x => x.id === landlordId);
+    landlordName = match ? match.name : '';
+  }
+
+  if (!landlordId && !isCustomLandlord) { toast('Please select a landlord.'); return; }
   if (S.stars === 0) { toast('Please select a star rating.'); return; }
 
   const text = document.getElementById('rev-text')?.value?.trim();
@@ -1664,6 +1758,7 @@ async function submitReview(landlordIdFromDetail) {
 
   const propSelect = document.getElementById('rev-property-select')?.value || '';
   const propCustom = document.getElementById('rev-property-custom')?.value?.trim() || '';
+  const isCustomProperty = propSelect === '__custom__' && propCustom;
   const property = propSelect === '__custom__' ? (propCustom || 'Not specified') : (propSelect || 'Not specified');
   const email = document.getElementById('rev-email')?.value?.trim() || '';
   const leaseStart = document.getElementById('rev-lease-start')?.value || '';
@@ -1679,7 +1774,8 @@ async function submitReview(landlordIdFromDetail) {
 
   // Determine which neighborhood this property is in
   const matchedProp = SEED_PROPERTIES.find(p => p.name === property);
-  const hoodName = matchedProp ? matchedProp.hood : '';
+  const customHood = document.getElementById('rev-hood-select')?.value || '';
+  const hoodName = matchedProp ? matchedProp.hood : customHood;
 
   // Collect selected tags
   const posTags = [...document.querySelectorAll('#pos-tags .sel-pos')].map(el => el.dataset.tag);
@@ -1687,6 +1783,30 @@ async function submitReview(landlordIdFromDetail) {
 
   // Include lease period in review text if provided
   const fullText = leasePeriod ? `[Lease: ${leasePeriod}] ${text}` : text;
+
+  // Save new landlord to Supabase if custom
+  if (isCustomLandlord && landlordName) {
+    try {
+      const { data } = await db.from('user_landlords').insert({ name: landlordName }).select();
+      if (data && data[0]) {
+        landlordId = data[0].id;
+        userLandlords.push(data[0]);
+      }
+    } catch(e) { /* continue with review even if landlord save fails */ }
+  }
+
+  // Save new property address to Supabase if custom
+  if (isCustomProperty && propCustom) {
+    try {
+      await db.from('user_properties').insert({
+        address: propCustom,
+        landlord_name: landlordName || (SEED_LANDLORDS.find(x=>x.id===landlordId)||{}).name || '',
+        hood_name: hoodName,
+        submitted_at: new Date().toISOString()
+      });
+      userProperties.push({ address: propCustom, landlord_name: landlordName, hood_name: hoodName });
+    } catch(e) { /* continue with review even if property save fails */ }
+  }
 
   const review = {
     landlordId: landlordId,
@@ -1703,6 +1823,7 @@ async function submitReview(landlordIdFromDetail) {
     hoodWalkability: hoodWalk,
     hoodQuiet: hoodQuiet,
     hoodNightlife: hoodNightlife,
+    landlordName: landlordName || '',
   };
 
   // Disable button while saving
@@ -1773,6 +1894,7 @@ window.addEventListener('hashchange', () => {
 const _origGo = go;
 
 render();
+loadUserSubmissions(); // Load user-submitted landlords & properties from Supabase
 </script>
 </body>
 </html>
