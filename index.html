@@ -1791,14 +1791,10 @@ function buildPropertyDropdown(landlordId) {
       userProps.forEach(p => props.push({ address: p.address, hood: p.hood_name || '' }));
     }
   } else {
-    // No landlord selected — show all EXCEPT PCH/dorm buildings (those appear when their landlord is selected)
-    props = SEED_PROPERTIES.filter(p => {
-      const ln = SEED_LANDLORDS.find(x => x.id === p.landlordId);
-      return !ln || !ln.skipAddress;
-    }).map(p => {
-      const ln = SEED_LANDLORDS.find(x => x.id === p.landlordId);
-      return { address: p.name, hood: p.hood, landlordName: ln ? ln.name : '' };
-    });
+    // No landlord selected — prompt user to pick one first
+    return `<select id="rev-property-select" disabled>
+      <option value="">Pick a landlord first...</option>
+    </select>`;
   }
 
   const showLandlordName = !landlordId;
@@ -1997,6 +1993,11 @@ function copyShareLink() {
 
 // ===== MAIN RENDER =====
 function render() {
+  // Save search input focus state before re-render
+  const searchEl = document.querySelector('.search-wrap input');
+  const hadSearchFocus = searchEl && document.activeElement === searchEl;
+  const cursorPos = hadSearchFocus ? searchEl.selectionStart : 0;
+
   let html = Nav();
   if (S.page === 'home' && !S.detail) html += ShareBanner() + Hero() + ResultsList();
   else if (S.page === 'detail' || S.detail) html += DetailPage();
@@ -2005,7 +2006,13 @@ function render() {
   else if (S.page === 'scanner') html += LeaseScanner();
   html += Modal() + Footer();
   document.getElementById('app').innerHTML = html;
-  if (!S.detail && !S.modal) window.scrollTo(0, 0);
+  if (!S.detail && !S.modal && !hadSearchFocus) window.scrollTo(0, 0);
+
+  // Restore search input focus after re-render
+  if (hadSearchFocus) {
+    const newSearch = document.querySelector('.search-wrap input');
+    if (newSearch) { newSearch.focus(); newSearch.setSelectionRange(cursorPos, cursorPos); }
+  }
 }
 
 // Handle browser back/forward
