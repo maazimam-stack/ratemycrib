@@ -1025,7 +1025,7 @@ function Compare() {
   // Enrich properties with review-based pricing
   const revs = allReviews();
   let filtered = SEED_PROPERTIES.map(p => {
-    const propRevs = revs.filter(r => r.landlordId === p.landlordId && r.monthlyRent > 0);
+    const propRevs = revs.filter(r => r.property === p.name && r.monthlyRent > 0);
     const reviewPrice = propRevs.length ? Math.round(propRevs.reduce((s,r)=>s+r.monthlyRent,0)/propRevs.length) : 0;
     return { ...p, reviewPrice, reviewCount: propRevs.length };
   });
