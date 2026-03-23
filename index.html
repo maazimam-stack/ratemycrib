@@ -624,8 +624,45 @@ async function loadDbReviews() {
   }
 }
 
-async function saveReviewToDb(review) {
+// Generate a simple device fingerprint for rate-limiting (not tracking)
+function getDeviceFingerprint() {
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  ctx.textBaseline = 'top';
+  ctx.font = '14px Arial';
+  ctx.fillText('RateMyCrib', 2, 2);
+  const raw = canvas.toDataURL() + navigator.language + screen.width + screen.height + new Date().getTimezoneOffset();
+  let hash = 0;
+  for (let i = 0; i < raw.length; i++) { hash = ((hash << 5) - hash) + raw.charCodeAt(i); hash |= 0; }
+  return 'fp_' + Math.abs(hash).toString(36);
+}
+
+// Check if this device already reviewed this landlord
+function hasReviewedLandlord(landlordId) {
+  const key = 'rmc_reviewed';
   try {
+    const reviewed = JSON.parse(localStorage.getItem(key) || '{}');
+    return !!reviewed[landlordId];
+  } catch { return false; }
+}
+function markReviewedLandlord(landlordId) {
+  const key = 'rmc_reviewed';
+  try {
+    const reviewed = JSON.parse(localStorage.getItem(key) || '{}');
+    reviewed[landlordId] = Date.now();
+    localStorage.setItem(key, JSON.stringify(reviewed));
+  } catch { /* ignore */ }
+}
+
+async function saveReviewToDb(review) {
+  // Rate limiting: one review per landlord per device
+  if (hasReviewedLandlord(review.landlordId)) {
+    toast('You have already reviewed this landlord. One review per landlord keeps things fair.');
+    return false;
+  }
+
+  try {
+    const fp = getDeviceFingerprint();
     const row = {
       landlord_id: review.landlordId,
       property: review.property,
@@ -636,6 +673,7 @@ async function saveReviewToDb(review) {
       positive_tags: review.pos,
       negative_tags: review.neg,
       helpful_count: 0,
+      device_fingerprint: fp,
     };
     // Add new fields only if they have values (columns may not exist yet)
     if (review.monthlyRent > 0) row.monthly_rent = review.monthlyRent;
@@ -646,6 +684,7 @@ async function saveReviewToDb(review) {
     if (review.hoodNightlife > 0) row.hood_nightlife = review.hoodNightlife;
     const { error } = await db.from('reviews').insert(row);
     if (error) throw error;
+    markReviewedLandlord(review.landlordId);
     await loadDbReviews(); // reload to get the new review with server-assigned id
     return true;
   } catch (e) {
@@ -684,7 +723,11 @@ loadDbReviews();
 
 // ===== STATE =====
 let S = { page:"home", query:"", filter:"all", sort:"rating", detail:null, modal:false, stars:0, wouldRentChoice:null, cmpBeds:'all', cmpHood:'all', cmpMaxRent:0 };
-const go = u => { Object.assign(S, u); render(); };
+const go = u => {
+  // When navigating to a different page, clear detail unless explicitly set
+  if (u.page && u.page !== 'detail' && !('detail' in u)) u.detail = null;
+  Object.assign(S, u); render();
+};
 
 // ===== HELPERS =====
 const qClass = r => r === 0 ? "neutral" : r >= 3.5 ? "high" : r >= 2.5 ? "mid" : "low";
@@ -923,7 +966,7 @@ function DetailPage() {
 
     <h3 style="font-size:18px;font-weight:700;margin-top:40px;margin-bottom:16px">Properties by ${esc(l.name)}</h3>
     ${lprops.map(p => `
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid #E8E8E8">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid #E8E8E8;cursor:pointer;border-radius:8px;padding-left:8px;padding-right:8px;transition:background 0.15s" onmouseover="this.style.background='#F9FAFB'" onmouseout="this.style.background=''" onclick="go({modal:true,stars:0,wouldRentChoice:null})">
         <div>
           <div style="font-weight:700">${esc(p.name)}</div>
           <div style="font-size:13px;color:#7C7C7C">${p.beds===0?'Studio':p.beds+'bd'} · ${esc(p.hood)} · ${p.tags.map(esc).join(', ')}</div>
@@ -931,6 +974,7 @@ function DetailPage() {
         <div style="text-align:right">
           ${(() => { const propRevs = allReviews().filter(r => r.property === p.name && r.monthlyRent > 0); const propAvg = propRevs.length ? Math.round(propRevs.reduce((s,r)=>s+r.monthlyRent,0)/propRevs.length) : 0; return propAvg ? `<div style="font-weight:700;font-size:18px">$${propAvg}<span style="font-size:12px;color:#7C7C7C;font-weight:400">/mo</span></div><div style="font-size:10px;color:#9CA3AF">from ${propRevs.length} review${propRevs.length!==1?'s':''}</div>` : `<div style="font-size:13px;color:#9CA3AF">No price data yet</div>`; })()}
           <div style="font-size:13px;color:${scoreColor(p.rating)};font-weight:600">${p.rating > 0 ? p.rating.toFixed(1)+' / 5.0' : 'No ratings'}</div>
+          <div style="font-size:11px;color:#E84A27;margin-top:2px">Click to review</div>
         </div>
       </div>
     `).join("")}
@@ -1167,6 +1211,13 @@ function Modal() {
       <div class="field">
         <label>Verify you're a student (optional, adds trust badge)</label>
         <input type="email" id="rev-email" placeholder="netid@illinois.edu" />
+      </div>
+
+      <div class="field" style="background:#FFF7ED;border:1px solid #FED7AA;border-radius:8px;padding:12px 14px">
+        <label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer;margin:0">
+          <input type="checkbox" id="rev-certify" style="margin-top:3px;accent-color:#E84A27" />
+          <span style="font-size:13px;color:#92400E;line-height:1.4">I certify that I am a current or former tenant (not a landlord, property manager, or their employee) and this review reflects my real experience.</span>
+        </label>
       </div>
 
       <button class="submit-btn" onclick="submitReview(${l?l.id:'null'})" ${S.stars===0?'disabled':''}>Submit My Review</button>
@@ -1808,13 +1859,23 @@ async function submitReview(landlordIdFromDetail) {
   }
 
   if (!landlordId && !isCustomLandlord) { toast('Please select a landlord.'); return; }
-  if (S.stars === 0) { toast('Please select a star rating.'); return; }
-
-  const text = document.getElementById('rev-text')?.value?.trim();
-  if (!text || text.length < 20) { toast('Please write at least 20 characters about your experience.'); return; }
+  if (S.stars === 0) { toast('Please select a star rating (1-5 stars).'); return; }
+  if (S.wouldRentChoice === null) { toast('Please answer: would you rent from them again?'); return; }
+  if (!document.getElementById('rev-certify')?.checked) { toast('Please certify that you are a real tenant, not a landlord or property manager.'); return; }
 
   const propSelect = document.getElementById('rev-property-select')?.value || '';
   const propCustom = document.getElementById('rev-property-custom')?.value?.trim() || '';
+  if (!propSelect) { toast('Please select a property address.'); return; }
+  if (propSelect === '__custom__' && !propCustom) { toast('Please type your property address.'); return; }
+
+  const text = document.getElementById('rev-text')?.value?.trim();
+  if (!text || text.length < 20) { toast('Please write at least 20 characters about your experience.'); return; }
+  if (text.length > 5000) { toast('Review text is too long (max 5,000 characters).'); return; }
+
+  const rentInput = document.getElementById('rev-rent')?.value;
+  const monthlyRentVal = parseInt(rentInput) || 0;
+  if (rentInput && monthlyRentVal > 0 && (monthlyRentVal < 100 || monthlyRentVal > 5000)) { toast('Monthly rent should be between $100 and $5,000.'); return; }
+
   const isCustomProperty = propSelect === '__custom__' && propCustom;
   const property = propSelect === '__custom__' ? (propCustom || 'Not specified') : (propSelect || 'Not specified');
   const email = document.getElementById('rev-email')?.value?.trim() || '';
@@ -1823,7 +1884,7 @@ async function submitReview(landlordIdFromDetail) {
   const leasePeriod = (leaseStart && leaseEnd) ? leaseStart + ' – ' + leaseEnd : '';
 
   // Collect rent + neighborhood ratings
-  const monthlyRent = parseInt(document.getElementById('rev-rent')?.value) || 0;
+  const monthlyRent = monthlyRentVal;
   const hoodSafety = parseInt(document.getElementById('rev-hood-safety')?.value) || 0;
   const hoodWalk = parseInt(document.getElementById('rev-hood-walk')?.value) || 0;
   const hoodQuiet = parseInt(document.getElementById('rev-hood-quiet')?.value) || 0;
