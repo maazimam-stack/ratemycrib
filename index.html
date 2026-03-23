@@ -736,7 +736,7 @@ function allReviews() {
 loadDbReviews();
 
 // ===== STATE =====
-let S = { page:"home", query:"", filter:"all", sort:"rating", detail:null, modal:false, stars:0, wouldRentChoice:null, cmpBeds:'all', cmpHood:'all', cmpMaxRent:0 };
+let S = { page:"home", filter:"all", sort:"rating", detail:null, modal:false, stars:0, wouldRentChoice:null, cmpBeds:'all', cmpHood:'all', cmpMaxRent:0 };
 const go = u => {
   // When navigating to a different page, clear detail unless explicitly set
   if (u.page && u.page !== 'detail' && !('detail' in u)) u.detail = null;
@@ -814,10 +814,9 @@ function Hero() {
   return `<div class="hero">
     <div class="hero-badge">&#127979; By students, for students — zero landlord influence</div>
     <h1>The Honest Guide to<br>UIUC <em>Housing</em></h1>
-    <p>Search landlords. Read student reviews. Compare prices. No sponsored rankings — ever.</p>
-    <div class="search-wrap">
-      <input type="text" placeholder="Search by landlord, address, or neighborhood..." value="${esc(S.query)}" oninput="go({query:this.value})" />
-      <button class="search-btn" onclick="void 0">Search</button>
+    <p>Read student reviews. Compare prices. No sponsored rankings — ever.</p>
+    <div style="margin:28px auto 0;text-align:center;animation:fadeUp 0.6s ease 0.3s both">
+      <button onclick="go({page:'home',modal:true,stars:0,wouldRentChoice:null})" style="padding:18px 48px;font-size:18px;font-weight:700;background:var(--orange);color:white;border:none;border-radius:var(--radius);cursor:pointer;font-family:inherit;box-shadow:0 4px 24px rgba(232,74,39,0.35);transition:all 0.25s ease;letter-spacing:0.3px" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 32px rgba(232,74,39,0.45)'" onmouseout="this.style.transform='';this.style.boxShadow='0 4px 24px rgba(232,74,39,0.35)'">&#9998; Rate a Landlord</button>
     </div>
     <div class="search-tags">
       <span class="search-tag ${S.filter==='all'?'active':''}" onclick="go({filter:'all'})">All</span>
@@ -868,19 +867,6 @@ function ResultCard(l) {
 
 function ResultsList() {
   let list = SEED_LANDLORDS.map(getLandlordStats);
-  if (S.query) {
-    const q = S.query.toLowerCase();
-    list = list.filter(l => {
-      // Match landlord name or tags
-      if (l.name.toLowerCase().includes(q)) return true;
-      if (l.topTags.some(t=>t.toLowerCase().includes(q))) return true;
-      // Match any property name/address under this landlord
-      if (SEED_PROPERTIES.some(p => p.landlordId === l.id && p.name.toLowerCase().includes(q))) return true;
-      // Match neighborhood
-      if (SEED_PROPERTIES.some(p => p.landlordId === l.id && p.hood.toLowerCase().includes(q))) return true;
-      return false;
-    });
-  }
   if (S.filter === "top") list = list.filter(l => l.rating >= 3.5);
   if (S.filter === "avoid") list = list.filter(l => l.rating < 2.5);
   if (S.filter === "responsive") list = list.filter(l => parseInt(l.responseRate) >= 60);
@@ -899,7 +885,7 @@ function ResultsList() {
       </select>
     </div>
     ${list.map(ResultCard).join("")}
-    ${list.length===0?'<p style="text-align:center;color:#7C7C7C;padding:48px">No landlords match your search.</p>':''}
+    ${list.length===0?'<p style="text-align:center;color:#7C7C7C;padding:48px">No landlords match this filter.</p>':''}
     <div class="promo">
       <div><h3>Free Lease Scanner</h3><p>Upload your lease PDF or paste the text — we'll flag clauses that may conflict with Illinois tenant law.</p></div>
       <button onclick="trackScannerEvent('cta_click',{source:'home_promo'});go({page:'scanner'})">Scan My Lease</button>
@@ -2007,11 +1993,6 @@ function copyShareLink() {
 
 // ===== MAIN RENDER =====
 function render() {
-  // Save search input focus state before re-render
-  const searchEl = document.querySelector('.search-wrap input');
-  const hadSearchFocus = searchEl && document.activeElement === searchEl;
-  const cursorPos = hadSearchFocus ? searchEl.selectionStart : 0;
-
   let html = Nav();
   if (S.page === 'home' && !S.detail) html += ShareBanner() + Hero() + ResultsList();
   else if (S.page === 'detail' || S.detail) html += DetailPage();
@@ -2020,13 +2001,7 @@ function render() {
   else if (S.page === 'scanner') html += LeaseScanner();
   html += Modal() + Footer();
   document.getElementById('app').innerHTML = html;
-  if (!S.detail && !S.modal && !hadSearchFocus) window.scrollTo(0, 0);
-
-  // Restore search input focus after re-render
-  if (hadSearchFocus) {
-    const newSearch = document.querySelector('.search-wrap input');
-    if (newSearch) { newSearch.focus(); newSearch.setSelectionRange(cursorPos, cursorPos); }
-  }
+  if (!S.detail && !S.modal) window.scrollTo(0, 0);
 }
 
 // Handle browser back/forward
