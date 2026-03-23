@@ -476,34 +476,74 @@ const SEED_LANDLORDS = [
     scores:{maintenance:0,communication:0,fairness:0,moveOut:0}, topTags:["New Listing"], dist:[0,0,0,0,0] },
   { id:10, name:"Seven07", props:1, rating:0, reviews:0, wouldRent:0, responseRate:"—",
     scores:{maintenance:0,communication:0,fairness:0,moveOut:0}, topTags:["New Listing"], dist:[0,0,0,0,0] },
-  { id:11, name:"The VUE", props:1, rating:0, reviews:0, wouldRent:0, responseRate:"—",
-    scores:{maintenance:0,communication:0,fairness:0,moveOut:0}, topTags:["New Listing"], dist:[0,0,0,0,0] },
   { id:12, name:"The Cottages at Illinois", props:1, rating:0, reviews:0, wouldRent:0, responseRate:"—",
     scores:{maintenance:0,communication:0,fairness:0,moveOut:0}, topTags:["New Listing"], dist:[0,0,0,0,0] },
   { id:13, name:"Ramshaw Real Estate", props:30, rating:0, reviews:0, wouldRent:0, responseRate:"—",
     scores:{maintenance:0,communication:0,fairness:0,moveOut:0}, topTags:["New Listing"], dist:[0,0,0,0,0] },
+  { id:14, name:"Private Certified Housing (PCH)", props:10, rating:0, reviews:0, wouldRent:0, responseRate:"—",
+    scores:{maintenance:0,communication:0,fairness:0,moveOut:0}, topTags:["New Listing"], dist:[0,0,0,0,0], skipAddress:true },
+  { id:15, name:"University Housing (Dorms)", props:24, rating:0, reviews:0, wouldRent:0, responseRate:"—",
+    scores:{maintenance:0,communication:0,fairness:0,moveOut:0}, topTags:["New Listing"], dist:[0,0,0,0,0], skipAddress:true },
 ];
 
 // Addresses and prices verified from apartments.com, landlord websites (March 2026)
 // Prices shown are per-person/month for the listed bed count
+// Prices are NOT hardcoded — they come from real student reviews only.
+// When students submit a review, they report their actual rent. That's what gets displayed.
 const SEED_PROPERTIES = [
-  { id:1, name:"309 E Green St", landlordId:1, beds:4, price:669, hood:"Campustown", tags:["Utilities Included","Pool","Gym"], rating:0, reviews:0 },
-  { id:2, name:"615 S Wright St", landlordId:2, beds:4, price:545, hood:"Campustown", tags:["Furnished","Near Quad"], rating:0, reviews:0 },
-  { id:3, name:"508 E White St", landlordId:3, beds:1, price:750, hood:"Campustown", tags:["Utilities Included"], rating:0, reviews:0 },
-  { id:4, name:"509 E Green St", landlordId:4, beds:2, price:900, hood:"Campustown", tags:["Utilities Included","Parking"], rating:0, reviews:0 },
-  { id:5, name:"305 E John St", landlordId:5, beds:4, price:499, hood:"Campustown", tags:["Cheap"], rating:0, reviews:0 },
-  { id:6, name:"901 S 1st St", landlordId:6, beds:1, price:875, hood:"Campustown", tags:["Renovated"], rating:0, reviews:0 },
-  { id:7, name:"707 S 6th St", landlordId:7, beds:0, price:620, hood:"East Campus", tags:["Walk to Engineering"], rating:0, reviews:0 },
-  { id:8, name:"606 E White St", landlordId:8, beds:2, price:875, hood:"Campustown", tags:["Quiet","Luxury"], rating:0, reviews:0 },
-  { id:9, name:"502 E Stoughton St", landlordId:3, beds:2, price:1100, hood:"Campustown", tags:["Furnished","Gym"], rating:0, reviews:0 },
-  { id:10, name:"501 E Daniel St", landlordId:1, beds:4, price:625, hood:"Campustown", tags:["Cheap"], rating:0, reviews:0 },
-  { id:11, name:"1002 S Lincoln Ave", landlordId:2, beds:1, price:980, hood:"South Campus", tags:["Meal Plan","Furnished"], rating:0, reviews:0 },
-  { id:12, name:"409 E Chalmers St", landlordId:7, beds:2, price:1250, hood:"Campustown", tags:["Dining Hall","Furnished"], rating:0, reviews:0 },
-  { id:13, name:"308 E Green St", landlordId:9, beds:2, price:959, hood:"Campustown", tags:["Luxury","Gym","Pool"], rating:0, reviews:0 },
-  { id:14, name:"707 S 4th St", landlordId:10, beds:4, price:949, hood:"Campustown", tags:["Furnished","Pool","Basketball Court"], rating:0, reviews:0 },
-  { id:15, name:"711 S 4th St", landlordId:11, beds:2, price:1500, hood:"Campustown", tags:["Modern","Parking","Built 2021"], rating:0, reviews:0 },
-  { id:16, name:"905 Welch Dr", landlordId:12, beds:4, price:685, hood:"Urbana", tags:["Furnished","Pool","Gym","Townhome"], rating:0, reviews:0 },
-  { id:17, name:"1901 N Lincoln Ave (Capstone Quarters)", landlordId:13, beds:2, price:925, hood:"Urbana", tags:["Pool","Parking","A/C"], rating:0, reviews:0 },
+  { id:1, name:"309 E Green St", landlordId:1, beds:4, price:0, hood:"Campustown", tags:["Utilities Included","Pool","Gym"], rating:0, reviews:0 },
+  { id:2, name:"615 S Wright St", landlordId:2, beds:4, price:0, hood:"Campustown", tags:["Furnished","Near Quad"], rating:0, reviews:0 },
+  { id:3, name:"508 E White St", landlordId:3, beds:1, price:0, hood:"Campustown", tags:["Utilities Included"], rating:0, reviews:0 },
+  { id:4, name:"509 E Green St", landlordId:4, beds:2, price:0, hood:"Campustown", tags:["Utilities Included","Parking"], rating:0, reviews:0 },
+  { id:5, name:"305 E John St", landlordId:5, beds:4, price:0, hood:"Campustown", tags:[], rating:0, reviews:0 },
+  { id:6, name:"901 S 1st St", landlordId:6, beds:1, price:0, hood:"Campustown", tags:["Renovated"], rating:0, reviews:0 },
+  { id:7, name:"707 S 6th St", landlordId:7, beds:0, price:0, hood:"East Campus", tags:["Walk to Engineering"], rating:0, reviews:0 },
+  { id:8, name:"606 E White St", landlordId:8, beds:2, price:0, hood:"Campustown", tags:["Quiet","Luxury"], rating:0, reviews:0 },
+  { id:9, name:"502 E Stoughton St", landlordId:3, beds:2, price:0, hood:"Campustown", tags:["Furnished","Gym"], rating:0, reviews:0 },
+  { id:10, name:"501 E Daniel St", landlordId:1, beds:4, price:0, hood:"Campustown", tags:[], rating:0, reviews:0 },
+  { id:11, name:"1002 S Lincoln Ave", landlordId:2, beds:1, price:0, hood:"South Campus", tags:["Meal Plan","Furnished"], rating:0, reviews:0 },
+  { id:12, name:"409 E Chalmers St", landlordId:7, beds:2, price:0, hood:"Campustown", tags:["Dining Hall","Furnished"], rating:0, reviews:0 },
+  { id:13, name:"308 E Green St", landlordId:9, beds:2, price:0, hood:"Campustown", tags:["Luxury","Gym","Pool"], rating:0, reviews:0 },
+  { id:14, name:"707 S 4th St", landlordId:10, beds:4, price:0, hood:"Campustown", tags:["Furnished","Pool","Basketball Court"], rating:0, reviews:0 },
+  { id:15, name:"711 S 4th St (The VUE)", landlordId:1, beds:2, price:0, hood:"Campustown", tags:["Modern","Parking","Built 2021"], rating:0, reviews:0 },
+  { id:16, name:"905 Welch Dr", landlordId:12, beds:4, price:0, hood:"Urbana", tags:["Furnished","Pool","Gym","Townhome"], rating:0, reviews:0 },
+  { id:17, name:"1901 N Lincoln Ave (Capstone Quarters)", landlordId:13, beds:2, price:0, hood:"Urbana", tags:["Pool","Parking","A/C"], rating:0, reviews:0 },
+  // Private Certified Housing (PCH) buildings
+  { id:18, name:"Hendrick House", landlordId:14, beds:0, price:0, hood:"East Campus", tags:["Meal Plan","Furnished","PCH"], rating:0, reviews:0 },
+  { id:19, name:"Illini Tower", landlordId:14, beds:0, price:0, hood:"Campustown", tags:["Meal Plan","Furnished","PCH"], rating:0, reviews:0 },
+  { id:20, name:"Newman Hall", landlordId:14, beds:0, price:0, hood:"Campustown", tags:["Meal Plan","Furnished","PCH"], rating:0, reviews:0 },
+  { id:21, name:"Bromley Hall", landlordId:14, beds:0, price:0, hood:"Campustown", tags:["Meal Plan","Furnished","PCH"], rating:0, reviews:0 },
+  { id:22, name:"Armory House", landlordId:14, beds:0, price:0, hood:"Campustown", tags:["Meal Plan","Furnished","PCH"], rating:0, reviews:0 },
+  { id:23, name:"Presby Hall", landlordId:14, beds:0, price:0, hood:"Campustown", tags:["Meal Plan","Furnished","PCH"], rating:0, reviews:0 },
+  { id:24, name:"Illini Chabad", landlordId:14, beds:0, price:0, hood:"Campustown", tags:["Meal Plan","Furnished","PCH"], rating:0, reviews:0 },
+  { id:25, name:"Nabor House", landlordId:14, beds:0, price:0, hood:"Campustown", tags:["Meal Plan","Furnished","PCH"], rating:0, reviews:0 },
+  { id:26, name:"Koinonia", landlordId:14, beds:0, price:0, hood:"Campustown", tags:["Meal Plan","Furnished","PCH"], rating:0, reviews:0 },
+  { id:27, name:"Brown House", landlordId:14, beds:0, price:0, hood:"Campustown", tags:["Meal Plan","Furnished","PCH"], rating:0, reviews:0 },
+  // University Housing — Dorms
+  { id:28, name:"Allen Hall", landlordId:15, beds:0, price:0, hood:"Lincoln Ave", tags:["Dorm","Meal Plan","Furnished"], rating:0, reviews:0 },
+  { id:29, name:"Shelden Hall (LAR)", landlordId:15, beds:0, price:0, hood:"Lincoln Ave", tags:["Dorm","Meal Plan","Furnished"], rating:0, reviews:0 },
+  { id:30, name:"Leonard Hall (LAR)", landlordId:15, beds:0, price:0, hood:"Lincoln Ave", tags:["Dorm","Meal Plan","Furnished"], rating:0, reviews:0 },
+  { id:31, name:"Busey Hall", landlordId:15, beds:0, price:0, hood:"Lincoln Ave", tags:["Dorm","Meal Plan","Furnished","All-Female"], rating:0, reviews:0 },
+  { id:32, name:"Evans Hall", landlordId:15, beds:0, price:0, hood:"Lincoln Ave", tags:["Dorm","Meal Plan","Furnished","All-Male"], rating:0, reviews:0 },
+  { id:33, name:"Townsend Hall (ISR)", landlordId:15, beds:0, price:0, hood:"East Campus", tags:["Dorm","Meal Plan","Furnished"], rating:0, reviews:0 },
+  { id:34, name:"Wardall Hall (ISR)", landlordId:15, beds:0, price:0, hood:"East Campus", tags:["Dorm","Meal Plan","Furnished"], rating:0, reviews:0 },
+  { id:35, name:"Babcock Hall (PAR)", landlordId:15, beds:0, price:0, hood:"South Campus", tags:["Dorm","Meal Plan","Furnished"], rating:0, reviews:0 },
+  { id:36, name:"Carr Hall (PAR)", landlordId:15, beds:0, price:0, hood:"South Campus", tags:["Dorm","Meal Plan","Furnished"], rating:0, reviews:0 },
+  { id:37, name:"Blaisdell Hall (PAR)", landlordId:15, beds:0, price:0, hood:"South Campus", tags:["Dorm","Meal Plan","Furnished"], rating:0, reviews:0 },
+  { id:38, name:"Saunders Hall (PAR)", landlordId:15, beds:0, price:0, hood:"South Campus", tags:["Dorm","Meal Plan","Furnished"], rating:0, reviews:0 },
+  { id:39, name:"Trelease Hall (FAR)", landlordId:15, beds:0, price:0, hood:"South Campus", tags:["Dorm","Meal Plan","Furnished"], rating:0, reviews:0 },
+  { id:40, name:"Oglesby Hall (FAR)", landlordId:15, beds:0, price:0, hood:"South Campus", tags:["Dorm","Meal Plan","Furnished"], rating:0, reviews:0 },
+  { id:41, name:"Barton Hall (Ike North)", landlordId:15, beds:0, price:0, hood:"South Campus", tags:["Dorm","Meal Plan","Furnished"], rating:0, reviews:0 },
+  { id:42, name:"Lundgren Hall (Ike North)", landlordId:15, beds:0, price:0, hood:"South Campus", tags:["Dorm","Meal Plan","Furnished"], rating:0, reviews:0 },
+  { id:43, name:"Hopkins Hall (Ike North)", landlordId:15, beds:0, price:0, hood:"South Campus", tags:["Dorm","Meal Plan","Furnished"], rating:0, reviews:0 },
+  { id:44, name:"Weston Hall (Ike North)", landlordId:15, beds:0, price:0, hood:"South Campus", tags:["Dorm","Meal Plan","Furnished"], rating:0, reviews:0 },
+  { id:45, name:"Nugent Hall (Ike North)", landlordId:15, beds:0, price:0, hood:"South Campus", tags:["Dorm","Meal Plan","Furnished"], rating:0, reviews:0 },
+  { id:46, name:"Wassaja Hall (Ike North)", landlordId:15, beds:0, price:0, hood:"South Campus", tags:["Dorm","Meal Plan","Furnished","Suite-Style"], rating:0, reviews:0 },
+  { id:47, name:"Scott Hall (Ike South)", landlordId:15, beds:0, price:0, hood:"South Campus", tags:["Dorm","Meal Plan","Furnished"], rating:0, reviews:0 },
+  { id:48, name:"Snyder Hall (Ike South)", landlordId:15, beds:0, price:0, hood:"South Campus", tags:["Dorm","Meal Plan","Furnished"], rating:0, reviews:0 },
+  { id:49, name:"Taft Hall (Ike South)", landlordId:15, beds:0, price:0, hood:"South Campus", tags:["Dorm","Meal Plan","Furnished"], rating:0, reviews:0 },
+  { id:50, name:"Van Doren Hall (Ike South)", landlordId:15, beds:0, price:0, hood:"South Campus", tags:["Dorm","Meal Plan","Furnished"], rating:0, reviews:0 },
+  { id:51, name:"Bousfield Hall (Ike South)", landlordId:15, beds:0, price:0, hood:"South Campus", tags:["Dorm","Meal Plan","Furnished","Suite-Style"], rating:0, reviews:0 },
 ];
 
 // Seed reviews removed — all reviews now come from real student submissions via Supabase.
@@ -519,13 +559,10 @@ function getHoodStats() {
   return HOOD_NAMES.map(name => {
     // Compute avg rent from seed properties in this hood
     const hoodProps = SEED_PROPERTIES.filter(p => p.hood === name);
-    const seedRent = hoodProps.length ? Math.round(hoodProps.reduce((s,p)=>s+p.price,0)/hoodProps.length) : 0;
-
     // Compute scores from Supabase reviews that have hood ratings
     const hoodReviews = dbReviews.filter(r => {
       const prop = SEED_PROPERTIES.find(p => p.name === r.property);
       if (prop && prop.hood === name) return true;
-      // Also check if the review has hood_name matching
       return r.hoodName === name;
     });
 
@@ -534,9 +571,9 @@ function getHoodStats() {
       return vals.length ? (vals.reduce((s,v)=>s+v,0)/vals.length) : 0;
     };
 
-    // Get avg rent from reviews if available, otherwise use seed property prices
+    // Avg rent comes ONLY from real reviews — no hardcoded prices
     const reviewRents = hoodReviews.map(r => r.monthlyRent).filter(v => v && v > 0);
-    const avgRent = reviewRents.length ? Math.round(reviewRents.reduce((s,v)=>s+v,0)/reviewRents.length) : seedRent;
+    const avgRent = reviewRents.length ? Math.round(reviewRents.reduce((s,v)=>s+v,0)/reviewRents.length) : 0;
 
     return {
       name: name,
@@ -738,7 +775,9 @@ function Hero() {
 function ResultCard(l) {
   const q = qClass(l.rating);
   const lprops = SEED_PROPERTIES.filter(p=>p.landlordId===l.id);
-  const avgPrice = lprops.length ? lprops.reduce((s,p)=>s+p.price,0) / lprops.length : 0;
+  // Price comes from real reviews only — not hardcoded
+  const landlordReviews = allReviews().filter(r => r.landlordId === l.id && r.monthlyRent > 0);
+  const avgPrice = landlordReviews.length ? Math.round(landlordReviews.reduce((s,r) => s + r.monthlyRent, 0) / landlordReviews.length) : 0;
   const isNew = l.reviews === 0;
   return `<div class="result-card" onclick="go({page:'detail',detail:${l.id}})">
     <div class="result-rating-box quality-${q}">
@@ -765,7 +804,7 @@ function ResultCard(l) {
     <div class="result-side">
       <div class="would-rent" style="color:${isNew?'#6B7280':l.wouldRent>=50?'#16A34A':'#DC2626'}">${isNew?'—':l.wouldRent+'%'}</div>
       <div class="would-rent-label">would rent<br>again</div>
-      ${avgPrice ? `<div class="result-price">~$${Math.round(avgPrice)}<span>/mo</span></div>` : ''}
+      ${avgPrice ? `<div class="result-price">~$${avgPrice}<span>/mo</span></div><div style="font-size:10px;color:#9CA3AF;text-align:center">from ${landlordReviews.length} review${landlordReviews.length!==1?'s':''}</div>` : ''}
     </div>
   </div>`;
 }
@@ -890,7 +929,7 @@ function DetailPage() {
           <div style="font-size:13px;color:#7C7C7C">${p.beds===0?'Studio':p.beds+'bd'} · ${esc(p.hood)} · ${p.tags.map(esc).join(', ')}</div>
         </div>
         <div style="text-align:right">
-          <div style="font-weight:700;font-size:18px">$${p.price}<span style="font-size:12px;color:#7C7C7C;font-weight:400">/mo</span></div>
+          ${(() => { const propRevs = allReviews().filter(r => r.property === p.name && r.monthlyRent > 0); const propAvg = propRevs.length ? Math.round(propRevs.reduce((s,r)=>s+r.monthlyRent,0)/propRevs.length) : 0; return propAvg ? `<div style="font-weight:700;font-size:18px">$${propAvg}<span style="font-size:12px;color:#7C7C7C;font-weight:400">/mo</span></div><div style="font-size:10px;color:#9CA3AF">from ${propRevs.length} review${propRevs.length!==1?'s':''}</div>` : `<div style="font-size:13px;color:#9CA3AF">No price data yet</div>`; })()}
           <div style="font-size:13px;color:${scoreColor(p.rating)};font-weight:600">${p.rating > 0 ? p.rating.toFixed(1)+' / 5.0' : 'No ratings'}</div>
         </div>
       </div>
@@ -930,7 +969,13 @@ function Hoods() {
 }
 
 function Compare() {
-  let filtered = [...SEED_PROPERTIES];
+  // Enrich properties with review-based pricing
+  const revs = allReviews();
+  let filtered = SEED_PROPERTIES.map(p => {
+    const propRevs = revs.filter(r => r.landlordId === p.landlordId && r.monthlyRent > 0);
+    const reviewPrice = propRevs.length ? Math.round(propRevs.reduce((s,r)=>s+r.monthlyRent,0)/propRevs.length) : 0;
+    return { ...p, reviewPrice, reviewCount: propRevs.length };
+  });
 
   // Apply filters from state
   if (S.cmpBeds !== undefined && S.cmpBeds !== 'all') {
@@ -940,10 +985,16 @@ function Compare() {
     filtered = filtered.filter(p => p.hood === S.cmpHood);
   }
   if (S.cmpMaxRent && S.cmpMaxRent > 0) {
-    filtered = filtered.filter(p => p.price <= S.cmpMaxRent);
+    filtered = filtered.filter(p => p.reviewPrice > 0 && p.reviewPrice <= S.cmpMaxRent);
   }
 
-  const sorted = filtered.sort((a,b)=>a.price-b.price);
+  // Sort: properties with price data first (by price asc), then no-data properties alphabetically
+  const sorted = filtered.sort((a,b) => {
+    if (a.reviewPrice && b.reviewPrice) return a.reviewPrice - b.reviewPrice;
+    if (a.reviewPrice) return -1;
+    if (b.reviewPrice) return 1;
+    return a.name.localeCompare(b.name);
+  });
   const allHoods = [...new Set(SEED_PROPERTIES.map(p=>p.hood))];
 
   return `<div style="background:var(--black);padding:48px 24px 40px;text-align:center;position:relative;overflow:hidden">
@@ -992,13 +1043,13 @@ function Compare() {
             const l = SEED_LANDLORDS.find(x=>x.id===p.landlordId);
             const lStats = l ? getLandlordStats(l) : null;
             const rating = lStats && lStats.reviews > 0 ? lStats.rating : 0;
-            const val = rating > 0 ? (rating/p.price*1000).toFixed(1) : '—';
+            const val = (rating > 0 && p.reviewPrice > 0) ? (rating/p.reviewPrice*1000).toFixed(1) : '—';
             return `<tr style="cursor:pointer" onclick="go({page:'detail',detail:${p.landlordId}})">
               <td><strong>${esc(p.name)}</strong></td>
               <td>${l?esc(l.name):''}</td>
               <td>${p.beds===0?'Studio':p.beds}</td>
               <td>${esc(p.hood)}</td>
-              <td><strong>$${p.price}</strong></td>
+              <td>${p.reviewPrice ? `<strong>$${p.reviewPrice}</strong><div style="font-size:10px;color:#9CA3AF">from ${p.reviewCount} review${p.reviewCount!==1?'s':''}</div>` : '<span style="color:#9CA3AF">—</span>'}</td>
               <td style="color:${rating > 0 ? scoreColor(rating) : '#6B7280'};font-weight:${rating > 0 ? '600' : '400'}">${rating > 0 ? rating.toFixed(1) : '—'}</td>
               <td style="color:#6B7280">${val}</td>
             </tr>`;
@@ -1007,7 +1058,7 @@ function Compare() {
       </table>
     </div>
     ${sorted.length===0 ? '<p style="text-align:center;color:#7C7C7C;padding:32px">No properties match your filters. Try adjusting them.</p>' : ''}
-    <p style="font-size:12px;color:#7C7C7C;margin-top:8px">*Value = Rating per $1,000/mo. Higher is better. Prices are per person/month.</p>
+    <p style="font-size:12px;color:#7C7C7C;margin-top:8px">*Value = Rating per $1,000/mo. Higher is better. Prices are averages from student reviews (per person/month). Properties with no reviews show no price.</p>
   </div>`;
 }
 
@@ -1688,10 +1739,12 @@ function buildPropertyDropdown(landlordId) {
   }
 
   const showLandlordName = !landlordId;
+  const landlordObj = typeof landlordId === 'number' ? SEED_LANDLORDS.find(x => x.id === landlordId) : null;
+  const isSkipAddress = landlordObj && landlordObj.skipAddress;
   return `<select id="rev-property-select" onchange="toggleCustomAddress(this)">
-    <option value="">Select a property...</option>
+    <option value="">${isSkipAddress ? 'Select your building...' : 'Select a property...'}</option>
     ${props.map(p => `<option value="${esc(p.address)}">${esc(p.address)}${showLandlordName && p.landlordName ? ' (' + esc(p.landlordName) + ')' : ''}</option>`).join("")}
-    <option value="__custom__">Other — type my address</option>
+    ${isSkipAddress ? '' : '<option value="__custom__">Other — type my address</option>'}
   </select>`;
 }
 
