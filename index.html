@@ -452,11 +452,13 @@
     .compare-tbl { font-size: 12px; display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
     .compare-tbl th, .compare-tbl td { padding: 8px 10px; white-space: nowrap; }
     .hood-grid { grid-template-columns: 1fr; }
-    .modal-box { padding: 24px 16px; width: 96%; max-height: 85vh; }
-    .modal-box .field select { font-size: 14px; padding: 10px 12px; }
-    .modal-box .field textarea { height: 100px; font-size: 15px; }
+    .modal-bg { align-items: flex-end; }
+    .modal-box { padding: 20px 16px; width: 100%; max-height: 92vh; border-radius: 16px 16px 0 0; margin: 0; }
+    .modal-box .field { margin-bottom: 14px; }
+    .modal-box .field select { font-size: 16px; padding: 10px 12px; }
+    .modal-box .field textarea { height: 90px; font-size: 16px; }
+    .modal-box .field input { font-size: 16px; }
     .modal-close { top: 8px; right: 10px; font-size: 32px; padding: 8px 12px; }
-    .modal-box .field[style*="background:#FFF7ED"] { position: sticky; bottom: -24px; margin-bottom: 0; z-index: 2; }
     .submit-btn { font-size: 17px; padding: 16px; }
     .detail-top { padding: 24px 16px 32px; }
     .scanner-header { padding: 36px 16px 32px; }
@@ -1323,7 +1325,7 @@ function Modal() {
 
       <div class="field" style="background:#FFF7ED;border:1px solid #FED7AA;border-radius:8px;padding:12px 14px">
         <label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer;margin:0">
-          <input type="checkbox" id="rev-certify" style="margin-top:3px;accent-color:#E84A27" />
+          <input type="checkbox" id="rev-certify" style="margin-top:3px;accent-color:#E84A27;min-width:20px;min-height:20px" />
           <span style="font-size:13px;color:#92400E;line-height:1.4">I certify that I am a current or former tenant (not a landlord, property manager, or their employee) and this review reflects my real experience.</span>
         </label>
       </div>
@@ -1753,7 +1755,7 @@ function LeaseScanner() {
         <div style="background:white;padding:14px 16px;border-radius:10px;border:1px solid var(--border);font-size:13.5px;line-height:1.6"><strong style="color:var(--orange)">Eviction</strong><br>Only a court can order an eviction. Self-help lockouts are illegal in Illinois.</div>
       </div>
       <div style="display:flex;gap:10px;flex-wrap:wrap">
-        <a href="rights.html" style="display:inline-block;padding:10px 20px;background:var(--black);color:white;border-radius:8px;font-size:13px;font-weight:600;transition:all 0.2s">Full Tenant Rights Guide</a>
+        <a onclick="go({page:'rights'})" style="display:inline-block;padding:10px 20px;background:var(--black);color:white;border-radius:8px;font-size:13px;font-weight:600;transition:all 0.2s;cursor:pointer">Full Tenant Rights Guide</a>
         <a href="https://studentlegal.illinois.edu/" target="_blank" style="display:inline-block;padding:10px 20px;background:var(--orange);color:white;border-radius:8px;font-size:13px;font-weight:600;transition:all 0.2s">Free UIUC Legal Help</a>
       </div>
     </div>
@@ -1829,7 +1831,7 @@ function Footer() {
     <div class="footer-inner">
       <div class="footer-col">
         <h4 style="font-size:16px;letter-spacing:-0.3px;text-transform:none">Rate<span style="color:var(--orange)">My</span>Crib</h4>
-        <a style="line-height:1.6">Built by students who got burned.<br>No landlord money. No sponsored rankings.</a>
+        <a style="line-height:1.6">Built by students who got burned.<br>No landlord money. No sponsored rankings.<br>Our mission: give every UIUC student the info they need to avoid bad landlords and find great housing.</a>
       </div>
       <div class="footer-col">
         <h4>Browse</h4>
@@ -1839,14 +1841,15 @@ function Footer() {
         <a onclick="go({page:'scanner'})">Lease Scanner</a>
       </div>
       <div class="footer-col">
+        <h4>Resources</h4>
+        <a onclick="go({page:'rights'})" style="cursor:pointer">Know Your Rights</a>
+        <a onclick="go({page:'landlords-info'})" style="cursor:pointer">For Landlords</a>
+        <a href="https://studentlegal.illinois.edu/" target="_blank">Free UIUC Legal Help</a>
+      </div>
+      <div class="footer-col">
         <h4>Legal</h4>
         <a onclick="go({page:'tos'})" style="cursor:pointer">Terms of Service</a>
         <a onclick="go({page:'privacy'})" style="cursor:pointer">Privacy Policy</a>
-        <a onclick="go({page:'scanner'})" style="cursor:pointer">Know Your Rights</a>
-      </div>
-      <div class="footer-col">
-        <h4>About</h4>
-        <a style="cursor:default;color:var(--muted)">Built by UIUC students</a>
         <a href="mailto:ratemycrib@proton.me">Contact Us</a>
       </div>
     </div>
@@ -2196,6 +2199,99 @@ function PrivacyPage() {
   </div>`;
 }
 
+function RightsPage() {
+  return `<div style="background:var(--black);padding:48px 24px 40px;text-align:center">
+    <h2 style="font-size:32px;font-weight:900;color:white;letter-spacing:-1px;margin-bottom:8px">Know Your Rights</h2>
+    <p style="color:rgba(255,255,255,0.5);font-size:15px">Illinois tenant protections every UIUC renter should know</p>
+  </div>
+  <div class="container" style="max-width:720px;line-height:1.8;font-size:15px">
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-bottom:32px">
+      <div style="background:var(--light);padding:20px;border-radius:12px;border:1px solid var(--border)">
+        <strong style="color:var(--orange);font-size:16px">Security Deposits</strong>
+        <p style="margin-top:8px;color:var(--text);font-size:14px;line-height:1.6">Landlords with 5+ units must return your deposit within 30 days of move-out with an itemized list of deductions. Smaller buildings get 45 days. Non-refundable deposits may violate Illinois law.</p>
+        <p style="margin-top:6px;font-size:12px;color:var(--blue);font-weight:600">765 ILCS 710 — Security Deposit Return Act</p>
+      </div>
+      <div style="background:var(--light);padding:20px;border-radius:12px;border:1px solid var(--border)">
+        <strong style="color:var(--orange);font-size:16px">Habitability</strong>
+        <p style="margin-top:8px;color:var(--text);font-size:14px;line-height:1.6">Your landlord must maintain heat, water, electricity, and structural safety. This is an implied warranty — you cannot waive it in your lease, even if the lease says otherwise.</p>
+        <p style="margin-top:6px;font-size:12px;color:var(--blue);font-weight:600">735 ILCS 5/9-101 — Implied Warranty</p>
+      </div>
+      <div style="background:var(--light);padding:20px;border-radius:12px;border:1px solid var(--border)">
+        <strong style="color:var(--orange);font-size:16px">Retaliation Protection</strong>
+        <p style="margin-top:8px;color:var(--text);font-size:14px;line-height:1.6">Landlords cannot raise rent, reduce services, or evict you for reporting code violations, filing complaints, or joining a tenant organization. Retaliation is illegal in Illinois.</p>
+        <p style="margin-top:6px;font-size:12px;color:var(--blue);font-weight:600">765 ILCS 720 — Retaliatory Eviction Act</p>
+      </div>
+      <div style="background:var(--light);padding:20px;border-radius:12px;border:1px solid var(--border)">
+        <strong style="color:var(--orange);font-size:16px">Eviction Process</strong>
+        <p style="margin-top:8px;color:var(--text);font-size:14px;line-height:1.6">Only a court can order an eviction. Your landlord cannot change your locks, remove your belongings, or shut off utilities to force you out. Self-help evictions are illegal.</p>
+        <p style="margin-top:6px;font-size:12px;color:var(--blue);font-weight:600">735 ILCS 5/9-101.2 — Forcible Entry</p>
+      </div>
+      <div style="background:var(--light);padding:20px;border-radius:12px;border:1px solid var(--border)">
+        <strong style="color:var(--orange);font-size:16px">Lease Clauses You Can't Waive</strong>
+        <p style="margin-top:8px;color:var(--text);font-size:14px;line-height:1.6">Any clause that asks you to waive your legal rights as a tenant is unenforceable. This includes waiving the right to a jury trial, waiving habitability, or agreeing to unlimited late fees.</p>
+        <p style="margin-top:6px;font-size:12px;color:var(--blue);font-weight:600">765 ILCS 705/1 — Tenant Rights</p>
+      </div>
+      <div style="background:var(--light);padding:20px;border-radius:12px;border:1px solid var(--border)">
+        <strong style="color:var(--orange);font-size:16px">Champaign Ordinance</strong>
+        <p style="margin-top:8px;color:var(--text);font-size:14px;line-height:1.6">Champaign has additional tenant protections beyond state law. Landlords must provide a move-in checklist, give 24-hour notice before entry, and follow specific security deposit rules.</p>
+        <p style="margin-top:6px;font-size:12px;color:var(--blue);font-weight:600">Champaign Municipal Code Ch. 12.5</p>
+      </div>
+    </div>
+
+    <div style="background:#FFF7ED;border:1px solid #FED7AA;border-radius:12px;padding:20px;margin-bottom:24px">
+      <strong style="color:#C2410C;font-size:15px">Free Legal Help for UIUC Students</strong>
+      <p style="margin-top:8px;font-size:14px;color:#92400E;line-height:1.6">The UIUC Student Legal Service offers free, confidential legal consultations for enrolled students. They specialize in landlord-tenant disputes, lease reviews, and security deposit issues. No appointment needed for walk-ins.</p>
+      <p style="margin-top:8px;font-size:13px;color:#92400E">Turner Student Services Building, Room 324 &middot; <a href="https://studentlegal.illinois.edu/" target="_blank" style="color:#C2410C;font-weight:600;text-decoration:underline">studentlegal.illinois.edu</a></p>
+    </div>
+
+    <div style="background:var(--light);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:24px">
+      <strong style="font-size:15px">Use Our Free Lease Scanner</strong>
+      <p style="margin-top:8px;font-size:14px;color:var(--muted);line-height:1.6">Paste your lease text and we'll flag clauses that may conflict with Illinois tenant law. It's free, runs entirely in your browser, and your lease text is never stored.</p>
+      <button style="margin-top:12px;padding:10px 24px;background:var(--black);color:white;border:none;border-radius:8px;font-weight:600;font-size:14px;cursor:pointer;font-family:inherit" onclick="go({page:'scanner'})">Open Lease Scanner</button>
+    </div>
+
+    <p style="font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:24px"><strong>Disclaimer:</strong> This page provides general educational information about Illinois tenant law. It is not legal advice. Laws change over time and specific situations vary. For advice on your specific situation, consult a licensed attorney or the UIUC Student Legal Service.</p>
+
+    <p><span style="color:var(--orange);cursor:pointer;font-weight:600;font-size:14px" onclick="go({page:'home',detail:null})">&#8592; Back to home</span></p>
+  </div>`;
+}
+
+function LandlordsInfoPage() {
+  return `<div style="background:var(--black);padding:48px 24px 40px;text-align:center">
+    <h2 style="font-size:32px;font-weight:900;color:white;letter-spacing:-1px;margin-bottom:8px">For Landlords</h2>
+    <p style="color:rgba(255,255,255,0.5);font-size:15px">How RateMyCrib works and what it means for property managers</p>
+  </div>
+  <div class="container" style="max-width:720px;line-height:1.8;font-size:15px">
+
+    <p style="margin-bottom:20px"><strong>RateMyCrib is a student-run, independently funded review platform.</strong> We don't accept money from landlords or property management companies. Rankings are based entirely on verified student reviews — not advertising spend.</p>
+
+    <p style="margin-bottom:20px;font-size:16px;font-weight:700">What we believe in:</p>
+
+    <div style="background:var(--light);border-radius:12px;padding:20px;margin-bottom:16px;border:1px solid var(--border)">
+      <strong style="color:var(--orange)">Transparency benefits good landlords.</strong>
+      <p style="margin-top:6px;font-size:14px;color:var(--text);line-height:1.6">If you maintain your properties, communicate well, and treat tenants fairly, reviews will reflect that. RateMyCrib gives good landlords a way to stand out in a market where students have limited information.</p>
+    </div>
+
+    <div style="background:var(--light);border-radius:12px;padding:20px;margin-bottom:16px;border:1px solid var(--border)">
+      <strong style="color:var(--orange)">We take review integrity seriously.</strong>
+      <p style="margin-top:6px;font-size:14px;color:var(--text);line-height:1.6">Every reviewer must certify they are a current or former tenant — not a landlord, property manager, or employee. We use device fingerprinting to prevent duplicate or fraudulent reviews. We reserve the right to remove reviews that violate our Terms of Service.</p>
+    </div>
+
+    <div style="background:var(--light);border-radius:12px;padding:20px;margin-bottom:16px;border:1px solid var(--border)">
+      <strong style="color:var(--orange)">We're open to feedback.</strong>
+      <p style="margin-top:6px;font-size:14px;color:var(--text);line-height:1.6">If you believe a review is fraudulent, defamatory, or violates our Terms, contact us. We review flagged content and will remove reviews that don't meet our standards. We're building this for the community — not against landlords.</p>
+    </div>
+
+    <div style="background:#FFF7ED;border:1px solid #FED7AA;border-radius:12px;padding:20px;margin-bottom:24px">
+      <strong style="color:#C2410C">Contact Us</strong>
+      <p style="margin-top:8px;font-size:14px;color:#92400E;line-height:1.6">Have a question, concern, or feedback? Reach out at <a href="mailto:ratemycrib@proton.me" style="color:#C2410C;font-weight:600;text-decoration:underline">ratemycrib@proton.me</a>. We respond to all inquiries within 48 hours.</p>
+    </div>
+
+    <p><span style="color:var(--orange);cursor:pointer;font-weight:600;font-size:14px" onclick="go({page:'home',detail:null})">&#8592; Back to home</span></p>
+  </div>`;
+}
+
 // ===== MAIN RENDER =====
 function render() {
   let html = Nav();
@@ -2206,6 +2302,8 @@ function render() {
   else if (S.page === 'scanner') html += LeaseScanner();
   else if (S.page === 'tos') html += TosPage();
   else if (S.page === 'privacy') html += PrivacyPage();
+  else if (S.page === 'rights') html += RightsPage();
+  else if (S.page === 'landlords-info') html += LandlordsInfoPage();
   html += Modal() + Footer();
   document.getElementById('app').innerHTML = html;
   if (!S.detail && !S.modal) window.scrollTo(0, 0);
