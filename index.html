@@ -1746,16 +1746,17 @@ function LeaseScanner() {
     </div>
 
     <div style="margin-top:40px;padding:28px;background:var(--light);border-radius:16px;border:1px solid var(--border)">
-      <h3 style="font-size:18px;font-weight:700;margin-bottom:8px;letter-spacing:-0.3px">Know Your Rights as a UIUC Tenant</h3>
-      <p style="font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:16px">Illinois has strong tenant protections. Key things every student renter should know:</p>
+      <h3 style="font-size:18px;font-weight:700;margin-bottom:8px;letter-spacing:-0.3px">Illinois Tenant Law — Quick Reference</h3>
+      <p style="font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:16px">Key Illinois statutes relevant to student renters (not legal advice — see disclaimer below):</p>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-bottom:20px">
-        <div style="background:white;padding:14px 16px;border-radius:10px;border:1px solid var(--border);font-size:13.5px;line-height:1.6"><strong style="color:var(--orange)">Security Deposits</strong><br>Must be returned within 30 days (5+ unit buildings) with an itemized list of deductions.</div>
-        <div style="background:white;padding:14px 16px;border-radius:10px;border:1px solid var(--border);font-size:13.5px;line-height:1.6"><strong style="color:var(--orange)">Habitability</strong><br>Your landlord must maintain heat, water, electricity, and structural safety — you can't waive this.</div>
-        <div style="background:white;padding:14px 16px;border-radius:10px;border:1px solid var(--border);font-size:13.5px;line-height:1.6"><strong style="color:var(--orange)">Retaliation</strong><br>Landlords cannot raise rent, reduce services, or evict you for reporting code violations.</div>
-        <div style="background:white;padding:14px 16px;border-radius:10px;border:1px solid var(--border);font-size:13.5px;line-height:1.6"><strong style="color:var(--orange)">Eviction</strong><br>Only a court can order an eviction. Self-help lockouts are illegal in Illinois.</div>
+        <div style="background:white;padding:14px 16px;border-radius:10px;border:1px solid var(--border);font-size:13.5px;line-height:1.6"><strong style="color:var(--orange)">Security Deposits</strong><br>Under <a href="https://www.ilga.gov/legislation/ilcs/ilcs3.asp?ActID=2202&ChapterID=62" target="_blank" style="color:var(--blue)">765 ILCS 710</a>, landlords of 5+ unit buildings must return deposits within 30 days with an itemized deduction list.</div>
+        <div style="background:white;padding:14px 16px;border-radius:10px;border:1px solid var(--border);font-size:13.5px;line-height:1.6"><strong style="color:var(--orange)">Habitability</strong><br>Illinois courts recognize an implied warranty of habitability covering heat, water, electricity, and structural safety.</div>
+        <div style="background:white;padding:14px 16px;border-radius:10px;border:1px solid var(--border);font-size:13.5px;line-height:1.6"><strong style="color:var(--orange)">Retaliation</strong><br>Under <a href="https://www.ilga.gov/legislation/ilcs/ilcs3.asp?ActID=4532&ChapterID=62" target="_blank" style="color:var(--blue)">765 ILCS 721</a>, landlords are prohibited from retaliating against tenants who report code violations.</div>
+        <div style="background:white;padding:14px 16px;border-radius:10px;border:1px solid var(--border);font-size:13.5px;line-height:1.6"><strong style="color:var(--orange)">Eviction</strong><br>Under <a href="https://www.ilga.gov/legislation/ilcs/ilcs4.asp?ActID=2017&ChapterID=56&SeqStart=65575000&SeqEnd=73000000" target="_blank" style="color:var(--blue)">735 ILCS 5/Art. IX</a>, evictions require a court order. Self-help lockouts are prohibited.</div>
       </div>
+      <p style="font-size:11px;color:var(--muted);margin-bottom:16px;line-height:1.5">This is a simplified summary for educational purposes, not legal advice. Consult a licensed attorney for advice on your situation.</p>
       <div style="display:flex;gap:10px;flex-wrap:wrap">
-        <a onclick="go({page:'rights'})" style="display:inline-block;padding:10px 20px;background:var(--black);color:white;border-radius:8px;font-size:13px;font-weight:600;transition:all 0.2s;cursor:pointer">Full Tenant Rights Guide</a>
+        <a onclick="go({page:'rights'})" style="display:inline-block;padding:10px 20px;background:var(--black);color:white;border-radius:8px;font-size:13px;font-weight:600;transition:all 0.2s;cursor:pointer">Full Reference Guide</a>
         <a href="https://studentlegal.illinois.edu/" target="_blank" style="display:inline-block;padding:10px 20px;background:var(--orange);color:white;border-radius:8px;font-size:13px;font-weight:600;transition:all 0.2s">Free UIUC Legal Help</a>
       </div>
     </div>
@@ -2202,56 +2203,59 @@ function PrivacyPage() {
 function RightsPage() {
   return `<div style="background:var(--black);padding:48px 24px 40px;text-align:center">
     <h2 style="font-size:32px;font-weight:900;color:white;letter-spacing:-1px;margin-bottom:8px">Know Your Rights</h2>
-    <p style="color:rgba(255,255,255,0.5);font-size:15px">Illinois tenant protections every UIUC renter should know</p>
+    <p style="color:rgba(255,255,255,0.5);font-size:15px">Illinois statutes relevant to student renters</p>
   </div>
   <div class="container" style="max-width:720px;line-height:1.8;font-size:15px">
+
+    <div style="background:#FEF2F2;border:1px solid #FECACA;border-radius:12px;padding:16px 20px;margin-bottom:24px">
+      <strong style="color:#991B1B;font-size:14px">This is not legal advice.</strong>
+      <p style="margin-top:4px;font-size:13px;color:#991B1B;line-height:1.5">The information below is a simplified summary of Illinois statutes for educational purposes only. Laws change, and how they apply depends on your specific situation. For legal advice, consult a licensed attorney or the <a href="https://studentlegal.illinois.edu/" target="_blank" style="color:#991B1B;font-weight:600;text-decoration:underline">free UIUC Student Legal Service</a>.</p>
+    </div>
 
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-bottom:32px">
       <div style="background:var(--light);padding:20px;border-radius:12px;border:1px solid var(--border)">
         <strong style="color:var(--orange);font-size:16px">Security Deposits</strong>
-        <p style="margin-top:8px;color:var(--text);font-size:14px;line-height:1.6">Landlords with 5+ units must return your deposit within 30 days of move-out with an itemized list of deductions. Smaller buildings get 45 days. Non-refundable deposits may violate Illinois law.</p>
-        <p style="margin-top:6px;font-size:12px;color:var(--blue);font-weight:600">765 ILCS 710 — Security Deposit Return Act</p>
+        <p style="margin-top:8px;color:var(--text);font-size:14px;line-height:1.6">Under this statute, landlords of buildings with 5+ units are required to return security deposits within 30 days of move-out, along with an itemized statement of deductions. Smaller buildings have a 45-day window.</p>
+        <p style="margin-top:6px;font-size:12px;color:var(--blue);font-weight:600"><a href="https://www.ilga.gov/legislation/ilcs/ilcs3.asp?ActID=2202&ChapterID=62" target="_blank" style="color:var(--blue);text-decoration:underline">765 ILCS 710 — Security Deposit Return Act</a></p>
       </div>
       <div style="background:var(--light);padding:20px;border-radius:12px;border:1px solid var(--border)">
         <strong style="color:var(--orange);font-size:16px">Habitability</strong>
-        <p style="margin-top:8px;color:var(--text);font-size:14px;line-height:1.6">Your landlord must maintain heat, water, electricity, and structural safety. This is an implied warranty — you cannot waive it in your lease, even if the lease says otherwise.</p>
-        <p style="margin-top:6px;font-size:12px;color:var(--blue);font-weight:600">735 ILCS 5/9-101 — Implied Warranty</p>
+        <p style="margin-top:8px;color:var(--text);font-size:14px;line-height:1.6">Illinois recognizes an implied warranty of habitability requiring landlords to maintain essential services like heat, water, and structural safety. Courts have generally held that lease clauses attempting to waive this warranty are unenforceable.</p>
+        <p style="margin-top:6px;font-size:12px;color:var(--blue);font-weight:600"><a href="https://www.ilga.gov/legislation/ilcs/fulltext.asp?DocName=073500050K9-101" target="_blank" style="color:var(--blue);text-decoration:underline">735 ILCS 5/9-101 — Forcible Entry and Detainer</a></p>
       </div>
       <div style="background:var(--light);padding:20px;border-radius:12px;border:1px solid var(--border)">
         <strong style="color:var(--orange);font-size:16px">Retaliation Protection</strong>
-        <p style="margin-top:8px;color:var(--text);font-size:14px;line-height:1.6">Landlords cannot raise rent, reduce services, or evict you for reporting code violations, filing complaints, or joining a tenant organization. Retaliation is illegal in Illinois.</p>
-        <p style="margin-top:6px;font-size:12px;color:var(--blue);font-weight:600">765 ILCS 720 — Retaliatory Eviction Act</p>
+        <p style="margin-top:8px;color:var(--text);font-size:14px;line-height:1.6">Under this statute, landlords are prohibited from retaliating against tenants who report code violations, file complaints, or join tenant organizations. Prohibited retaliation includes rent increases, service reductions, and eviction.</p>
+        <p style="margin-top:6px;font-size:12px;color:var(--blue);font-weight:600"><a href="https://www.ilga.gov/legislation/ilcs/ilcs3.asp?ActID=4532&ChapterID=62" target="_blank" style="color:var(--blue);text-decoration:underline">765 ILCS 721 — Landlord Retaliation Act</a></p>
       </div>
       <div style="background:var(--light);padding:20px;border-radius:12px;border:1px solid var(--border)">
         <strong style="color:var(--orange);font-size:16px">Eviction Process</strong>
-        <p style="margin-top:8px;color:var(--text);font-size:14px;line-height:1.6">Only a court can order an eviction. Your landlord cannot change your locks, remove your belongings, or shut off utilities to force you out. Self-help evictions are illegal.</p>
-        <p style="margin-top:6px;font-size:12px;color:var(--blue);font-weight:600">735 ILCS 5/9-101.2 — Forcible Entry</p>
+        <p style="margin-top:8px;color:var(--text);font-size:14px;line-height:1.6">Under Illinois law, evictions require a court order. The statute prohibits landlords from changing locks, removing belongings, or shutting off utilities to force a tenant out (known as "self-help" eviction).</p>
+        <p style="margin-top:6px;font-size:12px;color:var(--blue);font-weight:600"><a href="https://www.ilga.gov/legislation/ilcs/ilcs4.asp?ActID=2017&ChapterID=56&SeqStart=65575000&SeqEnd=73000000" target="_blank" style="color:var(--blue);text-decoration:underline">735 ILCS 5/Art. IX — Forcible Entry and Detainer</a></p>
       </div>
       <div style="background:var(--light);padding:20px;border-radius:12px;border:1px solid var(--border)">
-        <strong style="color:var(--orange);font-size:16px">Lease Clauses You Can't Waive</strong>
-        <p style="margin-top:8px;color:var(--text);font-size:14px;line-height:1.6">Any clause that asks you to waive your legal rights as a tenant is unenforceable. This includes waiving the right to a jury trial, waiving habitability, or agreeing to unlimited late fees.</p>
-        <p style="margin-top:6px;font-size:12px;color:var(--blue);font-weight:600">765 ILCS 705/1 — Tenant Rights</p>
+        <strong style="color:var(--orange);font-size:16px">Landlord and Tenant Act</strong>
+        <p style="margin-top:8px;color:var(--text);font-size:14px;line-height:1.6">This statute addresses the general rights and obligations of landlords and tenants in Illinois, including provisions on lease terms and tenant protections.</p>
+        <p style="margin-top:6px;font-size:12px;color:var(--blue);font-weight:600"><a href="https://www.ilga.gov/legislation/ilcs/ilcs3.asp?ActID=2201&ChapterID=62" target="_blank" style="color:var(--blue);text-decoration:underline">765 ILCS 705 — Landlord and Tenant Act</a></p>
       </div>
       <div style="background:var(--light);padding:20px;border-radius:12px;border:1px solid var(--border)">
-        <strong style="color:var(--orange);font-size:16px">Champaign Ordinance</strong>
-        <p style="margin-top:8px;color:var(--text);font-size:14px;line-height:1.6">Champaign has additional tenant protections beyond state law. Landlords must provide a move-in checklist, give 24-hour notice before entry, and follow specific security deposit rules.</p>
-        <p style="margin-top:6px;font-size:12px;color:var(--blue);font-weight:600">Champaign Municipal Code Ch. 12.5</p>
+        <strong style="color:var(--orange);font-size:16px">Local Ordinances</strong>
+        <p style="margin-top:8px;color:var(--text);font-size:14px;line-height:1.6">Both Champaign and Urbana have local ordinances with additional tenant protections beyond state law. The City of Champaign provides tenant resources including information about local rules on deposits, entry notice, and move-in checklists.</p>
+        <p style="margin-top:6px;font-size:12px;color:var(--blue);font-weight:600"><a href="https://champaignil.gov/neighborhood-services/neighborhood-code-compliance/tenant-resources/" target="_blank" style="color:var(--blue);text-decoration:underline">Champaign Tenant Resources</a> · <a href="https://library.municode.com/il/urbana/codes/code_of_ordinances?nodeId=COOR_CH12.5LANARE" target="_blank" style="color:var(--blue);text-decoration:underline">Urbana Ch. 12.5</a></p>
       </div>
     </div>
 
     <div style="background:#FFF7ED;border:1px solid #FED7AA;border-radius:12px;padding:20px;margin-bottom:24px">
       <strong style="color:#C2410C;font-size:15px">Free Legal Help for UIUC Students</strong>
-      <p style="margin-top:8px;font-size:14px;color:#92400E;line-height:1.6">The UIUC Student Legal Service offers free, confidential legal consultations for enrolled students. They specialize in landlord-tenant disputes, lease reviews, and security deposit issues. No appointment needed for walk-ins.</p>
+      <p style="margin-top:8px;font-size:14px;color:#92400E;line-height:1.6">The UIUC Student Legal Service offers free, confidential legal consultations for enrolled students. They can advise on landlord-tenant disputes, review your lease, and help with security deposit issues.</p>
       <p style="margin-top:8px;font-size:13px;color:#92400E">Turner Student Services Building, Room 324 &middot; <a href="https://studentlegal.illinois.edu/" target="_blank" style="color:#C2410C;font-weight:600;text-decoration:underline">studentlegal.illinois.edu</a></p>
     </div>
 
     <div style="background:var(--light);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:24px">
       <strong style="font-size:15px">Use Our Free Lease Scanner</strong>
-      <p style="margin-top:8px;font-size:14px;color:var(--muted);line-height:1.6">Paste your lease text and we'll flag clauses that may conflict with Illinois tenant law. It's free, runs entirely in your browser, and your lease text is never stored.</p>
+      <p style="margin-top:8px;font-size:14px;color:var(--muted);line-height:1.6">Paste your lease text and our tool will flag clauses that reference common areas of concern under Illinois tenant law. It runs entirely in your browser — your lease text is never stored or sent anywhere.</p>
       <button style="margin-top:12px;padding:10px 24px;background:var(--black);color:white;border:none;border-radius:8px;font-weight:600;font-size:14px;cursor:pointer;font-family:inherit" onclick="go({page:'scanner'})">Open Lease Scanner</button>
     </div>
-
-    <p style="font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:24px"><strong>Disclaimer:</strong> This page provides general educational information about Illinois tenant law. It is not legal advice. Laws change over time and specific situations vary. For advice on your specific situation, consult a licensed attorney or the UIUC Student Legal Service.</p>
 
     <p><span style="color:var(--orange);cursor:pointer;font-weight:600;font-size:14px" onclick="go({page:'home',detail:null})">&#8592; Back to home</span></p>
   </div>`;
