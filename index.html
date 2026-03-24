@@ -499,8 +499,6 @@ const SEED_LANDLORDS = [
     scores:{maintenance:0,communication:0,fairness:0,moveOut:0}, topTags:["New Listing"], dist:[0,0,0,0,0] },
   { id:4, name:"Bankier Apartments", props:18, rating:0, reviews:0, wouldRent:0, responseRate:"—",
     scores:{maintenance:0,communication:0,fairness:0,moveOut:0}, topTags:["New Listing"], dist:[0,0,0,0,0] },
-  { id:5, name:"CPM", props:54, rating:0, reviews:0, wouldRent:0, responseRate:"—",
-    scores:{maintenance:0,communication:0,fairness:0,moveOut:0}, topTags:["New Listing"], dist:[0,0,0,0,0] },
   { id:6, name:"Roland Realty", props:22, rating:0, reviews:0, wouldRent:0, responseRate:"—",
     scores:{maintenance:0,communication:0,fairness:0,moveOut:0}, topTags:["New Listing"], dist:[0,0,0,0,0] },
   { id:7, name:"University Group", props:31, rating:0, reviews:0, wouldRent:0, responseRate:"—",
@@ -535,74 +533,9 @@ const SEED_LANDLORDS = [
     scores:{maintenance:0,communication:0,fairness:0,moveOut:0}, topTags:["New Listing"], dist:[0,0,0,0,0], skipAddress:true },
 ];
 
-// Addresses and prices verified from apartments.com, landlord websites (March 2026)
-// Prices shown are per-person/month for the listed bed count
-// Prices are NOT hardcoded — they come from real student reviews only.
-// When students submit a review, they report their actual rent. That's what gets displayed.
-const SEED_PROPERTIES = [
-  { id:1, name:"309 E Green St", landlordId:1, beds:4, price:0, hood:"Campustown", tags:["Utilities Included","Pool","Gym"], rating:0, reviews:0 },
-  { id:2, name:"615 S Wright St", landlordId:2, beds:4, price:0, hood:"Campustown", tags:["Furnished","Near Quad"], rating:0, reviews:0 },
-  { id:3, name:"508 E White St", landlordId:3, beds:1, price:0, hood:"Campustown", tags:["Utilities Included"], rating:0, reviews:0 },
-  { id:4, name:"509 E Green St", landlordId:4, beds:2, price:0, hood:"Campustown", tags:["Utilities Included","Parking"], rating:0, reviews:0 },
-  { id:5, name:"305 E John St", landlordId:5, beds:4, price:0, hood:"Campustown", tags:[], rating:0, reviews:0 },
-  { id:6, name:"901 S 1st St", landlordId:6, beds:1, price:0, hood:"Campustown", tags:["Renovated"], rating:0, reviews:0 },
-  { id:7, name:"707 S 6th St", landlordId:7, beds:0, price:0, hood:"East Campus", tags:["Walk to Engineering"], rating:0, reviews:0 },
-  { id:8, name:"606 E White St", landlordId:8, beds:2, price:0, hood:"Campustown", tags:["Quiet","Luxury"], rating:0, reviews:0 },
-  { id:9, name:"502 E Stoughton St", landlordId:3, beds:2, price:0, hood:"Campustown", tags:["Furnished","Gym"], rating:0, reviews:0 },
-  { id:10, name:"501 E Daniel St", landlordId:1, beds:4, price:0, hood:"Campustown", tags:[], rating:0, reviews:0 },
-  { id:11, name:"1002 S Lincoln Ave", landlordId:2, beds:1, price:0, hood:"South Campus", tags:["Meal Plan","Furnished"], rating:0, reviews:0 },
-  { id:12, name:"409 E Chalmers St", landlordId:7, beds:2, price:0, hood:"Campustown", tags:["Dining Hall","Furnished"], rating:0, reviews:0 },
-  { id:13, name:"308 E Green St", landlordId:9, beds:2, price:0, hood:"Campustown", tags:["Luxury","Gym","Pool"], rating:0, reviews:0 },
-  { id:14, name:"707 S 4th St", landlordId:10, beds:4, price:0, hood:"Campustown", tags:["Furnished","Pool","Basketball Court"], rating:0, reviews:0 },
-  { id:15, name:"711 S 4th St (The VUE)", landlordId:1, beds:2, price:0, hood:"Campustown", tags:["Modern","Parking","Built 2021"], rating:0, reviews:0 },
-  { id:16, name:"905 Welch Dr", landlordId:12, beds:4, price:0, hood:"Urbana", tags:["Furnished","Pool","Gym","Townhome"], rating:0, reviews:0 },
-  { id:17, name:"1901 N Lincoln Ave (Capstone Quarters)", landlordId:13, beds:2, price:0, hood:"Urbana", tags:["Pool","Parking","A/C"], rating:0, reviews:0 },
-  { id:52, name:"608 E University Ave (Latitude)", landlordId:16, beds:4, price:0, hood:"Campustown", tags:["Furnished","Pool","Gym","Pet Friendly","Rooftop"], rating:0, reviews:0 },
-  { id:53, name:"512 S 3rd St (Yugo South 3rd Lofts)", landlordId:17, beds:2, price:0, hood:"Campustown", tags:["Furnished","Gym","Modern"], rating:0, reviews:0 },
-  { id:54, name:"410 N Lincoln Ave (Yugo Urbana)", landlordId:17, beds:1, price:0, hood:"Lincoln Ave", tags:["Furnished","Gym","Game Room"], rating:0, reviews:0 },
-  { id:55, name:"1321 N Lincoln Ave (ONYX)", landlordId:18, beds:4, price:0, hood:"Lincoln Ave", tags:["Furnished","Pool","Gym","Pet Friendly","Pickleball"], rating:0, reviews:0 },
-  { id:56, name:"112 E Green St", landlordId:4, beds:2, price:0, hood:"Campustown", tags:["Gym","Parking","Pet Friendly","Elevator"], rating:0, reviews:0 },
-  { id:57, name:"1010 W University Ave (Campus Circle)", landlordId:19, beds:4, price:0, hood:"Urbana", tags:["Furnished","Pool","Gym","Game Room","Rooftop"], rating:0, reviews:0 },
-  { id:58, name:"812 S 6th St (Hub on Campus)", landlordId:20, beds:4, price:0, hood:"Campustown", tags:["Furnished","Pool","Gym","Rooftop","Spa","Pet Friendly"], rating:0, reviews:0 },
-  { id:59, name:"708 S 6th St (The Dean)", landlordId:21, beds:4, price:0, hood:"Campustown", tags:["Furnished","Pool","Gym","Rooftop","Sauna","Target"], rating:0, reviews:0 },
-  { id:60, name:"Todd Thorenson Properties", landlordId:22, beds:0, price:0, hood:"Champaign-Urbana", tags:["Private Landlord","Small Building"], rating:0, reviews:0 },
-  // Private Certified Housing (PCH) buildings
-  { id:18, name:"Hendrick House", landlordId:14, beds:0, price:0, hood:"East Campus", tags:["Meal Plan","Furnished","PCH"], rating:0, reviews:0 },
-  { id:19, name:"Illini Tower", landlordId:14, beds:0, price:0, hood:"Campustown", tags:["Meal Plan","Furnished","PCH"], rating:0, reviews:0 },
-  { id:20, name:"Newman Hall", landlordId:14, beds:0, price:0, hood:"Campustown", tags:["Meal Plan","Furnished","PCH"], rating:0, reviews:0 },
-  { id:21, name:"Bromley Hall", landlordId:14, beds:0, price:0, hood:"Campustown", tags:["Meal Plan","Furnished","PCH"], rating:0, reviews:0 },
-  { id:22, name:"Armory House", landlordId:14, beds:0, price:0, hood:"Campustown", tags:["Meal Plan","Furnished","PCH"], rating:0, reviews:0 },
-  { id:23, name:"Presby Hall", landlordId:14, beds:0, price:0, hood:"Campustown", tags:["Meal Plan","Furnished","PCH"], rating:0, reviews:0 },
-  { id:24, name:"Illini Chabad", landlordId:14, beds:0, price:0, hood:"Campustown", tags:["Meal Plan","Furnished","PCH"], rating:0, reviews:0 },
-  { id:25, name:"Nabor House", landlordId:14, beds:0, price:0, hood:"Campustown", tags:["Meal Plan","Furnished","PCH"], rating:0, reviews:0 },
-  { id:26, name:"Koinonia", landlordId:14, beds:0, price:0, hood:"Campustown", tags:["Meal Plan","Furnished","PCH"], rating:0, reviews:0 },
-  { id:27, name:"Brown House", landlordId:14, beds:0, price:0, hood:"Campustown", tags:["Meal Plan","Furnished","PCH"], rating:0, reviews:0 },
-  // University Housing — Dorms
-  { id:28, name:"Allen Hall", landlordId:15, beds:0, price:0, hood:"Lincoln Ave", tags:["Dorm","Meal Plan","Furnished"], rating:0, reviews:0 },
-  { id:29, name:"Shelden Hall (LAR)", landlordId:15, beds:0, price:0, hood:"Lincoln Ave", tags:["Dorm","Meal Plan","Furnished"], rating:0, reviews:0 },
-  { id:30, name:"Leonard Hall (LAR)", landlordId:15, beds:0, price:0, hood:"Lincoln Ave", tags:["Dorm","Meal Plan","Furnished"], rating:0, reviews:0 },
-  { id:31, name:"Busey Hall", landlordId:15, beds:0, price:0, hood:"Lincoln Ave", tags:["Dorm","Meal Plan","Furnished","All-Female"], rating:0, reviews:0 },
-  { id:32, name:"Evans Hall", landlordId:15, beds:0, price:0, hood:"Lincoln Ave", tags:["Dorm","Meal Plan","Furnished","All-Male"], rating:0, reviews:0 },
-  { id:33, name:"Townsend Hall (ISR)", landlordId:15, beds:0, price:0, hood:"East Campus", tags:["Dorm","Meal Plan","Furnished"], rating:0, reviews:0 },
-  { id:34, name:"Wardall Hall (ISR)", landlordId:15, beds:0, price:0, hood:"East Campus", tags:["Dorm","Meal Plan","Furnished"], rating:0, reviews:0 },
-  { id:35, name:"Babcock Hall (PAR)", landlordId:15, beds:0, price:0, hood:"South Campus", tags:["Dorm","Meal Plan","Furnished"], rating:0, reviews:0 },
-  { id:36, name:"Carr Hall (PAR)", landlordId:15, beds:0, price:0, hood:"South Campus", tags:["Dorm","Meal Plan","Furnished"], rating:0, reviews:0 },
-  { id:37, name:"Blaisdell Hall (PAR)", landlordId:15, beds:0, price:0, hood:"South Campus", tags:["Dorm","Meal Plan","Furnished"], rating:0, reviews:0 },
-  { id:38, name:"Saunders Hall (PAR)", landlordId:15, beds:0, price:0, hood:"South Campus", tags:["Dorm","Meal Plan","Furnished"], rating:0, reviews:0 },
-  { id:39, name:"Trelease Hall (FAR)", landlordId:15, beds:0, price:0, hood:"South Campus", tags:["Dorm","Meal Plan","Furnished"], rating:0, reviews:0 },
-  { id:40, name:"Oglesby Hall (FAR)", landlordId:15, beds:0, price:0, hood:"South Campus", tags:["Dorm","Meal Plan","Furnished"], rating:0, reviews:0 },
-  { id:41, name:"Barton Hall (Ike North)", landlordId:15, beds:0, price:0, hood:"South Campus", tags:["Dorm","Meal Plan","Furnished"], rating:0, reviews:0 },
-  { id:42, name:"Lundgren Hall (Ike North)", landlordId:15, beds:0, price:0, hood:"South Campus", tags:["Dorm","Meal Plan","Furnished"], rating:0, reviews:0 },
-  { id:43, name:"Hopkins Hall (Ike North)", landlordId:15, beds:0, price:0, hood:"South Campus", tags:["Dorm","Meal Plan","Furnished"], rating:0, reviews:0 },
-  { id:44, name:"Weston Hall (Ike North)", landlordId:15, beds:0, price:0, hood:"South Campus", tags:["Dorm","Meal Plan","Furnished"], rating:0, reviews:0 },
-  { id:45, name:"Nugent Hall (Ike North)", landlordId:15, beds:0, price:0, hood:"South Campus", tags:["Dorm","Meal Plan","Furnished"], rating:0, reviews:0 },
-  { id:46, name:"Wassaja Hall (Ike North)", landlordId:15, beds:0, price:0, hood:"South Campus", tags:["Dorm","Meal Plan","Furnished","Suite-Style"], rating:0, reviews:0 },
-  { id:47, name:"Scott Hall (Ike South)", landlordId:15, beds:0, price:0, hood:"South Campus", tags:["Dorm","Meal Plan","Furnished"], rating:0, reviews:0 },
-  { id:48, name:"Snyder Hall (Ike South)", landlordId:15, beds:0, price:0, hood:"South Campus", tags:["Dorm","Meal Plan","Furnished"], rating:0, reviews:0 },
-  { id:49, name:"Taft Hall (Ike South)", landlordId:15, beds:0, price:0, hood:"South Campus", tags:["Dorm","Meal Plan","Furnished"], rating:0, reviews:0 },
-  { id:50, name:"Van Doren Hall (Ike South)", landlordId:15, beds:0, price:0, hood:"South Campus", tags:["Dorm","Meal Plan","Furnished"], rating:0, reviews:0 },
-  { id:51, name:"Bousfield Hall (Ike South)", landlordId:15, beds:0, price:0, hood:"South Campus", tags:["Dorm","Meal Plan","Furnished","Suite-Style"], rating:0, reviews:0 },
-];
+// Properties are no longer hardcoded — addresses come from student reviews.
+// This avoids incorrect property-to-landlord mappings.
+const SEED_PROPERTIES = [];
 
 // Seed reviews removed — all reviews now come from real student submissions via Supabase.
 // This eliminates any legal risk from fabricated reviews about real companies.
@@ -615,14 +548,8 @@ const HOOD_TYPES = { "Campustown":"Most Popular", "Lincoln Ave":"Residential", "
 
 function getHoodStats() {
   return HOOD_NAMES.map(name => {
-    // Compute avg rent from seed properties in this hood
-    const hoodProps = SEED_PROPERTIES.filter(p => p.hood === name);
     // Compute scores from Supabase reviews that have hood ratings
-    const hoodReviews = dbReviews.filter(r => {
-      const prop = SEED_PROPERTIES.find(p => p.name === r.property);
-      if (prop && prop.hood === name) return true;
-      return r.hoodName === name;
-    });
+    const hoodReviews = dbReviews.filter(r => r.hoodName === name);
 
     const avg = (arr, key) => {
       const vals = arr.map(r => r[key]).filter(v => v && v > 0);
@@ -799,15 +726,14 @@ const go = u => {
 };
 
 function saveFormState() {
-  const ids = ['rev-landlord','rev-landlord-custom','rev-property-select','rev-property-custom','rev-hood-select','rev-lease-start','rev-lease-end','rev-rent','rev-text','rev-email','rev-certify','rev-hood-safety','rev-hood-walk','rev-hood-quiet','rev-hood-nightlife'];
+  const ids = ['rev-landlord','rev-landlord-custom','rev-property-custom','rev-hood-select','rev-lease-start','rev-lease-end','rev-rent','rev-text','rev-email','rev-certify','rev-hood-safety','rev-hood-walk','rev-hood-quiet','rev-hood-nightlife'];
   const fd = {};
   ids.forEach(id => {
     const el = document.getElementById(id);
     if (!el) return;
     if (el.type === 'checkbox') fd[id] = el.checked;
     else fd[id] = el.value;
-    // Also save display state for conditional fields
-    if (id === 'rev-landlord-custom' || id === 'rev-property-custom' || id === 'rev-hood-select') {
+    if (id === 'rev-landlord-custom') {
       fd[id + '__display'] = el.style.display;
     }
   });
@@ -824,7 +750,6 @@ function restoreFormState() {
       if (!el) return;
       if (el.type === 'checkbox') el.checked = fd[key];
       else el.value = fd[key];
-      // Restore display state for conditional fields
       if (fd[key + '__display'] !== undefined) {
         el.style.display = fd[key + '__display'];
       }
@@ -933,8 +858,7 @@ function Hero() {
 
 function ResultCard(l) {
   const q = qClass(l.rating);
-  const lprops = SEED_PROPERTIES.filter(p=>p.landlordId===l.id);
-  // Price comes from real reviews only — not hardcoded
+  // Price comes from real reviews only
   const landlordReviews = allReviews().filter(r => r.landlordId === l.id && isValidRent(r.monthlyRent));
   const avgPrice = landlordReviews.length ? Math.round(landlordReviews.reduce((s,r) => s + r.monthlyRent, 0) / landlordReviews.length) : 0;
   const isNew = l.reviews === 0;
@@ -945,7 +869,7 @@ function ResultCard(l) {
     </div>
     <div class="result-body">
       <div class="result-name">${esc(l.name)}</div>
-      <div class="result-sub">${l.props} properties · ${isNew ? 'No reviews yet' : l.reviews+' reviews'}</div>
+      <div class="result-sub">${isNew ? 'No reviews yet — be the first!' : l.reviews+' student review'+(l.reviews!==1?'s':'')}</div>
       ${isNew ? `<div class="result-metrics"><div class="result-metric"><span style="color:#6B7280">Be the first to review this landlord!</span></div></div>` : `<div class="result-metrics">
         <div class="result-metric"><strong style="color:${scoreColor(l.scores.maintenance)}">${l.scores.maintenance.toFixed(1)}</strong><span>Maintenance</span></div>
         <div class="result-metric"><strong style="color:${scoreColor(l.scores.communication)}">${l.scores.communication.toFixed(1)}</strong><span>Communication</span></div>
@@ -1008,7 +932,6 @@ function DetailPage() {
   const l = getLandlordStats(raw);
   const q = qClass(l.rating);
   const revs = allReviews().filter(r=>r.landlordId===l.id);
-  const lprops = SEED_PROPERTIES.filter(p=>p.landlordId===l.id);
   const maxDist = Math.max(...l.dist) || 1;
   const helped = loadHelpful();
   const reported = loadReported();
@@ -1023,7 +946,7 @@ function DetailPage() {
         </div>
         <div class="detail-info">
           <h1>${esc(l.name)}</h1>
-          <div class="subtitle">${l.props} properties · ${l.reviews===0?'No ratings yet':l.reviews+' ratings'} · Response rate: ${l.responseRate}</div>
+          <div class="subtitle">${l.reviews===0?'No ratings yet':l.reviews+' student rating'+(l.reviews!==1?'s':'')} · Response rate: ${l.responseRate}</div>
           ${l.reviews===0 ? `<div style="color:rgba(255,255,255,0.4);font-size:14px;margin:12px 0">No reviews yet — scores will appear after students submit reviews.</div>` : `<div class="detail-sub-scores">
             ${Object.entries(l.scores).map(([k,v]) => `
               <div class="sub-score">
@@ -1083,20 +1006,26 @@ function DetailPage() {
     }).join("")}
     ${revs.length===0?'<p style="text-align:center;color:#7C7C7C;padding:48px">No reviews yet. Be the first!</p>':''}
 
-    <h3 style="font-size:18px;font-weight:700;margin-top:40px;margin-bottom:16px">Properties by ${esc(l.name)}</h3>
-    ${lprops.map(p => `
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid #E8E8E8;cursor:pointer;border-radius:8px;padding-left:8px;padding-right:8px;transition:background 0.15s" onmouseover="this.style.background='#F9FAFB'" onmouseout="this.style.background=''" onclick="go({modal:true,stars:0,wouldRentChoice:null,posTags:[],negTags:[],formData:{}})">
-        <div>
-          <div style="font-weight:700">${esc(p.name)}</div>
-          <div style="font-size:13px;color:#7C7C7C">${p.beds===0?'Studio':p.beds+'bd'} · ${esc(p.hood)} · ${p.tags.map(esc).join(', ')}</div>
-        </div>
-        <div style="text-align:right">
-          ${(() => { const propRevs = allReviews().filter(r => r.property === p.name && isValidRent(r.monthlyRent)); const propAvg = propRevs.length ? Math.round(propRevs.reduce((s,r)=>s+r.monthlyRent,0)/propRevs.length) : 0; return propAvg ? `<div style="font-weight:700;font-size:18px">$${propAvg}<span style="font-size:12px;color:#7C7C7C;font-weight:400">/mo</span></div><div style="font-size:10px;color:#9CA3AF">from ${propRevs.length} review${propRevs.length!==1?'s':''}</div>` : `<div style="font-size:13px;color:#9CA3AF">No price data yet</div>`; })()}
-          <div style="font-size:13px;color:${scoreColor(p.rating)};font-weight:600">${p.rating > 0 ? p.rating.toFixed(1)+' / 5.0' : 'No ratings'}</div>
-          <div style="font-size:11px;color:#E84A27;margin-top:2px">Click to review</div>
-        </div>
-      </div>
-    `).join("")}
+    ${(() => {
+      const reviewAddresses = revs.filter(r => r.property && r.property !== 'Not specified').map(r => r.property);
+      const uniqueAddresses = [...new Set(reviewAddresses)];
+      if (uniqueAddresses.length === 0) return '';
+      return `<h3 style="font-size:18px;font-weight:700;margin-top:40px;margin-bottom:16px">Reviewed Addresses</h3>` +
+        uniqueAddresses.map(addr => {
+          const addrRevs = revs.filter(r => r.property === addr);
+          const rentRevs = addrRevs.filter(r => isValidRent(r.monthlyRent));
+          const avgRent = rentRevs.length ? Math.round(rentRevs.reduce((s,r)=>s+r.monthlyRent,0)/rentRevs.length) : 0;
+          return `<div style="display:flex;align-items:center;justify-content:space-between;padding:14px 8px;border-bottom:1px solid #E8E8E8">
+            <div>
+              <div style="font-weight:700">${esc(addr)}</div>
+              <div style="font-size:13px;color:#7C7C7C">${addrRevs.length} review${addrRevs.length!==1?'s':''}</div>
+            </div>
+            <div style="text-align:right">
+              ${avgRent ? `<div style="font-weight:700;font-size:18px">$${avgRent}<span style="font-size:12px;color:#7C7C7C;font-weight:400">/mo</span></div>` : ''}
+            </div>
+          </div>`;
+        }).join('');
+    })()}
 
     <div class="promo" style="margin-top:32px">
       <div><h3>Lease Red Flag Scanner</h3><p>Upload your lease PDF or paste the text. We'll flag clauses worth reviewing before you sign.</p></div>
@@ -1132,18 +1061,23 @@ function Hoods() {
 }
 
 function Compare() {
-  // Enrich properties with review-based pricing
+  // Build comparison from actual review data — no hardcoded properties
   const revs = allReviews();
-  let filtered = SEED_PROPERTIES.map(p => {
-    const propRevs = revs.filter(r => r.property === p.name && isValidRent(r.monthlyRent));
-    const reviewPrice = propRevs.length ? Math.round(propRevs.reduce((s,r)=>s+r.monthlyRent,0)/propRevs.length) : 0;
-    return { ...p, reviewPrice, reviewCount: propRevs.length };
+  // Group reviews by address, computing avg rent and linking to landlord
+  const addrMap = {};
+  revs.forEach(r => {
+    if (!r.property || r.property === 'Not specified') return;
+    if (!addrMap[r.property]) addrMap[r.property] = { name: r.property, landlordId: r.landlordId, landlordName: r.landlordName || '', hood: r.hoodName || '', reviews: [], rents: [] };
+    addrMap[r.property].reviews.push(r);
+    if (isValidRent(r.monthlyRent)) addrMap[r.property].rents.push(r.monthlyRent);
   });
+  let filtered = Object.values(addrMap).map(a => ({
+    ...a,
+    reviewPrice: a.rents.length ? Math.round(a.rents.reduce((s,v)=>s+v,0)/a.rents.length) : 0,
+    reviewCount: a.reviews.length
+  }));
 
-  // Apply filters from state
-  if (S.cmpBeds !== undefined && S.cmpBeds !== 'all') {
-    filtered = filtered.filter(p => S.cmpBeds === '0' ? p.beds === 0 : p.beds === parseInt(S.cmpBeds));
-  }
+  // Apply filters
   if (S.cmpHood && S.cmpHood !== 'all') {
     filtered = filtered.filter(p => p.hood === S.cmpHood);
   }
@@ -1151,34 +1085,25 @@ function Compare() {
     filtered = filtered.filter(p => p.reviewPrice > 0 && p.reviewPrice <= S.cmpMaxRent);
   }
 
-  // Sort: properties with price data first (by price asc), then no-data properties alphabetically
+  // Sort: price data first, then alphabetical
   const sorted = filtered.sort((a,b) => {
     if (a.reviewPrice && b.reviewPrice) return a.reviewPrice - b.reviewPrice;
     if (a.reviewPrice) return -1;
     if (b.reviewPrice) return 1;
     return a.name.localeCompare(b.name);
   });
-  const allHoods = [...new Set(SEED_PROPERTIES.map(p=>p.hood))];
+  const allHoods = [...new Set(revs.map(r => r.hoodName).filter(Boolean))];
+
+  const hasData = sorted.length > 0;
 
   return `<div style="background:var(--black);padding:48px 24px 40px;text-align:center;position:relative;overflow:hidden">
     <div style="position:absolute;top:-100px;left:50%;transform:translateX(-50%);width:600px;height:600px;background:radial-gradient(circle,rgba(232,74,39,0.12) 0%,transparent 60%);pointer-events:none"></div>
-    <h2 style="font-size:32px;font-weight:900;color:white;letter-spacing:-1px;margin-bottom:8px;position:relative">Compare Properties</h2>
-    <p style="color:rgba(255,255,255,0.5);font-size:15px;position:relative">Side-by-side. Every property. Filter by what matters to you.</p>
+    <h2 style="font-size:32px;font-weight:900;color:white;letter-spacing:-1px;margin-bottom:8px;position:relative">Compare Prices</h2>
+    <p style="color:rgba(255,255,255,0.5);font-size:15px;position:relative">Real rent data from student reviews. All prices are per person/month.</p>
   </div>
   <div class="container" style="padding-top:32px">
-
+    ${hasData ? `
     <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:24px;align-items:center;background:var(--light);padding:16px 20px;border-radius:12px;border:1px solid var(--border)">
-      <div style="display:flex;align-items:center;gap:6px">
-        <label style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px">Beds</label>
-        <select style="padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;background:white" onchange="go({cmpBeds:this.value})">
-          <option value="all">All</option>
-          <option value="0" ${S.cmpBeds==='0'?'selected':''}>Studio</option>
-          <option value="1" ${S.cmpBeds==='1'?'selected':''}>1 bed</option>
-          <option value="2" ${S.cmpBeds==='2'?'selected':''}>2 bed</option>
-          <option value="3" ${S.cmpBeds==='3'?'selected':''}>3 bed</option>
-          <option value="4" ${S.cmpBeds==='4'?'selected':''}>4 bed</option>
-        </select>
-      </div>
       <div style="display:flex;align-items:center;gap:6px">
         <label style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px">Area</label>
         <select style="padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;background:white" onchange="go({cmpHood:this.value})">
@@ -1197,10 +1122,9 @@ function Compare() {
         </select>
       </div>
     </div>
-
     <div style="overflow-x:auto">
       <table class="compare-tbl">
-        <thead><tr><th>Property</th><th>Landlord</th><th>Beds</th><th>Neighborhood</th><th>Price/mo</th><th>Rating</th><th>Value*</th></tr></thead>
+        <thead><tr><th>Address</th><th>Landlord</th><th>Neighborhood</th><th>Price/mo</th><th>Rating</th><th>Value*</th></tr></thead>
         <tbody>
           ${sorted.map(p => {
             const l = SEED_LANDLORDS.find(x=>x.id===p.landlordId);
@@ -1209,8 +1133,7 @@ function Compare() {
             const val = (rating > 0 && p.reviewPrice > 0) ? (rating/p.reviewPrice*1000).toFixed(1) : '—';
             return `<tr style="cursor:pointer" onclick="go({page:'detail',detail:${p.landlordId}})">
               <td><strong>${esc(p.name)}</strong></td>
-              <td>${l?esc(l.name):''}</td>
-              <td>${p.beds===0?'Studio':p.beds}</td>
+              <td>${l?esc(l.name):esc(p.landlordName)}</td>
               <td>${esc(p.hood)}</td>
               <td>${p.reviewPrice ? `<strong>$${p.reviewPrice}</strong><div style="font-size:10px;color:#9CA3AF">from ${p.reviewCount} review${p.reviewCount!==1?'s':''}</div>` : '<span style="color:#9CA3AF">—</span>'}</td>
               <td style="color:${rating > 0 ? scoreColor(rating) : '#6B7280'};font-weight:${rating > 0 ? '600' : '400'}">${rating > 0 ? rating.toFixed(1) : '—'}</td>
@@ -1220,8 +1143,15 @@ function Compare() {
         </tbody>
       </table>
     </div>
-    ${sorted.length===0 ? '<p style="text-align:center;color:#7C7C7C;padding:32px">No properties match your filters. Try adjusting them.</p>' : ''}
-    <p style="font-size:12px;color:#7C7C7C;margin-top:8px">*Value = Rating per $1,000/mo. Higher is better. Prices are averages from student reviews (per person/month). Properties with no reviews show no price.</p>
+    <p style="font-size:12px;color:#7C7C7C;margin-top:8px">*Value = Rating per $1,000/mo. Higher is better. Prices are averages from student reviews (per person/month).</p>
+    ` : `
+    <div style="text-align:center;padding:48px 24px">
+      <div style="font-size:48px;margin-bottom:12px">&#128200;</div>
+      <h3 style="font-size:20px;font-weight:700;margin-bottom:8px">Price comparisons powered by reviews</h3>
+      <p style="color:#6B7280;max-width:400px;margin:0 auto 20px;line-height:1.6">When students submit reviews with their rent, those prices show up here so you can compare costs across buildings and neighborhoods.</p>
+      <button onclick="go({page:'home',modal:true,stars:0,wouldRentChoice:null,posTags:[],negTags:[],formData:{}})" style="padding:12px 28px;background:var(--orange);color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit">Add Your Rent Data</button>
+    </div>
+    `}
   </div>`;
 }
 
@@ -1262,13 +1192,15 @@ function Modal() {
 
       <div class="field">
         <label>Property Address</label>
-        <div id="rev-property-container">
-          ${buildPropertyDropdown(l ? l.id : null)}
-        </div>
-        <input type="text" id="rev-property-custom" placeholder="e.g. 123 E Green St, Apt 4B" style="display:none;margin-top:8px;width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-family:inherit;outline:none;" />
-        <select id="rev-hood-select" style="display:none;margin-top:8px">
-          <option value="">What neighborhood? (helps others find it)</option>
+        <input type="text" id="rev-property-custom" placeholder="e.g. 309 E Green St, Apt 4B" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-family:inherit;outline:none;" />
+        <p style="font-size:11px;color:#7C7C7C;margin-top:4px">Street address where you lived. This helps other students find reviews for their building.</p>
+      </div>
+      <div class="field">
+        <label>Neighborhood</label>
+        <select id="rev-hood-select">
+          <option value="">Select neighborhood...</option>
           ${HOOD_NAMES.map(h=>`<option value="${h}">${h}</option>`).join("")}
+          <option value="__other__">Other / Not sure</option>
         </select>
       </div>
 
@@ -1277,12 +1209,12 @@ function Modal() {
         <div style="display:flex;gap:8px;align-items:center">
           <select id="rev-lease-start" style="flex:1">
             <option value="">Start...</option>
-            ${["Fall 2022","Spring 2023","Summer 2023","Fall 2023","Spring 2024","Summer 2024","Fall 2024","Spring 2025","Summer 2025","Fall 2025","Spring 2026","Summer 2026","Fall 2026"].map(t=>`<option value="${t}">${t}</option>`).join("")}
+            ${["Fall 2020","Spring 2021","Summer 2021","Fall 2021","Spring 2022","Summer 2022","Fall 2022","Spring 2023","Summer 2023","Fall 2023","Spring 2024","Summer 2024","Fall 2024","Spring 2025","Summer 2025","Fall 2025","Spring 2026","Summer 2026","Fall 2026"].map(t=>`<option value="${t}">${t}</option>`).join("")}
           </select>
           <span style="color:#7C7C7C">to</span>
           <select id="rev-lease-end" style="flex:1">
             <option value="">End...</option>
-            ${["Spring 2023","Summer 2023","Fall 2023","Spring 2024","Summer 2024","Fall 2024","Spring 2025","Summer 2025","Fall 2025","Spring 2026","Summer 2026","Fall 2026","Spring 2027"].map(t=>`<option value="${t}">${t}</option>`).join("")}
+            ${["Spring 2021","Summer 2021","Fall 2021","Spring 2022","Summer 2022","Fall 2022","Spring 2023","Summer 2023","Fall 2023","Spring 2024","Summer 2024","Fall 2024","Spring 2025","Summer 2025","Fall 2025","Spring 2026","Summer 2026","Fall 2026","Spring 2027"].map(t=>`<option value="${t}">${t}</option>`).join("")}
           </select>
         </div>
         <p style="font-size:11px;color:#7C7C7C;margin-top:4px">Helps verify reviews and lets you review the same landlord for different lease periods.</p>
@@ -1889,40 +1821,7 @@ async function loadUserSubmissions() {
   } catch(e) { /* tables may not exist yet — silent fail */ }
 }
 
-function buildPropertyDropdown(landlordId) {
-  // Combine seed + user-submitted properties, filtered by landlord if one is selected
-  let props = [];
-  if (landlordId && typeof landlordId === 'number') {
-    props = SEED_PROPERTIES.filter(p => p.landlordId === landlordId).map(p => ({ address: p.name, hood: p.hood }));
-    // Also add user-submitted properties for this landlord
-    const match = SEED_LANDLORDS.find(x => x.id === landlordId);
-    if (match) {
-      const userProps = userProperties.filter(p => p.landlord_name && p.landlord_name.toLowerCase() === match.name.toLowerCase());
-      userProps.forEach(p => props.push({ address: p.address, hood: p.hood_name || '' }));
-    }
-  } else if (landlordId && typeof landlordId === 'string' && landlordId.startsWith('user_')) {
-    // User-submitted landlord
-    const ul = userLandlords.find(x => 'user_' + x.id === landlordId);
-    if (ul) {
-      const userProps = userProperties.filter(p => p.landlord_name && p.landlord_name.toLowerCase() === ul.name.toLowerCase());
-      userProps.forEach(p => props.push({ address: p.address, hood: p.hood_name || '' }));
-    }
-  } else {
-    // No landlord selected — prompt user to pick one first
-    return `<select id="rev-property-select" disabled>
-      <option value="">Pick a landlord first...</option>
-    </select>`;
-  }
-
-  const showLandlordName = !landlordId;
-  const landlordObj = typeof landlordId === 'number' ? SEED_LANDLORDS.find(x => x.id === landlordId) : null;
-  const isSkipAddress = landlordObj && landlordObj.skipAddress;
-  return `<select id="rev-property-select" onchange="toggleCustomAddress(this)">
-    <option value="">${isSkipAddress ? 'Select your building...' : 'Select a property...'}</option>
-    ${props.map(p => `<option value="${esc(p.address)}">${esc(p.address)}${showLandlordName && p.landlordName ? ' (' + esc(p.landlordName) + ')' : ''}</option>`).join("")}
-    ${isSkipAddress ? '' : '<option value="__custom__">Other — type my address</option>'}
-  </select>`;
-}
+// buildPropertyDropdown removed — address is now always free-text input
 
 // ===== ACTIONS =====
 function closeModal() {
@@ -1949,32 +1848,11 @@ function toggleTag(type, tag) {
 
 function onLandlordChange(sel) {
   const customInput = document.getElementById('rev-landlord-custom');
-  const propContainer = document.getElementById('rev-property-container');
-  const customAddr = document.getElementById('rev-property-custom');
-  const hoodSelect = document.getElementById('rev-hood-select');
   if (sel.value === '__other__') {
-    // Show custom landlord name input
     if (customInput) customInput.style.display = 'block';
-    // Skip property dropdown entirely — go straight to custom address
-    if (propContainer) propContainer.innerHTML = `<select id="rev-property-select" style="display:none"><option value="__custom__" selected></option></select>`;
-    if (customAddr) customAddr.style.display = 'block';
-    if (hoodSelect) hoodSelect.style.display = 'block';
   } else {
     if (customInput) customInput.style.display = 'none';
-    // Filter properties to selected landlord
-    const lid = sel.value.startsWith('user_') ? sel.value : parseInt(sel.value);
-    if (propContainer) propContainer.innerHTML = buildPropertyDropdown(lid || null);
-    // Reset custom address field
-    if (customAddr) customAddr.style.display = 'none';
-    if (hoodSelect) hoodSelect.style.display = 'none';
   }
-}
-
-function toggleCustomAddress(sel) {
-  const custom = document.getElementById('rev-property-custom');
-  const hoodSelect = document.getElementById('rev-hood-select');
-  if (custom) custom.style.display = sel.value === '__custom__' ? 'block' : 'none';
-  if (hoodSelect) hoodSelect.style.display = sel.value === '__custom__' ? 'block' : 'none';
 }
 
 async function submitReview(landlordIdFromDetail) {
@@ -2013,10 +1891,8 @@ async function submitReview(landlordIdFromDetail) {
   if (S.wouldRentChoice === null) { toast('Please answer: would you rent from them again?'); return; }
   if (!document.getElementById('rev-certify')?.checked) { toast('Please certify that you are a real tenant, not a landlord or property manager.'); return; }
 
-  const propSelect = document.getElementById('rev-property-select')?.value || '';
   const propCustom = document.getElementById('rev-property-custom')?.value?.trim() || '';
-  if (!propSelect) { toast('Please select a property address.'); return; }
-  if (propSelect === '__custom__' && !propCustom) { toast('Please type your property address.'); return; }
+  if (!propCustom) { toast('Please type your property address.'); return; }
 
   const text = document.getElementById('rev-text')?.value?.trim();
   if (!text || text.length < 20) { toast('Please write at least 20 characters about your experience.'); return; }
@@ -2026,8 +1902,8 @@ async function submitReview(landlordIdFromDetail) {
   const monthlyRentVal = parseInt(rentInput) || 0;
   if (rentInput && monthlyRentVal > 0 && !isValidRent(monthlyRentVal)) { toast('Monthly rent should be between $' + MIN_RENT + ' and $' + MAX_RENT.toLocaleString() + ' per person.'); return; }
 
-  const isCustomProperty = propSelect === '__custom__' && propCustom;
-  const property = propSelect === '__custom__' ? (propCustom || 'Not specified') : (propSelect || 'Not specified');
+  const isCustomProperty = true;
+  const property = propCustom || 'Not specified';
   const email = document.getElementById('rev-email')?.value?.trim() || '';
   const leaseStart = document.getElementById('rev-lease-start')?.value || '';
   const leaseEnd = document.getElementById('rev-lease-end')?.value || '';
@@ -2040,10 +1916,9 @@ async function submitReview(landlordIdFromDetail) {
   const hoodQuiet = parseInt(document.getElementById('rev-hood-quiet')?.value) || 0;
   const hoodNightlife = parseInt(document.getElementById('rev-hood-nightlife')?.value) || 0;
 
-  // Determine which neighborhood this property is in
-  const matchedProp = SEED_PROPERTIES.find(p => p.name === property);
-  const customHood = document.getElementById('rev-hood-select')?.value || '';
-  const hoodName = matchedProp ? matchedProp.hood : customHood;
+  // Neighborhood comes from the dropdown
+  const hoodRaw = document.getElementById('rev-hood-select')?.value || '';
+  const hoodName = hoodRaw === '__other__' ? '' : hoodRaw;
 
   // Collect selected tags from state
   const posTags = [...S.posTags];
