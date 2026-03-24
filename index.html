@@ -614,8 +614,12 @@ let dbLoaded = false;
 
 async function loadDbReviews() {
   try {
-    const { data, error } = await db.from('reviews').select('*').order('created_at', { ascending: false });
+    const { data, error, count } = await db.from('reviews').select('*', { count: 'exact' }).order('created_at', { ascending: false });
     if (error) throw error;
+    console.log('[RateMyCrib] Supabase returned', (data||[]).length, 'reviews (count:', count, ')');
+    if (data && data.length === 0 && count === 0) {
+      console.warn('[RateMyCrib] 0 reviews returned — if you have reviews in the DB, check that RLS has a SELECT policy for anon role');
+    }
     dbReviews = (data || []).map(r => ({
       id: r.id,
       landlordId: r.landlord_id,
@@ -638,7 +642,7 @@ async function loadDbReviews() {
     dbLoaded = true;
     render();
   } catch (e) {
-    console.warn('Supabase load failed, using seed data only:', e.message);
+    console.error('[RateMyCrib] Supabase load failed:', e.message);
     dbLoaded = true;
     render();
   }
@@ -1817,21 +1821,24 @@ function buildPropertyDropdown(landlordId) {
 function onLandlordChange(sel) {
   const customInput = document.getElementById('rev-landlord-custom');
   const propContainer = document.getElementById('rev-property-container');
+  const customAddr = document.getElementById('rev-property-custom');
+  const hoodSelect = document.getElementById('rev-hood-select');
   if (sel.value === '__other__') {
+    // Show custom landlord name input
     if (customInput) customInput.style.display = 'block';
-    // Show all properties since we don't know the landlord
-    if (propContainer) propContainer.innerHTML = buildPropertyDropdown(null);
+    // Skip property dropdown entirely — go straight to custom address
+    if (propContainer) propContainer.innerHTML = `<select id="rev-property-select" style="display:none"><option value="__custom__" selected></option></select>`;
+    if (customAddr) customAddr.style.display = 'block';
+    if (hoodSelect) hoodSelect.style.display = 'block';
   } else {
     if (customInput) customInput.style.display = 'none';
     // Filter properties to selected landlord
     const lid = sel.value.startsWith('user_') ? sel.value : parseInt(sel.value);
     if (propContainer) propContainer.innerHTML = buildPropertyDropdown(lid || null);
+    // Reset custom address field
+    if (customAddr) customAddr.style.display = 'none';
+    if (hoodSelect) hoodSelect.style.display = 'none';
   }
-  // Reset custom address field
-  const customAddr = document.getElementById('rev-property-custom');
-  if (customAddr) customAddr.style.display = 'none';
-  const hoodSelect = document.getElementById('rev-hood-select');
-  if (hoodSelect) hoodSelect.style.display = 'none';
 }
 
 function toggleCustomAddress(sel) {
