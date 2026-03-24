@@ -894,7 +894,7 @@ function Nav() {
       <span class="nav-link ${S.page==='hoods'?'active':''}" onclick="closeNav();go({page:'hoods'})">Neighborhoods</span>
       <span class="nav-link ${S.page==='compare'?'active':''}" onclick="closeNav();go({page:'compare'})">Compare</span>
       <span class="nav-link ${S.page==='scanner'?'active':''}" onclick="closeNav();trackScannerEvent('nav_click',{source:'navbar'});go({page:'scanner'})">Lease Scanner</span>
-      <button class="nav-cta" onclick="closeNav();go({page:'home',modal:true,stars:0,wouldRentChoice:null,posTags:[],negTags:[],formData:{}})">Rate a Landlord</button>
+      <button class="nav-cta" onclick="closeNav();go({page:'home',modal:true,stars:0,wouldRentChoice:null,posTags:[],negTags:[],formData:{}})">Rate Your Landlord</button>
     </div>
   </div>`;
 }
@@ -919,7 +919,7 @@ function Hero() {
       <div style="text-align:center"><span style="font-size:24px;font-weight:800;color:white">${landlordCount}</span><span style="font-size:12px;color:rgba(255,255,255,0.45);display:block;margin-top:2px">Landlords Tracked</span></div>
     </div>` : ''}
     <div style="margin:24px auto 0;text-align:center;animation:fadeUp 0.6s ease 0.3s both">
-      <button class="hero-cta" onclick="go({page:'home',modal:true,stars:0,wouldRentChoice:null,posTags:[],negTags:[],formData:{}})">&#9998; Rate a Landlord</button>
+      <button class="hero-cta" onclick="go({page:'home',modal:true,stars:0,wouldRentChoice:null,posTags:[],negTags:[],formData:{}})">&#9998; Rate Your Landlord — 60 Seconds</button>
     </div>
     <div class="search-tags">
       <span class="search-tag ${S.filter==='all'?'active':''}" onclick="go({filter:'all'})">All</span>
@@ -1054,7 +1054,7 @@ function DetailPage() {
   <div class="reviews-section">
     <div class="reviews-header">
       <h2>${revs.length} Student Review${revs.length!==1?'s':''}</h2>
-      <button class="write-btn" onclick="go({modal:true,stars:0,wouldRentChoice:null,posTags:[],negTags:[],formData:{}})">+ Rate This Landlord</button>
+      <button class="write-btn" onclick="go({modal:true,stars:0,wouldRentChoice:null,posTags:[],negTags:[],formData:{}})">+ Warn Other Students About This Landlord</button>
     </div>
     ${revs.map(r => {
       const rq = qClass(r.rating);
@@ -1808,6 +1808,11 @@ function renderScanResults() {
     `).join('')}
     <div class="scanner-disclaimer" style="margin-top:24px">
       <strong>Next step:</strong> If any red or yellow items concern you, bring your lease to the <a href="https://studentlegal.illinois.edu/" target="_blank" style="color:#C2410C;text-decoration:underline;font-weight:600">UIUC Student Legal Service</a> (Turner Student Services Building, Room 324) for a free review. They can tell you whether specific clauses are enforceable and help you negotiate changes before you sign.
+    </div>
+    <div style="margin-top:20px;padding:20px 24px;background:linear-gradient(135deg,#0A0A0A,#1A1A2E);border-radius:12px;text-align:center">
+      <p style="color:rgba(255,255,255,0.6);font-size:13px;margin-bottom:4px">Had experience with this landlord?</p>
+      <p style="color:white;font-size:16px;font-weight:700;margin-bottom:14px">Help other students avoid the same lease traps</p>
+      <button onclick="go({page:'home',modal:true,stars:0,wouldRentChoice:null,posTags:[],negTags:[],formData:{}})" style="padding:12px 28px;background:var(--orange);color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;transition:transform 0.15s" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform=''">Rate Your Landlord — 60 Seconds</button>
     </div>
   `;
 }
