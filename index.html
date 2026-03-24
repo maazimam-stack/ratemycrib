@@ -1045,9 +1045,11 @@ function Hoods() {
     <div class="hood-grid">
       ${hoods.map(h => {
         const hasReviews = h.reviewCount > 0;
+        const hoodBounds = {"Campustown":"Green St to University Ave, Wright to 1st St","Lincoln Ave":"Along Lincoln Ave, north of Green St","South Campus":"South of University Ave (PAR, FAR, Ike area)","East Campus":"East of Wright St (ISR, Hendrick House area)","North Champaign":"North of University Ave, west of Neil St","Urbana":"East of Lincoln Ave / Race St into Urbana"};
         return `<div class="hood-card">
           <div class="hood-name">${esc(h.name)}</div>
           <div class="hood-type">${esc(h.type)}${hasReviews ? ` · ${h.reviewCount} review${h.reviewCount!==1?'s':''}` : ''}</div>
+          <div style="font-size:11px;color:#9CA3AF;margin-bottom:8px">${hoodBounds[h.name]||''}</div>
           <div class="hood-row"><span>Avg Rent</span><strong>${h.rent > 0 ? '$'+h.rent+'/mo' : '—'}</strong></div>
           <div class="hood-row"><span>Walkability</span><strong>${h.walk > 0 ? h.walk+'/5' : '—'}</strong></div>
           <div class="hood-row"><span>Safety</span><strong ${h.safety > 0 ? 'class="'+valClass(h.safety,3.5,2.5)+'"' : ''}>${h.safety > 0 ? h.safety+'/5' : '—'}</strong></div>
@@ -1199,7 +1201,12 @@ function Modal() {
         <label>Neighborhood</label>
         <select id="rev-hood-select">
           <option value="">Select neighborhood...</option>
-          ${HOOD_NAMES.map(h=>`<option value="${h}">${h}</option>`).join("")}
+          <option value="Campustown">Campustown — Green St to University Ave, Wright to 1st St</option>
+          <option value="Lincoln Ave">Lincoln Ave — Along Lincoln Ave, north of Green St</option>
+          <option value="South Campus">South Campus — South of University Ave (PAR, FAR, Ike area)</option>
+          <option value="East Campus">East Campus — East of Wright St (ISR, Hendrick House area)</option>
+          <option value="North Champaign">North Champaign — North of University Ave, west of Neil St</option>
+          <option value="Urbana">Urbana — East of Lincoln Ave / Race St into Urbana</option>
           <option value="__other__">Other / Not sure</option>
         </select>
       </div>
