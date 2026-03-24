@@ -116,12 +116,7 @@
   .hero h1 { font-size: 52px; font-weight: 900; letter-spacing: -2px; line-height: 1.08; margin-bottom: 16px; animation: fadeUp 0.6s ease 0.1s both; color: white; }
   .hero h1 em { font-style: normal; color: var(--orange); }
   .hero p { font-size: 17px; color: rgba(255,255,255,0.55); max-width: 460px; margin: 0 auto 36px; line-height: 1.6; animation: fadeUp 0.6s ease 0.2s both; }
-  .search-wrap { max-width: 580px; margin: 0 auto; position: relative; animation: fadeUp 0.6s ease 0.3s both; }
-  .search-wrap input { width: 100%; padding: 18px 22px; padding-right: 120px; font-size: 16px; border: 2px solid rgba(255,255,255,0.1); border-radius: var(--radius); outline: none; transition: all 0.25s ease; background: rgba(255,255,255,0.08); box-shadow: 0 4px 24px rgba(0,0,0,0.2); font-family: inherit; color: white; }
-  .search-wrap input:focus { border-color: var(--orange); background: rgba(255,255,255,0.12); box-shadow: 0 4px 24px rgba(0,0,0,0.2), 0 0 0 4px rgba(232,74,39,0.15); }
-  .search-wrap input::placeholder { color: rgba(255,255,255,0.35); }
-  .search-btn { position: absolute; right: 6px; top: 6px; bottom: 6px; background: var(--orange); color: white; border: none; padding: 0 24px; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer; transition: all 0.2s; font-family: inherit; }
-  .search-btn:hover { background: #D4401F; box-shadow: 0 4px 12px rgba(232,74,39,0.4); }
+  /* search bar removed — hero uses CTA button instead */
   .search-tags { display: flex; justify-content: center; gap: 8px; margin-top: 18px; flex-wrap: wrap; animation: fadeUp 0.6s ease 0.4s both; }
   .search-tag { padding: 7px 16px; border-radius: 50px; background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.45); font-size: 13px; cursor: pointer; transition: all 0.2s ease; border: 1px solid rgba(255,255,255,0.08); font-weight: 500; }
   .search-tag:hover { border-color: rgba(232,74,39,0.4); color: var(--orange); background: rgba(232,74,39,0.1); }
@@ -396,29 +391,54 @@
   .scanner-cta-bar .cta-notify:hover { background: #d4431f; transform: translateY(-1px); }
   .hidden { display: none !important; }
 
+  /* ===== MOBILE NAV HAMBURGER ===== */
+  .nav-toggle { display: none; background: none; border: none; cursor: pointer; padding: 8px; margin-left: auto; }
+  .nav-toggle svg { display: block; }
+  .nav-right.mobile-open { display: flex !important; }
+
+  /* ===== LOADING STATE ===== */
+  .loading-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--orange); animation: pulse 1s ease infinite; margin: 0 2px; }
+  .loading-dot:nth-child(2) { animation-delay: 0.15s; }
+  .loading-dot:nth-child(3) { animation-delay: 0.3s; }
+
+  /* ===== HERO CTA BUTTON ===== */
+  .hero-cta { padding: 18px 48px; font-size: 18px; font-weight: 700; background: var(--orange); color: white; border: none; border-radius: var(--radius); cursor: pointer; font-family: inherit; box-shadow: 0 4px 24px rgba(232,74,39,0.35); transition: all 0.25s ease; letter-spacing: 0.3px; }
+  .hero-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(232,74,39,0.45); }
+
+  /* ===== EMPTY FILTER STATE ===== */
+  .empty-filter { text-align: center; padding: 48px 24px; }
+  .empty-filter-icon { font-size: 48px; margin-bottom: 12px; opacity: 0.3; }
+  .empty-filter h3 { font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+  .empty-filter p { font-size: 14px; color: var(--muted); line-height: 1.6; max-width: 400px; margin: 0 auto; }
+
   /* ===== RESPONSIVE ===== */
   @media (max-width: 700px) {
     .hero h1 { font-size: 34px; letter-spacing: -1px; }
     .hero { padding: 48px 16px 40px; }
     .hero p { font-size: 15px; }
-    .search-wrap input { font-size: 15px; padding: 14px 16px; padding-right: 90px; }
-    .search-btn { padding: 0 16px; font-size: 13px; }
+    .hero-cta { padding: 16px 36px; font-size: 16px; }
     .result-card { flex-direction: column; }
-    .result-rating-box { width: 100%; flex-direction: row; padding: 12px 20px; min-width: unset; }
-    .result-side { width: 100%; flex-direction: row; gap: 20px; border-left: none; border-top: 1px solid var(--border); min-width: unset; }
+    .result-rating-box { width: 100%; flex-direction: row; padding: 12px 20px; min-width: unset; gap: 8px; }
+    .result-side { width: 100%; flex-direction: row; gap: 20px; border-left: none; border-top: 1px solid var(--border); min-width: unset; padding: 12px 20px; justify-content: center; }
     .detail-head { flex-direction: column; align-items: center; text-align: center; }
     .detail-sub-scores { justify-content: center; }
     .promo { flex-direction: column; text-align: center; padding: 28px 24px; }
-    .stats-bar { gap: 20px; flex-wrap: wrap; padding: 20px 16px; }
+    .stats-bar { grid-template-columns: repeat(2, 1fr); }
+    .stat-item:nth-child(2) { border-right: none; }
     .stat-num { font-size: 22px; }
     .footer-inner { flex-direction: column; gap: 24px; }
-    .footer-bottom { flex-direction: column; gap: 8px; }
+    .footer-bottom { flex-direction: column; gap: 8px; text-align: center; }
     .share-banner { flex-direction: column; text-align: center; padding: 12px 16px; gap: 10px; }
-    .nav { padding: 0 12px; flex-wrap: wrap; height: auto; min-height: 56px; padding-top: 8px; padding-bottom: 8px; }
-    .nav-right { gap: 4px; flex-wrap: wrap; justify-content: center; width: 100%; margin-top: 4px; }
-    .nav-link { font-size: 12px; padding: 5px 8px; }
-    .nav-cta { font-size: 12px; padding: 6px 14px; margin-left: 0; }
+
+    /* Mobile hamburger nav */
+    .nav { padding: 0 16px; height: 56px; flex-wrap: nowrap; }
+    .nav-toggle { display: block; }
+    .nav-right { display: none; position: absolute; top: 56px; left: 0; right: 0; background: rgba(10,10,10,0.98); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); flex-direction: column; padding: 12px 16px 16px; gap: 2px; border-bottom: 1px solid rgba(255,255,255,0.08); z-index: 99; }
+    .nav-right.mobile-open { display: flex; }
+    .nav-link { padding: 10px 12px; font-size: 14px; border-radius: 8px; }
+    .nav-cta { margin-left: 0; margin-top: 4px; text-align: center; padding: 10px 20px; font-size: 14px; }
     .nav-brand { font-size: 18px; }
+
     .container { padding: 24px 16px; }
     .scanner-wrap { padding: 28px 16px; }
     .scanner-textarea { min-height: 150px; font-size: 13px; }
@@ -426,18 +446,24 @@
     .scan-summary { flex-direction: column; }
     .flag-card { padding: 16px; }
     .flag-match { font-size: 12px; word-break: break-word; }
-    .compare-tbl { font-size: 12px; }
-    .compare-tbl th, .compare-tbl td { padding: 8px 10px; }
+    .compare-tbl { font-size: 12px; display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .compare-tbl th, .compare-tbl td { padding: 8px 10px; white-space: nowrap; }
     .hood-grid { grid-template-columns: 1fr; }
     .modal-box { padding: 24px 16px; width: 96%; }
+    .modal-box .field select { font-size: 14px; padding: 10px 12px; }
     .detail-top { padding: 24px 16px 32px; }
     .scanner-header { padding: 36px 16px 32px; }
     .scanner-header h2 { font-size: 26px; }
-    .stats-bar { grid-template-columns: repeat(2, 1fr); }
-    .stat-item:nth-child(2) { border-right: none; }
     .result-body { padding: 16px; }
     .result-metrics { flex-wrap: wrap; gap: 12px; }
     .result-name { font-size: 16px; }
+    .search-tags { gap: 6px; }
+    .search-tag { padding: 6px 12px; font-size: 12px; }
+
+    /* Fix modal neighborhood grid on small screens */
+    .modal-box .field div[style*="grid-template-columns"] { grid-template-columns: 1fr !important; }
+    /* Fix lease period selects */
+    .modal-box .field div[style*="flex"] select { min-width: 0; font-size: 13px; }
   }
 </style>
 </head>
@@ -805,15 +831,19 @@ function getLandlordStats(landlord) {
 function Nav() {
   return `<div class="nav">
     <div class="nav-brand" onclick="go({page:'home',detail:null})">Rate<em>My</em>Crib</div>
+    <button class="nav-toggle" onclick="document.querySelector('.nav-right').classList.toggle('mobile-open')" aria-label="Menu">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
     <div class="nav-right">
-      <span class="nav-link ${S.page==='home'&&!S.detail?'active':''}" onclick="go({page:'home',detail:null})">Landlords</span>
-      <span class="nav-link ${S.page==='hoods'?'active':''}" onclick="go({page:'hoods'})">Neighborhoods</span>
-      <span class="nav-link ${S.page==='compare'?'active':''}" onclick="go({page:'compare'})">Compare</span>
-      <span class="nav-link ${S.page==='scanner'?'active':''}" onclick="trackScannerEvent('nav_click',{source:'navbar'});go({page:'scanner'})">Lease Scanner</span>
-      <button class="nav-cta" onclick="go({page:'home',modal:true,stars:0,wouldRentChoice:null})">Rate a Landlord</button>
+      <span class="nav-link ${S.page==='home'&&!S.detail?'active':''}" onclick="closeNav();go({page:'home',detail:null})">Landlords</span>
+      <span class="nav-link ${S.page==='hoods'?'active':''}" onclick="closeNav();go({page:'hoods'})">Neighborhoods</span>
+      <span class="nav-link ${S.page==='compare'?'active':''}" onclick="closeNav();go({page:'compare'})">Compare</span>
+      <span class="nav-link ${S.page==='scanner'?'active':''}" onclick="closeNav();trackScannerEvent('nav_click',{source:'navbar'});go({page:'scanner'})">Lease Scanner</span>
+      <button class="nav-cta" onclick="closeNav();go({page:'home',modal:true,stars:0,wouldRentChoice:null})">Rate a Landlord</button>
     </div>
   </div>`;
 }
+function closeNav() { const nr = document.querySelector('.nav-right'); if (nr) nr.classList.remove('mobile-open'); }
 
 function ShareBanner() {
   return `<div class="share-banner">
@@ -829,7 +859,7 @@ function Hero() {
     <h1>The Honest Guide to<br>UIUC <em>Housing</em></h1>
     <p>Read student reviews. Compare prices. No sponsored rankings — ever.</p>
     <div style="margin:28px auto 0;text-align:center;animation:fadeUp 0.6s ease 0.3s both">
-      <button onclick="go({page:'home',modal:true,stars:0,wouldRentChoice:null})" style="padding:18px 48px;font-size:18px;font-weight:700;background:var(--orange);color:white;border:none;border-radius:var(--radius);cursor:pointer;font-family:inherit;box-shadow:0 4px 24px rgba(232,74,39,0.35);transition:all 0.25s ease;letter-spacing:0.3px" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 32px rgba(232,74,39,0.45)'" onmouseout="this.style.transform='';this.style.boxShadow='0 4px 24px rgba(232,74,39,0.35)'">&#9998; Rate a Landlord</button>
+      <button class="hero-cta" onclick="go({page:'home',modal:true,stars:0,wouldRentChoice:null})">&#9998; Rate a Landlord</button>
     </div>
     <div class="search-tags">
       <span class="search-tag ${S.filter==='all'?'active':''}" onclick="go({filter:'all'})">All</span>
@@ -898,7 +928,13 @@ function ResultsList() {
       </select>
     </div>
     ${list.map(ResultCard).join("")}
-    ${list.length===0?'<p style="text-align:center;color:#7C7C7C;padding:48px">No landlords match this filter.</p>':''}
+    ${list.length===0 ? `<div class="empty-filter">
+      <div class="empty-filter-icon">&#128269;</div>
+      <h3>${S.filter==='top'?'No top-rated landlords yet':S.filter==='avoid'?'No low-rated landlords yet':S.filter==='responsive'?'No response data yet':'No landlords match this filter'}</h3>
+      <p>${S.filter==='top'||S.filter==='avoid'||S.filter==='responsive'?'Ratings appear once students submit reviews. Be the first!':'Try a different filter or browse all landlords.'}</p>
+      <button style="margin-top:16px;padding:10px 24px;background:var(--orange);color:white;border:none;border-radius:8px;font-weight:600;font-size:14px;cursor:pointer;font-family:inherit" onclick="go({filter:'all'})">View All Landlords</button>
+    </div>` : ''}
+
     <div class="promo">
       <div><h3>Free Lease Scanner</h3><p>Upload your lease PDF or paste the text — we'll flag clauses that may conflict with Illinois tenant law.</p></div>
       <button onclick="trackScannerEvent('cta_click',{source:'home_promo'});go({page:'scanner'})">Scan My Lease</button>
@@ -1754,20 +1790,19 @@ function Footer() {
       </div>
       <div class="footer-col">
         <h4>Legal</h4>
-        <a href="terms.html">Terms of Service</a>
-        <a href="privacy.html">Privacy Policy</a>
-        <a href="rights.html">Know Your Rights</a>
+        <a style="cursor:default;color:var(--muted)">Terms of Service</a>
+        <a style="cursor:default;color:var(--muted)">Privacy Policy</a>
+        <a onclick="go({page:'scanner'})" style="cursor:pointer">Know Your Rights</a>
       </div>
       <div class="footer-col">
         <h4>About</h4>
-        <a href="mission.html">Our Mission</a>
-        <a href="landlords.html">For Landlords</a>
+        <a style="cursor:default;color:var(--muted)">Built by UIUC students</a>
         <a href="mailto:ratemycrib@proton.me">Contact Us</a>
       </div>
     </div>
     <div class="footer-bottom">
       <span>Not affiliated with the University of Illinois. Independent student project.</span>
-      <span>&copy; ${new Date().getFullYear()} RateMyCrib LLC &middot; <a href="terms.html" style="color:var(--muted);text-decoration:underline">Terms</a> &middot; <a href="privacy.html" style="color:var(--muted);text-decoration:underline">Privacy</a></span>
+      <span>&copy; ${new Date().getFullYear()} RateMyCrib LLC</span>
     </div>
   </footer>`;
 }
