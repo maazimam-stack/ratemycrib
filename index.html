@@ -603,6 +603,10 @@ async function loadDbReviews() {
       hoodWalkability: r.hood_walkability || 0,
       hoodQuiet: r.hood_quiet || 0,
       hoodNightlife: r.hood_nightlife || 0,
+      scoreMaintenance: r.score_maintenance || 0,
+      scoreCommunication: r.score_communication || 0,
+      scoreFairness: r.score_fairness || 0,
+      scoreMoveOut: r.score_move_out || 0,
     }));
     dbLoaded = true;
     render();
@@ -671,6 +675,10 @@ async function saveReviewToDb(review) {
     if (review.hoodWalkability > 0) row.hood_walkability = review.hoodWalkability;
     if (review.hoodQuiet > 0) row.hood_quiet = review.hoodQuiet;
     if (review.hoodNightlife > 0) row.hood_nightlife = review.hoodNightlife;
+    if (review.scoreMaintenance > 0) row.score_maintenance = review.scoreMaintenance;
+    if (review.scoreCommunication > 0) row.score_communication = review.scoreCommunication;
+    if (review.scoreFairness > 0) row.score_fairness = review.scoreFairness;
+    if (review.scoreMoveOut > 0) row.score_move_out = review.scoreMoveOut;
     const { error } = await db.from('reviews').insert(row);
     if (error) throw error;
     markReviewedLandlord(review.landlordId);
@@ -726,7 +734,7 @@ const go = u => {
 };
 
 function saveFormState() {
-  const ids = ['rev-landlord','rev-landlord-custom','rev-property-custom','rev-hood-select','rev-lease-start','rev-lease-end','rev-rent','rev-text','rev-email','rev-certify','rev-hood-safety','rev-hood-walk','rev-hood-quiet','rev-hood-nightlife'];
+  const ids = ['rev-landlord','rev-landlord-custom','rev-property-custom','rev-hood-select','rev-lease-start','rev-lease-end','rev-rent','rev-text','rev-email','rev-certify','rev-hood-safety','rev-hood-walk','rev-hood-quiet','rev-hood-nightlife','rev-score-maintenance','rev-score-communication','rev-score-fairness','rev-score-moveout'];
   const fd = {};
   ids.forEach(id => {
     const el = document.getElementById(id);
@@ -803,8 +811,13 @@ function getLandlordStats(landlord) {
     const star = Math.round(r.rating);
     if (star >= 1 && star <= 5) dist[5 - star]++;
   });
+  // Compute subcategory averages from reviews that have them
+  const subAvg = (key) => {
+    const vals = revs.map(r => r[key]).filter(v => v && v > 0);
+    return vals.length ? parseFloat((vals.reduce((s,v)=>s+v,0)/vals.length).toFixed(1)) : 0;
+  };
   return { ...landlord, rating: avg, reviews: revs.length, wouldRent: wouldRentPct,
-    scores:{maintenance:0,communication:0,fairness:0,moveOut:0}, dist: dist };
+    scores:{maintenance:subAvg('scoreMaintenance'),communication:subAvg('scoreCommunication'),fairness:subAvg('scoreFairness'),moveOut:subAvg('scoreMoveOut')}, dist: dist };
 }
 
 // ===== COMPONENTS =====
@@ -871,10 +884,10 @@ function ResultCard(l) {
       <div class="result-name">${esc(l.name)}</div>
       <div class="result-sub">${isNew ? 'No reviews yet — be the first!' : l.reviews+' student review'+(l.reviews!==1?'s':'')}</div>
       ${isNew ? `<div class="result-metrics"><div class="result-metric"><span style="color:#6B7280">Be the first to review this landlord!</span></div></div>` : `<div class="result-metrics">
-        <div class="result-metric"><strong style="color:${scoreColor(l.scores.maintenance)}">${l.scores.maintenance.toFixed(1)}</strong><span>Maintenance</span></div>
-        <div class="result-metric"><strong style="color:${scoreColor(l.scores.communication)}">${l.scores.communication.toFixed(1)}</strong><span>Communication</span></div>
-        <div class="result-metric"><strong style="color:${scoreColor(l.scores.fairness)}">${l.scores.fairness.toFixed(1)}</strong><span>Fairness</span></div>
-        <div class="result-metric"><strong style="color:${scoreColor(l.scores.moveOut)}">${l.scores.moveOut.toFixed(1)}</strong><span>Move-Out</span></div>
+        <div class="result-metric"><strong style="color:${l.scores.maintenance > 0 ? scoreColor(l.scores.maintenance) : '#6B7280'}">${l.scores.maintenance > 0 ? l.scores.maintenance.toFixed(1) : '—'}</strong><span>Maintenance</span></div>
+        <div class="result-metric"><strong style="color:${l.scores.communication > 0 ? scoreColor(l.scores.communication) : '#6B7280'}">${l.scores.communication > 0 ? l.scores.communication.toFixed(1) : '—'}</strong><span>Communication</span></div>
+        <div class="result-metric"><strong style="color:${l.scores.fairness > 0 ? scoreColor(l.scores.fairness) : '#6B7280'}">${l.scores.fairness > 0 ? l.scores.fairness.toFixed(1) : '—'}</strong><span>Fairness</span></div>
+        <div class="result-metric"><strong style="color:${l.scores.moveOut > 0 ? scoreColor(l.scores.moveOut) : '#6B7280'}">${l.scores.moveOut > 0 ? l.scores.moveOut.toFixed(1) : '—'}</strong><span>Move-Out</span></div>
       </div>`}
       <div class="result-tags">
         ${l.topTags.map(t => {
@@ -950,7 +963,7 @@ function DetailPage() {
           ${l.reviews===0 ? `<div style="color:rgba(255,255,255,0.4);font-size:14px;margin:12px 0">No reviews yet — scores will appear after students submit reviews.</div>` : `<div class="detail-sub-scores">
             ${Object.entries(l.scores).map(([k,v]) => `
               <div class="sub-score">
-                <div class="sub-score-val" style="color:${scoreColor(v)}">${v.toFixed(1)}</div>
+                <div class="sub-score-val" style="color:${v > 0 ? scoreColor(v) : 'rgba(255,255,255,0.3)'}">${v > 0 ? v.toFixed(1) : '—'}</div>
                 <div class="sub-score-label">${k==='moveOut'?'Move-Out':k.charAt(0).toUpperCase()+k.slice(1)}</div>
               </div>
             `).join("")}
@@ -1189,6 +1202,17 @@ function Modal() {
         <div style="display:flex;gap:8px">
           <span class="chip ${S.wouldRentChoice===true?'sel-pos':''}" onclick="go({wouldRentChoice:true})">Yes</span>
           <span class="chip ${S.wouldRentChoice===false?'sel-neg':''}" onclick="go({wouldRentChoice:false})">No</span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Rate Your Landlord (optional)</label>
+        <p style="font-size:12px;color:#7C7C7C;margin-bottom:8px">How'd they do in these areas?</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <div><label style="font-size:12px">Maintenance</label><select id="rev-score-maintenance"><option value="0">—</option>${[1,2,3,4,5].map(n=>`<option value="${n}">${n}/5${n===1?' (Terrible)':n===3?' (Average)':n===5?' (Excellent)':''}</option>`).join("")}</select></div>
+          <div><label style="font-size:12px">Communication</label><select id="rev-score-communication"><option value="0">—</option>${[1,2,3,4,5].map(n=>`<option value="${n}">${n}/5${n===1?' (Ghost)':n===3?' (Average)':n===5?' (Very Responsive)':''}</option>`).join("")}</select></div>
+          <div><label style="font-size:12px">Fairness</label><select id="rev-score-fairness"><option value="0">—</option>${[1,2,3,4,5].map(n=>`<option value="${n}">${n}/5${n===1?' (Scammy)':n===3?' (Average)':n===5?' (Very Fair)':''}</option>`).join("")}</select></div>
+          <div><label style="font-size:12px">Move-Out</label><select id="rev-score-moveout"><option value="0">—</option>${[1,2,3,4,5].map(n=>`<option value="${n}">${n}/5${n===1?' (Nightmare)':n===3?' (Average)':n===5?' (Smooth)':''}</option>`).join("")}</select></div>
         </div>
       </div>
 
@@ -1973,6 +1997,10 @@ async function submitReview(landlordIdFromDetail) {
     hoodWalkability: hoodWalk,
     hoodQuiet: hoodQuiet,
     hoodNightlife: hoodNightlife,
+    scoreMaintenance: parseInt(document.getElementById('rev-score-maintenance')?.value) || 0,
+    scoreCommunication: parseInt(document.getElementById('rev-score-communication')?.value) || 0,
+    scoreFairness: parseInt(document.getElementById('rev-score-fairness')?.value) || 0,
+    scoreMoveOut: parseInt(document.getElementById('rev-score-moveout')?.value) || 0,
     landlordName: landlordName || '',
   };
 
