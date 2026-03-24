@@ -247,7 +247,10 @@
   /* ===== WRITE REVIEW MODAL ===== */
   .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 200; animation: fadeIn 0.2s ease; }
   .modal-box { background: white; border-radius: 16px; padding: 36px; max-width: 540px; width: 92%; max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow-lg); animation: slideDown 0.3s ease; }
-  .modal-box h2 { font-size: 22px; font-weight: 800; margin-bottom: 6px; letter-spacing: -0.3px; }
+  .modal-close { position: absolute; top: 12px; right: 16px; background: none; border: none; font-size: 28px; color: var(--muted); cursor: pointer; padding: 4px 8px; line-height: 1; border-radius: 6px; transition: all 0.2s; z-index: 1; }
+  .modal-close:hover { background: var(--light); color: var(--text); }
+  .modal-box { position: relative; }
+  .modal-box h2 { font-size: 22px; font-weight: 800; margin-bottom: 6px; letter-spacing: -0.3px; padding-right: 40px; }
   .modal-box .modal-sub { font-size: 14px; color: var(--muted); margin-bottom: 24px; }
   .field { margin-bottom: 20px; }
   .field label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: var(--text); }
@@ -449,8 +452,12 @@
     .compare-tbl { font-size: 12px; display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
     .compare-tbl th, .compare-tbl td { padding: 8px 10px; white-space: nowrap; }
     .hood-grid { grid-template-columns: 1fr; }
-    .modal-box { padding: 24px 16px; width: 96%; }
+    .modal-box { padding: 24px 16px; width: 96%; max-height: 85vh; }
     .modal-box .field select { font-size: 14px; padding: 10px 12px; }
+    .modal-box .field textarea { height: 100px; font-size: 15px; }
+    .modal-close { top: 8px; right: 10px; font-size: 32px; padding: 8px 12px; }
+    .modal-box .field[style*="background:#FFF7ED"] { position: sticky; bottom: -24px; margin-bottom: 0; z-index: 2; }
+    .submit-btn { font-size: 17px; padding: 16px; }
     .detail-top { padding: 24px 16px 32px; }
     .scanner-header { padding: 36px 16px 32px; }
     .scanner-header h2 { font-size: 26px; }
@@ -775,12 +782,53 @@ function allReviews() {
 loadDbReviews();
 
 // ===== STATE =====
-let S = { page:"home", filter:"all", sort:"rating", detail:null, modal:false, stars:0, wouldRentChoice:null, cmpBeds:'all', cmpHood:'all', cmpMaxRent:0 };
+let S = { page:"home", filter:"all", sort:"rating", detail:null, modal:false, stars:0, wouldRentChoice:null, cmpBeds:'all', cmpHood:'all', cmpMaxRent:0, posTags:[], negTags:[], formData:{} };
 const go = u => {
   // When navigating to a different page, clear detail unless explicitly set
   if (u.page && u.page !== 'detail' && !('detail' in u)) u.detail = null;
-  Object.assign(S, u); render();
+  // Save form state before re-render if modal is open
+  if (S.modal) saveFormState();
+  Object.assign(S, u);
+  // If closing modal, clear form state and tags
+  if ('modal' in u && !u.modal) { S.posTags = []; S.negTags = []; S.formData = {}; }
+  render();
+  // Restore form state after re-render if modal is still open
+  if (S.modal) restoreFormState();
 };
+
+function saveFormState() {
+  const ids = ['rev-landlord','rev-landlord-custom','rev-property-select','rev-property-custom','rev-hood-select','rev-lease-start','rev-lease-end','rev-rent','rev-text','rev-email','rev-certify','rev-hood-safety','rev-hood-walk','rev-hood-quiet','rev-hood-nightlife'];
+  const fd = {};
+  ids.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (el.type === 'checkbox') fd[id] = el.checked;
+    else fd[id] = el.value;
+    // Also save display state for conditional fields
+    if (id === 'rev-landlord-custom' || id === 'rev-property-custom' || id === 'rev-hood-select') {
+      fd[id + '__display'] = el.style.display;
+    }
+  });
+  S.formData = fd;
+}
+
+function restoreFormState() {
+  const fd = S.formData;
+  if (!fd || Object.keys(fd).length === 0) return;
+  setTimeout(() => {
+    Object.keys(fd).forEach(key => {
+      if (key.endsWith('__display')) return;
+      const el = document.getElementById(key);
+      if (!el) return;
+      if (el.type === 'checkbox') el.checked = fd[key];
+      else el.value = fd[key];
+      // Restore display state for conditional fields
+      if (fd[key + '__display'] !== undefined) {
+        el.style.display = fd[key + '__display'];
+      }
+    });
+  }, 0);
+}
 
 // ===== HELPERS =====
 const qClass = r => r === 0 ? "neutral" : r >= 3.5 ? "high" : r >= 2.5 ? "mid" : "low";
@@ -839,7 +887,7 @@ function Nav() {
       <span class="nav-link ${S.page==='hoods'?'active':''}" onclick="closeNav();go({page:'hoods'})">Neighborhoods</span>
       <span class="nav-link ${S.page==='compare'?'active':''}" onclick="closeNav();go({page:'compare'})">Compare</span>
       <span class="nav-link ${S.page==='scanner'?'active':''}" onclick="closeNav();trackScannerEvent('nav_click',{source:'navbar'});go({page:'scanner'})">Lease Scanner</span>
-      <button class="nav-cta" onclick="closeNav();go({page:'home',modal:true,stars:0,wouldRentChoice:null})">Rate a Landlord</button>
+      <button class="nav-cta" onclick="closeNav();go({page:'home',modal:true,stars:0,wouldRentChoice:null,posTags:[],negTags:[],formData:{}})">Rate a Landlord</button>
     </div>
   </div>`;
 }
@@ -859,7 +907,7 @@ function Hero() {
     <h1>The Honest Guide to<br>UIUC <em>Housing</em></h1>
     <p>Read student reviews. Compare prices. No sponsored rankings — ever.</p>
     <div style="margin:28px auto 0;text-align:center;animation:fadeUp 0.6s ease 0.3s both">
-      <button class="hero-cta" onclick="go({page:'home',modal:true,stars:0,wouldRentChoice:null})">&#9998; Rate a Landlord</button>
+      <button class="hero-cta" onclick="go({page:'home',modal:true,stars:0,wouldRentChoice:null,posTags:[],negTags:[],formData:{}})">&#9998; Rate a Landlord</button>
     </div>
     <div class="search-tags">
       <span class="search-tag ${S.filter==='all'?'active':''}" onclick="go({filter:'all'})">All</span>
@@ -951,6 +999,7 @@ function DetailPage() {
   const lprops = SEED_PROPERTIES.filter(p=>p.landlordId===l.id);
   const maxDist = Math.max(...l.dist) || 1;
   const helped = loadHelpful();
+  const reported = loadReported();
 
   return `<div class="detail-top">
     <div class="detail-inner">
@@ -993,7 +1042,7 @@ function DetailPage() {
   <div class="reviews-section">
     <div class="reviews-header">
       <h2>${revs.length} Student Review${revs.length!==1?'s':''}</h2>
-      <button class="write-btn" onclick="go({modal:true,stars:0,wouldRentChoice:null})">+ Rate This Landlord</button>
+      <button class="write-btn" onclick="go({modal:true,stars:0,wouldRentChoice:null,posTags:[],negTags:[],formData:{}})">+ Rate This Landlord</button>
     </div>
     ${revs.map(r => {
       const rq = qClass(r.rating);
@@ -1013,8 +1062,8 @@ function DetailPage() {
               ${(r.neg||[]).map(t=>`<span class="rtag rtag-neg">${esc(t)}</span>`).join("")}
             </div>
             <div class="review-actions">
-              <button ${isHelped?'style="border-color:#16A34A;color:#16A34A"':''} onclick="event.stopPropagation();markHelpful('${r.id}',this,${r.helpful||0})">&#128077; Helpful (${isHelped?(r.helpful||0)+1:r.helpful||0})</button>
-              <button onclick="event.stopPropagation();toast('Review reported. We\\'ll look into it.')">&#128681; Report</button>
+              <button ${isHelped?'style="border-color:#16A34A;color:#16A34A"':''} onclick="event.stopPropagation();markHelpful('${r.id}',this,${r.helpful||0})">&#128077; ${isHelped?'Helpful':'Helpful'} (${isHelped?(r.helpful||0)+1:r.helpful||0})</button>
+              <button ${reported[r.id]?'style="border-color:#DC2626;color:#DC2626"':''} onclick="event.stopPropagation();toggleReport('${r.id}',this)">${reported[r.id]?'&#128681; Reported':'&#128681; Report'}</button>
             </div>
           </div>
         </div>
@@ -1024,7 +1073,7 @@ function DetailPage() {
 
     <h3 style="font-size:18px;font-weight:700;margin-top:40px;margin-bottom:16px">Properties by ${esc(l.name)}</h3>
     ${lprops.map(p => `
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid #E8E8E8;cursor:pointer;border-radius:8px;padding-left:8px;padding-right:8px;transition:background 0.15s" onmouseover="this.style.background='#F9FAFB'" onmouseout="this.style.background=''" onclick="go({modal:true,stars:0,wouldRentChoice:null})">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid #E8E8E8;cursor:pointer;border-radius:8px;padding-left:8px;padding-right:8px;transition:background 0.15s" onmouseover="this.style.background='#F9FAFB'" onmouseout="this.style.background=''" onclick="go({modal:true,stars:0,wouldRentChoice:null,posTags:[],negTags:[],formData:{}})">
         <div>
           <div style="font-weight:700">${esc(p.name)}</div>
           <div style="font-size:13px;color:#7C7C7C">${p.beds===0?'Studio':p.beds+'bd'} · ${esc(p.hood)} · ${p.tags.map(esc).join(', ')}</div>
@@ -1167,8 +1216,9 @@ function Compare() {
 function Modal() {
   if (!S.modal) return '';
   const l = S.detail ? SEED_LANDLORDS.find(x=>x.id===S.detail) : null;
-  return `<div class="modal-bg" onclick="if(event.target===this)go({modal:false})">
+  return `<div class="modal-bg" onclick="if(event.target===this)closeModal()">
     <div class="modal-box">
+      <button class="modal-close" onclick="closeModal()" aria-label="Close">&times;</button>
       <h2>Rate ${l ? esc(l.name) : 'a Landlord'}</h2>
       <p class="modal-sub">Your review is anonymous and helps other students make better decisions.</p>
 
@@ -1256,12 +1306,12 @@ function Modal() {
         <label>Tags — select all that apply</label>
         <div class="chip-group" id="pos-tags">
           ${["Great Location","Responsive","Fast Repairs","Modern","Quiet","Pet Friendly","Fair Deposit","Furnished","Good Amenities","Cheap Rent"].map(t=>
-            `<span class="chip" data-tag="${esc(t)}" data-type="pos" onclick="this.classList.toggle('sel-pos')">${esc(t)}</span>`
+            `<span class="chip ${S.posTags.includes(t)?'sel-pos':''}" data-tag="${esc(t)}" data-type="pos" onclick="toggleTag('pos','${esc(t)}')">${esc(t)}</span>`
           ).join("")}
         </div>
         <div class="chip-group" id="neg-tags" style="margin-top:8px">
           ${["Slow Maintenance","Unfair Charges","Pests","Poor Communication","Old Building","Noisy","Hidden Fees","Thin Walls"].map(t=>
-            `<span class="chip" data-tag="${esc(t)}" data-type="neg" onclick="this.classList.toggle('sel-neg')">${esc(t)}</span>`
+            `<span class="chip ${S.negTags.includes(t)?'sel-neg':''}" data-tag="${esc(t)}" data-type="neg" onclick="toggleTag('neg','${esc(t)}')">${esc(t)}</span>`
           ).join("")}
         </div>
       </div>
@@ -1790,8 +1840,8 @@ function Footer() {
       </div>
       <div class="footer-col">
         <h4>Legal</h4>
-        <a style="cursor:default;color:var(--muted)">Terms of Service</a>
-        <a style="cursor:default;color:var(--muted)">Privacy Policy</a>
+        <a onclick="go({page:'tos'})" style="cursor:pointer">Terms of Service</a>
+        <a onclick="go({page:'privacy'})" style="cursor:pointer">Privacy Policy</a>
         <a onclick="go({page:'scanner'})" style="cursor:pointer">Know Your Rights</a>
       </div>
       <div class="footer-col">
@@ -1856,6 +1906,28 @@ function buildPropertyDropdown(landlordId) {
 }
 
 // ===== ACTIONS =====
+function closeModal() {
+  go({modal:false, stars:0, wouldRentChoice:null});
+}
+
+function toggleTag(type, tag) {
+  if (type === 'pos') {
+    if (S.posTags.includes(tag)) S.posTags = S.posTags.filter(t => t !== tag);
+    else S.posTags = [...S.posTags, tag];
+  } else {
+    if (S.negTags.includes(tag)) S.negTags = S.negTags.filter(t => t !== tag);
+    else S.negTags = [...S.negTags, tag];
+  }
+  // Update DOM directly — no re-render needed for tags
+  const selector = type === 'pos' ? '#pos-tags .chip' : '#neg-tags .chip';
+  document.querySelectorAll(selector).forEach(el => {
+    const cls = type === 'pos' ? 'sel-pos' : 'sel-neg';
+    const arr = type === 'pos' ? S.posTags : S.negTags;
+    if (arr.includes(el.dataset.tag)) el.classList.add(cls);
+    else el.classList.remove(cls);
+  });
+}
+
 function onLandlordChange(sel) {
   const customInput = document.getElementById('rev-landlord-custom');
   const propContainer = document.getElementById('rev-property-container');
@@ -1954,9 +2026,9 @@ async function submitReview(landlordIdFromDetail) {
   const customHood = document.getElementById('rev-hood-select')?.value || '';
   const hoodName = matchedProp ? matchedProp.hood : customHood;
 
-  // Collect selected tags
-  const posTags = [...document.querySelectorAll('#pos-tags .sel-pos')].map(el => el.dataset.tag);
-  const negTags = [...document.querySelectorAll('#neg-tags .sel-neg')].map(el => el.dataset.tag);
+  // Collect selected tags from state
+  const posTags = [...S.posTags];
+  const negTags = [...S.negTags];
 
   // Include lease period in review text if provided
   const fullText = leasePeriod ? `[Lease: ${leasePeriod}] ${text}` : text;
@@ -2019,12 +2091,54 @@ async function submitReview(landlordIdFromDetail) {
 
 async function markHelpful(reviewId, btn, currentCount) {
   const helped = loadHelpful();
-  if (helped[reviewId]) return;
+  if (helped[reviewId]) {
+    // Toggle OFF — remove helpful
+    removeHelpful(reviewId);
+    btn.style.borderColor = '';
+    btn.style.color = '';
+    btn.innerHTML = `&#128077; Helpful (${currentCount})`;
+    // Decrement in DB
+    try {
+      const existing = dbReviews.find(r => r.id === reviewId);
+      if (existing && existing.helpful > 0) {
+        await db.from('reviews').update({ helpful_count: existing.helpful - 1 }).eq('id', reviewId);
+      }
+    } catch(e) { /* silent */ }
+    return;
+  }
   saveHelpful(reviewId);
   btn.style.borderColor = '#16A34A';
   btn.style.color = '#16A34A';
   btn.innerHTML = `&#128077; Helpful (${currentCount + 1})`;
   await incrementHelpful(reviewId);
+}
+
+function removeHelpful(id) {
+  const h = loadHelpful();
+  delete h[id];
+  localStorage.setItem('ratemycrib_helpful', JSON.stringify(h));
+}
+
+function loadReported() {
+  try { return JSON.parse(localStorage.getItem('ratemycrib_reported') || '{}'); } catch { return {}; }
+}
+function toggleReport(reviewId, btn) {
+  const reported = loadReported();
+  if (reported[reviewId]) {
+    delete reported[reviewId];
+    localStorage.setItem('ratemycrib_reported', JSON.stringify(reported));
+    btn.style.borderColor = '';
+    btn.style.color = '';
+    btn.innerHTML = '&#128681; Report';
+    toast('Report removed.');
+  } else {
+    reported[reviewId] = true;
+    localStorage.setItem('ratemycrib_reported', JSON.stringify(reported));
+    btn.style.borderColor = '#DC2626';
+    btn.style.color = '#DC2626';
+    btn.innerHTML = '&#128681; Reported';
+    toast('Review reported. We\'ll look into it.');
+  }
 }
 
 function copyShareLink() {
@@ -2042,6 +2156,46 @@ function copyShareLink() {
   }
 }
 
+function TosPage() {
+  return `<div style="background:var(--black);padding:48px 24px 40px;text-align:center">
+    <h2 style="font-size:32px;font-weight:900;color:white;letter-spacing:-1px;margin-bottom:8px">Terms of Service</h2>
+    <p style="color:rgba(255,255,255,0.5);font-size:15px">Last updated: March 2026</p>
+  </div>
+  <div class="container" style="max-width:720px;line-height:1.8;font-size:15px">
+    <p style="margin-bottom:16px"><strong>1. Acceptance.</strong> By using RateMyCrib ("the Site"), you agree to these Terms of Service. If you do not agree, please do not use the Site.</p>
+    <p style="margin-bottom:16px"><strong>2. Eligibility.</strong> The Site is intended for current and former students, tenants, and prospective renters in the Champaign-Urbana area. You must be at least 18 years old to submit a review.</p>
+    <p style="margin-bottom:16px"><strong>3. User-Submitted Content.</strong> When you submit a review, you represent that: (a) you are or were an actual tenant of the property reviewed; (b) your review reflects your genuine, honest experience; (c) you are not a landlord, property manager, or their employee submitting a review about your own company; (d) your review does not contain defamatory, fraudulent, or knowingly false statements.</p>
+    <p style="margin-bottom:16px"><strong>4. Content Moderation.</strong> We reserve the right to remove reviews that violate these Terms, appear fraudulent, contain personal attacks, or are otherwise inappropriate. We do not guarantee that all reviews are accurate or verified.</p>
+    <p style="margin-bottom:16px"><strong>5. No Legal Advice.</strong> The Lease Scanner tool provides general educational information about Illinois tenant law. It is not legal advice. For legal advice, consult a licensed attorney or the UIUC Student Legal Service.</p>
+    <p style="margin-bottom:16px"><strong>6. Disclaimer of Warranties.</strong> The Site is provided "as is" without warranties of any kind. We do not verify the accuracy of user-submitted reviews, property data, or pricing information. Use this information at your own discretion.</p>
+    <p style="margin-bottom:16px"><strong>7. Limitation of Liability.</strong> RateMyCrib LLC shall not be liable for any damages arising from your use of the Site, reliance on reviews, or decisions made based on information found here.</p>
+    <p style="margin-bottom:16px"><strong>8. Intellectual Property.</strong> The RateMyCrib name, logo, and site design are property of RateMyCrib LLC. User-submitted reviews remain the property of their authors but you grant us a non-exclusive, royalty-free license to display them on the Site.</p>
+    <p style="margin-bottom:16px"><strong>9. Changes.</strong> We may update these Terms at any time. Continued use of the Site constitutes acceptance of the updated Terms.</p>
+    <p style="margin-bottom:16px"><strong>10. Contact.</strong> Questions about these Terms? Email us at <a href="mailto:ratemycrib@proton.me" style="color:var(--orange)">ratemycrib@proton.me</a>.</p>
+    <p style="margin-top:32px"><span class="back-link" style="color:var(--orange);cursor:pointer" onclick="go({page:'home',detail:null})">&#8592; Back to home</span></p>
+  </div>`;
+}
+
+function PrivacyPage() {
+  return `<div style="background:var(--black);padding:48px 24px 40px;text-align:center">
+    <h2 style="font-size:32px;font-weight:900;color:white;letter-spacing:-1px;margin-bottom:8px">Privacy Policy</h2>
+    <p style="color:rgba(255,255,255,0.5);font-size:15px">Last updated: March 2026</p>
+  </div>
+  <div class="container" style="max-width:720px;line-height:1.8;font-size:15px">
+    <p style="margin-bottom:16px"><strong>1. What We Collect.</strong> When you submit a review, we collect: your review text, star rating, selected tags, property address, lease period, monthly rent, neighborhood ratings, and an optional email address. We also collect a device fingerprint (a hash of browser properties) solely to prevent duplicate reviews.</p>
+    <p style="margin-bottom:16px"><strong>2. What We Do NOT Collect.</strong> We do not use cookies for tracking. We do not sell your data. We do not collect your real name, IP address, or location. We do not use third-party analytics or advertising trackers.</p>
+    <p style="margin-bottom:16px"><strong>3. Email Addresses.</strong> If you provide an @illinois.edu email for verification, it is used solely to display a "Verified Illini" badge on your review. Your email is never shown publicly, shared with landlords, or used for marketing.</p>
+    <p style="margin-bottom:16px"><strong>4. Device Fingerprint.</strong> We generate a simple hash from your browser properties (canvas rendering, screen size, timezone) to limit one review per landlord per device. This fingerprint cannot identify you personally and is not shared with third parties.</p>
+    <p style="margin-bottom:16px"><strong>5. Lease Scanner.</strong> Text you paste into the Lease Scanner is processed entirely in your browser. It is never sent to our servers, stored, or shared with anyone.</p>
+    <p style="margin-bottom:16px"><strong>6. Data Storage.</strong> Review data is stored in a Supabase (PostgreSQL) database with Row Level Security enabled. Access is restricted to the minimum needed for the Site to function.</p>
+    <p style="margin-bottom:16px"><strong>7. Data Retention.</strong> Reviews are retained indefinitely to maintain the usefulness of the platform. If you want a review removed, email us at <a href="mailto:ratemycrib@proton.me" style="color:var(--orange)">ratemycrib@proton.me</a> with details about the review you submitted.</p>
+    <p style="margin-bottom:16px"><strong>8. Third Parties.</strong> We use Supabase for database hosting and Google Fonts for typography. We do not share your data with landlords, advertisers, or data brokers.</p>
+    <p style="margin-bottom:16px"><strong>9. Changes.</strong> We may update this Privacy Policy. The latest version will always be available on this page.</p>
+    <p style="margin-bottom:16px"><strong>10. Contact.</strong> Privacy questions? Email <a href="mailto:ratemycrib@proton.me" style="color:var(--orange)">ratemycrib@proton.me</a>.</p>
+    <p style="margin-top:32px"><span class="back-link" style="color:var(--orange);cursor:pointer" onclick="go({page:'home',detail:null})">&#8592; Back to home</span></p>
+  </div>`;
+}
+
 // ===== MAIN RENDER =====
 function render() {
   let html = Nav();
@@ -2050,6 +2204,8 @@ function render() {
   else if (S.page === 'hoods') html += Hoods();
   else if (S.page === 'compare') html += Compare();
   else if (S.page === 'scanner') html += LeaseScanner();
+  else if (S.page === 'tos') html += TosPage();
+  else if (S.page === 'privacy') html += PrivacyPage();
   html += Modal() + Footer();
   document.getElementById('app').innerHTML = html;
   if (!S.detail && !S.modal) window.scrollTo(0, 0);
