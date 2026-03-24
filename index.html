@@ -630,7 +630,7 @@ function getHoodStats() {
     };
 
     // Avg rent comes ONLY from real reviews — no hardcoded prices
-    const reviewRents = hoodReviews.map(r => r.monthlyRent).filter(v => v && v > 0);
+    const reviewRents = hoodReviews.map(r => r.monthlyRent).filter(v => v && isValidRent(v));
     const avgRent = reviewRents.length ? Math.round(reviewRents.reduce((s,v)=>s+v,0)/reviewRents.length) : 0;
 
     return {
@@ -833,6 +833,11 @@ function restoreFormState() {
 }
 
 // ===== HELPERS =====
+// Rent sanity bounds — filter out junk values from calculations & display
+const MIN_RENT = 200;  // no legitimate UIUC rent is under $200/mo per person
+const MAX_RENT = 4000; // or over $4,000/mo per person
+const isValidRent = r => r >= MIN_RENT && r <= MAX_RENT;
+
 const qClass = r => r === 0 ? "neutral" : r >= 3.5 ? "high" : r >= 2.5 ? "mid" : "low";
 const qLabel = r => r === 0 ? "NEW" : r >= 4.0 ? "AWESOME" : r >= 3.5 ? "GOOD" : r >= 2.5 ? "OK" : r >= 2.0 ? "POOR" : "AWFUL";
 const valClass = (v, good, ok) => v >= good ? "val-good" : v >= ok ? "val-ok" : "val-bad";
@@ -904,11 +909,16 @@ function ShareBanner() {
 
 function Hero() {
   const revCount = getReviewCount();
+  const landlordCount = SEED_LANDLORDS.length;
   return `<div class="hero">
     <div class="hero-badge">&#127979; By students, for students — zero landlord influence</div>
     <h1>The Honest Guide to<br>UIUC <em>Housing</em></h1>
     <p>Read student reviews. Compare prices. No sponsored rankings — ever.</p>
-    <div style="margin:28px auto 0;text-align:center;animation:fadeUp 0.6s ease 0.3s both">
+    ${revCount > 0 ? `<div style="display:flex;justify-content:center;gap:24px;margin-top:12px;animation:fadeUp 0.6s ease 0.15s both">
+      <div style="text-align:center"><span style="font-size:24px;font-weight:800;color:var(--orange)">${revCount}</span><span style="font-size:12px;color:rgba(255,255,255,0.45);display:block;margin-top:2px">Student Reviews</span></div>
+      <div style="text-align:center"><span style="font-size:24px;font-weight:800;color:white">${landlordCount}</span><span style="font-size:12px;color:rgba(255,255,255,0.45);display:block;margin-top:2px">Landlords Tracked</span></div>
+    </div>` : ''}
+    <div style="margin:24px auto 0;text-align:center;animation:fadeUp 0.6s ease 0.3s both">
       <button class="hero-cta" onclick="go({page:'home',modal:true,stars:0,wouldRentChoice:null,posTags:[],negTags:[],formData:{}})">&#9998; Rate a Landlord</button>
     </div>
     <div class="search-tags">
@@ -925,7 +935,7 @@ function ResultCard(l) {
   const q = qClass(l.rating);
   const lprops = SEED_PROPERTIES.filter(p=>p.landlordId===l.id);
   // Price comes from real reviews only — not hardcoded
-  const landlordReviews = allReviews().filter(r => r.landlordId === l.id && r.monthlyRent > 0);
+  const landlordReviews = allReviews().filter(r => r.landlordId === l.id && isValidRent(r.monthlyRent));
   const avgPrice = landlordReviews.length ? Math.round(landlordReviews.reduce((s,r) => s + r.monthlyRent, 0) / landlordReviews.length) : 0;
   const isNew = l.reviews === 0;
   return `<div class="result-card" onclick="go({page:'detail',detail:${l.id}})">
@@ -1056,7 +1066,7 @@ function DetailPage() {
             <div class="review-score-q">${qLabel(r.rating)}</div>
           </div>
           <div class="review-content">
-            <div class="review-meta"><strong>${esc(r.author)}</strong> · ${esc(r.date)} · ${r.wouldRent ? '<span style="color:#16A34A;font-weight:600">Would rent again</span>' : '<span style="color:#DC2626;font-weight:600">Would NOT rent again</span>'}${r.monthlyRent > 0 ? ' · <span style="color:#2563EB;font-weight:600">$'+r.monthlyRent+'/mo</span>' : ''}</div>
+            <div class="review-meta"><strong>${esc(r.author)}</strong> · ${esc(r.date)} · ${r.wouldRent ? '<span style="color:#16A34A;font-weight:600">Would rent again</span>' : '<span style="color:#DC2626;font-weight:600">Would NOT rent again</span>'}${isValidRent(r.monthlyRent) ? ' · <span style="color:#2563EB;font-weight:600">$'+r.monthlyRent+'/mo</span>' : ''}</div>
             <div class="review-property">${esc(r.property)}</div>
             <div class="review-text">${esc(r.text)}</div>
             <div class="review-tags">
@@ -1081,7 +1091,7 @@ function DetailPage() {
           <div style="font-size:13px;color:#7C7C7C">${p.beds===0?'Studio':p.beds+'bd'} · ${esc(p.hood)} · ${p.tags.map(esc).join(', ')}</div>
         </div>
         <div style="text-align:right">
-          ${(() => { const propRevs = allReviews().filter(r => r.property === p.name && r.monthlyRent > 0); const propAvg = propRevs.length ? Math.round(propRevs.reduce((s,r)=>s+r.monthlyRent,0)/propRevs.length) : 0; return propAvg ? `<div style="font-weight:700;font-size:18px">$${propAvg}<span style="font-size:12px;color:#7C7C7C;font-weight:400">/mo</span></div><div style="font-size:10px;color:#9CA3AF">from ${propRevs.length} review${propRevs.length!==1?'s':''}</div>` : `<div style="font-size:13px;color:#9CA3AF">No price data yet</div>`; })()}
+          ${(() => { const propRevs = allReviews().filter(r => r.property === p.name && isValidRent(r.monthlyRent)); const propAvg = propRevs.length ? Math.round(propRevs.reduce((s,r)=>s+r.monthlyRent,0)/propRevs.length) : 0; return propAvg ? `<div style="font-weight:700;font-size:18px">$${propAvg}<span style="font-size:12px;color:#7C7C7C;font-weight:400">/mo</span></div><div style="font-size:10px;color:#9CA3AF">from ${propRevs.length} review${propRevs.length!==1?'s':''}</div>` : `<div style="font-size:13px;color:#9CA3AF">No price data yet</div>`; })()}
           <div style="font-size:13px;color:${scoreColor(p.rating)};font-weight:600">${p.rating > 0 ? p.rating.toFixed(1)+' / 5.0' : 'No ratings'}</div>
           <div style="font-size:11px;color:#E84A27;margin-top:2px">Click to review</div>
         </div>
@@ -1125,7 +1135,7 @@ function Compare() {
   // Enrich properties with review-based pricing
   const revs = allReviews();
   let filtered = SEED_PROPERTIES.map(p => {
-    const propRevs = revs.filter(r => r.property === p.name && r.monthlyRent > 0);
+    const propRevs = revs.filter(r => r.property === p.name && isValidRent(r.monthlyRent));
     const reviewPrice = propRevs.length ? Math.round(propRevs.reduce((s,r)=>s+r.monthlyRent,0)/propRevs.length) : 0;
     return { ...p, reviewPrice, reviewCount: propRevs.length };
   });
@@ -1282,7 +1292,7 @@ function Modal() {
         <label>Monthly Rent (per person)</label>
         <div style="display:flex;align-items:center;gap:4px">
           <span style="font-size:18px;font-weight:700">$</span>
-          <input type="number" id="rev-rent" placeholder="e.g. 750" min="100" max="5000" style="flex:1" />
+          <input type="number" id="rev-rent" placeholder="e.g. 750" min="200" max="4000" style="flex:1" />
           <span style="font-size:13px;color:#7C7C7C">/month</span>
         </div>
         <p style="font-size:11px;color:#7C7C7C;margin-top:4px">What you actually pay per month. Helps other students compare real costs.</p>
@@ -2009,7 +2019,7 @@ async function submitReview(landlordIdFromDetail) {
 
   const rentInput = document.getElementById('rev-rent')?.value;
   const monthlyRentVal = parseInt(rentInput) || 0;
-  if (rentInput && monthlyRentVal > 0 && (monthlyRentVal < 100 || monthlyRentVal > 5000)) { toast('Monthly rent should be between $100 and $5,000.'); return; }
+  if (rentInput && monthlyRentVal > 0 && !isValidRent(monthlyRentVal)) { toast('Monthly rent should be between $' + MIN_RENT + ' and $' + MAX_RENT.toLocaleString() + ' per person.'); return; }
 
   const isCustomProperty = propSelect === '__custom__' && propCustom;
   const property = propSelect === '__custom__' ? (propCustom || 'Not specified') : (propSelect || 'Not specified');
@@ -2086,11 +2096,28 @@ async function submitReview(landlordIdFromDetail) {
   const success = await saveReviewToDb(review);
   if (success) {
     go({modal:false, stars:0, wouldRentChoice:null});
-    toast('Review submitted! Everyone can see it now.');
+    showSharePrompt();
   } else {
     if (btn) { btn.disabled = false; btn.textContent = 'Submit My Review'; }
     toast('Something went wrong. Try again.');
   }
+}
+
+function showSharePrompt() {
+  const overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;z-index:300;animation:fadeIn 0.2s';
+  overlay.innerHTML = `
+    <div style="background:white;border-radius:16px;padding:32px;max-width:400px;width:90%;text-align:center;animation:slideDown 0.3s;box-shadow:0 20px 60px rgba(0,0,0,0.2)">
+      <div style="font-size:48px;margin-bottom:12px">&#9989;</div>
+      <h3 style="font-size:20px;font-weight:800;margin-bottom:6px;letter-spacing:-0.3px">Review Submitted!</h3>
+      <p style="font-size:14px;color:#6B7280;line-height:1.6;margin-bottom:20px">Your review is live and helping other students make better housing decisions.</p>
+      <p style="font-size:13px;font-weight:600;color:#1F2937;margin-bottom:12px">Know someone apartment hunting?</p>
+      <button onclick="copyShareLink();this.textContent='Link Copied!';this.style.background='#16A34A'" style="width:100%;padding:14px;background:#0A0A0A;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;transition:all 0.2s;margin-bottom:8px">Share RateMyCrib</button>
+      <button onclick="this.closest('div').parentElement.remove()" style="width:100%;padding:12px;background:transparent;color:#6B7280;border:none;font-size:14px;cursor:pointer;font-family:inherit;font-weight:500">Maybe later</button>
+    </div>
+  `;
+  overlay.onclick = function(e) { if (e.target === overlay) overlay.remove(); };
+  document.body.appendChild(overlay);
 }
 
 async function markHelpful(reviewId, btn, currentCount) {
