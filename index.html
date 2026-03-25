@@ -673,6 +673,7 @@ async function saveReviewToDb(review) {
     const fp = getDeviceFingerprint();
     const row = {
       landlord_id: review.landlordId,
+      landlord_name: review.landlordName || '',
       property: review.property,
       author: review.author,
       rating: review.rating,
@@ -796,6 +797,18 @@ function findLandlord(id) {
   return null;
 }
 
+// Return only the reviews that truly belong to this landlord.
+// Matches by landlord_id, PLUS filters out any review whose landlord_name
+// doesn't match (prevents cross-contamination when IDs collide).
+function getReviewsForLandlord(landlord) {
+  return allReviews().filter(r => {
+    if (r.landlordId !== landlord.id) return false;
+    // If the review recorded a landlord name and it doesn't match this landlord, skip it
+    if (r.landlordName && landlord.name && r.landlordName !== landlord.name) return false;
+    return true;
+  });
+}
+
 const qClass = r => r === 0 ? "neutral" : r >= 3.5 ? "high" : r >= 2.5 ? "mid" : "low";
 const qLabel = r => r === 0 ? "NEW" : r >= 4.0 ? "AWESOME" : r >= 3.5 ? "GOOD" : r >= 2.5 ? "OK" : r >= 2.0 ? "POOR" : "AWFUL";
 const valClass = (v, good, ok) => v >= good ? "val-good" : v >= ok ? "val-ok" : "val-bad";
@@ -824,7 +837,7 @@ async function getTotalDbReviewCount() {
 
 // Dynamically compute landlord stats from real Supabase reviews
 function getLandlordStats(landlord) {
-  const revs = allReviews().filter(r => r.landlordId === landlord.id);
+  const revs = getReviewsForLandlord(landlord);
   if (revs.length === 0) {
     return { ...landlord, rating: 0, reviews: 0, wouldRent: 0, responseRate: "—",
       scores:{maintenance:0,communication:0,fairness:0,moveOut:0}, dist:[0,0,0,0,0] };
@@ -897,7 +910,7 @@ function Hero() {
 function ResultCard(l) {
   const q = qClass(l.rating);
   // Price comes from real reviews only
-  const landlordReviews = allReviews().filter(r => r.landlordId === l.id && isValidRent(r.monthlyRent));
+  const landlordReviews = getReviewsForLandlord(l).filter(r => isValidRent(r.monthlyRent));
   const avgPrice = landlordReviews.length ? Math.round(landlordReviews.reduce((s,r) => s + r.monthlyRent, 0) / landlordReviews.length) : 0;
   const isNew = l.reviews === 0;
   return `<div class="result-card" onclick="go({page:'detail',detail:${l.id}})">
@@ -992,7 +1005,7 @@ function DetailPage() {
   if (!raw) return '';
   const l = getLandlordStats(raw);
   const q = qClass(l.rating);
-  const revs = allReviews().filter(r=>r.landlordId===l.id);
+  const revs = getReviewsForLandlord(l);
   const maxDist = Math.max(...l.dist) || 1;
   const helped = loadHelpful();
   const reported = loadReported();
