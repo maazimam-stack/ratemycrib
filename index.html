@@ -861,7 +861,7 @@ function ShareBanner() {
 
 function Hero() {
   const revCount = getReviewCount();
-  const landlordCount = SEED_LANDLORDS.length;
+  const landlordCount = SEED_LANDLORDS.filter(l => getLandlordStats(l).reviews > 0).length + (userLandlords||[]).filter(ul => dbReviews.some(r => r.landlordId === ul.id)).length;
   return `<div class="hero">
     <div class="hero-badge">By students, for students — zero landlord influence</div>
     <h1>The Honest Guide to<br>UIUC <em>Housing</em></h1>
@@ -920,26 +920,49 @@ function ResultCard(l) {
 }
 
 function ResultsList() {
-  let list = SEED_LANDLORDS.map(getLandlordStats);
-  if (S.filter === "top") list = list.filter(l => l.rating >= 3.5);
-  if (S.filter === "avoid") list = list.filter(l => l.rating < 2.5);
-  if (S.filter === "responsive") list = list.filter(l => parseInt(l.responseRate) >= 60);
+  // Merge seed landlords with user-submitted landlords that have reviews
+  const seedStats = SEED_LANDLORDS.map(getLandlordStats);
+  const userStats = (userLandlords || []).map(ul => {
+    const fake = { id: ul.id, name: ul.name, props: 0, rating: 0, reviews: 0, wouldRent: 0, responseRate: "—",
+      scores:{maintenance:0,communication:0,fairness:0,moveOut:0}, topTags:["New Listing"], dist:[0,0,0,0,0] };
+    return getLandlordStats(fake);
+  }).filter(l => l.reviews > 0);
+  let list = [...seedStats, ...userStats];
+  if (S.filter === "top") list = list.filter(l => l.rating >= 3.5 && l.reviews > 0);
+  else if (S.filter === "avoid") list = list.filter(l => l.rating > 0 && l.rating < 2.5 && l.reviews > 0);
+  else if (S.filter === "responsive") list = list.filter(l => parseInt(l.responseRate) >= 60);
 
-  if (S.sort === "rating") list.sort((a,b) => b.rating - a.rating);
-  else if (S.sort === "reviews") list.sort((a,b) => b.reviews - a.reviews);
-  else if (S.sort === "wouldRent") list.sort((a,b) => b.wouldRent - a.wouldRent);
+  // Separate reviewed and unreviewed landlords
+  const reviewed = list.filter(l => l.reviews > 0);
+  const unreviewed = list.filter(l => l.reviews === 0);
+
+  // Sort reviewed landlords by selected sort
+  if (S.sort === "rating") reviewed.sort((a,b) => b.rating - a.rating);
+  else if (S.sort === "reviews") reviewed.sort((a,b) => b.reviews - a.reviews);
+  else if (S.sort === "wouldRent") reviewed.sort((a,b) => b.wouldRent - a.wouldRent);
+
+  // Unreviewed sorted alphabetically
+  unreviewed.sort((a,b) => a.name.localeCompare(b.name));
+
+  const showUnreviewed = S.filter === 'all' && unreviewed.length > 0;
 
   return `<div class="container">
     <div class="results-header">
-      <div class="results-count">${list.length} landlord${list.length!==1?'s':''} found</div>
+      <div class="results-count">${reviewed.length} landlord${reviewed.length!==1?'s':''} with reviews</div>
       <select class="sort-select" onchange="go({sort:this.value})">
         <option value="rating" ${S.sort==='rating'?'selected':''}>Highest Rated</option>
         <option value="reviews" ${S.sort==='reviews'?'selected':''}>Most Reviews</option>
         <option value="wouldRent" ${S.sort==='wouldRent'?'selected':''}>Would Rent Again %</option>
       </select>
     </div>
-    ${list.map(ResultCard).join("")}
-    ${list.length===0 ? `<div class="empty-filter">
+    ${reviewed.map(ResultCard).join("")}
+    ${showUnreviewed ? `
+      <div style="margin-top:32px;padding-top:24px;border-top:1px solid var(--border)">
+        <h3 style="font-size:14px;font-weight:600;color:rgba(255,255,255,0.4);margin-bottom:16px;text-transform:uppercase;letter-spacing:0.5px">Not yet reviewed</h3>
+        ${unreviewed.map(ResultCard).join("")}
+      </div>
+    ` : ''}
+    ${reviewed.length===0 ? `<div class="empty-filter">
       <div class="empty-filter-icon" style="font-size:28px;color:rgba(255,255,255,0.3)">No results</div>
       <h3>${S.filter==='top'?'No top-rated landlords yet':S.filter==='avoid'?'No low-rated landlords yet':S.filter==='responsive'?'No response data yet':'No landlords match this filter'}</h3>
       <p>${S.filter==='top'||S.filter==='avoid'||S.filter==='responsive'?'Ratings appear once students submit reviews. Be the first!':'Try a different filter or browse all landlords.'}</p>
