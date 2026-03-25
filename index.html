@@ -851,7 +851,7 @@ function Hero() {
   const revCount = getReviewCount();
   const landlordCount = SEED_LANDLORDS.length;
   return `<div class="hero">
-    <div class="hero-badge">&#127979; By students, for students — zero landlord influence</div>
+    <div class="hero-badge">By students, for students — zero landlord influence</div>
     <h1>The Honest Guide to<br>UIUC <em>Housing</em></h1>
     <p>Read student reviews. Compare prices. No sponsored rankings — ever.</p>
     ${revCount > 0 ? `<div style="display:flex;justify-content:center;gap:24px;margin-top:12px;animation:fadeUp 0.6s ease 0.15s both">
@@ -859,7 +859,7 @@ function Hero() {
       <div style="text-align:center"><span style="font-size:24px;font-weight:800;color:white">${landlordCount}</span><span style="font-size:12px;color:rgba(255,255,255,0.45);display:block;margin-top:2px">Landlords Tracked</span></div>
     </div>` : ''}
     <div style="margin:24px auto 0;text-align:center;animation:fadeUp 0.6s ease 0.3s both">
-      <button class="hero-cta" onclick="go({page:'home',modal:true,stars:0,wouldRentChoice:null,posTags:[],negTags:[],formData:{}})">&#9998; Rate Your Landlord — 60 Seconds</button>
+      <button class="hero-cta" onclick="go({page:'home',modal:true,stars:0,wouldRentChoice:null,posTags:[],negTags:[],formData:{}})">Rate Your Landlord — 60 Seconds</button>
     </div>
     <div class="search-tags">
       <span class="search-tag ${S.filter==='all'?'active':''}" onclick="go({filter:'all'})">All</span>
@@ -928,7 +928,7 @@ function ResultsList() {
     </div>
     ${list.map(ResultCard).join("")}
     ${list.length===0 ? `<div class="empty-filter">
-      <div class="empty-filter-icon">&#128269;</div>
+      <div class="empty-filter-icon" style="font-size:28px;color:rgba(255,255,255,0.3)">No results</div>
       <h3>${S.filter==='top'?'No top-rated landlords yet':S.filter==='avoid'?'No low-rated landlords yet':S.filter==='responsive'?'No response data yet':'No landlords match this filter'}</h3>
       <p>${S.filter==='top'||S.filter==='avoid'||S.filter==='responsive'?'Ratings appear once students submit reviews. Be the first!':'Try a different filter or browse all landlords.'}</p>
       <button style="margin-top:16px;padding:10px 24px;background:var(--orange);color:white;border:none;border-radius:8px;font-weight:600;font-size:14px;cursor:pointer;font-family:inherit" onclick="go({filter:'all'})">View All Landlords</button>
@@ -1012,8 +1012,8 @@ function DetailPage() {
               ${(r.neg||[]).map(t=>`<span class="rtag rtag-neg">${esc(t)}</span>`).join("")}
             </div>
             <div class="review-actions">
-              <button ${isHelped?'style="border-color:#16A34A;color:#16A34A"':''} onclick="event.stopPropagation();markHelpful('${r.id}',this,${r.helpful||0})">&#128077; ${isHelped?'Helpful':'Helpful'} (${isHelped?(r.helpful||0)+1:r.helpful||0})</button>
-              <button ${reported[r.id]?'style="border-color:#DC2626;color:#DC2626"':''} onclick="event.stopPropagation();toggleReport('${r.id}',this)">${reported[r.id]?'&#128681; Reported':'&#128681; Report'}</button>
+              <button ${isHelped?'style="border-color:#16A34A;color:#16A34A"':''} onclick="event.stopPropagation();markHelpful('${r.id}',this,${r.helpful||0})">${isHelped?'Helpful':'Helpful'} (${isHelped?(r.helpful||0)+1:r.helpful||0})</button>
+              <button ${reported[r.id]?'style="border-color:#DC2626;color:#DC2626"':''} onclick="event.stopPropagation();toggleReport('${r.id}',this)">${reported[r.id]?'Reported':'Report'}</button>
             </div>
           </div>
         </div>
@@ -1163,7 +1163,7 @@ function Compare() {
     <p style="font-size:12px;color:#7C7C7C;margin-top:8px">*Value = Rating per $1,000/mo. Higher is better. Prices are averages from student reviews (per person/month).</p>
     ` : `
     <div style="text-align:center;padding:48px 24px">
-      <div style="font-size:48px;margin-bottom:12px">&#128200;</div>
+      <div style="font-size:20px;margin-bottom:12px;color:rgba(255,255,255,0.3);font-weight:700">—</div>
       <h3 style="font-size:20px;font-weight:700;margin-bottom:8px">Price comparisons powered by reviews</h3>
       <p style="color:#6B7280;max-width:400px;margin:0 auto 20px;line-height:1.6">When students submit reviews with their rent, those prices show up here so you can compare costs across buildings and neighborhoods.</p>
       <button onclick="go({page:'home',modal:true,stars:0,wouldRentChoice:null,posTags:[],negTags:[],formData:{}})" style="padding:12px 28px;background:var(--orange);color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit">Add Your Rent Data</button>
@@ -1584,7 +1584,7 @@ async function handlePdfUpload(file) {
   pdfExtracting = true;
   const textarea = document.getElementById('lease-text');
   const uploadZone = document.getElementById('upload-zone');
-  if (uploadZone) uploadZone.innerHTML = '<div class="upload-icon">&#9203;</div><div class="upload-text">Extracting text from <strong>' + esc(file.name) + '</strong>...</div>';
+  if (uploadZone) uploadZone.innerHTML = '<div class="upload-icon" style="font-size:14px;color:rgba(255,255,255,0.5)">...</div><div class="upload-text">Extracting text from <strong>' + esc(file.name) + '</strong>...</div>';
 
   try {
     const text = await extractPdfText(file);
@@ -1601,7 +1601,7 @@ async function handlePdfUpload(file) {
     trackScannerEvent('pdf_upload_fail', { filename: file.name, reason: err.message });
   }
   pdfExtracting = false;
-  if (uploadZone) uploadZone.innerHTML = '<div class="upload-icon">&#128196;</div><div class="upload-text"><strong>Click to upload</strong> or drag & drop your lease PDF<br>PDF files up to 20MB</div>';
+  if (uploadZone) uploadZone.innerHTML = '<div class="upload-icon" style="font-size:24px;font-weight:700;color:rgba(255,255,255,0.3)">PDF</div><div class="upload-text"><strong>Click to upload</strong> or drag & drop your lease PDF<br>PDF files up to 20MB</div>';
 }
 
 function setupUploadZone() {
@@ -1633,7 +1633,7 @@ function showInterestPopup() {
   overlay.id = 'interest-overlay';
   overlay.innerHTML = `
     <div class="interest-modal">
-      <h3>&#128274; Want a Smarter Lease Scanner?</h3>
+      <h3>Want a Smarter Lease Scanner?</h3>
       <p>We're building an AI-powered version that gives you a detailed clause-by-clause analysis, specific to your landlord and Illinois law. Drop your email to get early access when it launches.</p>
       <input type="email" id="interest-email" placeholder="your@illinois.edu" />
       <div class="interest-modal-btns">
@@ -1679,13 +1679,13 @@ async function submitInterest() {
 function LeaseScanner() {
   setupUploadZone();
   return `<div class="scanner-header">
-    <h2>&#128269; Lease Clause Scanner</h2>
+    <h2>Lease Clause Scanner</h2>
     <p>Upload your lease PDF or paste the text — we'll flag clauses that may conflict with Illinois tenant law.</p>
   </div>
   <div class="scanner-wrap">
 
     <div style="background:#F0FDF4;border:1px solid #86EFAC;border-radius:10px;padding:16px 20px;margin-bottom:16px;font-size:13px;color:#166534;line-height:1.6;">
-      <strong style="color:#15803D;">&#128274; Your lease stays private.</strong> This scanner runs entirely in your browser. Your lease text is never uploaded, stored, or sent to any server. Not ours, not anyone's. All analysis happens on your device and disappears when you close the page.
+      <strong style="color:#15803D;">Your lease stays private.</strong> This scanner runs entirely in your browser. Your lease text is never uploaded, stored, or sent to any server. Not ours, not anyone's. All analysis happens on your device and disappears when you close the page.
     </div>
 
     <div class="scanner-disclaimer">
@@ -1693,7 +1693,7 @@ function LeaseScanner() {
     </div>
 
     <div class="scanner-upload-zone" id="upload-zone">
-      <div class="upload-icon">&#128196;</div>
+      <div class="upload-icon" style="font-size:24px;font-weight:700;color:rgba(255,255,255,0.3)">PDF</div>
       <div class="upload-text"><strong>Click to upload</strong> or drag & drop your lease PDF<br>PDF files up to 20MB<br><span style="font-size:12px;color:#999;">Your file never leaves your device</span></div>
     </div>
     <input type="file" id="pdf-file-input" accept=".pdf" style="display:none">
@@ -1709,10 +1709,10 @@ function LeaseScanner() {
 
     <div class="scanner-cta-bar">
       <button class="scan-btn" onclick="runScan()">
-        <span style="font-size:20px">&#128269;</span> Scan My Lease
+        Scan My Lease
       </button>
       <button class="cta-notify" onclick="showInterestPopup()" style="display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;border:none;font-family:inherit;background:var(--orange);color:white;transition:all 0.2s;">
-        <span style="font-size:16px">&#128276;</span> Get AI Scanner Early Access
+        Get AI Scanner Early Access
       </button>
     </div>
 
@@ -1747,7 +1747,7 @@ function renderScanResults() {
 
   if (flags.length === 0) {
     return `<div class="scan-clean">
-      <h3>&#9989; No Common Red Flags Detected</h3>
+      <h3>No Common Red Flags Detected</h3>
       <p>We didn't find any commonly flagged clauses, but this doesn't mean your lease is perfect. We recommend having the <a href="https://studentlegal.illinois.edu/" target="_blank" style="color:#065F46;text-decoration:underline">UIUC Student Legal Service</a> review it — it's free.</p>
     </div>`;
   }
@@ -1764,11 +1764,11 @@ function renderScanResults() {
       return sev[a.severity] - sev[b.severity];
     }).map(f => `
       <div class="flag-card severity-${f.severity}">
-        <div class="flag-severity">${f.severity === 'high' ? '&#9888;&#65039; Review Carefully' : f.severity === 'medium' ? '&#9888; Worth Checking' : '&#8505;&#65039; Good to Know'}</div>
+        <div class="flag-severity">${f.severity === 'high' ? 'Review Carefully' : f.severity === 'medium' ? 'Worth Checking' : 'Good to Know'}</div>
         <div class="flag-title">${esc(f.title)}</div>
         <div class="flag-match">"...${esc(f.matchedTerm)}..."</div>
         <div class="flag-explain">${f.explain}</div>
-        <div class="flag-statute">&#128218; ${esc(f.statute)}</div>
+        <div class="flag-statute">${esc(f.statute)}</div>
       </div>
     `).join('')}
     <div class="scanner-disclaimer" style="margin-top:24px">
@@ -2051,7 +2051,7 @@ function showSharePrompt() {
   overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;z-index:300;animation:fadeIn 0.2s';
   overlay.innerHTML = `
     <div style="background:white;border-radius:16px;padding:32px;max-width:400px;width:90%;text-align:center;animation:slideDown 0.3s;box-shadow:0 20px 60px rgba(0,0,0,0.2)">
-      <div style="font-size:48px;margin-bottom:12px">&#9989;</div>
+      <div style="font-size:24px;margin-bottom:12px;font-weight:800;color:#16A34A">Done</div>
       <h3 style="font-size:20px;font-weight:800;margin-bottom:6px;letter-spacing:-0.3px">Review Submitted!</h3>
       <p style="font-size:14px;color:#6B7280;line-height:1.6;margin-bottom:20px">Your review is live and helping other students make better housing decisions.</p>
       <p style="font-size:13px;font-weight:600;color:#1F2937;margin-bottom:12px">Know someone apartment hunting?</p>
@@ -2070,7 +2070,7 @@ async function markHelpful(reviewId, btn, currentCount) {
     removeHelpful(reviewId);
     btn.style.borderColor = '';
     btn.style.color = '';
-    btn.innerHTML = `&#128077; Helpful (${currentCount})`;
+    btn.innerHTML = `Helpful (${currentCount})`;
     // Decrement in DB
     try {
       const existing = dbReviews.find(r => r.id === reviewId);
@@ -2083,7 +2083,7 @@ async function markHelpful(reviewId, btn, currentCount) {
   saveHelpful(reviewId);
   btn.style.borderColor = '#16A34A';
   btn.style.color = '#16A34A';
-  btn.innerHTML = `&#128077; Helpful (${currentCount + 1})`;
+  btn.innerHTML = `Helpful (${currentCount + 1})`;
   await incrementHelpful(reviewId);
 }
 
@@ -2103,14 +2103,14 @@ function toggleReport(reviewId, btn) {
     localStorage.setItem('ratemycrib_reported', JSON.stringify(reported));
     btn.style.borderColor = '';
     btn.style.color = '';
-    btn.innerHTML = '&#128681; Report';
+    btn.innerHTML = 'Report';
     toast('Report removed.');
   } else {
     reported[reviewId] = true;
     localStorage.setItem('ratemycrib_reported', JSON.stringify(reported));
     btn.style.borderColor = '#DC2626';
     btn.style.color = '#DC2626';
-    btn.innerHTML = '&#128681; Reported';
+    btn.innerHTML = 'Reported';
     toast('Review reported. We\'ll look into it.');
   }
 }
