@@ -602,6 +602,7 @@ async function loadDbReviews() {
     dbReviews = (data || []).map(r => ({
       id: r.id,
       landlordId: r.landlord_id,
+      landlordName: r.landlord_name || '',
       property: r.property || 'Not specified',
       author: r.author || 'Anonymous Student',
       date: new Date(r.created_at).toLocaleDateString('en-US', {month:'short', year:'numeric'}),
@@ -785,6 +786,16 @@ const MIN_RENT = 200;  // no legitimate UIUC rent is under $200/mo per person
 const MAX_RENT = 4000; // or over $4,000/mo per person
 const isValidRent = r => r >= MIN_RENT && r <= MAX_RENT;
 
+// Look up a landlord by id from both seed and user-submitted lists
+function findLandlord(id) {
+  const seed = SEED_LANDLORDS.find(x => x.id === id);
+  if (seed) return seed;
+  const ul = (userLandlords || []).find(x => x.id === id);
+  if (ul) return { id: ul.id, name: ul.name, props: 0, rating: 0, reviews: 0, wouldRent: 0, responseRate: "—",
+    scores:{maintenance:0,communication:0,fairness:0,moveOut:0}, topTags:["New Listing"], dist:[0,0,0,0,0] };
+  return null;
+}
+
 const qClass = r => r === 0 ? "neutral" : r >= 3.5 ? "high" : r >= 2.5 ? "mid" : "low";
 const qLabel = r => r === 0 ? "NEW" : r >= 4.0 ? "AWESOME" : r >= 3.5 ? "GOOD" : r >= 2.5 ? "OK" : r >= 2.0 ? "POOR" : "AWFUL";
 const valClass = (v, good, ok) => v >= good ? "val-good" : v >= ok ? "val-ok" : "val-bad";
@@ -861,7 +872,7 @@ function ShareBanner() {
 
 function Hero() {
   const revCount = getReviewCount();
-  const landlordCount = SEED_LANDLORDS.filter(l => getLandlordStats(l).reviews > 0).length + (userLandlords||[]).filter(ul => dbReviews.some(r => r.landlordId === ul.id)).length;
+  const landlordCount = SEED_LANDLORDS.length + (userLandlords||[]).length;
   return `<div class="hero">
     <div class="hero-badge">By students, for students — zero landlord influence</div>
     <h1>The Honest Guide to<br>UIUC <em>Housing</em></h1>
@@ -977,7 +988,7 @@ function ResultsList() {
 }
 
 function DetailPage() {
-  const raw = SEED_LANDLORDS.find(x=>x.id===S.detail);
+  const raw = findLandlord(S.detail);
   if (!raw) return '';
   const l = getLandlordStats(raw);
   const q = qClass(l.rating);
@@ -1179,7 +1190,7 @@ function Compare() {
         <thead><tr><th>Address</th><th>Landlord</th><th>Neighborhood</th><th>Price/mo</th><th>Rating</th><th>Value*</th></tr></thead>
         <tbody>
           ${sorted.map(p => {
-            const l = SEED_LANDLORDS.find(x=>x.id===p.landlordId);
+            const l = findLandlord(p.landlordId);
             const lStats = l ? getLandlordStats(l) : null;
             const rating = lStats && lStats.reviews > 0 ? lStats.rating : 0;
             const val = (rating > 0 && p.reviewPrice > 0) ? (rating/p.reviewPrice*1000).toFixed(1) : '—';
@@ -1209,7 +1220,7 @@ function Compare() {
 
 function Modal() {
   if (!S.modal) return '';
-  const l = S.detail ? SEED_LANDLORDS.find(x=>x.id===S.detail) : null;
+  const l = S.detail ? findLandlord(S.detail) : null;
   return `<div class="modal-bg" onclick="if(event.target===this)closeModal()">
     <div class="modal-box">
       <button class="modal-close" onclick="closeModal()" aria-label="Close">&times;</button>
@@ -1913,6 +1924,7 @@ async function loadUserSubmissions() {
     if (ld) userLandlords = ld;
     const { data: pp } = await db.from('user_properties').select('*').order('address');
     if (pp) userProperties = pp;
+    render(); // re-render to include user-submitted landlords in UI
   } catch(e) { /* tables may not exist yet — silent fail */ }
 }
 
@@ -2035,11 +2047,11 @@ async function submitReview(landlordIdFromDetail) {
       landlordName = ul ? ul.name : '';
     } else {
       landlordId = parseInt(landlordVal);
-      const match = SEED_LANDLORDS.find(x => x.id === landlordId);
+      const match = findLandlord(landlordId);
       landlordName = match ? match.name : '';
     }
   } else {
-    const match = SEED_LANDLORDS.find(x => x.id === landlordId);
+    const match = findLandlord(landlordId);
     landlordName = match ? match.name : '';
   }
 
@@ -2100,7 +2112,7 @@ async function submitReview(landlordIdFromDetail) {
     try {
       await db.from('user_properties').insert({
         address: propCustom,
-        landlord_name: landlordName || (SEED_LANDLORDS.find(x=>x.id===landlordId)||{}).name || '',
+        landlord_name: landlordName || (findLandlord(landlordId)||{}).name || '',
         hood_name: hoodName,
         submitted_at: new Date().toISOString()
       });
