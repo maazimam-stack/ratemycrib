@@ -1782,10 +1782,36 @@ function renderScanResults() {
   `;
 }
 
+function looksLikeLease(text) {
+  // Must have minimum length — real leases are long
+  if (text.length < 200) return { valid: false, reason: 'Too short — paste at least a few paragraphs from your lease.' };
+  // Check for lease-related keywords
+  const leaseWords = ['tenant','landlord','lease','rent','security deposit','premises','agreement',
+    'occupant','property','termination','notice','maintenance','utilities','move-in','move-out',
+    'monthly','payment','term','renewal','violation','eviction','damages','repair','unit','apartment',
+    'bedroom','bathroom','parking','pet','sublease','assignee','lessee','lessor','dwelling','occupancy'];
+  const lower = text.toLowerCase();
+  const matchCount = leaseWords.filter(w => lower.includes(w)).length;
+  if (matchCount < 3) return { valid: false, reason: "This doesn't look like a lease. Paste the actual text from your lease agreement and we'll flag anything sketchy." };
+  // Check for excessive repetition (spam detection)
+  const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+  if (lines.length >= 3) {
+    const uniqueLines = new Set(lines);
+    if (uniqueLines.size / lines.length < 0.3) return { valid: false, reason: "Looks like repeated text. Paste your actual lease agreement to get a real scan." };
+  }
+  return { valid: true };
+}
+
 function runScan() {
   const text = document.getElementById('lease-text')?.value?.trim();
   if (!text || text.length < 50) {
     toast('Please paste your lease text (at least a few paragraphs).');
+    return;
+  }
+  const check = looksLikeLease(text);
+  if (!check.valid) {
+    toast(check.reason);
+    trackScannerEvent('scan_rejected', { reason: check.reason, text_length: text.length });
     return;
   }
   scannerClicks++;
