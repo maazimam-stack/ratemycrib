@@ -1677,9 +1677,13 @@ function Nav() {
 function closeNav() { const nr = document.querySelector('.nav-right'); if (nr) nr.classList.remove('mobile-open'); }
 function toggleDarkMode() {
   const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-  document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
-  try { localStorage.setItem('rmc-theme', isDark ? 'light' : 'dark'); } catch(e) {}
-  render();
+  const newTheme = isDark ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', newTheme);
+  try { localStorage.setItem('rmc-theme', newTheme); } catch(e) {}
+  // No render() needed — CSS handles everything via [data-theme] selectors
+  // Just swap the toggle button icon (sun ↔ moon)
+  var btn = document.querySelector('.dm-toggle');
+  if (btn) btn.innerHTML = newTheme === 'dark' ? '&#9788;' : '&#9790;';
 }
 
 function LandlordTicker() {
@@ -2059,7 +2063,7 @@ function ResultsList() {
 
   const showUnreviewed = S.filter === 'all' && unreviewed.length > 0;
 
-  return `<div class="container">
+  return `<div id="results-container" class="container">
     <div class="search-bar-wrap" style="margin-bottom:16px">
       <div style="position:relative">
         <svg style="position:absolute;left:14px;top:50%;transform:translateY(-50%);pointer-events:none" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
@@ -2171,7 +2175,7 @@ function DetailPage() {
   <div class="reviews-section">
     <div class="reviews-header">
       <h2>${revs.length} Student Review${revs.length!==1?'s':''}</h2>
-      <button class="write-btn" onclick="go({modal:true,stars:0,wouldRentChoice:null,posTags:[],negTags:[],formData:{}})">+ Warn Other Students About This Landlord</button>
+      <button class="write-btn" onclick="go({modal:true,stars:0,wouldRentChoice:null,posTags:[],negTags:[],formData:{}})">+ Review This Landlord</button>
     </div>
     ${revs.map(r => {
       const rq = qClass(r.rating);
@@ -3685,12 +3689,47 @@ function LandlordsInfoPage() {
 }
 
 // ===== MAIN RENDER =====
+var _lastSort = null;
+var _lastFilter = null;
+var _lastHoodFilter = null;
+
 function render() {
   // Track whether this is a real page navigation (vs sort/filter/dark mode toggle)
   var pageChanged = (S.page !== S._prevPage) || (S.detail !== S._prevDetail);
   S._prevPage = S.page;
   S._prevDetail = S.detail;
 
+  // Fast path: if we're on the home page and only sort/filter changed, just swap the results container
+  var onHomePage = S.page === 'home' && !S.detail && !S.modal;
+  var onlyResultsChanged = onHomePage && !pageChanged &&
+    (S.sort !== _lastSort || S.filter !== _lastFilter || S.hoodFilter !== _lastHoodFilter);
+  var resultsEl = onlyResultsChanged ? document.getElementById('results-container') : null;
+
+  if (resultsEl && onlyResultsChanged) {
+    // Partial update — only re-render the results list, leave hero/nav/ticker untouched
+    var temp = document.createElement('div');
+    temp.innerHTML = ResultsList();
+    resultsEl.replaceWith(temp.firstElementChild);
+    _lastSort = S.sort;
+    _lastFilter = S.filter;
+    _lastHoodFilter = S.hoodFilter;
+    // Update filter tag active states in Hero (they live outside #results-container)
+    var searchTags = document.querySelectorAll('.search-tags .search-tag');
+    searchTags.forEach(function(tag) {
+      var txt = tag.textContent.trim();
+      var val = txt === 'Top Rated' ? 'top' : txt === 'Lowest Rated' ? 'avoid' : 'all';
+      if (val === S.filter) tag.classList.add('active');
+      else tag.classList.remove('active');
+    });
+    // Re-apply search
+    if (S.search) {
+      var searchEl = document.getElementById('landlord-search');
+      if (searchEl) { searchEl.value = S.search; filterLandlordCards(S.search); }
+    }
+    return;
+  }
+
+  // Full render
   let html = Nav() + LandlordTicker();
   if (S.page === 'home' && !S.detail) html += ShareBanner() + Hero() + ResultsList();
   else if (S.page === 'insights') html += InsightsPage();
@@ -3705,6 +3744,9 @@ function render() {
   else if (S.page === 'landlords-info') html += LandlordsInfoPage();
   html += Modal() + Footer();
   document.getElementById('app').innerHTML = html;
+  _lastSort = S.sort;
+  _lastFilter = S.filter;
+  _lastHoodFilter = S.hoodFilter;
   // Only scroll to top on actual page/detail navigation, not on sort/filter/dark mode changes
   if (pageChanged && !S.modal) window.scrollTo(0, 0);
   // Re-apply search filter after re-render (preserves search state across sort/dark mode changes)
