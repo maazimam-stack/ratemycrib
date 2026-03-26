@@ -181,6 +181,7 @@
   .rtag { padding: 4px 10px; border-radius: 50px; font-size: 11px; font-weight: 600; letter-spacing: 0.1px; }
   .rtag-pos { background: #ECFDF5; color: #065F46; border: 1px solid #A7F3D0; }
   .rtag-neg { background: #FEF2F2; color: #991B1B; border: 1px solid #FECACA; }
+  .rtag-recent { background: #EFF6FF; color: #1D4ED8; border: 1px solid #BFDBFE; }
   .rtag-neutral { background: var(--light); color: var(--muted); border: 1px solid var(--border); }
 
   .result-side { width: 130px; min-width: 130px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 16px; border-left: 1px solid var(--border); background: var(--light); }
@@ -482,6 +483,13 @@
     .nav-cta { margin-left: 0; margin-top: 4px; text-align: center; padding: 10px 20px; font-size: 14px; }
     .nav-brand { font-size: 18px; }
 
+    .scatter-wrap { padding: 20px 12px; }
+    .scatter-header { flex-direction: column; gap: 4px; }
+    .scatter-subtitle { font-size: 12px; margin-bottom: 16px; }
+    .scatter-axis-x { font-size: 10px; }
+    .insight-stat-card { padding: 14px 10px; }
+    .insight-stat-val { font-size: 20px; }
+    .insight-stat-label { font-size: 10px; }
     .container { padding: 24px 16px; }
     .scanner-wrap { padding: 28px 16px; }
     .scanner-textarea { min-height: 150px; font-size: 13px; }
@@ -555,9 +563,28 @@
   [data-theme="dark"] .rtag { background: #374151; color: #D1D5DB; }
   [data-theme="dark"] .rtag-pos { background: rgba(5,150,105,0.15); color: #6EE7B7; }
   [data-theme="dark"] .rtag-neg { background: rgba(239,68,68,0.15); color: #FCA5A5; }
+  [data-theme="dark"] .rtag-recent { background: rgba(59,130,246,0.15); color: #93C5FD; border-color: rgba(59,130,246,0.3); }
   [data-theme="dark"] .search-tag { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.5); }
   [data-theme="dark"] .search-tag.active { background: var(--orange); color: white; }
   [data-theme="dark"] .scatter-wrap { background: var(--card-bg); border-color: var(--border); }
+
+  /* Alert/callout boxes for legal pages */
+  .alert-red { background: #FEF2F2; border: 1px solid #FECACA; border-radius: 12px; padding: 16px 20px; margin-bottom: 24px; }
+  .alert-red strong, .alert-red p, .alert-red a { color: #991B1B; }
+  .alert-orange { background: #FFF7ED; border: 1px solid #FED7AA; border-radius: 12px; padding: 20px; margin-bottom: 24px; }
+  .alert-orange strong { color: #C2410C; }
+  .alert-orange p, .alert-orange a { color: #92400E; }
+  .alert-orange a { font-weight: 600; text-decoration: underline; }
+  .info-card { background: var(--light); padding: 20px; border-radius: 12px; border: 1px solid var(--border); }
+  .info-card strong { color: var(--orange); }
+  .info-card p { margin-top: 8px; color: var(--text); font-size: 14px; line-height: 1.6; }
+  [data-theme="dark"] .alert-red { background: rgba(220,38,38,0.1); border-color: rgba(220,38,38,0.25); }
+  [data-theme="dark"] .alert-red strong, [data-theme="dark"] .alert-red p { color: #FCA5A5; }
+  [data-theme="dark"] .alert-red a { color: #FCA5A5; }
+  [data-theme="dark"] .alert-orange { background: rgba(234,88,12,0.1); border-color: rgba(234,88,12,0.25); }
+  [data-theme="dark"] .alert-orange strong { color: #FB923C; }
+  [data-theme="dark"] .alert-orange p { color: #FDBA74; }
+  [data-theme="dark"] .alert-orange a { color: #FB923C; }
   [data-theme="dark"] .scatter-dot { border-color: rgba(0,0,0,0.4); }
   [data-theme="dark"] .scatter-tooltip { background: #E5E7EB; color: #111827; }
 
@@ -584,6 +611,9 @@
   .scatter-legend { display: flex; gap: 14px; flex-wrap: wrap; }
   .scatter-legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--muted); font-weight: 500; }
   .scatter-legend-dot { width: 9px; height: 9px; border-radius: 50%; }
+  .scatter-select { width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; font-family: inherit; background: var(--white); color: var(--text); cursor: pointer; }
+  .scatter-select:focus { outline: none; border-color: var(--orange); }
+  [data-theme="dark"] .scatter-select { background: var(--card-bg); color: var(--text); border-color: var(--border); }
 </style>
 </head>
 <body>
@@ -992,6 +1022,7 @@ async function loadDbReviews() {
       property: r.property || 'Not specified',
       author: r.author || 'Anonymous Student',
       date: new Date(r.created_at).toLocaleDateString('en-US', {month:'short', year:'numeric'}),
+      createdAt: new Date(r.created_at).getTime(),
       rating: parseFloat(r.rating),
       wouldRent: r.would_rent,
       text: r.review_text,
@@ -1342,8 +1373,13 @@ function RentVsRatingChart() {
 
   if (data.length < 3) return ''; // Need at least 3 landlords with rent data
 
-  var chartH = 420;
-  var padL = 48, padR = 24, padT = 32, padB = 48;
+  // Responsive dimensions
+  var isMobile = window.innerWidth < 700;
+  var chartH = isMobile ? 300 : 420;
+  var padL = isMobile ? 12 : 48;
+  var padR = isMobile ? 6 : 24;
+  var padT = isMobile ? 24 : 32;
+  var padB = isMobile ? 36 : 48;
 
   // Dynamic axis ranges based on actual data with breathing room
   var rents = data.map(function(d){ return d.rent; });
@@ -1357,14 +1393,40 @@ function RentVsRatingChart() {
   function xPos(rent) { return padL + (rent - minRent) / (maxRent - minRent) * (100 - padL - padR); }
   function yPos(rating) { return padT + (1 - (rating - minRating) / (maxRating - minRating)) * (chartH - padT - padB); }
 
+  // Average crosshair
+  var avgRent = Math.round(data.reduce(function(s,d){return s+d.rent;},0) / data.length);
+  var avgRating = data.reduce(function(s,d){return s+d.rating;},0) / data.length;
+  var highlighted = S.highlightLandlord || null;
+
   var dots = data.map(function(d) {
     var x = xPos(d.rent);
     var y = yPos(d.rating);
     var color = d.rating >= 3.5 ? '#16A34A' : d.rating >= 2.5 ? '#EAB308' : '#DC2626';
-    var size = Math.max(12, Math.min(22, 8 + d.reviews * 1.8));
-    return '<div class="scatter-dot" style="left:' + x + '%;top:' + y + 'px;width:' + size + 'px;height:' + size + 'px;background:' + color + '" onclick="event.stopPropagation();go({page:\'detail\',detail:' + d.id + '})">' +
+    var baseSize = isMobile ? Math.max(8, Math.min(14, 6 + d.reviews * 1.2)) : Math.max(12, Math.min(22, 8 + d.reviews * 1.8));
+    var isHL = highlighted && d.id === highlighted;
+    var isDimmed = highlighted && d.id !== highlighted;
+    var size = isHL ? baseSize + 6 : baseSize;
+    var opacity = isDimmed ? '0.2' : '1';
+    var border = isHL ? '3px solid #fff' : '2px solid rgba(255,255,255,0.9)';
+    var zIdx = isHL ? '5' : '2';
+    var shadow = isHL ? '0 0 12px rgba(232,74,39,0.6)' : '0 1px 3px rgba(0,0,0,0.12)';
+    return '<div class="scatter-dot" style="left:' + x + '%;top:' + y + 'px;width:' + size + 'px;height:' + size + 'px;background:' + color + ';opacity:' + opacity + ';border:' + border + ';z-index:' + zIdx + ';box-shadow:' + shadow + '" onclick="event.stopPropagation();go({page:\'detail\',detail:' + d.id + '})">' +
       '<div class="scatter-tooltip">' + esc(d.name) + '<br>' + d.rating.toFixed(1) + '\u2605 \u00B7 $' + d.rent + '/mo \u00B7 ' + d.wouldRent + '% would rent again</div>' +
     '</div>';
+  }).join('');
+
+  // Average crosshair lines (always shown, more prominent when a landlord is highlighted)
+  var avgX = xPos(avgRent);
+  var avgY = yPos(avgRating);
+  var crosshairOpacity = highlighted ? '0.5' : '0.15';
+  var avgMarker = '<div style="position:absolute;left:' + avgX + '%;top:' + padT + 'px;bottom:' + padB + 'px;border-left:1px dashed rgba(232,74,39,' + crosshairOpacity + ');z-index:1"></div>' +
+    '<div style="position:absolute;top:' + avgY + 'px;left:' + padL + '%;right:' + padR + '%;border-top:1px dashed rgba(232,74,39,' + crosshairOpacity + ');z-index:1"></div>' +
+    '<div style="position:absolute;left:' + avgX + '%;top:' + avgY + 'px;transform:translate(-50%,-50%);width:8px;height:8px;background:var(--orange);border-radius:50%;z-index:1;opacity:' + (highlighted ? '0.7' : '0.3') + '"></div>' +
+    (highlighted ? '<div style="position:absolute;left:' + (avgX+0.5) + '%;top:' + (avgY - 18) + 'px;font-size:9px;color:var(--orange);font-weight:600;white-space:nowrap;z-index:3">AVG</div>' : '');
+
+  // Landlord dropdown options
+  var ddOptions = '<option value="">Find your landlord\u2026</option>' + data.sort(function(a,b){return a.name.localeCompare(b.name);}).map(function(d) {
+    return '<option value="' + d.id + '"' + (highlighted===d.id?' selected':'') + '>' + esc(d.name) + ' \u2014 ' + d.rating.toFixed(1) + '\u2605 $' + d.rent + '/mo</option>';
   }).join('');
 
   // Y-axis grid lines at whole-number ratings within range
@@ -1372,17 +1434,23 @@ function RentVsRatingChart() {
   for (var g = Math.ceil(minRating); g <= Math.floor(maxRating); g++) {
     var gy = yPos(g);
     gridLines += '<div style="position:absolute;left:' + padL + '%;right:' + padR + '%;top:' + gy + 'px;border-top:1px solid rgba(128,128,128,0.08)"></div>';
-    gridLines += '<div style="position:absolute;left:8px;top:' + (gy - 8) + 'px;font-size:11px;color:var(--muted);font-weight:600">' + g + '.0</div>';
+    if (!isMobile) {
+      gridLines += '<div style="position:absolute;left:8px;top:' + (gy - 8) + 'px;font-size:11px;color:var(--muted);font-weight:600">' + g + '.0</div>';
+    } else {
+      gridLines += '<div style="position:absolute;left:0;top:' + (gy - 14) + 'px;font-size:9px;color:var(--muted);font-weight:600;background:var(--card-bg,#fff);padding:1px 3px;border-radius:3px;z-index:3">' + g + '.0</div>';
+    }
   }
 
   // X-axis rent labels — clean intervals
   var rentRange = maxRent - minRent;
-  var rentStep = rentRange <= 400 ? 100 : rentRange <= 800 ? 150 : rentRange <= 1200 ? 200 : 250;
+  var rentStep = isMobile
+    ? (rentRange <= 400 ? 200 : rentRange <= 800 ? 300 : rentRange <= 1200 ? 400 : 500)
+    : (rentRange <= 400 ? 100 : rentRange <= 800 ? 150 : rentRange <= 1200 ? 200 : 250);
   var rentLabels = '';
   var startR = Math.ceil(minRent / rentStep) * rentStep;
   for (var r = startR; r <= maxRent; r += rentStep) {
     var rx = xPos(r);
-    rentLabels += '<div style="position:absolute;left:' + rx + '%;bottom:8px;transform:translateX(-50%);font-size:11px;color:var(--muted);font-weight:500">$' + r + '</div>';
+    rentLabels += '<div style="position:absolute;left:' + rx + '%;bottom:8px;transform:translateX(-50%);font-size:' + (isMobile ? '9px' : '11px') + ';color:var(--muted);font-weight:500">$' + r + '</div>';
     // Vertical tick
     gridLines += '<div style="position:absolute;left:' + rx + '%;top:' + padT + 'px;bottom:' + padB + 'px;border-left:1px solid rgba(128,128,128,0.06)"></div>';
   }
@@ -1404,11 +1472,12 @@ function RentVsRatingChart() {
     '<div class="scatter-chart" style="height:' + chartH + 'px">' +
       gridLines +
       axes +
+      avgMarker +
       dots +
       rentLabels +
     '</div>' +
     '<div class="scatter-axis-x">Avg Monthly Rent \u2192</div>' +
-    '<div class="scatter-axis-y-label">\u2191 Rating</div>' +
+    '<div style="margin-top:16px"><select class="scatter-select" onchange="go({highlightLandlord:this.value?parseInt(this.value):null})">' + ddOptions + '</select></div>' +
   '</div>';
 }
 
@@ -1443,6 +1512,19 @@ function InsightsPage() {
   '</div>';
 }
 
+function getHeroQuote() {
+  const revs = allReviews().filter(r => r.text && r.text.length > 30 && r.text.length < 200 && r.rating >= 1);
+  if (revs.length === 0) return '';
+  // Pick a random review, seeded by the day so it changes daily but not on every render
+  const daySeed = Math.floor(Date.now() / 86400000);
+  const pick = revs[daySeed % revs.length];
+  const truncated = pick.text.length > 120 ? pick.text.substring(0, 117) + '...' : pick.text;
+  return '<div style="margin-top:16px;animation:fadeUp 0.6s ease 0.4s both;max-width:480px;margin-left:auto;margin-right:auto">' +
+    '<div style="font-size:14px;color:rgba(255,255,255,0.55);font-style:italic;line-height:1.5">&ldquo;' + esc(truncated) + '&rdquo;</div>' +
+    '<div style="font-size:11px;color:rgba(255,255,255,0.3);margin-top:4px">&mdash; ' + esc(pick.author) + ' on ' + esc(pick.landlordName || 'a landlord') + '</div>' +
+  '</div>';
+}
+
 function Hero() {
   const revCount = getReviewCount();
   const landlordCount = SEED_LANDLORDS.length + (userLandlords||[]).length;
@@ -1454,6 +1536,7 @@ function Hero() {
       <div style="text-align:center"><span style="font-size:24px;font-weight:800;color:var(--orange)">${revCount}</span><span style="font-size:12px;color:rgba(255,255,255,0.45);display:block;margin-top:2px">Student Reviews</span></div>
       <div style="text-align:center"><span style="font-size:24px;font-weight:800;color:white">${landlordCount}</span><span style="font-size:12px;color:rgba(255,255,255,0.45);display:block;margin-top:2px">Landlords Tracked</span></div>
     </div>` : ''}
+    ${getHeroQuote()}
     <div style="margin:24px auto 0;text-align:center;animation:fadeUp 0.6s ease 0.3s both">
       <button class="hero-cta" onclick="go({page:'home',modal:true,stars:0,wouldRentChoice:null,posTags:[],negTags:[],formData:{}})">Rate Your Landlord — 60 Seconds</button>
     </div>
@@ -1488,10 +1571,17 @@ function ResultCard(l) {
         <div class="result-metric"><strong style="color:${l.scores.moveOut > 0 ? scoreColor(l.scores.moveOut) : '#6B7280'}">${l.scores.moveOut > 0 ? l.scores.moveOut.toFixed(1) : '—'}</strong><span>Move-Out</span></div>
       </div>`}
       <div class="result-tags">
-        ${l.topTags.map(t => {
+        ${(function(){
+          var tags = l.topTags.filter(t => t !== 'New Listing');
+          var revs = getReviewsForLandlord(l);
+          var recent = revs.filter(r => r.createdAt && (Date.now() - r.createdAt) < 14*86400000);
+          if (recent.length > 0) tags = ['Recent Review', ...tags];
+          return tags;
+        })().map(t => {
           const isNeg = ["Slow Maintenance","Unfair Charges","Nightmare Maintenance","Avoid","Pests","Old Buildings","Move-Out Fees","Hit or Miss"].includes(t);
           const isPos = ["Responsive","Fast Repairs","Fair Deposits","Hidden Gem","Modern Units","Great Locations","Responsive Owner","Quiet","Well-Maintained","Solid Option","Prime Location","Good Locations","Cheap Rent"].includes(t);
-          return `<span class="rtag ${isNeg?'rtag-neg':isPos?'rtag-pos':'rtag-neutral'}">${esc(t)}</span>`;
+          const isRecent = t === 'Recent Review';
+          return `<span class="rtag ${isRecent?'rtag-recent':isNeg?'rtag-neg':isPos?'rtag-pos':'rtag-neutral'}">${esc(t)}</span>`;
         }).join("")}
       </div>
     </div>
@@ -1516,6 +1606,14 @@ function ResultsList() {
   else if (S.filter === "avoid") list = list.filter(l => l.rating > 0 && l.rating < 2.5 && l.reviews > 0);
   else if (S.filter === "responsive") list = list.filter(l => parseInt(l.responseRate) >= 60);
 
+  // Neighborhood filter from Hoods page link
+  if (S.hoodFilter) {
+    list = list.filter(l => {
+      const revs = getReviewsForLandlord(l);
+      return revs.some(r => r.hoodName === S.hoodFilter);
+    });
+  }
+
   // Separate reviewed and unreviewed landlords
   const reviewed = list.filter(l => l.reviews > 0);
   const unreviewed = list.filter(l => l.reviews === 0);
@@ -1532,7 +1630,7 @@ function ResultsList() {
 
   return `<div class="container">
     <div class="results-header">
-      <div class="results-count">${reviewed.length} landlord${reviewed.length!==1?'s':''} with reviews</div>
+      <div class="results-count">${S.hoodFilter ? '<span style="color:var(--orange);font-weight:700">' + esc(S.hoodFilter) + '</span> · ' : ''}${reviewed.length} landlord${reviewed.length!==1?'s':''} with reviews${S.hoodFilter ? ' <span style="color:var(--muted);font-size:12px;cursor:pointer;margin-left:6px" onclick="go({hoodFilter:null})">(clear filter)</span>' : ''}</div>
       <select class="sort-select" onchange="go({sort:this.value})">
         <option value="rating" ${S.sort==='rating'?'selected':''}>Highest Rated</option>
         <option value="reviews" ${S.sort==='reviews'?'selected':''}>Most Reviews</option>
@@ -1690,6 +1788,7 @@ function Hoods() {
           <div class="hood-row"><span>Nightlife</span><strong>${h.nightlife > 0 ? h.nightlife+'/5' : '—'}</strong></div>
           <div class="hood-row"><span>Quiet</span><strong>${h.quiet > 0 ? h.quiet+'/5' : '—'}</strong></div>
           ${!hasReviews ? '<p style="font-size:11px;color:#7C7C7C;margin-top:8px;text-align:center">Scores appear when students rate this neighborhood.</p>' : ''}
+          ${hasReviews ? `<div style="margin-top:10px;text-align:center"><span style="color:var(--orange);font-size:12px;font-weight:600;cursor:pointer" onclick="event.stopPropagation();go({page:'home',detail:null,hoodFilter:'${h.name.replace(/'/g,"\\'")}',filter:'all'})">View landlords in ${esc(h.name)} \u2192</span></div>` : ''}
         </div>`;
       }).join("")}
     </div>
@@ -2971,48 +3070,48 @@ function RightsPage() {
   </div>
   <div class="container" style="max-width:720px;line-height:1.8;font-size:15px">
 
-    <div style="background:#FEF2F2;border:1px solid #FECACA;border-radius:12px;padding:16px 20px;margin-bottom:24px">
-      <strong style="color:#991B1B;font-size:14px">This is not legal advice.</strong>
-      <p style="margin-top:4px;font-size:13px;color:#991B1B;line-height:1.5">The information below is a simplified summary of Illinois statutes for educational purposes only. Laws change, and how they apply depends on your specific situation. For legal advice, consult a licensed attorney or the <a href="https://studentlegal.illinois.edu/" target="_blank" style="color:#991B1B;font-weight:600;text-decoration:underline">free UIUC Student Legal Service</a>.</p>
+    <div class="alert-red">
+      <strong style="font-size:14px">This is not legal advice.</strong>
+      <p style="margin-top:4px;font-size:13px;line-height:1.5">The information below is a simplified summary of Illinois statutes for educational purposes only. Laws change, and how they apply depends on your specific situation. For legal advice, consult a licensed attorney or the <a href="https://studentlegal.illinois.edu/" target="_blank" style="font-weight:600;text-decoration:underline">free UIUC Student Legal Service</a>.</p>
     </div>
 
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-bottom:32px">
-      <div style="background:var(--light);padding:20px;border-radius:12px;border:1px solid var(--border)">
-        <strong style="color:var(--orange);font-size:16px">Security Deposits</strong>
+      <div class="info-card">
+        <strong style="font-size:16px">Security Deposits</strong>
         <p style="margin-top:8px;color:var(--text);font-size:14px;line-height:1.6">Under this statute, landlords of buildings with 5+ units are required to return security deposits within 30 days of move-out, along with an itemized statement of deductions. Smaller buildings have a 45-day window.</p>
         <p style="margin-top:6px;font-size:12px;color:var(--blue);font-weight:600"><a href="https://www.ilga.gov/legislation/ilcs/ilcs3.asp?ActID=2202&ChapterID=62" target="_blank" style="color:var(--blue);text-decoration:underline">765 ILCS 710 — Security Deposit Return Act</a></p>
       </div>
-      <div style="background:var(--light);padding:20px;border-radius:12px;border:1px solid var(--border)">
-        <strong style="color:var(--orange);font-size:16px">Habitability</strong>
+      <div class="info-card">
+        <strong style="font-size:16px">Habitability</strong>
         <p style="margin-top:8px;color:var(--text);font-size:14px;line-height:1.6">Illinois recognizes an implied warranty of habitability requiring landlords to maintain essential services like heat, water, and structural safety. Courts have generally held that lease clauses attempting to waive this warranty are unenforceable.</p>
         <p style="margin-top:6px;font-size:12px;color:var(--blue);font-weight:600"><a href="https://www.ilga.gov/legislation/ilcs/fulltext.asp?DocName=073500050K9-101" target="_blank" style="color:var(--blue);text-decoration:underline">735 ILCS 5/9-101 — Forcible Entry and Detainer</a></p>
       </div>
-      <div style="background:var(--light);padding:20px;border-radius:12px;border:1px solid var(--border)">
-        <strong style="color:var(--orange);font-size:16px">Retaliation Protection</strong>
+      <div class="info-card">
+        <strong style="font-size:16px">Retaliation Protection</strong>
         <p style="margin-top:8px;color:var(--text);font-size:14px;line-height:1.6">Under this statute, landlords are prohibited from retaliating against tenants who report code violations, file complaints, or join tenant organizations. Prohibited retaliation includes rent increases, service reductions, and eviction.</p>
         <p style="margin-top:6px;font-size:12px;color:var(--blue);font-weight:600"><a href="https://www.ilga.gov/legislation/ilcs/ilcs3.asp?ActID=4532&ChapterID=62" target="_blank" style="color:var(--blue);text-decoration:underline">765 ILCS 721 — Landlord Retaliation Act</a></p>
       </div>
-      <div style="background:var(--light);padding:20px;border-radius:12px;border:1px solid var(--border)">
-        <strong style="color:var(--orange);font-size:16px">Eviction Process</strong>
+      <div class="info-card">
+        <strong style="font-size:16px">Eviction Process</strong>
         <p style="margin-top:8px;color:var(--text);font-size:14px;line-height:1.6">Under Illinois law, evictions require a court order. The statute prohibits landlords from changing locks, removing belongings, or shutting off utilities to force a tenant out (known as "self-help" eviction).</p>
         <p style="margin-top:6px;font-size:12px;color:var(--blue);font-weight:600"><a href="https://www.ilga.gov/legislation/ilcs/ilcs4.asp?ActID=2017&ChapterID=56&SeqStart=65575000&SeqEnd=73000000" target="_blank" style="color:var(--blue);text-decoration:underline">735 ILCS 5/Art. IX — Forcible Entry and Detainer</a></p>
       </div>
-      <div style="background:var(--light);padding:20px;border-radius:12px;border:1px solid var(--border)">
-        <strong style="color:var(--orange);font-size:16px">Landlord and Tenant Act</strong>
+      <div class="info-card">
+        <strong style="font-size:16px">Landlord and Tenant Act</strong>
         <p style="margin-top:8px;color:var(--text);font-size:14px;line-height:1.6">This statute addresses the general rights and obligations of landlords and tenants in Illinois, including provisions on lease terms and tenant protections.</p>
         <p style="margin-top:6px;font-size:12px;color:var(--blue);font-weight:600"><a href="https://www.ilga.gov/legislation/ilcs/ilcs3.asp?ActID=2201&ChapterID=62" target="_blank" style="color:var(--blue);text-decoration:underline">765 ILCS 705 — Landlord and Tenant Act</a></p>
       </div>
-      <div style="background:var(--light);padding:20px;border-radius:12px;border:1px solid var(--border)">
-        <strong style="color:var(--orange);font-size:16px">Local Ordinances</strong>
+      <div class="info-card">
+        <strong style="font-size:16px">Local Ordinances</strong>
         <p style="margin-top:8px;color:var(--text);font-size:14px;line-height:1.6">Both Champaign and Urbana have local ordinances with additional tenant protections beyond state law. The City of Champaign provides tenant resources including information about local rules on deposits, entry notice, and move-in checklists.</p>
         <p style="margin-top:6px;font-size:12px;color:var(--blue);font-weight:600"><a href="https://champaignil.gov/neighborhood-services/neighborhood-code-compliance/tenant-resources/" target="_blank" style="color:var(--blue);text-decoration:underline">Champaign Tenant Resources</a> · <a href="https://library.municode.com/il/urbana/codes/code_of_ordinances?nodeId=COOR_CH12.5LANARE" target="_blank" style="color:var(--blue);text-decoration:underline">Urbana Ch. 12.5</a></p>
       </div>
     </div>
 
-    <div style="background:#FFF7ED;border:1px solid #FED7AA;border-radius:12px;padding:20px;margin-bottom:24px">
-      <strong style="color:#C2410C;font-size:15px">Free Legal Help for UIUC Students</strong>
-      <p style="margin-top:8px;font-size:14px;color:#92400E;line-height:1.6">The UIUC Student Legal Service offers free, confidential legal consultations for enrolled students. They can advise on landlord-tenant disputes, review your lease, and help with security deposit issues.</p>
-      <p style="margin-top:8px;font-size:13px;color:#92400E">Turner Student Services Building, Room 324 &middot; <a href="https://studentlegal.illinois.edu/" target="_blank" style="color:#C2410C;font-weight:600;text-decoration:underline">studentlegal.illinois.edu</a></p>
+    <div class="alert-orange">
+      <strong style="font-size:15px">Free Legal Help for UIUC Students</strong>
+      <p style="margin-top:8px;font-size:14px;line-height:1.6">The UIUC Student Legal Service offers free, confidential legal consultations for enrolled students. They can advise on landlord-tenant disputes, review your lease, and help with security deposit issues.</p>
+      <p style="margin-top:8px;font-size:13px">Turner Student Services Building, Room 324 &middot; <a href="https://studentlegal.illinois.edu/" target="_blank">studentlegal.illinois.edu</a></p>
     </div>
 
     <div style="background:var(--light);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:24px">
@@ -3061,9 +3160,9 @@ function LandlordsInfoPage() {
       <p style="margin-top:6px;font-size:14px;color:var(--text);line-height:1.6">If you believe a specific review contains verifiably false statements of <em>fact</em> (not opinions), you may submit a dispute to <a href="mailto:ratemycrib@proton.me" style="color:var(--orange);font-weight:600;text-decoration:underline">ratemycrib@proton.me</a> with supporting evidence. We will review within 14 business days. We are not obligated to remove reviews that express genuine opinions, even strongly negative ones. Opinions such as &ldquo;worst landlord ever&rdquo; or &ldquo;terrible maintenance&rdquo; are protected speech.</p>
     </div>
 
-    <div style="background:#FFF7ED;border:1px solid #FED7AA;border-radius:12px;padding:20px;margin-bottom:24px">
-      <strong style="color:#C2410C">Contact Us</strong>
-      <p style="margin-top:8px;font-size:14px;color:#92400E;line-height:1.6">Have a question, concern, or feedback? Reach out at <a href="mailto:ratemycrib@proton.me" style="color:#C2410C;font-weight:600;text-decoration:underline">ratemycrib@proton.me</a>. We respond to all inquiries within 48 hours.</p>
+    <div class="alert-orange">
+      <strong>Contact Us</strong>
+      <p style="margin-top:8px;font-size:14px;line-height:1.6">Have a question, concern, or feedback? Reach out at <a href="mailto:ratemycrib@proton.me">ratemycrib@proton.me</a>. We respond to all inquiries within 48 hours.</p>
     </div>
 
     <p><span style="color:var(--orange);cursor:pointer;font-weight:600;font-size:14px" onclick="go({page:'home',detail:null})">&#8592; Back to home</span></p>
