@@ -545,7 +545,269 @@ const SEED_LANDLORDS = [
     scores:{maintenance:0,communication:0,fairness:0,moveOut:0}, topTags:["Sterling on First"], dist:[0,0,0,0,0] },
   { id:27, name:"The Rive Champaign", props:1, rating:0, reviews:0, wouldRent:0, responseRate:"—",
     scores:{maintenance:0,communication:0,fairness:0,moveOut:0}, topTags:["New Listing"], dist:[0,0,0,0,0] },
+  { id:29, name:"Bailey Apartments", props:1, rating:0, reviews:0, wouldRent:0, responseRate:"—",
+    scores:{maintenance:0,communication:0,fairness:0,moveOut:0}, topTags:["New Listing"], dist:[0,0,0,0,0] },
 ];
+
+// ────────────────────────────────────────────
+// KNOWN PROPERTY → LANDLORD MAPPING
+// ────────────────────────────────────────────
+// When a user types an address in the review form, we fuzzy-match against this
+// table and auto-select (or warn about) the correct landlord. This prevents
+// future misattribution at the source. Built from verified landlord websites.
+const KNOWN_PROPERTIES = [
+  // ── Green Street Realty (1) — 180 properties on greenstrealty.com ──
+  {addr:"505 S Fourth",lid:1},{addr:"505 S 4th",lid:1},{addr:"711 S Fourth",lid:1},{addr:"711 S 4th",lid:1},
+  {addr:"103 E Healey",lid:1},{addr:"54 E Chalmers",lid:1},{addr:"11 E Columbia",lid:1},
+  {addr:"122 W Hill",lid:1},{addr:"804 N Neil",lid:1},{addr:"905 E Oak",lid:1},
+  {addr:"105 E Armory",lid:1},{addr:"112 E John",lid:1},{addr:"6 E Main",lid:1},
+  {addr:"901 S Second",lid:1},{addr:"901 S 2nd",lid:1},{addr:"27 E Taylor",lid:1},
+  {addr:"309 E Springfield",lid:1},{addr:"901 S Fourth",lid:1},{addr:"901 S 4th",lid:1},
+  {addr:"907 S Third",lid:1},{addr:"907 S 3rd",lid:1},{addr:"502 E Springfield",lid:1},
+  {addr:"1007 W University",lid:1},{addr:"809 W Nevada",lid:1},{addr:"802 W Oregon",lid:1},
+  {addr:"603 S Busey",lid:1},{addr:"711 W Elm",lid:1},{addr:"1001 S Pine",lid:1},
+  {addr:"1005 S Oak",lid:1},{addr:"1005 S First",lid:1},{addr:"1005 S 1st",lid:1},
+  {addr:"1006 S Prairie",lid:1},{addr:"1007 S Locust",lid:1},{addr:"1009 S First",lid:1},{addr:"1009 S 1st",lid:1},
+  {addr:"101 E Daniel",lid:1},{addr:"101 E Green",lid:1},{addr:"1011 W Stoughton",lid:1},
+  {addr:"102 N Gregory",lid:1},{addr:"102 S Lincoln",lid:1},{addr:"103 E John",lid:1},
+  {addr:"104 E John",lid:1},{addr:"105 S Fourth",lid:1},{addr:"105 S 4th",lid:1},
+  {addr:"106 E Armory",lid:1},{addr:"106 S Coler",lid:1},{addr:"107 N Walnut",lid:1},
+  {addr:"108 E Daniel",lid:1},{addr:"108 W Green",lid:1},{addr:"109 E John",lid:1},
+  {addr:"1106 S Euclid",lid:1},{addr:"1106 W Stoughton",lid:1},{addr:"1109 W Stoughton",lid:1},
+  {addr:"111 S Busey",lid:1},{addr:"119 W Washington",lid:1},{addr:"121 W Washington",lid:1},
+  {addr:"1305 W Columbia",lid:1},{addr:"15 E Taylor",lid:1},{addr:"1507 W John",lid:1},
+  {addr:"1517 W Green",lid:1},{addr:"1706 W White",lid:1},{addr:"306.5 E Green",lid:1},
+
+  // ── Smile Student Living (2) — smilestudentliving.com ──
+  {addr:"615 S Wright",lid:2},{addr:"304 E Daniel",lid:2},{addr:"52 E Armory",lid:2},
+  {addr:"105 N Busey",lid:2},{addr:"Busey Court",lid:2},{addr:"606 E Stoughton",lid:2},
+  {addr:"51 E Green",lid:2},{addr:"608 E Chalmers",lid:2},{addr:"405 E Stoughton",lid:2},
+  {addr:"805 W Green",lid:2},{addr:"303 S Busey",lid:2},{addr:"104 N Lincoln",lid:2},
+  {addr:"107 E Springfield",lid:2},{addr:"107 E Healey",lid:2},{addr:"408 E Healey",lid:2},
+  {addr:"507 E White",lid:2},{addr:"512 E Clark",lid:2},{addr:"106 S Gregory",lid:2},
+  {addr:"804 W Illinois",lid:2},{addr:"510 E White",lid:2},{addr:"48 E John",lid:2},
+  {addr:"207 S Fifth",lid:2},{addr:"207 S 5th",lid:2},{addr:"1010 W Stoughton",lid:2},
+  {addr:"404 E Clark",lid:2},
+
+  // ── JSM Living (3) — 47 buildings on jsmliving.com ──
+  {addr:"502 E John",lid:3},{addr:"508 E John",lid:3},{addr:"508 E White",lid:3},
+  {addr:"102 E Gregory",lid:3},{addr:"105 E Chalmers",lid:3},{addr:"105 E Green",lid:3},
+  {addr:"107 E Chalmers",lid:3},{addr:"110 S Gregory",lid:3},{addr:"201 E Healey",lid:3},
+  {addr:"201 S Wright",lid:3},{addr:"203 E Stoughton",lid:3},{addr:"301 S Water",lid:3},
+  {addr:"302 S Fourth",lid:3},{addr:"302 S 4th",lid:3},{addr:"303 S Wright",lid:3},
+  {addr:"306 E Armory",lid:3},{addr:"307 E Armory",lid:3},{addr:"308 E Armory",lid:3},
+  {addr:"401 E Chalmers",lid:3},{addr:"403 E White",lid:3},{addr:"406 E Clark",lid:3},
+  {addr:"408 E Stoughton",lid:3},{addr:"408 E White",lid:3},{addr:"501 E Healey",lid:3},
+  {addr:"502 E White",lid:3},{addr:"505 E Clark",lid:3},{addr:"505 E Healey",lid:3},
+  {addr:"505 S Fifth",lid:3},{addr:"505 S 5th",lid:3},{addr:"507 E Green",lid:3},
+  {addr:"508 E Healey",lid:3},{addr:"510 E Green",lid:3},{addr:"601 S Sixth",lid:3},{addr:"601 S 6th",lid:3},
+  {addr:"601 E White",lid:3},{addr:"602 E Clark",lid:3},{addr:"603 E White",lid:3},
+  {addr:"604 E Clark",lid:3},{addr:"605 E White",lid:3},{addr:"607 E White",lid:3},
+  {addr:"608 E Green",lid:3},{addr:"608 S Sixth",lid:3},{addr:"608 S 6th",lid:3},
+  {addr:"616 E Green",lid:3},{addr:"700 S Gregory",lid:3},{addr:"701 S Gregory",lid:3},
+  {addr:"707 S Sixth",lid:3},{addr:"707 S 6th",lid:3},{addr:"902 S Lincoln",lid:3},
+  {addr:"1105 W Oregon",lid:3},{addr:"1103 S Euclid",lid:3},{addr:"1107 W Oregon",lid:3},
+  {addr:"1108 W Nevada",lid:3},
+
+  // ── Bankier Apartments (4) — bankierapartments.com ──
+  {addr:"410 E Green",lid:4},{addr:"112 E Green",lid:4},{addr:"202 E John",lid:4},
+  {addr:"519 E Green",lid:4},{addr:"509 E Green",lid:4},{addr:"509 1/2 E Green",lid:4},
+  {addr:"403 E Green",lid:4},{addr:"1107 S Second",lid:4},{addr:"1107 S 2nd",lid:4},
+  {addr:"202 E Green",lid:4},{addr:"406 E Green",lid:4},{addr:"408 E Green",lid:4},
+  {addr:"621 E Green",lid:4},{addr:"624 S Fifth",lid:4},{addr:"624 S 5th",lid:4},
+
+  // ── Roland Realty (6) — roland-realty.com ──
+  {addr:"901 S 1st",lid:6},{addr:"901 S First",lid:6},{addr:"903 S 1st",lid:6},{addr:"903 S First",lid:6},
+  {addr:"35 E Daniel",lid:6},{addr:"56 E Daniel",lid:6},{addr:"506 E White",lid:6},
+  {addr:"311 E John",lid:6},{addr:"1011 S Locust",lid:6},{addr:"33 E Chalmers",lid:6},
+
+  // ── University Group (7) — ugroupcu.com ──
+  {addr:"75 E Armory",lid:7},{addr:"605 S Fourth",lid:7},{addr:"605 S 4th",lid:7},
+  {addr:"1002 W Clark",lid:7},{addr:"901 Western",lid:7},{addr:"604 E White",lid:7},
+  {addr:"60 E Green",lid:7},{addr:"605 S Fifth",lid:7},{addr:"605 S 5th",lid:7},
+  {addr:"106 E Daniel",lid:7},{addr:"303 E Chalmers",lid:7},{addr:"111 E Chalmers",lid:7},
+  {addr:"409 S 3rd",lid:7},{addr:"58 E John",lid:7},{addr:"309 E White",lid:7},
+  {addr:"502 E Healey",lid:7},{addr:"111 E Healey",lid:7},{addr:"102 E Healey",lid:7},
+  {addr:"411 E Healey",lid:7},{addr:"316 E Healey",lid:7},{addr:"207 E John",lid:7},
+  {addr:"205 E Stoughton",lid:7},{addr:"512 W Green",lid:7},{addr:"309 N Busey",lid:7},
+  {addr:"601 S First",lid:7},{addr:"601 S 1st",lid:7},{addr:"405 S Fifth",lid:7},{addr:"405 S 5th",lid:7},
+  {addr:"64 E Chester",lid:7},{addr:"805 S Lincoln",lid:7},{addr:"808 S Lincoln",lid:7},
+  {addr:"310 S 1st",lid:7},{addr:"310 S First",lid:7},{addr:"501 S 5th",lid:7},{addr:"501 S Fifth",lid:7},
+  {addr:"507 S Locust",lid:7},{addr:"503 S Locust",lid:7},{addr:"66 E Chester",lid:7},
+  {addr:"609 W Main",lid:7},{addr:"504 E Stoughton",lid:7},{addr:"412 E Healey",lid:7},
+  {addr:"401 E University",lid:7},{addr:"407 E University",lid:7},{addr:"409 W Green",lid:7},
+  {addr:"505 S First",lid:7},{addr:"505 S 1st",lid:7},{addr:"1009 W Clark",lid:7},
+  {addr:"1010 W Clark",lid:7},{addr:"1007 W Clark",lid:7},{addr:"908 W Stoughton",lid:7},
+  {addr:"1007 W Main",lid:7},{addr:"511 W Church",lid:7},{addr:"1008 W Main",lid:7},
+  {addr:"53 E Chalmers",lid:7},{addr:"1004 W Main",lid:7},{addr:"604 W Stoughton",lid:7},
+  {addr:"305 N Lincoln",lid:7},{addr:"701 W Green",lid:7},{addr:"1013 S First",lid:7},{addr:"1013 S 1st",lid:7},
+  {addr:"1004 S First",lid:7},{addr:"1004 S 1st",lid:7},{addr:"25 E John",lid:7},
+  {addr:"34 E Main",lid:7},
+
+  // ── MHM Properties (8) — mhmproperties.com ──
+  {addr:"606 E White",lid:8},{addr:"303 S Fifth",lid:8},{addr:"303 S 5th",lid:8},
+  {addr:"314 E Clark",lid:8},{addr:"311 E Clark",lid:8},{addr:"605 E Clark",lid:8},
+  {addr:"203 S Fourth",lid:8},{addr:"203 S 4th",lid:8},{addr:"205 S Sixth",lid:8},{addr:"205 S 6th",lid:8},
+  {addr:"805 S Locust",lid:8},{addr:"61 E John",lid:8},{addr:"803 S First",lid:8},{addr:"803 S 1st",lid:8},
+  {addr:"803 S Locust",lid:8},{addr:"101 E Armory",lid:8},{addr:"1001 S First",lid:8},{addr:"1001 S 1st",lid:8},
+  {addr:"1003 S First",lid:8},{addr:"1003 S 1st",lid:8},{addr:"59 E Chalmers",lid:8},{addr:"61 E Chalmers",lid:8},
+
+  // ── HERE Champaign (9) — herechampaign.com ──
+  {addr:"308 E Green",lid:9},{addr:"308 East Green",lid:9},
+
+  // ── Seven07 (10) — liveseven07.com ──
+  {addr:"707 S 4th",lid:10},{addr:"707 S Fourth",lid:10},
+
+  // ── The Cottages at Illinois (12) — thecottagesillinois.com ──
+  {addr:"905 Welch",lid:12},
+
+  // ── Ramshaw Real Estate (13) — ramshaw.com ──
+  {addr:"1901 N Lincoln",lid:13},{addr:"Capstone Quarters",lid:13},
+  {addr:"1002 S Second",lid:13},{addr:"1002 S 2nd",lid:13},{addr:"1005 E Colorado",lid:13},
+  {addr:"1010 S First",lid:13},{addr:"1010 S 1st",lid:13},{addr:"1012 S First",lid:13},{addr:"1012 S 1st",lid:13},
+  {addr:"107 E Daniel",lid:13},{addr:"107 S Wright",lid:13},{addr:"1105 W Main",lid:13},
+  {addr:"1110 W Stoughton",lid:13},{addr:"1606 W Healey",lid:13},{addr:"201 S Elm",lid:13},
+  {addr:"202 W Columbia",lid:13},{addr:"208 W Washington",lid:13},{addr:"209 N Coler",lid:13},
+  {addr:"210 W Washington",lid:13},{addr:"212 W Washington",lid:13},{addr:"302 S Cedar",lid:13},
+  {addr:"303 E Clark",lid:13},{addr:"305 E Clark",lid:13},{addr:"305 E John",lid:13},
+  {addr:"308 E Clark",lid:13},{addr:"308 W Green",lid:13},{addr:"310 W Green",lid:13},
+  {addr:"312 W Springfield",lid:13},{addr:"402 S Race",lid:13},{addr:"404 S Busey",lid:13},
+  {addr:"508 S Mattis",lid:13},{addr:"509 N Willis",lid:13},{addr:"510 S Mattis",lid:13},
+  {addr:"59 E John",lid:13},{addr:"605 W Green",lid:13},{addr:"616 W Healey",lid:13},
+  {addr:"703 W Park",lid:13},{addr:"705 W Main",lid:13},{addr:"802 W Iowa",lid:13},
+
+  // ── PCH (14) ──
+  {addr:"Bromley Hall",lid:14},
+
+  // ── University Housing — Dorms (15) ──
+  {addr:"202 E Peabody",lid:15},{addr:"1203 S Fourth",lid:15},{addr:"1203 S 4th",lid:15},
+  {addr:"Allen Hall",lid:15},{addr:"Busey-Evans Hall",lid:15},{addr:"Lincoln Avenue Residence",lid:15},
+  {addr:"Florida Avenue Residence",lid:15},{addr:"Pennsylvania Avenue Residence",lid:15},
+  {addr:"Ikenberry Commons",lid:15},{addr:"Wassaja Hall",lid:15},{addr:"Nugent Hall",lid:15},
+  {addr:"Weston Hall",lid:15},{addr:"Bousfield Hall",lid:15},{addr:"Hopkins Hall",lid:15},
+  {addr:"Lundgren Hall",lid:15},{addr:"Barton-Lundgren",lid:15},{addr:"Scott Hall",lid:15},
+  {addr:"Snyder Hall",lid:15},{addr:"Taft-Van Doren",lid:15},{addr:"Wardall Hall",lid:15},
+  {addr:"Daniels Hall",lid:15},{addr:"Trelease Hall",lid:15},{addr:"Flagg Hall",lid:15},
+  {addr:"Babcock Hall",lid:15},{addr:"Carr Hall",lid:15},{addr:"Hendrick House",lid:15},
+
+  // ── Latitude (16) — livelatitude.com ──
+  {addr:"608 E University",lid:16},
+
+  // ── Yugo (17) — yugo.com ──
+  {addr:"410 N Lincoln",lid:17},{addr:"512 S 3rd",lid:17},{addr:"512 S Third",lid:17},
+
+  // ── ONYX (18) — aspensquare.com ──
+  {addr:"1321 N Lincoln",lid:18},
+
+  // ── Campus Circle (19) — campuscircleapartments.com ──
+  {addr:"1010 W University",lid:19},
+
+  // ── The Dean (21) — thedean.com/campustown ──
+  {addr:"708 S 6th",lid:21},{addr:"708 S Sixth",lid:21},
+  {addr:"307 E Daniel",lid:21},{addr:"501 S Sixth",lid:21},{addr:"501 S 6th",lid:21},
+  {addr:"908 S First",lid:21},{addr:"908 S 1st",lid:21},{addr:"1008 S Fourth",lid:21},{addr:"1008 S 4th",lid:21},
+
+  // ── Todd Thorenson (22) ──
+  {addr:"306 N State",lid:22},
+
+  // ── University Housing — Apartments (23) ──
+  {addr:"2205 Hazelwood",lid:23},{addr:"Orchard Downs",lid:23},{addr:"Goodwin-Green",lid:23},
+  {addr:"Sherman Hall",lid:23},
+
+  // ── CU Property Management (24) — cupropertymanagement.com ──
+  {addr:"207 E Clark",lid:24},{addr:"207 East Clark",lid:24},
+  {addr:"800 W Church",lid:24},{addr:"709 W Church",lid:24},{addr:"407 W Green",lid:24},
+  {addr:"713 W Church",lid:24},
+
+  // ── JSJ Property Management (25) — jsjmanagement.com ──
+  {addr:"1003 W Stoughton",lid:25},{addr:"611 S State",lid:25},{addr:"305 W Clark",lid:25},
+  {addr:"301 W University",lid:25},{addr:"302 W Clark",lid:25},{addr:"314 S State",lid:25},
+  {addr:"318 S State",lid:25},{addr:"302 W Springfield",lid:25},
+  {addr:"611 Lofts",lid:25},{addr:"Luxe District",lid:25},{addr:"305 Lofts",lid:25},
+
+  // ── Fairlawn Real Estate (26) — Smile Fairlawn Student Living ──
+  {addr:"Fairlawn Dr",lid:26},{addr:"108 Sterling",lid:26},
+
+  // ── The Rive Champaign (27) — therivechampaign.com ──
+  {addr:"212 E Green",lid:27},{addr:"212 East Green",lid:27},
+
+  // ── The LINC (28) — aspensquare.com ──
+  {addr:"1601 N Lincoln",lid:28},
+
+  // ── Bailey Apartments (29) ──
+  {addr:"1004 W Springfield",lid:29},
+];
+
+// Normalize an address for comparison: lowercase, strip punctuation, collapse spaces.
+function normAddr(s) {
+  return (s || '').toLowerCase().replace(/[.,#]/g, '').replace(/\s+/g, ' ').trim();
+}
+
+// Check if a typed address matches a known address pattern.
+// Uses word-boundary matching to avoid false positives:
+//   "51 E Green" must NOT match "151 E Green" or "1051 E Green".
+// For numeric addresses, the number must match exactly (start of string or after space).
+// For named places ("Busey Court", "Bromley Hall"), requires exact phrase match.
+function addrMatches(typed, known) {
+  const t = normAddr(typed);
+  const k = normAddr(known);
+  if (!t || !k) return false;
+
+  // If known starts with a digit, do a word-boundary match on the number
+  if (/^\d/.test(k)) {
+    // Build regex: word-boundary + known pattern (escaped) at start or after space
+    // e.g., "51 e green" → matches "51 e green st apt 4" but NOT "151 e green"
+    const escaped = k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const re = new RegExp('(?:^|\\s)' + escaped, 'i');
+    return re.test(t) || re.test(' ' + t);
+  }
+  // Named place: require the full phrase to appear
+  return t.includes(k);
+}
+
+// Fuzzy-match a typed address against KNOWN_PROPERTIES + existing reviews.
+// Returns { landlordId, landlordName, source } or null if no match.
+// source: "verified" (curated list) or "reviews" (crowd-sourced from existing reviews)
+function matchAddressToLandlord(address) {
+  if (!address || address.length < 4) return null;
+
+  // 1) Check curated KNOWN_PROPERTIES first (highest confidence)
+  for (const kp of KNOWN_PROPERTIES) {
+    if (addrMatches(address, kp.addr)) {
+      const seed = SEED_LANDLORDS.find(l => l.id === kp.lid);
+      if (seed) return { landlordId: seed.id, landlordName: seed.name, source: 'verified' };
+    }
+  }
+
+  // 2) Learn from existing reviews: if 2+ reviews map this address to the
+  //    same landlord, use that as a suggestion. This makes the system smarter
+  //    over time without manual updates.
+  const revs = allReviews();
+  const addrCounts = {};
+  const nStreet = normAddr(address).replace(/\s*(apt|unit|#|suite)\s*.*/i, '').trim();
+  if (nStreet.length < 5) return null;
+
+  for (const r of revs) {
+    if (!r.property) continue;
+    const rStreet = normAddr(r.property).replace(/\s*(apt|unit|#|suite)\s*.*/i, '').trim();
+    if (rStreet.length < 5) continue;
+    // Use the safe word-boundary match in both directions
+    if (addrMatches(rStreet, nStreet) || addrMatches(nStreet, rStreet)) {
+      const key = r.landlordId;
+      if (!addrCounts[key]) addrCounts[key] = { count: 0, name: r.landlordName };
+      addrCounts[key].count++;
+    }
+  }
+  // Only suggest if 2+ reviews agree on the same landlord
+  const topMatch = Object.entries(addrCounts).sort((a,b) => b[1].count - a[1].count)[0];
+  if (topMatch && topMatch[1].count >= 2) {
+    const lid = parseInt(topMatch[0]);
+    const l = findLandlord(lid);
+    if (l) return { landlordId: l.id, landlordName: l.name, source: 'reviews' };
+  }
+
+  return null;
+}
 
 // Properties are no longer hardcoded — addresses come from student reviews.
 // This avoids incorrect property-to-landlord mappings.
@@ -1280,7 +1542,8 @@ function Modal() {
 
       <div class="field">
         <label>Property Address</label>
-        <input type="text" id="rev-property-custom" placeholder="e.g. 309 E Green St, Apt 4B" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-family:inherit;outline:none;" />
+        <input type="text" id="rev-property-custom" placeholder="e.g. 309 E Green St, Apt 4B" oninput="onAddressInput(this)" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-family:inherit;outline:none;" />
+        <div id="addr-match-hint" style="display:none;margin-top:6px;padding:8px 12px;border-radius:8px;font-size:12px"></div>
         <p style="font-size:11px;color:#7C7C7C;margin-top:4px">Street address where you lived. This helps other students find reviews for their building.</p>
       </div>
       <div class="field">
@@ -1975,6 +2238,80 @@ function onLandlordChange(sel) {
     if (customInput) customInput.style.display = 'none';
     if (suggestBox) suggestBox.style.display = 'none';
   }
+  // Re-check address hint in case landlord changed after address was typed
+  const addrInput = document.getElementById('rev-property-custom');
+  if (addrInput && addrInput.value.trim()) onAddressInput(addrInput);
+}
+
+// ── Address-to-landlord validation ────────────────────────
+// Fires as the user types their address (debounced 300ms).
+// If the address matches a known property, show a hint and optionally
+// auto-correct the landlord dropdown.
+let _addrDebounce = null;
+function onAddressInput(input) {
+  clearTimeout(_addrDebounce);
+  _addrDebounce = setTimeout(() => _doAddressCheck(input), 300);
+}
+function _doAddressCheck(input) {
+  const hint = document.getElementById('addr-match-hint');
+  if (!hint) return;
+  const addr = input.value.trim();
+  if (addr.length < 4) { hint.style.display = 'none'; return; }
+
+  const match = matchAddressToLandlord(addr);
+  if (!match) { hint.style.display = 'none'; return; }
+
+  // Check what landlord is currently selected — either from dropdown or detail page
+  const sel = document.getElementById('rev-landlord');
+  const isDetailPage = !sel; // No dropdown = reviewing from a landlord detail page
+  let currentLid = 0;
+  let currentVal = '';
+
+  if (sel) {
+    currentVal = sel.value;
+    currentLid = currentVal.startsWith('user_') ? parseInt(currentVal.replace('user_','')) : parseInt(currentVal);
+  } else {
+    // Detail page: the landlord ID is embedded in the submit button's onclick
+    // Pull from S.detail which holds the current landlord ID
+    currentLid = S.detail || 0;
+    currentVal = String(currentLid);
+  }
+
+  const srcLabel = match.source === 'verified' ? '' : ' (based on other reviews)';
+
+  if (currentLid === match.landlordId) {
+    // Correct landlord already selected — green confirmation
+    hint.style.display = 'block';
+    hint.style.background = 'rgba(76,175,80,0.12)';
+    hint.style.color = '#2e7d32';
+    hint.innerHTML = '\u2705 This address is managed by <strong>' + esc(match.landlordName) + '</strong>' + srcLabel + ' — matches your selection.';
+  } else if (!currentVal || currentVal === '') {
+    // No landlord selected yet — auto-select for them
+    if (sel) sel.value = String(match.landlordId);
+    hint.style.display = 'block';
+    hint.style.background = 'rgba(33,150,243,0.12)';
+    hint.style.color = '#1565c0';
+    hint.innerHTML = '\uD83D\uDCA1 We recognized this address' + srcLabel + ' — auto-selected <strong>' + esc(match.landlordName) + '</strong>. You can change this if it\'s wrong.';
+    // Hide custom landlord input if it was showing
+    const customInput = document.getElementById('rev-landlord-custom');
+    const suggestBox = document.getElementById('landlord-suggestions');
+    if (customInput) customInput.style.display = 'none';
+    if (suggestBox) suggestBox.style.display = 'none';
+  } else {
+    // Different landlord selected — orange suggestion (never blocking)
+    hint.style.display = 'block';
+    hint.style.background = 'rgba(255,152,0,0.15)';
+    hint.style.color = '#e65100';
+    if (isDetailPage) {
+      // Can't switch landlord on detail page — just inform
+      hint.innerHTML = '\u26A0\uFE0F Heads up: this address is typically managed by <strong>' + esc(match.landlordName) + '</strong>' + srcLabel
+        + '. If you want to review under that landlord instead, go back and find their page. Otherwise, continue — you know your landlord best!';
+    } else {
+      hint.innerHTML = '\u26A0\uFE0F Other students report this address is managed by <strong>' + esc(match.landlordName) + '</strong>' + srcLabel + '. If that\'s correct, '
+        + '<a href="#" onclick="event.preventDefault();var s=document.getElementById(\'rev-landlord\');if(s)s.value=\'' + match.landlordId + '\';onAddressInput(document.getElementById(\'rev-property-custom\'));return false;" style="color:#e65100;font-weight:700;text-decoration:underline">switch to ' + esc(match.landlordName) + '</a>'
+        + '. Otherwise, keep your selection — you know your landlord best!';
+    }
+  }
 }
 
 function fuzzyMatch(query, target) {
@@ -2075,6 +2412,19 @@ async function submitReview(landlordIdFromDetail) {
 
   const propCustom = document.getElementById('rev-property-custom')?.value?.trim() || '';
   if (!propCustom) { toast('Please type your property address.'); return; }
+
+  // Soft mismatch warning — never blocks, just asks "are you sure?"
+  if (!isCustomLandlord && propCustom.length >= 4) {
+    const addrMatch = matchAddressToLandlord(propCustom);
+    if (addrMatch && addrMatch.landlordId !== landlordId && addrMatch.source === 'verified') {
+      const proceed = confirm(
+        'Heads up: "' + propCustom + '" is typically managed by ' + addrMatch.landlordName +
+        ', but you selected ' + landlordName + '.\n\n' +
+        'Click OK to submit anyway, or Cancel to go back and change the landlord.'
+      );
+      if (!proceed) return;
+    }
+  }
 
   const text = document.getElementById('rev-text')?.value?.trim();
   if (!text || text.length < 20) { toast('Please write at least 20 characters about your experience.'); return; }
