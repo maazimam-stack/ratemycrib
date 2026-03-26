@@ -619,7 +619,9 @@
   .scatter-chart { position: relative; width: 100%; overflow: visible; }
   .scatter-dot { position: absolute; border-radius: 50%; cursor: pointer; transition: transform 0.15s ease, box-shadow 0.15s ease; transform: translate(-50%, -50%); z-index: 2; border: 2px solid rgba(255,255,255,0.9); box-shadow: 0 1px 3px rgba(0,0,0,0.12); }
   .scatter-dot:hover { transform: translate(-50%, -50%) scale(1.5); z-index: 10; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
-  .scatter-tooltip { display: none; position: absolute; background: #0A0A0A; color: white; font-size: 12px; padding: 8px 12px; border-radius: 8px; white-space: nowrap; z-index: 20; pointer-events: none; transform: translate(-50%, -130%); font-weight: 600; line-height: 1.5; box-shadow: 0 4px 16px rgba(0,0,0,0.3); }
+  .scatter-tooltip { display: none; position: absolute; background: #0A0A0A; color: white; font-size: 12px; padding: 8px 12px; border-radius: 8px; white-space: nowrap; z-index: 20; pointer-events: none; font-weight: 600; line-height: 1.5; box-shadow: 0 4px 16px rgba(0,0,0,0.3); left: 50%; transform: translate(-50%, -130%); }
+  .scatter-dot.tt-left .scatter-tooltip { left: 0; transform: translate(0, -130%); }
+  .scatter-dot.tt-right .scatter-tooltip { left: auto; right: 0; transform: translate(0, -130%); }
   .scatter-dot:hover .scatter-tooltip { display: block; }
   .scatter-axis-x { text-align: center; font-size: 11px; color: var(--muted); margin-top: 4px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
   .scatter-axis-y-label { position: absolute; left: 0; top: 50%; transform: rotate(-90deg); font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; display: none; }
@@ -1425,7 +1427,9 @@ function RentVsRatingChart() {
     var border = isHL ? '3px solid #fff' : '2px solid rgba(255,255,255,0.9)';
     var zIdx = isHL ? '5' : '2';
     var shadow = isHL ? '0 0 12px rgba(232,74,39,0.6)' : '0 1px 3px rgba(0,0,0,0.12)';
-    return '<div class="scatter-dot" style="left:' + x + '%;top:' + y + 'px;width:' + size + 'px;height:' + size + 'px;background:' + color + ';opacity:' + opacity + ';border:' + border + ';z-index:' + zIdx + ';box-shadow:' + shadow + '" onclick="event.stopPropagation();go({page:\'detail\',detail:' + d.id + '})">' +
+    // Tooltip alignment: left-align if dot is in right 30%, right-align if in left 30%, center otherwise
+    var ttClass = x > 70 ? ' tt-right' : x < 30 ? ' tt-left' : '';
+    return '<div class="scatter-dot' + ttClass + '" style="left:' + x + '%;top:' + y + 'px;width:' + size + 'px;height:' + size + 'px;background:' + color + ';opacity:' + opacity + ';border:' + border + ';z-index:' + zIdx + ';box-shadow:' + shadow + '" onclick="event.stopPropagation();go({page:\'detail\',detail:' + d.id + '})">' +
       '<div class="scatter-tooltip">' + esc(d.name) + '<br>' + d.rating.toFixed(1) + '\u2605 \u00B7 $' + d.rent + '/mo \u00B7 ' + d.wouldRent + '% would rent again</div>' +
     '</div>';
   }).join('');
@@ -1456,11 +1460,11 @@ function RentVsRatingChart() {
     }
   }
 
-  // X-axis rent labels — clean intervals
+  // X-axis rent labels — clean intervals, max ~5-6 labels to avoid cramming
   var rentRange = maxRent - minRent;
   var rentStep = isMobile
-    ? (rentRange <= 400 ? 200 : rentRange <= 800 ? 300 : rentRange <= 1200 ? 400 : 500)
-    : (rentRange <= 400 ? 100 : rentRange <= 800 ? 150 : rentRange <= 1200 ? 200 : 250);
+    ? (rentRange <= 400 ? 200 : rentRange <= 800 ? 400 : rentRange <= 1500 ? 500 : 750)
+    : (rentRange <= 400 ? 100 : rentRange <= 800 ? 200 : rentRange <= 1500 ? 250 : 500);
   var rentLabels = '';
   var startR = Math.ceil(minRent / rentStep) * rentStep;
   for (var r = startR; r <= maxRent; r += rentStep) {
