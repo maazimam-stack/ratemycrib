@@ -118,6 +118,58 @@
     50% { transform: scale(1.05); }
   }
 
+  /* ===== HEAD-TO-HEAD COMPARISON ===== */
+  .h2h-picker { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; justify-content: center; margin-bottom: 32px; }
+  .h2h-select { padding: 12px 16px; border: 2px solid var(--border); border-radius: 12px; font-size: 15px; font-family: inherit; background: var(--card-bg); color: var(--text); min-width: 200px; cursor: pointer; transition: border-color 0.2s; }
+  .h2h-select:focus { border-color: var(--orange); outline: none; }
+  .h2h-vs { font-size: 20px; font-weight: 900; color: var(--orange); }
+  .h2h-grid { display: grid; grid-template-columns: 1fr auto 1fr; gap: 0; margin-bottom: 24px; }
+  .h2h-col { text-align: center; }
+  .h2h-mid { width: 1px; background: var(--border); margin: 0 16px; }
+  .h2h-name { font-size: 18px; font-weight: 800; letter-spacing: -0.3px; margin-bottom: 4px; color: var(--text); }
+  .h2h-badge { display: inline-block; padding: 2px 10px; border-radius: 50px; font-size: 11px; font-weight: 700; margin-bottom: 12px; }
+  .h2h-row { display: grid; grid-template-columns: 1fr 100px 1fr; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); }
+  .h2h-row:last-child { border-bottom: none; }
+  .h2h-label { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; text-align: center; }
+  .h2h-val { font-size: 18px; font-weight: 700; text-align: center; }
+  .h2h-winner { color: #16A34A; }
+  .h2h-loser { color: var(--muted); }
+  @media (max-width: 600px) {
+    .h2h-select { min-width: 140px; font-size: 13px; padding: 10px 12px; }
+    .h2h-val { font-size: 15px; }
+    .h2h-name { font-size: 15px; }
+    .h2h-row { grid-template-columns: 1fr 80px 1fr; padding: 10px 0; }
+  }
+
+  /* ===== MAP VIEW ===== */
+  .map-wrap { position: relative; width: 100%; max-width: 800px; margin: 0 auto 32px; border-radius: 16px; overflow: hidden; border: 1px solid var(--border); background: var(--card-bg); }
+  .map-img { width: 100%; display: block; }
+  .map-pin { position: absolute; width: 28px; height: 28px; border-radius: 50%; border: 3px solid white; cursor: pointer; transform: translate(-50%, -50%); transition: all 0.2s; box-shadow: 0 2px 8px rgba(0,0,0,0.3); z-index: 2; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 800; color: white; }
+  .map-pin:hover { transform: translate(-50%, -50%) scale(1.3); z-index: 10; }
+  .map-pin .map-tooltip { display: none; position: absolute; bottom: 110%; left: 50%; transform: translateX(-50%); background: var(--card-bg); color: var(--text); padding: 10px 14px; border-radius: 10px; font-size: 12px; white-space: nowrap; box-shadow: 0 4px 20px rgba(0,0,0,0.2); border: 1px solid var(--border); font-weight: 600; z-index: 20; pointer-events: none; }
+  .map-pin:hover .map-tooltip { display: block; }
+  @media (max-width: 600px) {
+    .map-pin { width: 22px; height: 22px; font-size: 8px; border-width: 2px; }
+  }
+
+  /* ===== SMART TAGS ===== */
+  .smart-tag { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 50px; font-size: 11px; font-weight: 600; border: 1px solid; }
+  .smart-tag-good { background: rgba(22,163,74,0.08); color: #16A34A; border-color: rgba(22,163,74,0.2); }
+  .smart-tag-warn { background: rgba(234,179,8,0.08); color: #CA8A04; border-color: rgba(234,179,8,0.2); }
+  .smart-tag-bad { background: rgba(220,38,38,0.08); color: #DC2626; border-color: rgba(220,38,38,0.2); }
+  .smart-tag-neutral { background: rgba(107,114,128,0.08); color: var(--muted); border-color: rgba(107,114,128,0.2); }
+  [data-theme="dark"] .smart-tag-good { background: rgba(22,163,74,0.15); color: #6EE7B7; border-color: rgba(22,163,74,0.3); }
+  [data-theme="dark"] .smart-tag-warn { background: rgba(234,179,8,0.15); color: #FDE047; border-color: rgba(234,179,8,0.3); }
+  [data-theme="dark"] .smart-tag-bad { background: rgba(220,38,38,0.15); color: #FCA5A5; border-color: rgba(220,38,38,0.3); }
+  [data-theme="dark"] .smart-tag-neutral { background: rgba(107,114,128,0.15); border-color: rgba(107,114,128,0.3); }
+
+  /* ===== SHARE MODAL ===== */
+  .share-btn-row { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+  .share-opt { flex: 1; min-width: 100px; padding: 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--card-bg); cursor: pointer; text-align: center; transition: all 0.2s; font-family: inherit; color: var(--text); }
+  .share-opt:hover { border-color: var(--orange); background: rgba(232,74,39,0.05); }
+  .share-opt-icon { font-size: 22px; margin-bottom: 4px; }
+  .share-opt-label { font-size: 11px; font-weight: 600; }
+
   /* ===== NAV ===== */
   .nav { background: rgba(10,10,10,0.95); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); height: 60px; display: flex; align-items: center; padding: 0 32px; padding-top: env(safe-area-inset-top, 0px); height: calc(60px + env(safe-area-inset-top, 0px)); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid rgba(255,255,255,0.06); }
   .nav-brand { font-size: 22px; font-weight: 800; color: #fff; cursor: pointer; letter-spacing: -0.3px; }
@@ -1169,7 +1221,7 @@ function allReviews() {
 loadDbReviews();
 
 // ===== STATE =====
-let S = { page:"home", filter:"all", sort:"rating", detail:null, modal:false, stars:0, wouldRentChoice:null, cmpBeds:'all', cmpHood:'all', cmpMaxRent:0, posTags:[], negTags:[], formData:{}, search:'', _prevPage:null, _prevDetail:null };
+let S = { page:"home", filter:"all", sort:"rating", detail:null, modal:false, stars:0, wouldRentChoice:null, cmpBeds:'all', cmpHood:'all', cmpMaxRent:0, posTags:[], negTags:[], formData:{}, search:'', _prevPage:null, _prevDetail:null, h2hA:null, h2hB:null };
 const go = u => {
   // When navigating to a different page, clear detail unless explicitly set
   if (u.page && u.page !== 'detail' && !('detail' in u)) u.detail = null;
@@ -1331,6 +1383,265 @@ function sparklineSVG(points, w, h, color) {
   '</svg>';
 }
 
+// ===== SMART TAGS ENGINE =====
+// Extracts "Best for" tags from review text + scores via keyword matching
+function getSmartTags(landlord) {
+  var revs = getReviewsForLandlord(landlord);
+  if (revs.length === 0) return [];
+  var tags = [];
+  var texts = revs.map(function(r){ return (r.text || '').toLowerCase(); });
+  var allText = texts.join(' ');
+  var n = revs.length;
+
+  // Keyword-based detection with thresholds
+  var patterns = [
+    { tag: 'Fast Maintenance', type: 'good', keys: ['quick fix','fast repair','fixed quickly','fixed right away','same day','next day','maintenance.*fast','maintenance.*quick','responsive maintenance','fixed immediately','prompt repair'], min: 0.3 },
+    { tag: 'Slow Repairs', type: 'bad', keys: ['slow repair','slow maintenance','took weeks','took months','never fixed','still broken','waited forever','maintenance.*slow','took forever','unresponsive','ignored'], min: 0.3 },
+    { tag: 'Great Communication', type: 'good', keys: ['great communication','always responds','easy to reach','responsive','answers quickly','communicat.*great','communicat.*good','professional','helpful staff'], min: 0.3 },
+    { tag: 'Hard to Reach', type: 'bad', keys: ['hard to reach','never responds','ghosted','no response','impossible to contact','doesn.t respond','won.t respond','ignored my','never answer','unresponsive'], min: 0.25 },
+    { tag: 'Fair Pricing', type: 'good', keys: ['fair price','good price','affordable','cheap','great deal','good value','reasonable rent','worth the price','good for the price','bang for.*buck'], min: 0.3 },
+    { tag: 'Overpriced', type: 'bad', keys: ['overpriced','too expensive','not worth','rip off','ripoff','highway robbery','way too much','overpay'], min: 0.25 },
+    { tag: 'Clean & Modern', type: 'good', keys: ['clean','modern','renovated','updated','new appliance','nice kitchen','granite','stainless','updated unit','well.maintained','good condition'], min: 0.35 },
+    { tag: 'Pest Issues', type: 'bad', keys: ['roach','cockroach','mice','mouse','rat','bug','ant','pest','infestation','bed bug','bedbug','spider'], min: 0.2 },
+    { tag: 'Quiet Building', type: 'good', keys: ['quiet','peaceful','no noise','not noisy','silent','calm','tranquil'], min: 0.3 },
+    { tag: 'Noisy', type: 'warn', keys: ['noisy','loud','noise','thin walls','hear everything','party','parties all','loud neighbor'], min: 0.3 },
+    { tag: 'Great Location', type: 'good', keys: ['great location','close to campus','walking distance','right next to','convenient location','prime location','close to everything','steps from'], min: 0.3 },
+    { tag: 'Parking Hassle', type: 'warn', keys: ['parking','no parking','hard to park','towed','parking.*terrible','parking.*issue','parking.*problem'], min: 0.3 },
+    { tag: 'Security Deposit Issues', type: 'bad', keys: ['deposit.*back','deposit.*issue','kept.*deposit','security deposit','didn.t return','charged.*move','unfair charge','hidden fee','nickel and dime','extra charge'], min: 0.25 },
+    { tag: 'Pet Friendly', type: 'neutral', keys: ['pet','dog','cat','pet.friendly','pets allowed','pet policy'], min: 0.2 },
+    { tag: 'Good for Grad Students', type: 'neutral', keys: ['grad student','graduate','quiet.*study','professional','mature','older crowd','serious'], min: 0.25 },
+  ];
+
+  patterns.forEach(function(p) {
+    var matchCount = 0;
+    texts.forEach(function(t) {
+      var found = p.keys.some(function(k) { return new RegExp(k, 'i').test(t); });
+      if (found) matchCount++;
+    });
+    if (matchCount / n >= p.min && matchCount >= 1) {
+      tags.push({ tag: p.tag, type: p.type, pct: Math.round(matchCount / n * 100) });
+    }
+  });
+
+  // Score-based tags
+  var stats = getLandlordStats(landlord);
+  if (stats.scores.maintenance >= 4.0 && stats.reviews >= 2) tags.push({ tag: 'Top Maintenance', type: 'good', pct: null });
+  if (stats.scores.communication >= 4.0 && stats.reviews >= 2) tags.push({ tag: 'Top Communication', type: 'good', pct: null });
+  if (stats.scores.fairness >= 4.0 && stats.reviews >= 2) tags.push({ tag: 'Very Fair', type: 'good', pct: null });
+  if (stats.wouldRent >= 80 && stats.reviews >= 3) tags.push({ tag: 'Students Love It', type: 'good', pct: null });
+  if (stats.wouldRent <= 25 && stats.reviews >= 3) tags.push({ tag: 'Avoid', type: 'bad', pct: null });
+
+  // Deduplicate by tag name, keep first occurrence (highest confidence)
+  var seen = {};
+  return tags.filter(function(t) { if (seen[t.tag]) return false; seen[t.tag] = true; return true; }).slice(0, 6);
+}
+
+function renderSmartTags(landlord) {
+  var tags = getSmartTags(landlord);
+  if (tags.length === 0) return '';
+  return '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px">' +
+    tags.map(function(t) {
+      var icon = t.type === 'good' ? '&#10003;' : t.type === 'bad' ? '&#10007;' : t.type === 'warn' ? '&#9888;' : '&#8226;';
+      return '<span class="smart-tag smart-tag-' + t.type + '">' + icon + ' ' + esc(t.tag) + '</span>';
+    }).join('') +
+  '</div>';
+}
+
+// ===== HEAD-TO-HEAD COMPARISON =====
+function HeadToHead() {
+  var allStats = SEED_LANDLORDS.map(getLandlordStats).concat(
+    (userLandlords || []).map(function(ul) {
+      return getLandlordStats({ id: ul.id, name: ul.name, props: 0, rating: 0, reviews: 0, wouldRent: 0, responseRate: "—", scores:{maintenance:0,communication:0,fairness:0,moveOut:0}, topTags:[], dist:[0,0,0,0,0] });
+    })
+  ).filter(function(l) { return l.reviews > 0; }).sort(function(a,b) { return a.name.localeCompare(b.name); });
+
+  if (allStats.length < 2) return '<div style="text-align:center;padding:48px 24px"><p style="color:var(--muted)">Need at least 2 reviewed landlords for comparison. Keep reviewing!</p></div>';
+
+  var a = S.h2hA ? allStats.find(function(l){ return l.id === S.h2hA; }) : allStats[0];
+  var b = S.h2hB ? allStats.find(function(l){ return l.id === S.h2hB; }) : (allStats.length > 1 ? allStats[1] : null);
+  if (!a) a = allStats[0];
+  if (!b || b.id === a.id) b = allStats.find(function(l){ return l.id !== a.id; });
+  if (!a || !b) return '';
+
+  var revsA = getReviewsForLandlord(a).filter(function(r){ return isValidRent(r.monthlyRent); });
+  var revsB = getReviewsForLandlord(b).filter(function(r){ return isValidRent(r.monthlyRent); });
+  var rentA = revsA.length ? Math.round(revsA.reduce(function(s,r){return s+r.monthlyRent;},0)/revsA.length) : 0;
+  var rentB = revsB.length ? Math.round(revsB.reduce(function(s,r){return s+r.monthlyRent;},0)/revsB.length) : 0;
+  var trendA = getLandlordTrend(a);
+  var trendB = getLandlordTrend(b);
+
+  function win(va, vb, higher) {
+    if (va === 0 && vb === 0) return ['',''];
+    if (va === 0) return ['h2h-loser','h2h-winner'];
+    if (vb === 0) return ['h2h-winner','h2h-loser'];
+    if (higher) return va > vb ? ['h2h-winner','h2h-loser'] : va < vb ? ['h2h-loser','h2h-winner'] : ['',''];
+    return va < vb ? ['h2h-winner','h2h-loser'] : va > vb ? ['h2h-loser','h2h-winner'] : ['',''];
+  }
+
+  var rows = [
+    { label: 'Overall Rating', va: a.rating.toFixed(1), vb: b.rating.toFixed(1), w: win(a.rating, b.rating, true) },
+    { label: 'Would Rent Again', va: a.wouldRent + '%', vb: b.wouldRent + '%', w: win(a.wouldRent, b.wouldRent, true) },
+    { label: 'Avg Rent', va: rentA ? '$' + rentA : '—', vb: rentB ? '$' + rentB : '—', w: win(rentA, rentB, false) },
+    { label: 'Maintenance', va: a.scores.maintenance > 0 ? a.scores.maintenance.toFixed(1) : '—', vb: b.scores.maintenance > 0 ? b.scores.maintenance.toFixed(1) : '—', w: win(a.scores.maintenance, b.scores.maintenance, true) },
+    { label: 'Communication', va: a.scores.communication > 0 ? a.scores.communication.toFixed(1) : '—', vb: b.scores.communication > 0 ? b.scores.communication.toFixed(1) : '—', w: win(a.scores.communication, b.scores.communication, true) },
+    { label: 'Fairness', va: a.scores.fairness > 0 ? a.scores.fairness.toFixed(1) : '—', vb: b.scores.fairness > 0 ? b.scores.fairness.toFixed(1) : '—', w: win(a.scores.fairness, b.scores.fairness, true) },
+    { label: 'Move-Out', va: a.scores.moveOut > 0 ? a.scores.moveOut.toFixed(1) : '—', vb: b.scores.moveOut > 0 ? b.scores.moveOut.toFixed(1) : '—', w: win(a.scores.moveOut, b.scores.moveOut, true) },
+    { label: 'Reviews', va: String(a.reviews), vb: String(b.reviews), w: win(a.reviews, b.reviews, true) },
+    { label: 'Trend', va: trendA.arrow + ' ' + trendA.label, vb: trendB.arrow + ' ' + trendB.label, w: ['',''] },
+  ];
+
+  // Count wins
+  var winsA = 0, winsB = 0;
+  rows.forEach(function(r) { if (r.w[0] === 'h2h-winner') winsA++; if (r.w[1] === 'h2h-winner') winsB++; });
+
+  var opts = allStats.map(function(l) {
+    return '<option value="' + l.id + '">' + esc(l.name) + ' (' + l.rating.toFixed(1) + ')</option>';
+  }).join('');
+
+  return '<div class="h2h-picker">' +
+    '<select class="h2h-select" onchange="go({h2hA:parseInt(this.value)})" value="' + a.id + '">' + opts.replace('value="' + a.id + '"', 'value="' + a.id + '" selected') + '</select>' +
+    '<span class="h2h-vs">VS</span>' +
+    '<select class="h2h-select" onchange="go({h2hB:parseInt(this.value)})" value="' + b.id + '">' + opts.replace('value="' + b.id + '"', 'value="' + b.id + '" selected') + '</select>' +
+  '</div>' +
+  '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;text-align:center">' +
+    '<div style="padding:20px;background:var(--card-bg);border-radius:12px;border:1px solid var(--border)">' +
+      '<div style="font-size:32px;font-weight:900;color:' + (a.rating >= 3.5 ? '#16A34A' : a.rating >= 2.5 ? '#EAB308' : '#DC2626') + '">' + a.rating.toFixed(1) + '</div>' +
+      '<div style="font-size:15px;font-weight:700;margin-top:4px;color:var(--text)">' + esc(a.name) + '</div>' +
+      '<div style="font-size:12px;color:var(--muted);margin-top:2px">' + a.reviews + ' reviews</div>' +
+      (trendA.points.length >= 2 ? '<div style="margin-top:8px;display:flex;justify-content:center">' + sparklineSVG(trendA.points, 80, 24, trendA.color) + '</div>' : '') +
+      renderSmartTags(a) +
+    '</div>' +
+    '<div style="padding:20px;background:var(--card-bg);border-radius:12px;border:1px solid var(--border)">' +
+      '<div style="font-size:32px;font-weight:900;color:' + (b.rating >= 3.5 ? '#16A34A' : b.rating >= 2.5 ? '#EAB308' : '#DC2626') + '">' + b.rating.toFixed(1) + '</div>' +
+      '<div style="font-size:15px;font-weight:700;margin-top:4px;color:var(--text)">' + esc(b.name) + '</div>' +
+      '<div style="font-size:12px;color:var(--muted);margin-top:2px">' + b.reviews + ' reviews</div>' +
+      (trendB.points.length >= 2 ? '<div style="margin-top:8px;display:flex;justify-content:center">' + sparklineSVG(trendB.points, 80, 24, trendB.color) + '</div>' : '') +
+      renderSmartTags(b) +
+    '</div>' +
+  '</div>' +
+  '<div style="background:var(--card-bg);border-radius:12px;border:1px solid var(--border);padding:4px 20px;margin-bottom:24px">' +
+    rows.map(function(r) {
+      return '<div class="h2h-row">' +
+        '<div class="h2h-val ' + r.w[0] + '">' + r.va + '</div>' +
+        '<div class="h2h-label">' + r.label + '</div>' +
+        '<div class="h2h-val ' + r.w[1] + '">' + r.vb + '</div>' +
+      '</div>';
+    }).join('') +
+  '</div>' +
+  '<div style="text-align:center;padding:12px;background:var(--card-bg);border-radius:12px;border:1px solid var(--border)">' +
+    '<span style="font-size:13px;color:var(--muted)">Verdict: </span>' +
+    (winsA > winsB ? '<strong style="color:#16A34A">' + esc(a.name) + ' wins ' + winsA + '-' + winsB + '</strong>' :
+     winsB > winsA ? '<strong style="color:#16A34A">' + esc(b.name) + ' wins ' + winsB + '-' + winsA + '</strong>' :
+     '<strong style="color:var(--muted)">Tied ' + winsA + '-' + winsB + '</strong>') +
+  '</div>';
+}
+
+// ===== MAP VIEW =====
+// Approximate positions of UIUC neighborhoods on a CSS grid map
+var HOOD_COORDS = {
+  'Campustown': { x: 48, y: 35 },
+  'Green Street': { x: 48, y: 30 },
+  'Urbana': { x: 72, y: 45 },
+  'Downtown Champaign': { x: 25, y: 35 },
+  'South Campus': { x: 48, y: 55 },
+  'North Campus': { x: 48, y: 18 },
+  'West Champaign': { x: 12, y: 40 },
+  'Near South Side': { x: 38, y: 60 },
+  'Lincoln Square': { x: 30, y: 30 },
+  'University District': { x: 55, y: 38 },
+  'Engineering Quad': { x: 55, y: 28 },
+  'Midtown': { x: 35, y: 42 },
+};
+
+function MapView() {
+  // Collect landlords with hood data from reviews
+  var allRevs = allReviews();
+  var hoodMap = {};
+  allRevs.forEach(function(r) {
+    if (!r.hoodName) return;
+    if (!hoodMap[r.hoodName]) hoodMap[r.hoodName] = { name: r.hoodName, ratings: [], rents: [], landlords: {} };
+    hoodMap[r.hoodName].ratings.push(r.rating);
+    if (isValidRent(r.monthlyRent)) hoodMap[r.hoodName].rents.push(r.monthlyRent);
+    var lName = r.landlordName || 'Unknown';
+    hoodMap[r.hoodName].landlords[lName] = (hoodMap[r.hoodName].landlords[lName] || 0) + 1;
+  });
+
+  var hoods = Object.values(hoodMap).filter(function(h) { return h.ratings.length > 0; });
+  if (hoods.length < 2) return '<div style="text-align:center;padding:48px 24px"><p style="color:var(--muted)">Not enough neighborhood data yet. Reviews with neighborhood info will populate this map.</p></div>';
+
+  // Compute hood stats
+  hoods.forEach(function(h) {
+    h.avgRating = h.ratings.reduce(function(s,v){return s+v;},0) / h.ratings.length;
+    h.avgRent = h.rents.length ? Math.round(h.rents.reduce(function(s,v){return s+v;},0) / h.rents.length) : 0;
+    h.count = h.ratings.length;
+    h.topLandlord = Object.entries(h.landlords).sort(function(a,b){return b[1]-a[1];})[0][0];
+  });
+
+  // Build the map as a styled div with pin overlays
+  var pins = hoods.map(function(h) {
+    var coords = HOOD_COORDS[h.name] || { x: 50 + (Math.random() - 0.5) * 40, y: 40 + (Math.random() - 0.5) * 30 };
+    var color = h.avgRating >= 3.5 ? '#16A34A' : h.avgRating >= 2.5 ? '#EAB308' : '#DC2626';
+    var size = Math.max(26, Math.min(40, 20 + h.count * 2));
+    return '<div class="map-pin" style="left:' + coords.x + '%;top:' + coords.y + '%;width:' + size + 'px;height:' + size + 'px;background:' + color + '" onclick="go({page:\'home\',hoodFilter:\'' + esc(h.name) + '\'})">' +
+      h.avgRating.toFixed(1) +
+      '<div class="map-tooltip">' +
+        '<div style="font-size:14px;font-weight:800;margin-bottom:4px">' + esc(h.name) + '</div>' +
+        '<div>' + h.avgRating.toFixed(1) + ' avg rating &middot; ' + h.count + ' reviews</div>' +
+        (h.avgRent ? '<div>~$' + h.avgRent + '/mo avg rent</div>' : '') +
+        '<div style="color:var(--muted);font-size:11px;margin-top:2px">Top: ' + esc(h.topLandlord) + '</div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+
+  return '<div class="map-wrap">' +
+    '<div style="position:relative;width:100%;padding-bottom:65%;background:linear-gradient(135deg, var(--light) 0%, var(--card-bg) 100%)">' +
+      '<div style="position:absolute;inset:0;overflow:hidden">' +
+        // Grid lines for campus feel
+        '<div style="position:absolute;inset:0;background-image:linear-gradient(var(--border) 1px, transparent 1px),linear-gradient(90deg, var(--border) 1px, transparent 1px);background-size:50px 50px;opacity:0.4"></div>' +
+        // Campus label
+        '<div style="position:absolute;top:25%;left:50%;transform:translate(-50%,-50%);font-size:11px;font-weight:700;color:var(--muted);opacity:0.5;letter-spacing:2px;text-transform:uppercase">UIUC CAMPUS</div>' +
+        '<div style="position:absolute;top:30%;left:35%;right:35%;height:20%;border:2px dashed var(--border);border-radius:8px;opacity:0.3"></div>' +
+        pins +
+      '</div>' +
+    '</div>' +
+    '<div style="padding:12px 16px;display:flex;justify-content:center;gap:16px;font-size:12px;border-top:1px solid var(--border)">' +
+      '<span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#16A34A;margin-right:4px"></span>3.5+ stars</span>' +
+      '<span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#EAB308;margin-right:4px"></span>2.5-3.4</span>' +
+      '<span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#DC2626;margin-right:4px"></span>Below 2.5</span>' +
+      '<span style="color:var(--muted)">Bigger = more reviews</span>' +
+    '</div>' +
+  '</div>';
+}
+
+// ===== ENHANCED SHARE FLOW =====
+function showSharePromptEnhanced(landlordName) {
+  var lName = landlordName || '';
+  var shareUrl = 'https://ratemycrib.net';
+  var shareText = lName
+    ? 'I just reviewed ' + lName + ' on RateMyCrib — the honest guide to UIUC housing. Check it out:'
+    : 'I just reviewed my landlord on RateMyCrib — the honest guide to UIUC housing. Check it out:';
+  var encodedText = encodeURIComponent(shareText + ' ' + shareUrl);
+  var encodedUrl = encodeURIComponent(shareUrl);
+
+  var overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;z-index:300;animation:fadeIn 0.2s';
+  overlay.innerHTML =
+    '<div style="background:var(--card-bg,#fff);border-radius:20px;padding:32px 28px;max-width:420px;width:92%;text-align:center;animation:slideDown 0.3s;box-shadow:0 20px 60px rgba(0,0,0,0.3);border:1px solid var(--border)">' +
+      '<div style="font-size:40px;margin-bottom:8px">&#127881;</div>' +
+      '<h3 style="font-size:22px;font-weight:900;margin-bottom:6px;letter-spacing:-0.3px;color:var(--text)">Review Submitted!</h3>' +
+      '<p style="font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:20px">Your review is live. Help other Illini make better housing decisions.</p>' +
+      '<div class="share-btn-row">' +
+        '<button class="share-opt" onclick="window.open(\'sms:?&body=' + encodedText + '\',\'_blank\')"><div class="share-opt-icon">&#128172;</div><div class="share-opt-label">iMessage</div></button>' +
+        '<button class="share-opt" onclick="window.open(\'https://twitter.com/intent/tweet?text=' + encodedText + '\',\'_blank\')"><div class="share-opt-icon">&#120143;</div><div class="share-opt-label">Twitter</div></button>' +
+        '<button class="share-opt" onclick="copyShareLink();this.querySelector(\'.share-opt-label\').textContent=\'Copied!\'"><div class="share-opt-icon">&#128279;</div><div class="share-opt-label">Copy Link</div></button>' +
+      '</div>' +
+      (navigator.share ? '<button onclick="navigator.share({title:\'RateMyCrib\',text:\'' + shareText.replace(/'/g,"\\'") + '\',url:\'' + shareUrl + '\'}).catch(function(){});this.textContent=\'Shared!\'" style="width:100%;padding:14px;background:var(--orange);color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:12px">Share via...</button>' : '') +
+      '<button onclick="this.closest(\'div\').parentElement.remove()" style="width:100%;padding:12px;background:transparent;color:var(--muted);border:none;font-size:14px;cursor:pointer;font-family:inherit;font-weight:500;margin-top:6px">Maybe later</button>' +
+    '</div>';
+  overlay.onclick = function(e) { if (e.target === overlay) overlay.remove(); };
+  document.body.appendChild(overlay);
+}
+
 // ===== COMPONENTS =====
 function Nav() {
   return `<div class="nav">
@@ -1345,6 +1656,8 @@ function Nav() {
       <span class="nav-link ${S.page==='home'&&!S.detail?'active':''}" onclick="closeNav();go({page:'home',detail:null})">Landlords</span>
       <span class="nav-link ${S.page==='hoods'?'active':''}" onclick="closeNav();go({page:'hoods'})">Neighborhoods</span>
       <span class="nav-link ${S.page==='compare'?'active':''}" onclick="closeNav();go({page:'compare'})">Compare</span>
+      <span class="nav-link ${S.page==='h2h'?'active':''}" onclick="closeNav();go({page:'h2h'})">Head-to-Head</span>
+      <span class="nav-link ${S.page==='map'?'active':''}" onclick="closeNav();go({page:'map'})">Map</span>
       <span class="nav-link ${S.page==='scanner'?'active':''}" onclick="closeNav();trackScannerEvent('nav_click',{source:'navbar'});go({page:'scanner'})">Lease Scanner</span>
       <span class="nav-link ${S.page==='insights'?'active':''}" onclick="closeNav();go({page:'insights'})">Insights</span>
       <button class="nav-cta" onclick="closeNav();go({page:'home',modal:true,stars:0,wouldRentChoice:null,posTags:[],negTags:[],formData:{}})">Rate Your Landlord</button>
@@ -1673,6 +1986,7 @@ function ResultCard(l) {
           const isRecent = t === 'Recent Review';
           return `<span class="rtag ${isRecent?'rtag-recent':isNeg?'rtag-neg':isPos?'rtag-pos':'rtag-neutral'}">${esc(t)}</span>`;
         }).join("")}
+        ${!isNew ? (function(){ var st = getSmartTags(l); return st.slice(0,3).map(function(t){ return '<span class="smart-tag smart-tag-' + t.type + '" style="font-size:10px;padding:2px 8px">' + esc(t.tag) + '</span>'; }).join(''); })() : ''}
       </div>
     </div>
     <div class="result-side">
@@ -1748,6 +2062,19 @@ function ResultsList() {
       <button style="margin-top:16px;padding:10px 24px;background:var(--orange);color:white;border:none;border-radius:8px;font-weight:600;font-size:14px;cursor:pointer;font-family:inherit" onclick="go({filter:'all'})">View All Landlords</button>
     </div>` : ''}
 
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:24px;margin-bottom:24px">
+      <div onclick="go({page:'h2h'})" style="padding:20px;background:var(--card-bg);border:1px solid var(--border);border-radius:12px;cursor:pointer;transition:all 0.2s;text-align:center">
+        <div style="font-size:24px;margin-bottom:6px">&#9878;</div>
+        <div style="font-size:14px;font-weight:700;color:var(--text)">Head-to-Head</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px">Compare two landlords side by side</div>
+      </div>
+      <div onclick="go({page:'map'})" style="padding:20px;background:var(--card-bg);border:1px solid var(--border);border-radius:12px;cursor:pointer;transition:all 0.2s;text-align:center">
+        <div style="font-size:24px;margin-bottom:6px">&#128205;</div>
+        <div style="font-size:14px;font-weight:700;color:var(--text)">Campus Map</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px">See ratings by neighborhood</div>
+      </div>
+    </div>
+
     <div class="promo">
       <div><h3>Free Lease Scanner</h3><p>Upload your lease PDF or paste the text — we'll flag clauses that may conflict with Illinois tenant law.</p></div>
       <button onclick="trackScannerEvent('cta_click',{source:'home_promo'});go({page:'scanner'})">Scan My Lease</button>
@@ -1790,6 +2117,7 @@ function DetailPage() {
               <span style="color:rgba(255,255,255,0.4);font-size:13px">would rent again</span>
             </div>
           </div>`}
+          ${l.reviews > 0 ? renderSmartTags(l) : ''}
           <div class="rating-dist" style="max-width:320px;margin-top:16px">
             ${[5,4,3,2,1].map((star,i) => `
               <div class="dist-row">
@@ -2000,6 +2328,29 @@ function Compare() {
     </div>
     `}
   </div>`;
+}
+
+function HeadToHeadPage() {
+  return '<div style="background:var(--black);padding:48px 24px 40px;text-align:center;position:relative;overflow:hidden">' +
+    '<div style="position:absolute;top:-100px;left:50%;transform:translateX(-50%);width:600px;height:600px;background:radial-gradient(circle,rgba(232,74,39,0.12) 0%,transparent 60%);pointer-events:none"></div>' +
+    '<h2 style="font-size:32px;font-weight:900;color:white;letter-spacing:-1px;margin-bottom:8px;position:relative">Head-to-Head</h2>' +
+    '<p style="color:rgba(255,255,255,0.5);font-size:15px;position:relative">Pick two landlords and see how they stack up side by side.</p>' +
+  '</div>' +
+  '<div class="container" style="padding-top:32px;padding-bottom:80px">' +
+    HeadToHead() +
+  '</div>';
+}
+
+function MapPage() {
+  return '<div style="background:var(--black);padding:48px 24px 40px;text-align:center;position:relative;overflow:hidden">' +
+    '<div style="position:absolute;top:-100px;left:50%;transform:translateX(-50%);width:600px;height:600px;background:radial-gradient(circle,rgba(232,74,39,0.12) 0%,transparent 60%);pointer-events:none"></div>' +
+    '<h2 style="font-size:32px;font-weight:900;color:white;letter-spacing:-1px;margin-bottom:8px;position:relative">Campus Map</h2>' +
+    '<p style="color:rgba(255,255,255,0.5);font-size:15px;position:relative">See how neighborhoods rate across campus. Tap a pin to filter landlords.</p>' +
+  '</div>' +
+  '<div class="container" style="padding-top:32px;padding-bottom:80px">' +
+    MapView() +
+    '<div style="text-align:center;margin-top:16px"><span style="color:var(--orange);cursor:pointer;font-weight:600;font-size:14px" onclick="go({page:\'hoods\'})">' + 'Explore all neighborhoods &rarr;</span></div>' +
+  '</div>';
 }
 
 function Modal() {
@@ -3060,7 +3411,7 @@ async function submitReview(landlordIdFromDetail) {
   const success = await saveReviewToDb(review);
   if (success) {
     go({modal:false, stars:0, wouldRentChoice:null});
-    showSharePrompt();
+    showSharePromptEnhanced(landlordName);
   } else {
     if (btn) { btn.disabled = false; btn.textContent = 'Submit My Review'; }
     toast('Something went wrong. Try again.');
@@ -3324,6 +3675,8 @@ function render() {
   else if (S.page === 'detail' || S.detail) html += DetailPage();
   else if (S.page === 'hoods') html += Hoods();
   else if (S.page === 'compare') html += Compare();
+  else if (S.page === 'h2h') html += HeadToHeadPage();
+  else if (S.page === 'map') html += MapPage();
   else if (S.page === 'scanner') html += LeaseScanner();
   else if (S.page === 'tos') html += TosPage();
   else if (S.page === 'privacy') html += PrivacyPage();
@@ -3348,6 +3701,8 @@ window.addEventListener('hashchange', () => {
     if (id) go({page:'detail', detail:id});
   } else if (hash === 'neighborhoods') go({page:'hoods', detail:null});
   else if (hash === 'compare') go({page:'compare', detail:null});
+  else if (hash === 'head-to-head' || hash === 'h2h') go({page:'h2h', detail:null});
+  else if (hash === 'map') go({page:'map', detail:null});
   else if (hash === 'scanner') go({page:'scanner', detail:null});
   else if (hash === 'insights') go({page:'insights', detail:null});
   else go({page:'home', detail:null});
