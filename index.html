@@ -433,7 +433,8 @@
   .hidden { display: none !important; }
 
   /* ===== MOBILE NAV HAMBURGER ===== */
-  .nav-toggle { display: none; background: none; border: none; cursor: pointer; padding: 8px; margin-left: auto; }
+  .nav-actions { margin-left: 8px; display: flex; align-items: center; gap: 4px; }
+  .nav-toggle { display: none; background: none; border: none; cursor: pointer; padding: 8px; }
   .nav-toggle svg { display: block; }
   .nav-right.mobile-open { display: flex !important; }
 
@@ -473,6 +474,7 @@
 
     /* Mobile hamburger nav */
     .nav { padding: 0 16px; height: 56px; flex-wrap: nowrap; }
+    .nav-actions { margin-left: auto; }
     .nav-toggle { display: block; }
     .nav-right { display: none; position: absolute; top: 56px; left: 0; right: 0; background: rgba(10,10,10,0.98); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); flex-direction: column; padding: 12px 16px 16px; gap: 2px; border-bottom: 1px solid rgba(255,255,255,0.08); z-index: 99; }
     .nav-right.mobile-open { display: flex; }
@@ -560,7 +562,7 @@
   [data-theme="dark"] .scatter-tooltip { background: #E5E7EB; color: #111827; }
 
   /* Dark mode toggle */
-  .dm-toggle { background: none; border: 1px solid rgba(255,255,255,0.15); color: rgba(255,255,255,0.6); font-size: 16px; cursor: pointer; padding: 5px 8px; border-radius: 8px; transition: all 0.2s; line-height: 1; margin-left: 8px; }
+  .dm-toggle { background: none; border: 1px solid rgba(255,255,255,0.15); color: rgba(255,255,255,0.6); font-size: 16px; cursor: pointer; padding: 5px 8px; border-radius: 8px; transition: all 0.2s; line-height: 1; }
   .dm-toggle:hover { background: rgba(255,255,255,0.1); color: white; border-color: rgba(255,255,255,0.3); }
 
   /* ===== SCATTER PLOT ===== */
@@ -1246,9 +1248,12 @@ function getLandlordStats(landlord) {
 function Nav() {
   return `<div class="nav">
     <div class="nav-brand" onclick="go({page:'home',detail:null})">Rate<em>My</em>Crib</div>
-    <button class="nav-toggle" onclick="document.querySelector('.nav-right').classList.toggle('mobile-open')" aria-label="Menu">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-    </button>
+    <div class="nav-actions">
+      <button class="dm-toggle" onclick="toggleDarkMode()" aria-label="Toggle dark mode" title="Toggle dark mode">${document.documentElement.getAttribute('data-theme')==='dark'?'&#9788;':'&#9790;'}</button>
+      <button class="nav-toggle" onclick="document.querySelector('.nav-right').classList.toggle('mobile-open')" aria-label="Menu">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+    </div>
     <div class="nav-right">
       <span class="nav-link ${S.page==='home'&&!S.detail?'active':''}" onclick="closeNav();go({page:'home',detail:null})">Landlords</span>
       <span class="nav-link ${S.page==='hoods'?'active':''}" onclick="closeNav();go({page:'hoods'})">Neighborhoods</span>
@@ -1256,7 +1261,6 @@ function Nav() {
       <span class="nav-link ${S.page==='scanner'?'active':''}" onclick="closeNav();trackScannerEvent('nav_click',{source:'navbar'});go({page:'scanner'})">Lease Scanner</span>
       <span class="nav-link ${S.page==='insights'?'active':''}" onclick="closeNav();go({page:'insights'})">Insights</span>
       <button class="nav-cta" onclick="closeNav();go({page:'home',modal:true,stars:0,wouldRentChoice:null,posTags:[],negTags:[],formData:{}})">Rate Your Landlord</button>
-      <button class="dm-toggle" onclick="toggleDarkMode()" aria-label="Toggle dark mode" title="Toggle dark mode">${document.documentElement.getAttribute('data-theme')==='dark'?'&#9788;':'&#9790;'}</button>
     </div>
   </div>`;
 }
