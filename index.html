@@ -669,9 +669,9 @@
   .scatter-title { font-size: 20px; font-weight: 800; color: var(--text); letter-spacing: -0.5px; }
   .scatter-subtitle { font-size: 13px; color: var(--muted); margin-bottom: 24px; line-height: 1.5; max-width: 640px; }
   .scatter-chart { position: relative; width: 100%; overflow: visible; }
-  .scatter-dot { position: absolute; border-radius: 50%; cursor: pointer; transition: transform 0.15s ease, box-shadow 0.15s ease; transform: translate(-50%, -50%); z-index: 2; border: 2px solid rgba(255,255,255,0.9); box-shadow: 0 1px 3px rgba(0,0,0,0.12); }
-  .scatter-dot:hover { transform: translate(-50%, -50%) scale(1.5); z-index: 10; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
-  .scatter-tooltip { display: none; position: absolute; background: #0A0A0A; color: white; font-size: 12px; padding: 8px 12px; border-radius: 8px; white-space: nowrap; z-index: 20; pointer-events: none; font-weight: 600; line-height: 1.5; box-shadow: 0 4px 16px rgba(0,0,0,0.3); left: 50%; transform: translate(-50%, -130%); }
+  .scatter-dot { position: absolute; border-radius: 50%; cursor: pointer; transition: transform 0.15s ease, box-shadow 0.15s ease, z-index 0s; transform: translate(-50%, -50%); z-index: 2; border: 2px solid rgba(255,255,255,0.9); box-shadow: 0 1px 3px rgba(0,0,0,0.12); }
+  .scatter-dot:hover { transform: translate(-50%, -50%) scale(1.5); z-index: 100 !important; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+  .scatter-tooltip { display: none; position: absolute; background: #0A0A0A; color: white; font-size: 12px; padding: 8px 12px; border-radius: 8px; white-space: nowrap; z-index: 200; pointer-events: none; font-weight: 600; line-height: 1.5; box-shadow: 0 4px 16px rgba(0,0,0,0.3); left: 50%; transform: translate(-50%, -130%); }
   .scatter-dot.tt-left .scatter-tooltip { left: 0; transform: translate(0, -130%); }
   .scatter-dot.tt-right .scatter-tooltip { left: auto; right: 0; transform: translate(0, -130%); }
   .scatter-dot:hover .scatter-tooltip { display: block; }
@@ -1221,7 +1221,15 @@ function allReviews() {
 loadDbReviews();
 
 // ===== STATE =====
-let S = { page:"home", filter:"all", sort:"rating", detail:null, modal:false, stars:0, wouldRentChoice:null, cmpBeds:'all', cmpHood:'all', cmpMaxRent:0, posTags:[], negTags:[], formData:{}, search:'', _prevPage:null, _prevDetail:null, h2hA:null, h2hB:null };
+let S = { page:"home", filter:"all", sort:"rating", detail:null, modal:false, stars:0, wouldRentChoice:null, cmpBeds:'all', cmpHood:'all', cmpMaxRent:0, posTags:[], negTags:[], formData:{}, search:'', _prevPage:null, _prevDetail:null, h2hA:null, h2hB:null, highlightLandlords:[] };
+
+function toggleScatterHL(id) {
+  var list = (S.highlightLandlords || []).slice();
+  var idx = list.indexOf(id);
+  if (idx !== -1) list.splice(idx, 1);
+  else list.push(id);
+  go({highlightLandlords: list});
+}
 const go = u => {
   // When navigating to a different page, clear detail unless explicitly set
   if (u.page && u.page !== 'detail' && !('detail' in u)) u.detail = null;
@@ -1657,7 +1665,6 @@ function Nav() {
       <span class="nav-link ${S.page==='hoods'?'active':''}" onclick="closeNav();go({page:'hoods'})">Neighborhoods</span>
       <span class="nav-link ${S.page==='compare'?'active':''}" onclick="closeNav();go({page:'compare'})">Compare</span>
       <span class="nav-link ${S.page==='h2h'?'active':''}" onclick="closeNav();go({page:'h2h'})">Head-to-Head</span>
-      <span class="nav-link ${S.page==='map'?'active':''}" onclick="closeNav();go({page:'map'})">Map</span>
       <span class="nav-link ${S.page==='scanner'?'active':''}" onclick="closeNav();trackScannerEvent('nav_click',{source:'navbar'});go({page:'scanner'})">Lease Scanner</span>
       <span class="nav-link ${S.page==='insights'?'active':''}" onclick="closeNav();go({page:'insights'})">Insights</span>
       <button class="nav-cta" onclick="closeNav();go({page:'home',modal:true,stars:0,wouldRentChoice:null,posTags:[],negTags:[],formData:{}})">Rate Your Landlord</button>
@@ -1765,17 +1772,18 @@ function RentVsRatingChart() {
   // Average crosshair
   var avgRent = Math.round(data.reduce(function(s,d){return s+d.rent;},0) / data.length);
   var avgRating = data.reduce(function(s,d){return s+d.rating;},0) / data.length;
-  var highlighted = S.highlightLandlord || null;
+  var hlList = S.highlightLandlords || [];
+  var hasHL = hlList.length > 0;
 
   var dots = data.map(function(d) {
     var x = xPos(d.rent);
     var y = yPos(d.rating);
     var color = d.rating >= 3.5 ? '#16A34A' : d.rating >= 2.5 ? '#EAB308' : '#DC2626';
     var baseSize = isMobile ? Math.max(8, Math.min(14, 6 + d.reviews * 1.2)) : Math.max(12, Math.min(22, 8 + d.reviews * 1.8));
-    var isHL = highlighted && d.id === highlighted;
-    var isDimmed = highlighted && d.id !== highlighted;
+    var isHL = hasHL && hlList.indexOf(d.id) !== -1;
+    var isDimmed = hasHL && !isHL;
     var size = isHL ? baseSize + 6 : baseSize;
-    var opacity = isDimmed ? '0.2' : '1';
+    var opacity = isDimmed ? '0.15' : '1';
     var border = isHL ? '3px solid #fff' : '2px solid rgba(255,255,255,0.9)';
     var zIdx = isHL ? '5' : '2';
     var shadow = isHL ? '0 0 12px rgba(232,74,39,0.6)' : '0 1px 3px rgba(0,0,0,0.12)';
@@ -1789,15 +1797,23 @@ function RentVsRatingChart() {
   // Average crosshair lines (always shown, more prominent when a landlord is highlighted)
   var avgX = xPos(avgRent);
   var avgY = yPos(avgRating);
-  var crosshairOpacity = highlighted ? '0.5' : '0.15';
+  var crosshairOpacity = hasHL ? '0.5' : '0.15';
   var avgMarker = '<div style="position:absolute;left:' + avgX + '%;top:' + padT + 'px;bottom:' + padB + 'px;border-left:1px dashed rgba(232,74,39,' + crosshairOpacity + ');z-index:1"></div>' +
     '<div style="position:absolute;top:' + avgY + 'px;left:' + padL + '%;right:' + padR + '%;border-top:1px dashed rgba(232,74,39,' + crosshairOpacity + ');z-index:1"></div>' +
-    '<div style="position:absolute;left:' + avgX + '%;top:' + avgY + 'px;transform:translate(-50%,-50%);width:8px;height:8px;background:var(--orange);border-radius:50%;z-index:1;opacity:' + (highlighted ? '0.7' : '0.3') + '"></div>' +
-    (highlighted ? '<div style="position:absolute;left:' + (avgX+0.5) + '%;top:' + (avgY - 18) + 'px;font-size:9px;color:var(--orange);font-weight:600;white-space:nowrap;z-index:3">AVG</div>' : '');
+    '<div style="position:absolute;left:' + avgX + '%;top:' + avgY + 'px;transform:translate(-50%,-50%);width:8px;height:8px;background:var(--orange);border-radius:50%;z-index:1;opacity:' + (hasHL ? '0.7' : '0.3') + '"></div>' +
+    (hasHL ? '<div style="position:absolute;left:' + (avgX+0.5) + '%;top:' + (avgY - 18) + 'px;font-size:9px;color:var(--orange);font-weight:600;white-space:nowrap;z-index:3">AVG</div>' : '');
 
-  // Landlord dropdown options
-  var ddOptions = '<option value="">Find your landlord\u2026</option>' + data.sort(function(a,b){return a.name.localeCompare(b.name);}).map(function(d) {
-    return '<option value="' + d.id + '"' + (highlighted===d.id?' selected':'') + '>' + esc(d.name) + ' \u2014 ' + d.rating.toFixed(1) + '\u2605 $' + d.rent + '/mo</option>';
+  // Landlord checkbox list for multi-compare
+  var sorted_data = data.slice().sort(function(a,b){return a.name.localeCompare(b.name);});
+  var ddCheckboxes = sorted_data.map(function(d) {
+    var checked = hlList.indexOf(d.id) !== -1;
+    var color = d.rating >= 3.5 ? '#16A34A' : d.rating >= 2.5 ? '#EAB308' : '#DC2626';
+    return '<label style="display:flex;align-items:center;gap:8px;padding:6px 10px;cursor:pointer;border-radius:6px;transition:background 0.15s' + (checked ? ';background:rgba(232,74,39,0.08)' : '') + '" onmouseenter="this.style.background=\'rgba(232,74,39,0.05)\'" onmouseleave="this.style.background=\'' + (checked ? 'rgba(232,74,39,0.08)' : 'transparent') + '\'">' +
+      '<input type="checkbox" ' + (checked ? 'checked' : '') + ' onchange="toggleScatterHL(' + d.id + ')" style="accent-color:var(--orange);width:16px;height:16px;cursor:pointer">' +
+      '<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:' + color + ';flex-shrink:0"></span>' +
+      '<span style="font-size:13px;font-weight:500;color:var(--text)">' + esc(d.name) + '</span>' +
+      '<span style="margin-left:auto;font-size:12px;color:var(--muted)">' + d.rating.toFixed(1) + '\u2605 $' + d.rent + '</span>' +
+    '</label>';
   }).join('');
 
   // Y-axis grid lines at whole-number ratings within range
@@ -1848,7 +1864,16 @@ function RentVsRatingChart() {
       rentLabels +
     '</div>' +
     '<div class="scatter-axis-x">Avg Monthly Rent \u2192</div>' +
-    '<div style="margin-top:16px"><select class="scatter-select" onchange="go({highlightLandlord:this.value?parseInt(this.value):null})">' + ddOptions + '</select></div>' +
+    '<div style="margin-top:16px">' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">' +
+        '<span style="font-size:13px;font-weight:600;color:var(--text)">Compare landlords</span>' +
+        (hasHL ? '<span style="font-size:12px;color:var(--orange);cursor:pointer;font-weight:500" onclick="go({highlightLandlords:[]})">Clear all</span>' : '') +
+      '</div>' +
+      '<div style="max-height:200px;overflow-y:auto;border:1px solid var(--border);border-radius:10px;padding:4px;background:var(--card-bg)">' +
+        ddCheckboxes +
+      '</div>' +
+      (hasHL && hlList.length >= 2 ? '<div style="margin-top:12px;text-align:center"><button onclick="go({page:\'h2h\',h2hA:' + hlList[0] + ',h2hB:' + hlList[1] + '})" style="padding:10px 20px;background:var(--orange);color:white;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">Open Head-to-Head \u2192</button></div>' : '') +
+    '</div>' +
   '</div>';
 }
 
@@ -1942,7 +1967,6 @@ function Hero() {
       <span class="search-tag ${S.filter==='all'?'active':''}" onclick="go({filter:'all'})">All</span>
       <span class="search-tag ${S.filter==='top'?'active':''}" onclick="go({filter:'top'})">Top Rated</span>
       <span class="search-tag ${S.filter==='avoid'?'active':''}" onclick="go({filter:'avoid'})">Lowest Rated</span>
-      <span class="search-tag ${S.filter==='responsive'?'active':''}" onclick="go({filter:'responsive'})">Most Responsive</span>
     </div>
   </div>
   `;
@@ -2062,16 +2086,11 @@ function ResultsList() {
       <button style="margin-top:16px;padding:10px 24px;background:var(--orange);color:white;border:none;border-radius:8px;font-weight:600;font-size:14px;cursor:pointer;font-family:inherit" onclick="go({filter:'all'})">View All Landlords</button>
     </div>` : ''}
 
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:24px;margin-bottom:24px">
+    <div style="margin-top:24px;margin-bottom:24px">
       <div onclick="go({page:'h2h'})" style="padding:20px;background:var(--card-bg);border:1px solid var(--border);border-radius:12px;cursor:pointer;transition:all 0.2s;text-align:center">
         <div style="font-size:24px;margin-bottom:6px">&#9878;</div>
         <div style="font-size:14px;font-weight:700;color:var(--text)">Head-to-Head</div>
         <div style="font-size:12px;color:var(--muted);margin-top:2px">Compare two landlords side by side</div>
-      </div>
-      <div onclick="go({page:'map'})" style="padding:20px;background:var(--card-bg);border:1px solid var(--border);border-radius:12px;cursor:pointer;transition:all 0.2s;text-align:center">
-        <div style="font-size:24px;margin-bottom:6px">&#128205;</div>
-        <div style="font-size:14px;font-weight:700;color:var(--text)">Campus Map</div>
-        <div style="font-size:12px;color:var(--muted);margin-top:2px">See ratings by neighborhood</div>
       </div>
     </div>
 
@@ -3676,7 +3695,6 @@ function render() {
   else if (S.page === 'hoods') html += Hoods();
   else if (S.page === 'compare') html += Compare();
   else if (S.page === 'h2h') html += HeadToHeadPage();
-  else if (S.page === 'map') html += MapPage();
   else if (S.page === 'scanner') html += LeaseScanner();
   else if (S.page === 'tos') html += TosPage();
   else if (S.page === 'privacy') html += PrivacyPage();
@@ -3702,7 +3720,6 @@ window.addEventListener('hashchange', () => {
   } else if (hash === 'neighborhoods') go({page:'hoods', detail:null});
   else if (hash === 'compare') go({page:'compare', detail:null});
   else if (hash === 'head-to-head' || hash === 'h2h') go({page:'h2h', detail:null});
-  else if (hash === 'map') go({page:'map', detail:null});
   else if (hash === 'scanner') go({page:'scanner', detail:null});
   else if (hash === 'insights') go({page:'insights', detail:null});
   else go({page:'home', detail:null});
