@@ -1292,6 +1292,45 @@ function getLandlordStats(landlord) {
     scores:{maintenance:subAvg('scoreMaintenance'),communication:subAvg('scoreCommunication'),fairness:subAvg('scoreFairness'),moveOut:subAvg('scoreMoveOut')}, dist: dist };
 }
 
+// Compute a stock-style trend for a landlord
+function getLandlordTrend(l) {
+  var revs = getReviewsForLandlord(l);
+  if (revs.length < 2) return { arrow: '', label: '', color: '', diff: 0, points: [] };
+  // Sort chronologically (oldest first) using createdAt
+  var sorted = revs.slice().sort(function(a,b){ return (a.createdAt||0) - (b.createdAt||0); });
+  var points = sorted.map(function(r){ return r.rating; });
+  // Compare first half avg to second half avg
+  var half = Math.floor(sorted.length / 2);
+  var older = sorted.slice(0, half);
+  var newer = sorted.slice(half);
+  var olderAvg = older.reduce(function(s,r){return s+r.rating;},0) / older.length;
+  var newerAvg = newer.reduce(function(s,r){return s+r.rating;},0) / newer.length;
+  var diff = newerAvg - olderAvg;
+  var arrow, label, color;
+  if (diff > 0.3) { arrow = '▲'; label = '+' + diff.toFixed(1); color = '#16A34A'; }
+  else if (diff < -0.3) { arrow = '▼'; label = diff.toFixed(1); color = '#DC2626'; }
+  else { arrow = '—'; label = '0.0'; color = 'var(--muted)'; }
+  return { arrow: arrow, label: label, color: color, diff: diff, points: points };
+}
+
+// Generate an SVG sparkline from an array of values
+function sparklineSVG(points, w, h, color) {
+  if (!points || points.length < 2) return '';
+  var min = Math.min.apply(null, points);
+  var max = Math.max.apply(null, points);
+  var range = max - min || 1;
+  var pad = 2;
+  var coords = points.map(function(v, i) {
+    var x = pad + (i / (points.length - 1)) * (w - pad * 2);
+    var y = pad + (1 - (v - min) / range) * (h - pad * 2);
+    return x.toFixed(1) + ',' + y.toFixed(1);
+  });
+  return '<svg width="' + w + '" height="' + h + '" viewBox="0 0 ' + w + ' ' + h + '" style="display:block">' +
+    '<polyline points="' + coords.join(' ') + '" fill="none" stroke="' + color + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>' +
+    '<circle cx="' + coords[coords.length-1].split(',')[0] + '" cy="' + coords[coords.length-1].split(',')[1] + '" r="3" fill="' + color + '"/>' +
+  '</svg>';
+}
+
 // ===== COMPONENTS =====
 function Nav() {
   return `<div class="nav">
@@ -1602,10 +1641,15 @@ function ResultCard(l) {
   const landlordReviews = getReviewsForLandlord(l).filter(r => isValidRent(r.monthlyRent));
   const avgPrice = landlordReviews.length ? Math.round(landlordReviews.reduce((s,r) => s + r.monthlyRent, 0) / landlordReviews.length) : 0;
   const isNew = l.reviews === 0;
+  const trend = !isNew ? getLandlordTrend(l) : null;
   return `<div class="result-card" data-lname="${esc(l.name.toLowerCase())}" onclick="go({page:'detail',detail:${l.id}})">
     <div class="result-rating-box quality-${q}">
       <div class="result-rating-num">${isNew ? '—' : l.rating.toFixed(1)}</div>
       <div class="result-rating-label">${qLabel(l.rating)}</div>
+      ${trend && trend.points.length >= 2 ? `<div class="result-trend" style="display:flex;align-items:center;gap:4px;margin-top:4px">
+        ${sparklineSVG(trend.points, 48, 18, trend.color)}
+        <span style="font-size:10px;font-weight:700;color:${trend.color}">${trend.arrow}${trend.label}</span>
+      </div>` : ''}
     </div>
     <div class="result-body">
       <div class="result-name">${esc(l.name)}</div>
@@ -1755,6 +1799,21 @@ function DetailPage() {
               </div>
             `).join("")}
           </div>
+          ${revs.length >= 2 ? (function(){
+            var trend = getLandlordTrend(l);
+            if (!trend || trend.points.length < 2) return '';
+            return '<div style="margin-top:20px;padding:16px 20px;background:var(--card-bg,#fff);border:1px solid var(--border);border-radius:12px;max-width:360px">' +
+              '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">' +
+                '<span style="font-size:13px;font-weight:600;color:var(--text)">Rating Trend</span>' +
+                '<span style="font-size:13px;font-weight:700;color:' + trend.color + '">' + trend.arrow + ' ' + trend.label + '</span>' +
+              '</div>' +
+              sparklineSVG(trend.points, 320, 48, trend.color) +
+              '<div style="display:flex;justify-content:space-between;margin-top:6px">' +
+                '<span style="font-size:10px;color:var(--muted)">Oldest</span>' +
+                '<span style="font-size:10px;color:var(--muted)">Newest</span>' +
+              '</div>' +
+            '</div>';
+          })() : ''}
         </div>
       </div>
     </div>
