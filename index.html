@@ -556,184 +556,191 @@ const SEED_LANDLORDS = [
 // table and auto-select (or warn about) the correct landlord. This prevents
 // future misattribution at the source. Built from verified landlord websites.
 const KNOWN_PROPERTIES = [
-  // ── Green Street Realty (1) — 180 properties on greenstrealty.com ──
-  {addr:"505 S Fourth",lid:1},{addr:"505 S 4th",lid:1},{addr:"711 S Fourth",lid:1},{addr:"711 S 4th",lid:1},
-  {addr:"103 E Healey",lid:1},{addr:"54 E Chalmers",lid:1},{addr:"11 E Columbia",lid:1},
-  {addr:"122 W Hill",lid:1},{addr:"804 N Neil",lid:1},{addr:"905 E Oak",lid:1},
-  {addr:"105 E Armory",lid:1},{addr:"112 E John",lid:1},{addr:"6 E Main",lid:1},
-  {addr:"901 S Second",lid:1},{addr:"901 S 2nd",lid:1},{addr:"27 E Taylor",lid:1},
-  {addr:"309 E Springfield",lid:1},{addr:"901 S Fourth",lid:1},{addr:"901 S 4th",lid:1},
-  {addr:"907 S Third",lid:1},{addr:"907 S 3rd",lid:1},{addr:"502 E Springfield",lid:1},
-  {addr:"1007 W University",lid:1},{addr:"809 W Nevada",lid:1},{addr:"802 W Oregon",lid:1},
-  {addr:"603 S Busey",lid:1},{addr:"711 W Elm",lid:1},{addr:"1001 S Pine",lid:1},
-  {addr:"1005 S Oak",lid:1},{addr:"1005 S First",lid:1},{addr:"1005 S 1st",lid:1},
-  {addr:"1006 S Prairie",lid:1},{addr:"1007 S Locust",lid:1},{addr:"1009 S First",lid:1},{addr:"1009 S 1st",lid:1},
-  {addr:"101 E Daniel",lid:1},{addr:"101 E Green",lid:1},{addr:"1011 W Stoughton",lid:1},
-  {addr:"102 N Gregory",lid:1},{addr:"102 S Lincoln",lid:1},{addr:"103 E John",lid:1},
-  {addr:"104 E John",lid:1},{addr:"105 S Fourth",lid:1},{addr:"105 S 4th",lid:1},
-  {addr:"106 E Armory",lid:1},{addr:"106 S Coler",lid:1},{addr:"107 N Walnut",lid:1},
-  {addr:"108 E Daniel",lid:1},{addr:"108 W Green",lid:1},{addr:"109 E John",lid:1},
-  {addr:"1106 S Euclid",lid:1},{addr:"1106 W Stoughton",lid:1},{addr:"1109 W Stoughton",lid:1},
-  {addr:"111 S Busey",lid:1},{addr:"119 W Washington",lid:1},{addr:"121 W Washington",lid:1},
-  {addr:"1305 W Columbia",lid:1},{addr:"15 E Taylor",lid:1},{addr:"1507 W John",lid:1},
-  {addr:"1517 W Green",lid:1},{addr:"1706 W White",lid:1},{addr:"306.5 E Green",lid:1},
-
+  // ── Green Street Realty (1) — greenstrealty.com ──
+  {addr:"54 E Chalmers",lid:1},{addr:"11 E Columbia",lid:1},{addr:"122 W H",lid:1},{addr:"3065 E Green",lid:1},
+  {addr:"804 N Ne",lid:1},{addr:"905 E Oak",lid:1},{addr:"105 E Armory",lid:1},{addr:"112 E John",lid:1},
+  {addr:"6 E Main",lid:1},{addr:"901 S Second",lid:1},{addr:"901 S 2nd",lid:1},{addr:"27 E Taylor",lid:1},
+  {addr:"309 E Springfield",lid:1},{addr:"901 S Fourth",lid:1},{addr:"901 S 4th",lid:1},{addr:"907 S Third",lid:1},
+  {addr:"907 S 3rd",lid:1},{addr:"502 E Springfield",lid:1},{addr:"711 S Fourth",lid:1},{addr:"711 S 4th",lid:1},
+  {addr:"1007 W University",lid:1},{addr:"809 W Nevada",lid:1},{addr:"802 W Oregon",lid:1},{addr:"603 S Busey",lid:1},
+  {addr:"711 W Elm",lid:1},{addr:"1001 S Pine",lid:1},{addr:"1005 S Oak",lid:1},{addr:"1005 S First",lid:1},
+  {addr:"1005 S 1st",lid:1},{addr:"1006 S Prairie",lid:1},{addr:"1007 S Locust",lid:1},{addr:"1009 S First",lid:1},
+  {addr:"1009 S 1st",lid:1},{addr:"101 E Daniel",lid:1},{addr:"101 E Green",lid:1},{addr:"1011 W Stoughton",lid:1},
+  {addr:"102 N Gregory",lid:1},{addr:"102 S Lincoln",lid:1},{addr:"103 E John",lid:1},{addr:"103 E Healey",lid:1},
+  {addr:"104 E John",lid:1},{addr:"105 S Fourth",lid:1},{addr:"105 S 4th",lid:1},{addr:"106 E Armory",lid:1},
+  {addr:"106 S Coler",lid:1},{addr:"107 N Walnut",lid:1},{addr:"108 E Daniel",lid:1},{addr:"108 W Green",lid:1},
+  {addr:"109 E John",lid:1},{addr:"1106 S Euclid",lid:1},{addr:"1106 W Stoughton",lid:1},{addr:"1109 W Stoughton",lid:1},
+  {addr:"111 S Busey",lid:1},{addr:"119 W Washington",lid:1},{addr:"121 W Washington",lid:1},{addr:"1305 W Columbia",lid:1},
+  {addr:"15 E Taylor",lid:1},{addr:"1507 W John",lid:1},{addr:"1517 W Green",lid:1},{addr:"1706 W White",lid:1},
+  {addr:"204 N Ne",lid:1},{addr:"204 S Fifth",lid:1},{addr:"204 S 5th",lid:1},{addr:"204 W W",lid:1},
+  {addr:"205 E Healey",lid:1},{addr:"207 E Green",lid:1},{addr:"208 E Clark",lid:1},{addr:"208 E White",lid:1},
+  {addr:"209 E Clark",lid:1},{addr:"209 E University",lid:1},{addr:"209 W Ells",lid:1},{addr:"209 W Griggs",lid:1},
+  {addr:"210 E White",lid:1},{addr:"211 E Clark",lid:1},{addr:"212 E White",lid:1},{addr:"213 W Green",lid:1},
+  {addr:"2906 S Myra Ridge",lid:1},{addr:"3001 W Daniel",lid:1},{addr:"301 E Clark",lid:1},{addr:"301 E White",lid:1},
+  {addr:"301 S Fourth",lid:1},{addr:"301 S 4th",lid:1},{addr:"301 W Green",lid:1},{addr:"302 S Second",lid:1},
+  {addr:"302 S 2nd",lid:1},{addr:"302 S State",lid:1},{addr:"302 W Stanage",lid:1},{addr:"303 E White",lid:1},
+  {addr:"303 W Green",lid:1},{addr:"304 E Clark",lid:1},{addr:"304 S Mattis",lid:1},{addr:"304 S State",lid:1},
+  {addr:"305 E Green",lid:1},{addr:"305 E White",lid:1},{addr:"305 S Fifth",lid:1},{addr:"305 S 5th",lid:1},
+  {addr:"305 W Elm",lid:1},{addr:"306 E Clark",lid:1},{addr:"306 S Fifth",lid:1},{addr:"306 S 5th",lid:1},
+  {addr:"307 W Green",lid:1},{addr:"308 S Fifth",lid:1},{addr:"308 S 5th",lid:1},{addr:"309 E Daniel",lid:1},
+  {addr:"310 E Clark",lid:1},{addr:"311 E Daniel",lid:1},{addr:"312 E White",lid:1},{addr:"314 E White",lid:1},
+  {addr:"32 E Chester",lid:1},{addr:"32 E Green",lid:1},{addr:"320 N Ne",lid:1},{addr:"325 N Fair",lid:1},
+  {addr:"405 E White",lid:1},{addr:"406 E Stoughton",lid:1},{addr:"406 N Randolph",lid:1},{addr:"407 S State",lid:1},
+  {addr:"408 E Clark",lid:1},{addr:"410 E Stoughton",lid:1},{addr:"501 E University",lid:1},{addr:"502 E Stoughton",lid:1},
+  {addr:"505 S Fourth",lid:1},{addr:"505 S 4th",lid:1},{addr:"505 S Sixth",lid:1},{addr:"505 S 6th",lid:1},
+  {addr:"506 S Fifth",lid:1},{addr:"506 S 5th",lid:1},{addr:"507 E University",lid:1},{addr:"507 S Third",lid:1},
+  {addr:"507 S 3rd",lid:1},{addr:"508 E Clark",lid:1},{addr:"508 E Stoughton",lid:1},{addr:"508 S First",lid:1},
+  {addr:"508 S 1st",lid:1},{addr:"508 W Griggs",lid:1},{addr:"509 E Clark",lid:1},{addr:"509 S Elm",lid:1},
+  {addr:"509 W Main",lid:1},{addr:"512 E Church",lid:1},{addr:"52 E Green",lid:1},{addr:"54 E Green",lid:1},
+  {addr:"54 E John",lid:1},{addr:"55 E Healey",lid:1},{addr:"55 E Green",lid:1},{addr:"56 E Green",lid:1},
+  {addr:"56 E Healey",lid:1},{addr:"57 E John",lid:1},{addr:"58 E Healey",lid:1},{addr:"601 S Busey",lid:1},
+  {addr:"604 S Ne",lid:1},{addr:"605 S Elm",lid:1},{addr:"607 S Elm",lid:1},{addr:"608 S State",lid:1},
+  {addr:"609 S Randolph",lid:1},{addr:"619 S Wright",lid:1},{addr:"701 W Elm",lid:1},{addr:"702 S Prairie",lid:1},
+  {addr:"702 W Elm",lid:1},{addr:"704 W Elm",lid:1},{addr:"705 E Colorado",lid:1},{addr:"706 S Locust",lid:1},
+  {addr:"708 W",lid:1},{addr:"709 S State",lid:1},{addr:"709 W Green",lid:1},{addr:"712 W Elm",lid:1},
+  {addr:"712 W Green",lid:1},{addr:"713 S Sixth",lid:1},{addr:"713 S 6th",lid:1},{addr:"714 W Elm",lid:1},
+  {addr:"721 S Prairie",lid:1},{addr:"801 S State",lid:1},{addr:"801 W Nevada",lid:1},{addr:"803 W Green",lid:1},
+  {addr:"804 S Westlawn",lid:1},{addr:"805 S Fourth",lid:1},{addr:"805 S 4th",lid:1},{addr:"806 W Green",lid:1},
+  {addr:"807 W Oregon",lid:1},{addr:"808 S Oak",lid:1},{addr:"808 W",lid:1},{addr:"810 S Oak",lid:1},
+  {addr:"810 S Prairie",lid:1},{addr:"810 W Iowa",lid:1},{addr:"811 W Oregon",lid:1},{addr:"903 S Fourth",lid:1},
+  {addr:"903 S 4th",lid:1},{addr:"903 W Oregon",lid:1},{addr:"904 N Broadway",lid:1},{addr:"905 S Locust",lid:1},
+  {addr:"909 S Third",lid:1},{addr:"909 S 3rd",lid:1},
   // ── Smile Student Living (2) — smilestudentliving.com ──
-  {addr:"615 S Wright",lid:2},{addr:"304 E Daniel",lid:2},{addr:"52 E Armory",lid:2},
-  {addr:"105 N Busey",lid:2},{addr:"Busey Court",lid:2},{addr:"606 E Stoughton",lid:2},
-  {addr:"51 E Green",lid:2},{addr:"608 E Chalmers",lid:2},{addr:"405 E Stoughton",lid:2},
-  {addr:"805 W Green",lid:2},{addr:"303 S Busey",lid:2},{addr:"104 N Lincoln",lid:2},
-  {addr:"107 E Springfield",lid:2},{addr:"107 E Healey",lid:2},{addr:"408 E Healey",lid:2},
-  {addr:"507 E White",lid:2},{addr:"512 E Clark",lid:2},{addr:"106 S Gregory",lid:2},
-  {addr:"804 W Illinois",lid:2},{addr:"510 E White",lid:2},{addr:"48 E John",lid:2},
-  {addr:"207 S Fifth",lid:2},{addr:"207 S 5th",lid:2},{addr:"1010 W Stoughton",lid:2},
-  {addr:"404 E Clark",lid:2},
-
-  // ── JSM Living (3) — 47 buildings on jsmliving.com ──
-  {addr:"502 E John",lid:3},{addr:"508 E John",lid:3},{addr:"508 E White",lid:3},
-  {addr:"102 E Gregory",lid:3},{addr:"105 E Chalmers",lid:3},{addr:"105 E Green",lid:3},
-  {addr:"107 E Chalmers",lid:3},{addr:"110 S Gregory",lid:3},{addr:"201 E Healey",lid:3},
-  {addr:"201 S Wright",lid:3},{addr:"203 E Stoughton",lid:3},{addr:"301 S Water",lid:3},
-  {addr:"302 S Fourth",lid:3},{addr:"302 S 4th",lid:3},{addr:"303 S Wright",lid:3},
-  {addr:"306 E Armory",lid:3},{addr:"307 E Armory",lid:3},{addr:"308 E Armory",lid:3},
-  {addr:"401 E Chalmers",lid:3},{addr:"403 E White",lid:3},{addr:"406 E Clark",lid:3},
-  {addr:"408 E Stoughton",lid:3},{addr:"408 E White",lid:3},{addr:"501 E Healey",lid:3},
-  {addr:"502 E White",lid:3},{addr:"505 E Clark",lid:3},{addr:"505 E Healey",lid:3},
-  {addr:"505 S Fifth",lid:3},{addr:"505 S 5th",lid:3},{addr:"507 E Green",lid:3},
-  {addr:"508 E Healey",lid:3},{addr:"510 E Green",lid:3},{addr:"601 S Sixth",lid:3},{addr:"601 S 6th",lid:3},
-  {addr:"601 E White",lid:3},{addr:"602 E Clark",lid:3},{addr:"603 E White",lid:3},
-  {addr:"604 E Clark",lid:3},{addr:"605 E White",lid:3},{addr:"607 E White",lid:3},
-  {addr:"608 E Green",lid:3},{addr:"608 S Sixth",lid:3},{addr:"608 S 6th",lid:3},
-  {addr:"616 E Green",lid:3},{addr:"700 S Gregory",lid:3},{addr:"701 S Gregory",lid:3},
-  {addr:"707 S Sixth",lid:3},{addr:"707 S 6th",lid:3},{addr:"902 S Lincoln",lid:3},
-  {addr:"1105 W Oregon",lid:3},{addr:"1103 S Euclid",lid:3},{addr:"1107 W Oregon",lid:3},
-  {addr:"1108 W Nevada",lid:3},
-
+  {addr:"615 S Wright",lid:2},{addr:"304 E Daniel",lid:2},{addr:"52 E Armory",lid:2},{addr:"105 N Busey",lid:2},
+  {addr:"606 E Stoughton",lid:2},{addr:"51 E Green",lid:2},{addr:"608 E Chalmers",lid:2},{addr:"405 E Stoughton",lid:2},
+  {addr:"805 W Green",lid:2},{addr:"303 S Busey",lid:2},{addr:"104 N Lincoln",lid:2},{addr:"107 E Springfield",lid:2},
+  {addr:"107 E Healey",lid:2},{addr:"408 E Healey",lid:2},{addr:"507 E White",lid:2},{addr:"512 E Clark",lid:2},
+  {addr:"106 S Gregory",lid:2},{addr:"804 W",lid:2},{addr:"510 E White",lid:2},{addr:"48 E John",lid:2},
+  {addr:"207 S Fifth",lid:2},{addr:"207 S 5th",lid:2},{addr:"1010 W Stoughton",lid:2},{addr:"404 E Clark",lid:2},
+  {addr:"108 E Healey",lid:2},{addr:"106 E Healey",lid:2},{addr:"408 E Springfield",lid:2},{addr:"507 S Fourth",lid:2},
+  {addr:"507 S 4th",lid:2},{addr:"303 E Green",lid:2},{addr:"903 S Locust",lid:2},{addr:"909 S Locust",lid:2},
+  {addr:"202 E Chalmers",lid:2},{addr:"510 E Clark",lid:2},{addr:"507 E Clark",lid:2},{addr:"504 E Clark",lid:2},
+  {addr:"503 E Stoughton",lid:2},{addr:"402 S Fifth",lid:2},{addr:"402 S 5th",lid:2},{addr:"105 S Wright",lid:2},
+  {addr:"809 W Springfield",lid:2},{addr:"506 W Elm",lid:2},{addr:"809 W Stoughton",lid:2},{addr:"1009 W Stoughton",lid:2},
+  {addr:"512 E Green",lid:2},
+  // ── JSM Living (3) — jsmliving.com ──
+  {addr:"102 E Gregory",lid:3},{addr:"105 E Chalmers",lid:3},{addr:"105 E Green",lid:3},{addr:"107 E Chalmers",lid:3},
+  {addr:"110 S Gregory",lid:3},{addr:"201 E Healey",lid:3},{addr:"201 S Wright",lid:3},{addr:"203 E Stoughton",lid:3},
+  {addr:"301 S Water",lid:3},{addr:"302 S Fourth",lid:3},{addr:"302 S 4th",lid:3},{addr:"303 S Wright",lid:3},
+  {addr:"306 E Armory",lid:3},{addr:"307 E Armory",lid:3},{addr:"308 E Armory",lid:3},{addr:"401 E Chalmers",lid:3},
+  {addr:"403 E White",lid:3},{addr:"406 E Clark",lid:3},{addr:"408 E Stoughton",lid:3},{addr:"408 E White",lid:3},
+  {addr:"501 E Healey",lid:3},{addr:"502 E John",lid:3},{addr:"502 E White",lid:3},{addr:"505 E Clark",lid:3},
+  {addr:"505 E Healey",lid:3},{addr:"505 S Fifth",lid:3},{addr:"505 S 5th",lid:3},{addr:"507 E Green",lid:3},
+  {addr:"508 E Healey",lid:3},{addr:"508 E John",lid:3},{addr:"510 E Green",lid:3},{addr:"601 S Sixth",lid:3},
+  {addr:"601 S 6th",lid:3},{addr:"601 E White",lid:3},{addr:"602 E Clark",lid:3},{addr:"603 E White",lid:3},
+  {addr:"604 E Clark",lid:3},{addr:"605 E White",lid:3},{addr:"607 E White",lid:3},{addr:"608 E Green",lid:3},
+  {addr:"608 S Sixth",lid:3},{addr:"608 S 6th",lid:3},{addr:"616 E Green",lid:3},{addr:"700 S Gregory",lid:3},
+  {addr:"701 S Gregory",lid:3},{addr:"707 S Sixth",lid:3},{addr:"707 S 6th",lid:3},{addr:"902 S Lincoln",lid:3},
+  {addr:"1105 W Oregon",lid:3},{addr:"1103 S Euclid",lid:3},{addr:"1107 W Oregon",lid:3},{addr:"1108 W Nevada",lid:3},
   // ── Bankier Apartments (4) — bankierapartments.com ──
-  {addr:"410 E Green",lid:4},{addr:"112 E Green",lid:4},{addr:"202 E John",lid:4},
-  {addr:"519 E Green",lid:4},{addr:"509 E Green",lid:4},{addr:"509 1/2 E Green",lid:4},
-  {addr:"403 E Green",lid:4},{addr:"1107 S Second",lid:4},{addr:"1107 S 2nd",lid:4},
-  {addr:"202 E Green",lid:4},{addr:"406 E Green",lid:4},{addr:"408 E Green",lid:4},
+  {addr:"112 E Green",lid:4},{addr:"202 E John",lid:4},{addr:"519 E Green",lid:4},{addr:"410 E Green",lid:4},
+  {addr:"509 E Green",lid:4},{addr:"509 1/2 E Green",lid:4},{addr:"403 E Green",lid:4},{addr:"1107 S Second",lid:4},
+  {addr:"1107 S 2nd",lid:4},{addr:"202 E Green",lid:4},{addr:"406 E Green",lid:4},{addr:"408 E Green",lid:4},
   {addr:"621 E Green",lid:4},{addr:"624 S Fifth",lid:4},{addr:"624 S 5th",lid:4},
-
   // ── Roland Realty (6) — roland-realty.com ──
-  {addr:"901 S 1st",lid:6},{addr:"901 S First",lid:6},{addr:"903 S 1st",lid:6},{addr:"903 S First",lid:6},
-  {addr:"35 E Daniel",lid:6},{addr:"56 E Daniel",lid:6},{addr:"506 E White",lid:6},
-  {addr:"311 E John",lid:6},{addr:"1011 S Locust",lid:6},{addr:"33 E Chalmers",lid:6},
-
+  {addr:"901 S First",lid:6},{addr:"901 S 1st",lid:6},{addr:"903 S First",lid:6},{addr:"903 S 1st",lid:6},
+  {addr:"35 E Daniel",lid:6},{addr:"56 E Daniel",lid:6},{addr:"506 E White",lid:6},{addr:"311 E John",lid:6},
+  {addr:"1011 S Locust",lid:6},{addr:"33 E Chalmers",lid:6},
   // ── University Group (7) — ugroupcu.com ──
-  {addr:"75 E Armory",lid:7},{addr:"605 S Fourth",lid:7},{addr:"605 S 4th",lid:7},
-  {addr:"1002 W Clark",lid:7},{addr:"901 Western",lid:7},{addr:"604 E White",lid:7},
-  {addr:"60 E Green",lid:7},{addr:"605 S Fifth",lid:7},{addr:"605 S 5th",lid:7},
-  {addr:"106 E Daniel",lid:7},{addr:"303 E Chalmers",lid:7},{addr:"111 E Chalmers",lid:7},
-  {addr:"409 S 3rd",lid:7},{addr:"58 E John",lid:7},{addr:"309 E White",lid:7},
-  {addr:"502 E Healey",lid:7},{addr:"111 E Healey",lid:7},{addr:"102 E Healey",lid:7},
-  {addr:"411 E Healey",lid:7},{addr:"316 E Healey",lid:7},{addr:"207 E John",lid:7},
-  {addr:"205 E Stoughton",lid:7},{addr:"512 W Green",lid:7},{addr:"309 N Busey",lid:7},
-  {addr:"601 S First",lid:7},{addr:"601 S 1st",lid:7},{addr:"405 S Fifth",lid:7},{addr:"405 S 5th",lid:7},
-  {addr:"64 E Chester",lid:7},{addr:"805 S Lincoln",lid:7},{addr:"808 S Lincoln",lid:7},
-  {addr:"310 S 1st",lid:7},{addr:"310 S First",lid:7},{addr:"501 S 5th",lid:7},{addr:"501 S Fifth",lid:7},
-  {addr:"507 S Locust",lid:7},{addr:"503 S Locust",lid:7},{addr:"66 E Chester",lid:7},
-  {addr:"609 W Main",lid:7},{addr:"504 E Stoughton",lid:7},{addr:"412 E Healey",lid:7},
-  {addr:"401 E University",lid:7},{addr:"407 E University",lid:7},{addr:"409 W Green",lid:7},
-  {addr:"505 S First",lid:7},{addr:"505 S 1st",lid:7},{addr:"1009 W Clark",lid:7},
-  {addr:"1010 W Clark",lid:7},{addr:"1007 W Clark",lid:7},{addr:"908 W Stoughton",lid:7},
-  {addr:"1007 W Main",lid:7},{addr:"511 W Church",lid:7},{addr:"1008 W Main",lid:7},
-  {addr:"53 E Chalmers",lid:7},{addr:"1004 W Main",lid:7},{addr:"604 W Stoughton",lid:7},
-  {addr:"305 N Lincoln",lid:7},{addr:"701 W Green",lid:7},{addr:"1013 S First",lid:7},{addr:"1013 S 1st",lid:7},
-  {addr:"1004 S First",lid:7},{addr:"1004 S 1st",lid:7},{addr:"25 E John",lid:7},
+  {addr:"64 E Chester",lid:7},{addr:"60 E Green",lid:7},{addr:"805 S Lincoln",lid:7},{addr:"303 E Chalmers",lid:7},
+  {addr:"106 E Daniel",lid:7},{addr:"604 E White",lid:7},{addr:"310 S 1st",lid:7},{addr:"310 S First",lid:7},
+  {addr:"58 E John",lid:7},{addr:"309 E White",lid:7},{addr:"409 S 3rd",lid:7},{addr:"409 S Third",lid:7},
+  {addr:"605 S Fourth",lid:7},{addr:"605 S 4th",lid:7},{addr:"601 S First",lid:7},{addr:"601 S 1st",lid:7},
+  {addr:"808 S Lincoln",lid:7},{addr:"411 E Healey",lid:7},{addr:"502 E Healey",lid:7},{addr:"111 E Healey",lid:7},
+  {addr:"102 E Healey",lid:7},{addr:"1004 W Main",lid:7},{addr:"605 S Fifth",lid:7},{addr:"605 S 5th",lid:7},
+  {addr:"316 E Healey",lid:7},{addr:"111 E Chalmers",lid:7},{addr:"309 N Busey",lid:7},{addr:"609 W Main",lid:7},
+  {addr:"205 E Stoughton",lid:7},{addr:"512 W Green",lid:7},{addr:"207 E John",lid:7},{addr:"66 E Chester",lid:7},
+  {addr:"507 S Locust",lid:7},{addr:"503 S Locust",lid:7},{addr:"405 S Fifth",lid:7},{addr:"405 S 5th",lid:7},
+  {addr:"501 S 5th",lid:7},{addr:"501 S Fifth",lid:7},{addr:"505 S First",lid:7},{addr:"505 S 1st",lid:7},
+  {addr:"1002 W Clark",lid:7},{addr:"301 S Wright",lid:7},{addr:"1007 S First",lid:7},{addr:"1007 S 1st",lid:7},
+  {addr:"1007 W Main",lid:7},{addr:"509 E White",lid:7},{addr:"1010 W Main",lid:7},{addr:"1005 S Second",lid:7},
+  {addr:"1005 S 2nd",lid:7},{addr:"1008 W Main",lid:7},{addr:"305 E Daniel",lid:7},{addr:"1013 S First",lid:7},
+  {addr:"1013 S 1st",lid:7},{addr:"308 E White",lid:7},{addr:"507 S Second",lid:7},{addr:"507 S 2nd",lid:7},
+  {addr:"1006 S Third",lid:7},{addr:"1006 S 3rd",lid:7},{addr:"1107 S Fourth",lid:7},{addr:"1107 S 4th",lid:7},
+  {addr:"1004 S First",lid:7},{addr:"1004 S 1st",lid:7},{addr:"75 E Armory",lid:7},{addr:"31 E John",lid:7},
+  {addr:"306 E White",lid:7},{addr:"201 E Armory",lid:7},{addr:"33 E John",lid:7},{addr:"909 S Oak",lid:7},
+  {addr:"610 E Stoughton",lid:7},{addr:"25 E John",lid:7},{addr:"302 S 1st",lid:7},{addr:"302 S First",lid:7},
+  {addr:"506 S Fourth",lid:7},{addr:"506 S 4th",lid:7},{addr:"508 E White",lid:7},{addr:"203 E Healey",lid:7},
+  {addr:"901 Western",lid:7},{addr:"908 W Stoughton",lid:7},{addr:"1004 W Stoughton",lid:7},{addr:"53 E Chalmers",lid:7},
+  {addr:"504 E Stoughton",lid:7},{addr:"412 E Healey",lid:7},{addr:"401 E University",lid:7},{addr:"407 E University",lid:7},
+  {addr:"409 W Green",lid:7},{addr:"1009 W Clark",lid:7},{addr:"1010 W Clark",lid:7},{addr:"1007 W Clark",lid:7},
+  {addr:"511 W Church",lid:7},{addr:"604 W Stoughton",lid:7},{addr:"105 E Daniel",lid:7},{addr:"109 E Chalmers",lid:7},
+  {addr:"404 E Stoughton",lid:7},{addr:"211 E John",lid:7},{addr:"203 S Sixth",lid:7},{addr:"203 S 6th",lid:7},
+  {addr:"707 S First",lid:7},{addr:"707 S 1st",lid:7},{addr:"1404 S Lincoln",lid:7},{addr:"508 W Green",lid:7},
+  {addr:"203 N Gregory",lid:7},{addr:"204 N Harvey",lid:7},{addr:"907 W Stoughton",lid:7},{addr:"705 W Stoughton",lid:7},
+  {addr:"509 E Stoughton",lid:7},{addr:"602 E Stoughton",lid:7},{addr:"611 W Green",lid:7},{addr:"802 W Green",lid:7},
+  {addr:"903 W Nevada",lid:7},{addr:"506 E Stoughton",lid:7},{addr:"310 E White",lid:7},{addr:"307 E White",lid:7},
+  {addr:"309 E Clark",lid:7},{addr:"307 E Clark",lid:7},{addr:"1003 W Main",lid:7},{addr:"906 W Clark",lid:7},
+  {addr:"809 W Main",lid:7},{addr:"811 W Main",lid:7},{addr:"1102 W Stoughton",lid:7},{addr:"904 W Stoughton",lid:7},
+  {addr:"315 E John",lid:7},{addr:"705 W Church",lid:7},{addr:"810 W Stoughton",lid:7},{addr:"204 N Lincoln",lid:7},
+  {addr:"304 S Country Fair",lid:7},{addr:"701 W Green",lid:7},{addr:"305 N Lincoln",lid:7},{addr:"703 W Church",lid:7},
+  {addr:"58 E Armory",lid:7},{addr:"1107 S Euclid",lid:7},{addr:"1004 S Locust",lid:7},{addr:"1012 W Clark",lid:7},
+  {addr:"706 S First",lid:7},{addr:"706 S 1st",lid:7},{addr:"135 W Clark",lid:7},{addr:"1005 W Stoughton",lid:7},
+  {addr:"610 W Stoughton",lid:7},{addr:"812 W Stoughton",lid:7},{addr:"1106 S Second",lid:7},{addr:"1106 S 2nd",lid:7},
   {addr:"34 E Main",lid:7},
-
   // ── MHM Properties (8) — mhmproperties.com ──
-  {addr:"606 E White",lid:8},{addr:"303 S Fifth",lid:8},{addr:"303 S 5th",lid:8},
-  {addr:"314 E Clark",lid:8},{addr:"311 E Clark",lid:8},{addr:"605 E Clark",lid:8},
-  {addr:"203 S Fourth",lid:8},{addr:"203 S 4th",lid:8},{addr:"205 S Sixth",lid:8},{addr:"205 S 6th",lid:8},
-  {addr:"805 S Locust",lid:8},{addr:"61 E John",lid:8},{addr:"803 S First",lid:8},{addr:"803 S 1st",lid:8},
-  {addr:"803 S Locust",lid:8},{addr:"101 E Armory",lid:8},{addr:"1001 S First",lid:8},{addr:"1001 S 1st",lid:8},
-  {addr:"1003 S First",lid:8},{addr:"1003 S 1st",lid:8},{addr:"59 E Chalmers",lid:8},{addr:"61 E Chalmers",lid:8},
-
+  {addr:"606 E White",lid:8},{addr:"303 S Fifth",lid:8},{addr:"303 S 5th",lid:8},{addr:"314 E Clark",lid:8},
+  {addr:"311 E Clark",lid:8},{addr:"605 E Clark",lid:8},{addr:"203 S Fourth",lid:8},{addr:"203 S 4th",lid:8},
+  {addr:"205 S Sixth",lid:8},{addr:"205 S 6th",lid:8},{addr:"805 S Locust",lid:8},{addr:"61 E John",lid:8},
+  {addr:"803 S First",lid:8},{addr:"803 S 1st",lid:8},{addr:"803 S Locust",lid:8},{addr:"101 E Armory",lid:8},
+  {addr:"1001 S First",lid:8},{addr:"1001 S 1st",lid:8},{addr:"1003 S First",lid:8},{addr:"1003 S 1st",lid:8},
+  {addr:"59 E Chalmers",lid:8},{addr:"61 E Chalmers",lid:8},
   // ── HERE Champaign (9) — herechampaign.com ──
-  {addr:"308 E Green",lid:9},{addr:"308 East Green",lid:9},
-
+  {addr:"308 E Green",lid:9},
   // ── Seven07 (10) — liveseven07.com ──
   {addr:"707 S 4th",lid:10},{addr:"707 S Fourth",lid:10},
-
-  // ── The Cottages at Illinois (12) — thecottagesillinois.com ──
+  // ── The Cottages (12) — thecottagesillinois.com ──
   {addr:"905 Welch",lid:12},
-
   // ── Ramshaw Real Estate (13) — ramshaw.com ──
-  {addr:"1901 N Lincoln",lid:13},{addr:"Capstone Quarters",lid:13},
-  {addr:"1002 S Second",lid:13},{addr:"1002 S 2nd",lid:13},{addr:"1005 E Colorado",lid:13},
-  {addr:"1010 S First",lid:13},{addr:"1010 S 1st",lid:13},{addr:"1012 S First",lid:13},{addr:"1012 S 1st",lid:13},
-  {addr:"107 E Daniel",lid:13},{addr:"107 S Wright",lid:13},{addr:"1105 W Main",lid:13},
-  {addr:"1110 W Stoughton",lid:13},{addr:"1606 W Healey",lid:13},{addr:"201 S Elm",lid:13},
-  {addr:"202 W Columbia",lid:13},{addr:"208 W Washington",lid:13},{addr:"209 N Coler",lid:13},
-  {addr:"210 W Washington",lid:13},{addr:"212 W Washington",lid:13},{addr:"302 S Cedar",lid:13},
-  {addr:"303 E Clark",lid:13},{addr:"305 E Clark",lid:13},{addr:"305 E John",lid:13},
-  {addr:"308 E Clark",lid:13},{addr:"308 W Green",lid:13},{addr:"310 W Green",lid:13},
-  {addr:"312 W Springfield",lid:13},{addr:"402 S Race",lid:13},{addr:"404 S Busey",lid:13},
-  {addr:"508 S Mattis",lid:13},{addr:"509 N Willis",lid:13},{addr:"510 S Mattis",lid:13},
-  {addr:"59 E John",lid:13},{addr:"605 W Green",lid:13},{addr:"616 W Healey",lid:13},
+  {addr:"1901 N Lincoln",lid:13},{addr:"Capstone Quarters",lid:13},{addr:"1002 S Second",lid:13},{addr:"1002 S 2nd",lid:13},
+  {addr:"1005 E Colorado",lid:13},{addr:"1010 S First",lid:13},{addr:"1010 S 1st",lid:13},{addr:"1012 S First",lid:13},
+  {addr:"1012 S 1st",lid:13},{addr:"107 E Daniel",lid:13},{addr:"107 S Wright",lid:13},{addr:"1105 W Main",lid:13},
+  {addr:"1110 W Stoughton",lid:13},{addr:"1606 W Healey",lid:13},{addr:"201 S Elm",lid:13},{addr:"202 W Columbia",lid:13},
+  {addr:"208 W Washington",lid:13},{addr:"209 N Coler",lid:13},{addr:"210 W Washington",lid:13},{addr:"212 W Washington",lid:13},
+  {addr:"302 S Cedar",lid:13},{addr:"303 E Clark",lid:13},{addr:"305 E Clark",lid:13},{addr:"305 E John",lid:13},
+  {addr:"308 E Clark",lid:13},{addr:"308 W Green",lid:13},{addr:"310 W Green",lid:13},{addr:"312 W Springfield",lid:13},
+  {addr:"402 S Race",lid:13},{addr:"404 S Busey",lid:13},{addr:"508 S Mattis",lid:13},{addr:"509 N W",lid:13},
+  {addr:"510 S Mattis",lid:13},{addr:"59 E John",lid:13},{addr:"605 W Green",lid:13},{addr:"616 W Healey",lid:13},
   {addr:"703 W Park",lid:13},{addr:"705 W Main",lid:13},{addr:"802 W Iowa",lid:13},
-
   // ── PCH (14) ──
   {addr:"Bromley Hall",lid:14},
-
-  // ── University Housing — Dorms (15) ──
-  {addr:"202 E Peabody",lid:15},{addr:"1203 S Fourth",lid:15},{addr:"1203 S 4th",lid:15},
-  {addr:"Allen Hall",lid:15},{addr:"Busey-Evans Hall",lid:15},{addr:"Lincoln Avenue Residence",lid:15},
-  {addr:"Florida Avenue Residence",lid:15},{addr:"Pennsylvania Avenue Residence",lid:15},
-  {addr:"Ikenberry Commons",lid:15},{addr:"Wassaja Hall",lid:15},{addr:"Nugent Hall",lid:15},
-  {addr:"Weston Hall",lid:15},{addr:"Bousfield Hall",lid:15},{addr:"Hopkins Hall",lid:15},
-  {addr:"Lundgren Hall",lid:15},{addr:"Barton-Lundgren",lid:15},{addr:"Scott Hall",lid:15},
-  {addr:"Snyder Hall",lid:15},{addr:"Taft-Van Doren",lid:15},{addr:"Wardall Hall",lid:15},
-  {addr:"Daniels Hall",lid:15},{addr:"Trelease Hall",lid:15},{addr:"Flagg Hall",lid:15},
-  {addr:"Babcock Hall",lid:15},{addr:"Carr Hall",lid:15},{addr:"Hendrick House",lid:15},
-
+  // ── University Housing Dorms (15) — housing.illinois.edu ──
+  {addr:"202 E Peabody",lid:15},{addr:"1203 S Fourth",lid:15},{addr:"1203 S 4th",lid:15},{addr:"Allen Hall",lid:15},
+  {addr:"Busey",lid:15},{addr:"Lincoln Avenue Residence",lid:15},{addr:"Florida Avenue Residence",lid:15},{addr:"Pennsylvania Avenue Residence",lid:15},
+  {addr:"Ikenberry Commons",lid:15},{addr:"Wassaja Hall",lid:15},{addr:"Nugent Hall",lid:15},{addr:"Weston Hall",lid:15},
+  {addr:"Bousfield Hall",lid:15},{addr:"Hopkins Hall",lid:15},{addr:"Lundgren Hall",lid:15},{addr:"Barton",lid:15},
+  {addr:"Scott Hall",lid:15},{addr:"Snyder Hall",lid:15},{addr:"Taft",lid:15},{addr:"Wardall Hall",lid:15},
+  {addr:"Daniels Hall",lid:15},{addr:"Trelease Hall",lid:15},{addr:"Flagg Hall",lid:15},{addr:"Babcock Hall",lid:15},
+  {addr:"Carr Hall",lid:15},{addr:"Hendrick House",lid:15},
   // ── Latitude (16) — livelatitude.com ──
   {addr:"608 E University",lid:16},
-
   // ── Yugo (17) — yugo.com ──
   {addr:"410 N Lincoln",lid:17},{addr:"512 S 3rd",lid:17},{addr:"512 S Third",lid:17},
-
   // ── ONYX (18) — aspensquare.com ──
   {addr:"1321 N Lincoln",lid:18},
-
   // ── Campus Circle (19) — campuscircleapartments.com ──
   {addr:"1010 W University",lid:19},
-
-  // ── The Dean (21) — thedean.com/campustown ──
-  {addr:"708 S 6th",lid:21},{addr:"708 S Sixth",lid:21},
-  {addr:"307 E Daniel",lid:21},{addr:"501 S Sixth",lid:21},{addr:"501 S 6th",lid:21},
-  {addr:"908 S First",lid:21},{addr:"908 S 1st",lid:21},{addr:"1008 S Fourth",lid:21},{addr:"1008 S 4th",lid:21},
-
+  // ── The Dean (21) — thedean.com ──
+  {addr:"708 S 6th",lid:21},{addr:"708 S Sixth",lid:21},{addr:"307 E Daniel",lid:21},{addr:"501 S Sixth",lid:21},
+  {addr:"501 S 6th",lid:21},{addr:"908 S First",lid:21},{addr:"908 S 1st",lid:21},{addr:"1008 S Fourth",lid:21},
+  {addr:"1008 S 4th",lid:21},
   // ── Todd Thorenson (22) ──
   {addr:"306 N State",lid:22},
-
-  // ── University Housing — Apartments (23) ──
-  {addr:"2205 Hazelwood",lid:23},{addr:"Orchard Downs",lid:23},{addr:"Goodwin-Green",lid:23},
-  {addr:"Sherman Hall",lid:23},
-
+  // ── University Housing Apts (23) ──
+  {addr:"2205 Hazelwood",lid:23},{addr:"Orchard Downs",lid:23},{addr:"Goodwin",lid:23},{addr:"Sherman Hall",lid:23},
   // ── CU Property Management (24) — cupropertymanagement.com ──
-  {addr:"207 E Clark",lid:24},{addr:"207 East Clark",lid:24},
-  {addr:"800 W Church",lid:24},{addr:"709 W Church",lid:24},{addr:"407 W Green",lid:24},
+  {addr:"207 E Clark",lid:24},{addr:"800 W Church",lid:24},{addr:"709 W Church",lid:24},{addr:"407 W Green",lid:24},
   {addr:"713 W Church",lid:24},
-
   // ── JSJ Property Management (25) — jsjmanagement.com ──
-  {addr:"1003 W Stoughton",lid:25},{addr:"611 S State",lid:25},{addr:"305 W Clark",lid:25},
-  {addr:"301 W University",lid:25},{addr:"302 W Clark",lid:25},{addr:"314 S State",lid:25},
-  {addr:"318 S State",lid:25},{addr:"302 W Springfield",lid:25},
+  {addr:"1003 W Stoughton",lid:25},{addr:"611 S State",lid:25},{addr:"305 W Clark",lid:25},{addr:"301 W University",lid:25},
+  {addr:"302 W Clark",lid:25},{addr:"314 S State",lid:25},{addr:"318 S State",lid:25},{addr:"302 W Springfield",lid:25},
   {addr:"611 Lofts",lid:25},{addr:"Luxe District",lid:25},{addr:"305 Lofts",lid:25},
-
-  // ── Fairlawn Real Estate (26) — Smile Fairlawn Student Living ──
-  {addr:"Fairlawn Dr",lid:26},{addr:"108 Sterling",lid:26},
-
+  // ── Fairlawn Real Estate (26) ──
+  {addr:"Fairlawn",lid:26},{addr:"108 Sterling",lid:26},
   // ── The Rive Champaign (27) — therivechampaign.com ──
-  {addr:"212 E Green",lid:27},{addr:"212 East Green",lid:27},
-
+  {addr:"212 E Green",lid:27},
   // ── The LINC (28) — aspensquare.com ──
   {addr:"1601 N Lincoln",lid:28},
-
   // ── Bailey Apartments (29) ──
   {addr:"1004 W Springfield",lid:29},
 ];
@@ -2424,6 +2431,15 @@ async function submitReview(landlordIdFromDetail) {
       );
       if (!proceed) return;
     }
+    // Unverified-address warning — when address doesn't match ANY known property
+    if (!addrMatch) {
+      const proceed = confirm(
+        'We couldn\'t verify "' + propCustom + '" as a known property for any landlord in our database.\n\n' +
+        'Please double-check that the address is correct and spelled properly (e.g. "309 E Green St").\n\n' +
+        'Click OK to submit anyway, or Cancel to go back and fix it.'
+      );
+      if (!proceed) return;
+    }
   }
 
   const text = document.getElementById('rev-text')?.value?.trim();
@@ -2621,9 +2637,14 @@ function TosPage() {
     <p style="margin-bottom:16px"><strong>10. Consumer Review Fairness Act.</strong> Under the Consumer Review Fairness Act (15 U.S.C. &sect; 45b), any contract provision that prohibits or penalizes honest consumer reviews is void and unenforceable. If your lease contains a clause restricting honest reviews, that clause is likely unenforceable under federal law.</p>
     <p style="margin-bottom:16px"><strong>11. Anti-Retaliation.</strong> RateMyCrib supports your right to share truthful accounts of your rental experience. If a landlord threatens or retaliates against you for submitting a truthful review, document the threat and contact the UIUC Student Legal Service. We will never reveal a reviewer's identity to a landlord.</p>
     <p style="margin-bottom:16px"><strong>12. Landlord Disputes.</strong> Landlords who believe a review contains verifiably false statements of fact (not opinions) may submit a dispute to ratemycrib@proton.me with evidence. We will review within 14 business days. We are not obligated to remove reviews reflecting genuine opinions.</p>
-    <p style="margin-bottom:16px"><strong>13. Changes.</strong> We may update these Terms at any time. Continued use of the Site constitutes acceptance of the updated Terms.</p>
-    <p style="margin-bottom:16px"><strong>14. Contact.</strong> Questions about these Terms? Email us at <a href="mailto:ratemycrib@proton.me" style="color:var(--orange)">ratemycrib@proton.me</a>.</p>
-    <p style="margin-bottom:16px;font-size:13px;color:rgba(255,255,255,0.4)">For the full Terms of Service, see <a href="terms.html" style="color:var(--orange)">terms.html</a>.</p>
+    <p style="margin-bottom:16px"><strong>13. Prohibited Conduct.</strong> You agree not to: (a) submit fake, fraudulent, or deliberately misleading reviews; (b) impersonate another person or misrepresent your relationship to a property; (c) submit reviews as a landlord, property manager, or their employee about your own properties; (d) use the Site to harass, threaten, or defame any individual; (e) attempt to manipulate ratings or reviews through coordinated activity; (f) use automated tools to scrape, crawl, or extract data from the Site without our written consent.</p>
+    <p style="margin-bottom:16px"><strong>14. Indemnification.</strong> You agree to indemnify, defend, and hold harmless RateMyCrib LLC, its operators, and affiliates from any claims, damages, losses, or expenses (including reasonable attorney&rsquo;s fees) arising from: (a) your use of the Site; (b) content you submit; (c) your violation of these Terms; or (d) your violation of any third party&rsquo;s rights.</p>
+    <p style="margin-bottom:16px"><strong>15. Governing Law &amp; Jurisdiction.</strong> These Terms are governed by the laws of the State of Illinois, without regard to its conflict-of-law provisions. Any disputes arising under these Terms shall be resolved in the state or federal courts located in Champaign County, Illinois.</p>
+    <p style="margin-bottom:16px"><strong>16. Severability.</strong> If any provision of these Terms is found to be unenforceable or invalid, that provision shall be limited or eliminated to the minimum extent necessary, and the remaining provisions shall remain in full force and effect.</p>
+    <p style="margin-bottom:16px"><strong>17. DMCA &amp; Copyright.</strong> If you believe content on the Site infringes your copyright, submit a notice to <a href="mailto:ratemycrib@proton.me" style="color:var(--orange)">ratemycrib@proton.me</a> including: (a) identification of the copyrighted work; (b) identification of the allegedly infringing content; (c) your contact information; (d) a statement of good faith belief; (e) a statement under penalty of perjury that the information is accurate.</p>
+    <p style="margin-bottom:16px"><strong>18. Opinion vs. Fact.</strong> Reviews on this Site reflect individual opinions and subjective experiences. Statements such as &ldquo;worst landlord ever&rdquo; or &ldquo;terrible maintenance&rdquo; are expressions of opinion protected under the First Amendment and Illinois law. We encourage reviewers to be truthful and specific, but opinions — even strongly worded ones — are not actionable as defamation.</p>
+    <p style="margin-bottom:16px"><strong>19. Changes.</strong> We may update these Terms at any time. Continued use of the Site constitutes acceptance of the updated Terms.</p>
+    <p style="margin-bottom:16px"><strong>20. Contact.</strong> Questions about these Terms? Email us at <a href="mailto:ratemycrib@proton.me" style="color:var(--orange)">ratemycrib@proton.me</a>.</p>
     <p style="margin-top:32px"><span class="back-link" style="color:var(--orange);cursor:pointer" onclick="go({page:'home',detail:null})">&#8592; Back to home</span></p>
   </div>`;
 }
@@ -2642,8 +2663,12 @@ function PrivacyPage() {
     <p style="margin-bottom:16px"><strong>6. Data Storage.</strong> Review data is stored in a Supabase (PostgreSQL) database with Row Level Security enabled. Access is restricted to the minimum needed for the Site to function.</p>
     <p style="margin-bottom:16px"><strong>7. Data Retention.</strong> Reviews are retained indefinitely to maintain the usefulness of the platform. If you want a review removed, email us at <a href="mailto:ratemycrib@proton.me" style="color:var(--orange)">ratemycrib@proton.me</a> with details about the review you submitted.</p>
     <p style="margin-bottom:16px"><strong>8. Third Parties.</strong> We use Supabase for database hosting and Google Fonts for typography. We do not share your data with landlords, advertisers, or data brokers.</p>
-    <p style="margin-bottom:16px"><strong>9. Changes.</strong> We may update this Privacy Policy. The latest version will always be available on this page.</p>
-    <p style="margin-bottom:16px"><strong>10. Contact.</strong> Privacy questions? Email <a href="mailto:ratemycrib@proton.me" style="color:var(--orange)">ratemycrib@proton.me</a>.</p>
+    <p style="margin-bottom:16px"><strong>9. Children&rsquo;s Privacy.</strong> The Site is not intended for users under the age of 13. We do not knowingly collect personal information from children under 13. If we learn we have collected such data, we will delete it promptly.</p>
+    <p style="margin-bottom:16px"><strong>10. Security.</strong> We implement reasonable technical and organizational measures to protect your data, including Row Level Security policies, encrypted connections (HTTPS/TLS), and limited database access. However, no system is 100% secure, and we cannot guarantee absolute security.</p>
+    <p style="margin-bottom:16px"><strong>11. Your Rights.</strong> You may request access to, correction of, or deletion of your personal data by emailing us. Illinois residents may have additional rights under applicable state privacy laws. We will respond to verified requests within 30 days.</p>
+    <p style="margin-bottom:16px"><strong>12. Do Not Track.</strong> The Site does not use cookies for tracking and does not respond to Do Not Track signals, because we do not track users across other websites in the first place.</p>
+    <p style="margin-bottom:16px"><strong>13. Changes.</strong> We may update this Privacy Policy. The latest version will always be available on this page.</p>
+    <p style="margin-bottom:16px"><strong>14. Contact.</strong> Privacy questions? Email <a href="mailto:ratemycrib@proton.me" style="color:var(--orange)">ratemycrib@proton.me</a>.</p>
     <p style="margin-top:32px"><span class="back-link" style="color:var(--orange);cursor:pointer" onclick="go({page:'home',detail:null})">&#8592; Back to home</span></p>
   </div>`;
 }
@@ -2733,6 +2758,16 @@ function LandlordsInfoPage() {
     <div style="background:var(--light);border-radius:12px;padding:20px;margin-bottom:16px;border:1px solid var(--border)">
       <strong style="color:var(--orange)">We're open to feedback.</strong>
       <p style="margin-top:6px;font-size:14px;color:var(--text);line-height:1.6">If you believe a review is fraudulent, defamatory, or violates our Terms, contact us. We review flagged content and will remove reviews that don't meet our standards. We're building this for the community — not against landlords.</p>
+    </div>
+
+    <div style="background:var(--light);border-radius:12px;padding:20px;margin-bottom:16px;border:1px solid var(--border)">
+      <strong style="color:var(--orange)">Your legal rights &mdash; and ours.</strong>
+      <p style="margin-top:6px;font-size:14px;color:var(--text);line-height:1.6">RateMyCrib is a platform for user-generated content protected under <strong>Section 230 of the Communications Decency Act</strong> (47 U.S.C. &sect; 230). We do not author or endorse reviews &mdash; they reflect individual tenant experiences and opinions. Under the <strong>Consumer Review Fairness Act</strong> (15 U.S.C. &sect; 45b), lease provisions that prohibit or penalize honest tenant reviews are void and unenforceable under federal law.</p>
+    </div>
+
+    <div style="background:var(--light);border-radius:12px;padding:20px;margin-bottom:16px;border:1px solid var(--border)">
+      <strong style="color:var(--orange)">Dispute process.</strong>
+      <p style="margin-top:6px;font-size:14px;color:var(--text);line-height:1.6">If you believe a specific review contains verifiably false statements of <em>fact</em> (not opinions), you may submit a dispute to <a href="mailto:ratemycrib@proton.me" style="color:var(--orange);font-weight:600;text-decoration:underline">ratemycrib@proton.me</a> with supporting evidence. We will review within 14 business days. We are not obligated to remove reviews that express genuine opinions, even strongly negative ones. Opinions such as &ldquo;worst landlord ever&rdquo; or &ldquo;terrible maintenance&rdquo; are protected speech.</p>
     </div>
 
     <div style="background:#FFF7ED;border:1px solid #FED7AA;border-radius:12px;padding:20px;margin-bottom:24px">
