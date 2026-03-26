@@ -123,21 +123,43 @@
     100% { opacity: 1; transform: scale(1); }
   }
   @keyframes tiltLeft {
-    0% { transform: rotate(0deg); }
-    40% { transform: rotate(-18deg); }
-    60% { transform: rotate(-14deg); }
+    0%   { transform: rotate(0deg); }
+    10%  { transform: rotate(12deg); }
+    20%  { transform: rotate(-10deg); }
+    30%  { transform: rotate(14deg); }
+    40%  { transform: rotate(-8deg); }
+    50%  { transform: rotate(10deg); }
+    60%  { transform: rotate(-12deg); }
+    72%  { transform: rotate(-16deg); }
+    85%  { transform: rotate(-18deg); }
     100% { transform: rotate(-16deg); }
   }
   @keyframes tiltRight {
-    0% { transform: rotate(0deg); }
-    40% { transform: rotate(18deg); }
-    60% { transform: rotate(14deg); }
+    0%   { transform: rotate(0deg); }
+    10%  { transform: rotate(-12deg); }
+    20%  { transform: rotate(10deg); }
+    30%  { transform: rotate(-14deg); }
+    40%  { transform: rotate(8deg); }
+    50%  { transform: rotate(-10deg); }
+    60%  { transform: rotate(12deg); }
+    72%  { transform: rotate(16deg); }
+    85%  { transform: rotate(18deg); }
     100% { transform: rotate(16deg); }
   }
   @keyframes tiltEven {
-    0% { transform: rotate(8deg); }
-    50% { transform: rotate(-8deg); }
+    0%   { transform: rotate(0deg); }
+    12%  { transform: rotate(14deg); }
+    24%  { transform: rotate(-12deg); }
+    36%  { transform: rotate(10deg); }
+    48%  { transform: rotate(-10deg); }
+    60%  { transform: rotate(8deg); }
+    72%  { transform: rotate(-6deg); }
+    84%  { transform: rotate(3deg); }
     100% { transform: rotate(0deg); }
+  }
+  @keyframes verdictReveal {
+    0%   { opacity: 0; transform: translateY(8px); }
+    100% { opacity: 1; transform: translateY(0); }
   }
 
   /* ===== HEAD-TO-HEAD COMPARISON ===== */
@@ -733,7 +755,7 @@ const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 const SEED_LANDLORDS = [
   { id:1, name:"Green Street Realty", props:42, rating:0, reviews:0, wouldRent:0, responseRate:"—",
     scores:{maintenance:0,communication:0,fairness:0,moveOut:0}, topTags:["New Listing"], dist:[0,0,0,0,0] },
-  { id:2, name:"Smile Student Living", props:28, rating:0, reviews:0, wouldRent:0, responseRate:"—",
+  { id:2, name:"Smile Student Living & Fairlawn Real Estate", props:28, rating:0, reviews:0, wouldRent:0, responseRate:"—",
     scores:{maintenance:0,communication:0,fairness:0,moveOut:0}, topTags:["New Listing"], dist:[0,0,0,0,0] },
   { id:3, name:"JSM Living", props:35, rating:0, reviews:0, wouldRent:0, responseRate:"—",
     scores:{maintenance:0,communication:0,fairness:0,moveOut:0}, topTags:["New Listing"], dist:[0,0,0,0,0] },
@@ -779,8 +801,9 @@ const SEED_LANDLORDS = [
     scores:{maintenance:0,communication:0,fairness:0,moveOut:0}, topTags:["New Listing"], dist:[0,0,0,0,0] },
   { id:25, name:"JSJ Property Management", props:0, rating:0, reviews:0, wouldRent:0, responseRate:"—",
     scores:{maintenance:0,communication:0,fairness:0,moveOut:0}, topTags:["New Listing"], dist:[0,0,0,0,0] },
-  { id:26, name:"Fairlawn Real Estate", props:0, rating:0, reviews:0, wouldRent:0, responseRate:"—",
-    scores:{maintenance:0,communication:0,fairness:0,moveOut:0}, topTags:["Sterling on First"], dist:[0,0,0,0,0] },
+  // Fairlawn Real Estate merged into Smile Student Living (id:2)
+  // { id:26, name:"Fairlawn Real Estate" } — reviews under lid:26 are redirected to lid:2
+
   { id:27, name:"The Rive Champaign", props:1, rating:0, reviews:0, wouldRent:0, responseRate:"—",
     scores:{maintenance:0,communication:0,fairness:0,moveOut:0}, topTags:["New Listing"], dist:[0,0,0,0,0] },
   { id:29, name:"Bailey Apartments", props:1, rating:0, reviews:0, wouldRent:0, responseRate:"—",
@@ -973,8 +996,8 @@ const KNOWN_PROPERTIES = [
   {addr:"1003 W Stoughton",lid:25},{addr:"611 S State",lid:25},{addr:"305 W Clark",lid:25},{addr:"301 W University",lid:25},
   {addr:"302 W Clark",lid:25},{addr:"314 S State",lid:25},{addr:"318 S State",lid:25},{addr:"302 W Springfield",lid:25},
   {addr:"611 Lofts",lid:25},{addr:"Luxe District",lid:25},{addr:"305 Lofts",lid:25},
-  // ── Fairlawn Real Estate (26) ──
-  {addr:"Fairlawn",lid:26},{addr:"108 Sterling",lid:26},
+  // ── Fairlawn Real Estate (merged into Smile id:2) ──
+  {addr:"Fairlawn",lid:2},{addr:"108 Sterling",lid:2},
   // ── The Rive Champaign (27) — therivechampaign.com ──
   {addr:"212 E Green",lid:27},
   // ── The LINC (28) — aspensquare.com ──
@@ -1316,11 +1339,17 @@ function findLandlord(id) {
 // Return only the reviews that truly belong to this landlord.
 // Matches by landlord_id, PLUS filters out any review whose landlord_name
 // doesn't match (prevents cross-contamination when IDs collide).
+// Landlord merge map: reviews submitted under old IDs get counted under the merged parent
+var LANDLORD_ALIASES = { 26: 2 }; // Fairlawn Real Estate → Smile Student Living
+
 function getReviewsForLandlord(landlord) {
+  // Collect all IDs that should count for this landlord (own ID + any aliases pointing here)
+  var ids = [landlord.id];
+  Object.keys(LANDLORD_ALIASES).forEach(function(oldId) {
+    if (LANDLORD_ALIASES[oldId] === landlord.id) ids.push(parseInt(oldId));
+  });
   return allReviews().filter(r => {
-    if (r.landlordId !== landlord.id) return false;
-    // If the review recorded a landlord name and it doesn't match this landlord, skip it
-    if (r.landlordName && landlord.name && r.landlordName !== landlord.name) return false;
+    if (ids.indexOf(r.landlordId) === -1) return false;
     return true;
   });
 }
@@ -1423,29 +1452,37 @@ function getSmartTags(landlord) {
   var allText = texts.join(' ');
   var n = revs.length;
 
-  // Keyword-based detection with thresholds
+  // Keyword-based detection with thresholds + score gates
   // minN = minimum number of reviews that must match (absolute floor)
   // min  = minimum fraction of reviews that must match
-  // Both conditions must be true for the tag to appear
+  // scoreKey/scoreMin/scoreMax = the actual sub-score must back up the keyword match
+  //   This prevents false positives like "communication could be better" triggering "Great Communication"
+  // Both keyword thresholds AND score gate must pass for the tag to appear
+  var stats = getLandlordStats(landlord);
   var patterns = [
-    { tag: 'Fast Maintenance', type: 'good', keys: ['quick fix','fast repair','fixed quickly','fixed right away','same day','next day','maintenance.*fast','maintenance.*quick','responsive maintenance','fixed immediately','prompt repair'], min: 0.4, minN: 2 },
-    { tag: 'Slow Repairs', type: 'bad', keys: ['slow repair','slow maintenance','took weeks','took months','never fixed','still broken','waited forever','maintenance.*slow','took forever'], min: 0.4, minN: 2 },
-    { tag: 'Great Communication', type: 'good', keys: ['great communication','always responds','easy to reach','answers quickly','communicat.*great','communicat.*good','helpful staff'], min: 0.4, minN: 2 },
-    { tag: 'Hard to Reach', type: 'bad', keys: ['hard to reach','never responds','ghosted','no response','impossible to contact','doesn.t respond','won.t respond','never answer'], min: 0.35, minN: 2 },
-    { tag: 'Fair Pricing', type: 'good', keys: ['fair price','good price','affordable','great deal','good value','reasonable rent','worth the price','good for the price'], min: 0.4, minN: 2 },
-    { tag: 'Overpriced', type: 'bad', keys: ['overpriced','too expensive','not worth the','rip off','ripoff','way too much','overpay'], min: 0.35, minN: 2 },
+    { tag: 'Fast Maintenance', type: 'good', keys: ['quick fix','fast repair','fixed quickly','fixed right away','same day','next day','maintenance.*fast','maintenance.*quick','responsive maintenance','fixed immediately','prompt repair'], min: 0.4, minN: 2, scoreKey: 'maintenance', scoreMin: 3.5 },
+    { tag: 'Slow Repairs', type: 'bad', keys: ['slow repair','slow maintenance','took weeks','took months','never fixed','still broken','waited forever','maintenance.*slow','took forever'], min: 0.4, minN: 2, scoreKey: 'maintenance', scoreMax: 2.8 },
+    { tag: 'Great Communication', type: 'good', keys: ['great communication','always responds','easy to reach','answers quickly','communicat.*great','communicat.*good','helpful staff'], min: 0.4, minN: 2, scoreKey: 'communication', scoreMin: 3.5 },
+    { tag: 'Hard to Reach', type: 'bad', keys: ['hard to reach','never responds','ghosted','no response','impossible to contact','doesn.t respond','won.t respond','never answer'], min: 0.35, minN: 2, scoreKey: 'communication', scoreMax: 2.8 },
+    { tag: 'Fair Pricing', type: 'good', keys: ['fair price','good price','affordable','great deal','good value','reasonable rent','worth the price','good for the price'], min: 0.4, minN: 2, scoreKey: 'fairness', scoreMin: 3.5 },
+    { tag: 'Overpriced', type: 'bad', keys: ['overpriced','too expensive','not worth the','rip off','ripoff','way too much','overpay'], min: 0.35, minN: 2, scoreKey: 'fairness', scoreMax: 2.8 },
     { tag: 'Clean & Modern', type: 'good', keys: ['very clean','super clean','really clean','modern','renovated','updated unit','new appliance','well.maintained'], min: 0.4, minN: 2 },
     { tag: 'Pest Issues', type: 'bad', keys: ['roach','cockroach','mice','mouse','rat\\b','pest','infestation','bed bug','bedbug'], min: 0.3, minN: 2 },
     { tag: 'Quiet Building', type: 'good', keys: ['very quiet','super quiet','really quiet','peaceful','no noise'], min: 0.4, minN: 2 },
     { tag: 'Noisy', type: 'warn', keys: ['very noisy','really loud','too loud','thin walls','hear everything','loud neighbor'], min: 0.35, minN: 2 },
     { tag: 'Great Location', type: 'good', keys: ['great location','close to campus','walking distance','convenient location','prime location','close to everything','steps from'], min: 0.4, minN: 2 },
     { tag: 'Parking Hassle', type: 'warn', keys: ['no parking','hard to park','towed','parking.*terrible','parking.*issue','parking.*problem','parking.*nightmare'], min: 0.35, minN: 2 },
-    { tag: 'Security Deposit Issues', type: 'bad', keys: ['kept.*deposit','didn.t return.*deposit','unfair charge','hidden fee','nickel and dime','charged.*move.out','deposit.*never'], min: 0.3, minN: 2 },
+    { tag: 'Security Deposit Issues', type: 'bad', keys: ['kept.*deposit','didn.t return.*deposit','unfair charge','hidden fee','nickel and dime','charged.*move.out','deposit.*never'], min: 0.3, minN: 2, scoreKey: 'moveOut', scoreMax: 2.8 },
     { tag: 'Pet Friendly', type: 'neutral', keys: ['pet.friendly','pets allowed','dog friendly','cat friendly','allows pets'], min: 0.3, minN: 2 },
     { tag: 'Good for Grad Students', type: 'neutral', keys: ['grad student','graduate student','quiet.*study','mature crowd','older crowd'], min: 0.35, minN: 2 },
   ];
 
   patterns.forEach(function(p) {
+    // Score gate: if a score dimension is specified, the actual score must back up the keyword
+    if (p.scoreKey && stats.scores[p.scoreKey] > 0) {
+      if (p.scoreMin && stats.scores[p.scoreKey] < p.scoreMin) return;
+      if (p.scoreMax && stats.scores[p.scoreKey] > p.scoreMax) return;
+    }
     var matchCount = 0;
     texts.forEach(function(t) {
       var found = p.keys.some(function(k) { return new RegExp(k, 'i').test(t); });
@@ -1457,7 +1494,6 @@ function getSmartTags(landlord) {
   });
 
   // Score-based tags — require minimum 3 reviews for credibility
-  var stats = getLandlordStats(landlord);
   if (stats.scores.maintenance >= 4.0 && stats.reviews >= 3) tags.push({ tag: 'Top Maintenance', type: 'good', pct: null });
   if (stats.scores.communication >= 4.0 && stats.reviews >= 3) tags.push({ tag: 'Top Communication', type: 'good', pct: null });
   if (stats.scores.fairness >= 4.0 && stats.reviews >= 3) tags.push({ tag: 'Very Fair', type: 'good', pct: null });
@@ -1575,17 +1611,19 @@ function HeadToHead() {
       '</div>';
     }).join('') +
   '</div>' +
-  '<div style="text-align:center;padding:20px;background:var(--card-bg);border-radius:12px;border:1px solid var(--border);animation:verdictPop 0.5s ease both">' +
-    '<div style="font-size:48px;margin-bottom:8px;display:inline-block;animation:' + (scoreA > scoreB ? 'tiltLeft' : scoreB > scoreA ? 'tiltRight' : 'tiltEven') + ' 0.7s ease 0.3s both">&#9878;</div>' +
-    '<div style="display:flex;justify-content:center;align-items:center;gap:24px;margin-bottom:12px">' +
-      '<div style="text-align:center"><div style="font-size:28px;font-weight:900;color:' + (scoreA > scoreB ? '#16A34A' : scoreA < scoreB ? 'var(--muted)' : 'var(--text)') + '">' + scoreA + '</div><div style="font-size:11px;color:var(--muted)">' + esc(a.name) + '</div></div>' +
-      '<div style="font-size:12px;font-weight:700;color:var(--muted)">vs</div>' +
-      '<div style="text-align:center"><div style="font-size:28px;font-weight:900;color:' + (scoreB > scoreA ? '#16A34A' : scoreB < scoreA ? 'var(--muted)' : 'var(--text)') + '">' + scoreB + '</div><div style="font-size:11px;color:var(--muted)">' + esc(b.name) + '</div></div>' +
+  '<div style="text-align:center;padding:24px;background:var(--card-bg);border-radius:12px;border:1px solid var(--border);animation:verdictPop 0.5s ease both">' +
+    '<div style="font-size:56px;margin-bottom:12px;display:inline-block;animation:' + (scoreA > scoreB ? 'tiltLeft' : scoreB > scoreA ? 'tiltRight' : 'tiltEven') + ' 3s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.3s both">&#9878;</div>' +
+    '<div style="animation:verdictReveal 0.4s ease 3.2s both">' +
+      '<div style="display:flex;justify-content:center;align-items:center;gap:24px;margin-bottom:12px">' +
+        '<div style="text-align:center"><div style="font-size:28px;font-weight:900;color:' + (scoreA > scoreB ? '#16A34A' : scoreA < scoreB ? 'var(--muted)' : 'var(--text)') + '">' + scoreA + '</div><div style="font-size:11px;color:var(--muted)">' + esc(a.name) + '</div></div>' +
+        '<div style="font-size:12px;font-weight:700;color:var(--muted)">vs</div>' +
+        '<div style="text-align:center"><div style="font-size:28px;font-weight:900;color:' + (scoreB > scoreA ? '#16A34A' : scoreB < scoreA ? 'var(--muted)' : 'var(--text)') + '">' + scoreB + '</div><div style="font-size:11px;color:var(--muted)">' + esc(b.name) + '</div></div>' +
+      '</div>' +
+      (scoreA > scoreB ? '<strong style="color:#16A34A;font-size:16px">' + esc(a.name) + ' takes it</strong>' :
+       scoreB > scoreA ? '<strong style="color:#16A34A;font-size:16px">' + esc(b.name) + ' takes it</strong>' :
+       '<strong style="color:var(--muted);font-size:16px">Dead even</strong>') +
+      '<div style="font-size:11px;color:var(--muted);margin-top:8px">Composite score combining rating, would-rent-again %, and all sub-scores</div>' +
     '</div>' +
-    (scoreA > scoreB ? '<strong style="color:#16A34A;font-size:16px">' + esc(a.name) + ' takes it</strong>' :
-     scoreB > scoreA ? '<strong style="color:#16A34A;font-size:16px">' + esc(b.name) + ' takes it</strong>' :
-     '<strong style="color:var(--muted);font-size:16px">Dead even</strong>') +
-    '<div style="font-size:11px;color:var(--muted);margin-top:8px">Composite score combining rating, would-rent-again %, and all sub-scores</div>' +
   '</div>';
 }
 
