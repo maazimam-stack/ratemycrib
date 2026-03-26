@@ -250,7 +250,7 @@
   .container { max-width: 960px; margin: 0 auto; padding: 36px 24px; }
   .results-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
   .results-count { font-size: 14px; color: var(--muted); font-weight: 500; }
-  .sort-select { padding: 9px 16px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; background: white; cursor: pointer; font-family: inherit; color: var(--text); }
+  .sort-select { padding: 9px 16px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; background: var(--card-bg); cursor: pointer; font-family: inherit; color: var(--text); }
 
   .result-card { display: flex; gap: 0; border: 1px solid var(--border); border-radius: 16px; margin-bottom: 14px; overflow: hidden; transition: all 0.25s ease; cursor: pointer; background: var(--white); box-shadow: var(--shadow-sm); }
   .result-card:hover { box-shadow: 0 12px 40px rgba(0,0,0,0.1); transform: translateY(-3px); border-color: rgba(232,74,39,0.2); }
@@ -364,7 +364,7 @@
 
   /* ===== WRITE REVIEW MODAL ===== */
   .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 200; animation: fadeIn 0.2s ease; }
-  .modal-box { background: white; border-radius: 16px; padding: 36px; max-width: 540px; width: 92%; max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow-lg); animation: slideDown 0.3s ease; }
+  .modal-box { background: var(--card-bg); border-radius: 16px; padding: 36px; max-width: 540px; width: 92%; max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow-lg); animation: slideDown 0.3s ease; }
   .modal-close { position: absolute; top: 12px; right: 16px; background: none; border: none; font-size: 28px; color: var(--muted); cursor: pointer; padding: 4px 8px; line-height: 1; border-radius: 6px; transition: all 0.2s; z-index: 1; }
   .modal-close:hover { background: var(--light); color: var(--text); }
   .modal-box { position: relative; }
@@ -380,8 +380,8 @@
   .star-row span.on { color: #F59E0B; filter: drop-shadow(0 1px 2px rgba(245,158,11,0.3)); }
   .star-row span:hover { transform: scale(1.15); }
   .chip-group { display: flex; flex-wrap: wrap; gap: 6px; }
-  .chip { padding: 6px 14px; border-radius: 50px; font-size: 12px; border: 1.5px solid var(--border); cursor: pointer; transition: all 0.2s; background: white; font-family: inherit; font-weight: 500; }
-  .chip:hover { border-color: var(--orange); background: #FFF7ED; }
+  .chip { padding: 6px 14px; border-radius: 50px; font-size: 12px; border: 1.5px solid var(--border); cursor: pointer; transition: all 0.2s; background: var(--card-bg); font-family: inherit; font-weight: 500; color: var(--text); }
+  .chip:hover { border-color: var(--orange); background: var(--light); }
   .chip.sel-pos { background: #ECFDF5; border-color: #16A34A; color: #065F46; }
   .chip.sel-neg { background: #FEF2F2; border-color: #DC2626; color: #991B1B; }
   .submit-btn { width: 100%; padding: 14px; background: var(--orange); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.2s; font-family: inherit; }
@@ -517,7 +517,7 @@
   .scanner-progress-fill { height: 100%; background: var(--orange); border-radius: 3px; transition: width 0.3s; width: 0%; }
   .scanner-progress-text { font-size: 12px; color: var(--muted); margin-top: 6px; text-align: center; }
   .interest-modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 9998; display: flex; align-items: center; justify-content: center; animation: fadeIn 0.2s; }
-  .interest-modal { background: white; border-radius: 16px; padding: 32px; max-width: 440px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.2); animation: fadeUp 0.3s; }
+  .interest-modal { background: var(--card-bg); border-radius: 16px; padding: 32px; max-width: 440px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.2); animation: fadeUp 0.3s; }
   .interest-modal h3 { font-size: 20px; font-weight: 800; margin-bottom: 8px; letter-spacing: -0.3px; }
   .interest-modal p { font-size: 14px; color: var(--muted); line-height: 1.6; margin-bottom: 20px; }
   .interest-modal input[type="email"] { width: 100%; padding: 12px 16px; border: 2px solid var(--border); border-radius: 10px; font-size: 14px; font-family: inherit; outline: none; transition: border-color 0.2s; margin-bottom: 12px; }
@@ -668,6 +668,12 @@
   [data-theme="dark"] .search-tag { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.5); }
   [data-theme="dark"] .search-tag.active { background: var(--orange); color: white; }
   [data-theme="dark"] .scatter-wrap { background: var(--card-bg); border-color: var(--border); }
+  [data-theme="dark"] .scanner-disclaimer { background: rgba(234,179,8,0.1); border-color: rgba(234,179,8,0.3); color: #FDE68A; }
+  [data-theme="dark"] .scanner-upload-zone:hover, [data-theme="dark"] .scanner-upload-zone.dragover { background: rgba(232,74,39,0.08); }
+  [data-theme="dark"] .flag-card.severity-high { background: rgba(220,38,38,0.1); }
+  [data-theme="dark"] .flag-card.severity-medium { background: rgba(217,119,6,0.1); }
+  [data-theme="dark"] .alert-orange { background: rgba(232,74,39,0.08); border-color: rgba(232,74,39,0.25); color: var(--text); }
+  [data-theme="dark"] .interest-modal { background: var(--card-bg); }
 
   /* Alert/callout boxes for legal pages */
   .alert-red { background: #FEF2F2; border: 1px solid #FECACA; border-radius: 12px; padding: 16px 20px; margin-bottom: 24px; }
@@ -1275,12 +1281,20 @@ function toggleScatterHL(id) {
   else list.push(id);
   go({highlightLandlords: list});
 }
+var _lastTrackedPage = null;
 const go = u => {
   // When navigating to a different page, clear detail unless explicitly set
   if (u.page && u.page !== 'detail' && !('detail' in u)) u.detail = null;
   // Save form state before re-render if modal is open
   if (S.modal) saveFormState();
   Object.assign(S, u);
+  // Track page views on navigation
+  var currentPage = S.page || 'home';
+  var pageKey = currentPage + (S.detail ? '_' + S.detail : '');
+  if (pageKey !== _lastTrackedPage) {
+    _lastTrackedPage = pageKey;
+    trackEvent('page_view', { page: currentPage, detail: S.detail || null });
+  }
   // If closing modal, clear form state and tags
   if ('modal' in u && !u.modal) { S.posTags = []; S.negTags = []; S.formData = {}; }
   render();
@@ -1722,9 +1736,9 @@ function showSharePromptEnhanced(landlordName) {
       '<h3 style="font-size:22px;font-weight:900;margin-bottom:6px;letter-spacing:-0.3px;color:var(--text)">Review Submitted!</h3>' +
       '<p style="font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:20px">Your review is live. Help other Illini make better housing decisions.</p>' +
       '<div class="share-btn-row">' +
-        '<button class="share-opt" onclick="window.open(\'sms:?&body=' + encodedText + '\',\'_blank\')"><div class="share-opt-icon" style="font-weight:700">SMS</div><div class="share-opt-label">iMessage</div></button>' +
-        '<button class="share-opt" onclick="window.open(\'https://twitter.com/intent/tweet?text=' + encodedText + '\',\'_blank\')"><div class="share-opt-icon" style="font-weight:700">X</div><div class="share-opt-label">Twitter</div></button>' +
-        '<button class="share-opt" onclick="copyShareLink();this.querySelector(\'.share-opt-label\').textContent=\'Copied!\'"><div class="share-opt-icon" style="font-weight:700">Link</div><div class="share-opt-label">Copy Link</div></button>' +
+        '<button class="share-opt" onclick="trackEvent(\'share_click\',{method:\'sms\'});window.open(\'sms:?&body=' + encodedText + '\',\'_blank\')"><div class="share-opt-icon" style="font-weight:700">SMS</div><div class="share-opt-label">iMessage</div></button>' +
+        '<button class="share-opt" onclick="trackEvent(\'share_click\',{method:\'twitter\'});window.open(\'https://twitter.com/intent/tweet?text=' + encodedText + '\',\'_blank\')"><div class="share-opt-icon" style="font-weight:700">X</div><div class="share-opt-label">Twitter</div></button>' +
+        '<button class="share-opt" onclick="trackEvent(\'share_click\',{method:\'copy_link\'});copyShareLink();this.querySelector(\'.share-opt-label\').textContent=\'Copied!\'"><div class="share-opt-icon" style="font-weight:700">Link</div><div class="share-opt-label">Copy Link</div></button>' +
       '</div>' +
       (navigator.share ? '<button onclick="navigator.share({title:\'RateMyCrib\',text:\'' + shareText.replace(/'/g,"\\'") + '\',url:\'' + shareUrl + '\'}).catch(function(){});this.textContent=\'Shared!\'" style="width:100%;padding:14px;background:var(--orange);color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:12px">Share via...</button>' : '') +
       '<button onclick="this.closest(\'div\').parentElement.remove()" style="width:100%;padding:12px;background:transparent;color:var(--muted);border:none;font-size:14px;cursor:pointer;font-family:inherit;font-weight:500;margin-top:6px">Maybe later</button>' +
@@ -1766,6 +1780,7 @@ function toggleDarkMode() {
   // Just swap the toggle button icon (sun ↔ moon)
   var btn = document.querySelector('.dm-toggle');
   if (btn) btn.innerHTML = newTheme === 'dark' ? '&#9788;' : '&#9790;';
+  trackEvent('dark_mode_toggle', { theme: newTheme });
 }
 
 function LandlordTicker() {
@@ -2265,7 +2280,7 @@ function DetailPage() {
   <div class="reviews-section">
     <div class="reviews-header">
       <h2>${revs.length} Student Review${revs.length!==1?'s':''}</h2>
-      <button class="write-btn" onclick="go({modal:true,stars:0,wouldRentChoice:null,posTags:[],negTags:[],formData:{}})">+ Review This Landlord</button>
+      <button class="write-btn" onclick="trackEvent('review_modal_open',{landlord_id:S.detail});go({modal:true,stars:0,wouldRentChoice:null,posTags:[],negTags:[],formData:{}})">+ Review This Landlord</button>
     </div>
     ${revs.map(r => {
       const rq = qClass(r.rating);
@@ -2397,14 +2412,14 @@ function Compare() {
     <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:24px;align-items:center;background:var(--light);padding:16px 20px;border-radius:12px;border:1px solid var(--border)">
       <div style="display:flex;align-items:center;gap:6px">
         <label style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px">Area</label>
-        <select style="padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;background:white" onchange="go({cmpHood:this.value})">
+        <select style="padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;background:var(--card-bg);color:var(--text)" onchange="go({cmpHood:this.value})">
           <option value="all">All</option>
           ${allHoods.map(h => `<option value="${esc(h)}" ${S.cmpHood===h?'selected':''}>${esc(h)}</option>`).join('')}
         </select>
       </div>
       <div style="display:flex;align-items:center;gap:6px">
         <label style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px">Max Rent</label>
-        <select style="padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;background:white" onchange="go({cmpMaxRent:parseInt(this.value)||0})">
+        <select style="padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;background:var(--card-bg);color:var(--text)" onchange="go({cmpMaxRent:parseInt(this.value)||0})">
           <option value="0">No limit</option>
           <option value="600" ${S.cmpMaxRent===600?'selected':''}>Under $600</option>
           <option value="800" ${S.cmpMaxRent===800?'selected':''}>Under $800</option>
@@ -2831,12 +2846,19 @@ let pdfExtracting = false;
 
 // ===== SCANNER ANALYTICS =====
 async function trackScannerEvent(eventType, metadata = {}) {
+  trackEvent('scanner_' + eventType, metadata);
+}
+
+async function trackEvent(eventType, metadata = {}) {
   try {
-    await db.from('scanner_events').insert({
+    await db.from('site_events').insert({
       event_type: eventType,
       metadata: metadata,
+      page: S.page || 'home',
       created_at: new Date().toISOString(),
-      user_agent: navigator.userAgent
+      user_agent: navigator.userAgent,
+      referrer: document.referrer || null,
+      screen: window.innerWidth + 'x' + window.innerHeight
     });
   } catch(e) {
     // Silent fail — analytics should never block UX
@@ -3023,10 +3045,10 @@ function LeaseScanner() {
       <h3 style="font-size:18px;font-weight:700;margin-bottom:8px;letter-spacing:-0.3px">Illinois Tenant Law — Quick Reference</h3>
       <p style="font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:16px">Key Illinois statutes relevant to student renters (not legal advice — see disclaimer below):</p>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-bottom:20px">
-        <div style="background:white;padding:14px 16px;border-radius:10px;border:1px solid var(--border);font-size:13.5px;line-height:1.6"><strong style="color:var(--orange)">Security Deposits</strong><br>Under <a href="https://www.ilga.gov/legislation/ilcs/ilcs3.asp?ActID=2202&ChapterID=62" target="_blank" style="color:var(--blue)">765 ILCS 710</a>, landlords of 5+ unit buildings must return deposits within 30 days with an itemized deduction list.</div>
-        <div style="background:white;padding:14px 16px;border-radius:10px;border:1px solid var(--border);font-size:13.5px;line-height:1.6"><strong style="color:var(--orange)">Habitability</strong><br>Illinois courts recognize an implied warranty of habitability covering heat, water, electricity, and structural safety.</div>
-        <div style="background:white;padding:14px 16px;border-radius:10px;border:1px solid var(--border);font-size:13.5px;line-height:1.6"><strong style="color:var(--orange)">Retaliation</strong><br>Under <a href="https://www.ilga.gov/legislation/ilcs/ilcs3.asp?ActID=4532&ChapterID=62" target="_blank" style="color:var(--blue)">765 ILCS 721</a>, landlords are prohibited from retaliating against tenants who report code violations.</div>
-        <div style="background:white;padding:14px 16px;border-radius:10px;border:1px solid var(--border);font-size:13.5px;line-height:1.6"><strong style="color:var(--orange)">Eviction</strong><br>Under <a href="https://www.ilga.gov/legislation/ilcs/ilcs4.asp?ActID=2017&ChapterID=56&SeqStart=65575000&SeqEnd=73000000" target="_blank" style="color:var(--blue)">735 ILCS 5/Art. IX</a>, evictions require a court order. Self-help lockouts are prohibited.</div>
+        <div style="background:var(--card-bg);padding:14px 16px;border-radius:10px;border:1px solid var(--border);font-size:13.5px;line-height:1.6;color:var(--text)"><strong style="color:var(--orange)">Security Deposits</strong><br>Under <a href="https://www.ilga.gov/legislation/ilcs/ilcs3.asp?ActID=2202&ChapterID=62" target="_blank" style="color:var(--blue)">765 ILCS 710</a>, landlords of 5+ unit buildings must return deposits within 30 days with an itemized deduction list.</div>
+        <div style="background:var(--card-bg);padding:14px 16px;border-radius:10px;border:1px solid var(--border);font-size:13.5px;line-height:1.6;color:var(--text)"><strong style="color:var(--orange)">Habitability</strong><br>Illinois courts recognize an implied warranty of habitability covering heat, water, electricity, and structural safety.</div>
+        <div style="background:var(--card-bg);padding:14px 16px;border-radius:10px;border:1px solid var(--border);font-size:13.5px;line-height:1.6;color:var(--text)"><strong style="color:var(--orange)">Retaliation</strong><br>Under <a href="https://www.ilga.gov/legislation/ilcs/ilcs3.asp?ActID=4532&ChapterID=62" target="_blank" style="color:var(--blue)">765 ILCS 721</a>, landlords are prohibited from retaliating against tenants who report code violations.</div>
+        <div style="background:var(--card-bg);padding:14px 16px;border-radius:10px;border:1px solid var(--border);font-size:13.5px;line-height:1.6;color:var(--text)"><strong style="color:var(--orange)">Eviction</strong><br>Under <a href="https://www.ilga.gov/legislation/ilcs/ilcs4.asp?ActID=2017&ChapterID=56&SeqStart=65575000&SeqEnd=73000000" target="_blank" style="color:var(--blue)">735 ILCS 5/Art. IX</a>, evictions require a court order. Self-help lockouts are prohibited.</div>
       </div>
       <p style="font-size:11px;color:var(--muted);margin-bottom:16px;line-height:1.5">This is a simplified summary for educational purposes, not legal advice. Consult a licensed attorney for advice on your situation.</p>
       <div style="display:flex;gap:10px;flex-wrap:wrap">
@@ -3299,6 +3321,7 @@ function QuizPage() {
     '</div>';
   }
   // Results
+  trackEvent('quiz_completed', { answers: quizAnswers });
   var allStats = SEED_LANDLORDS.map(getLandlordStats).concat(
     (userLandlords || []).map(function(ul) {
       return getLandlordStats({ id: ul.id, name: ul.name, props: 0, rating: 0, reviews: 0, wouldRent: 0, responseRate: "—", scores:{maintenance:0,communication:0,fairness:0,moveOut:0}, topTags:[], dist:[0,0,0,0,0] });
@@ -3365,6 +3388,7 @@ function runRentCheck() {
   var amount = parseInt(document.getElementById('rent-check-amount').value);
   var lid = parseInt(document.getElementById('rent-check-landlord').value);
   if (!amount || amount < 100) { toast('Enter a valid rent amount'); return; }
+  trackEvent('rent_check', { amount: amount, landlord_id: lid || null });
   var el = document.getElementById('rent-check-result');
 
   // Landlord average
@@ -3551,8 +3575,13 @@ function clearSearch() {
 }
 
 // Search: DOM-level card filtering — no re-render, so input never loses focus
+var _searchTrackTimer = null;
 function filterLandlordCards(query) {
   S.search = query;
+  if (query.length >= 3) {
+    clearTimeout(_searchTrackTimer);
+    _searchTrackTimer = setTimeout(function() { trackEvent('search', { query: query }); }, 800);
+  }
   var q = query.toLowerCase().trim();
   var cards = document.querySelectorAll('.result-card[data-lname]');
   var visible = 0;
@@ -3886,6 +3915,7 @@ async function submitReview(landlordIdFromDetail) {
   const success = await saveReviewToDb(review);
   if (success) {
     go({modal:false, stars:0, wouldRentChoice:null});
+    trackEvent('review_submitted', { landlord: landlordName, rating: review.rating });
     launchConfetti();
     showSharePromptEnhanced(landlordName);
   } else {
@@ -3898,7 +3928,7 @@ function showSharePrompt() {
   const overlay = document.createElement('div');
   overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;z-index:300;animation:fadeIn 0.2s';
   overlay.innerHTML = `
-    <div style="background:white;border-radius:16px;padding:32px;max-width:400px;width:90%;text-align:center;animation:slideDown 0.3s;box-shadow:0 20px 60px rgba(0,0,0,0.2)">
+    <div style="background:var(--card-bg,#fff);border-radius:16px;padding:32px;max-width:400px;width:90%;text-align:center;animation:slideDown 0.3s;box-shadow:0 20px 60px rgba(0,0,0,0.2)">
       <div style="font-size:24px;margin-bottom:12px;font-weight:800;color:#16A34A">Done</div>
       <h3 style="font-size:20px;font-weight:800;margin-bottom:6px;letter-spacing:-0.3px">Review Submitted!</h3>
       <p style="font-size:14px;color:#6B7280;line-height:1.6;margin-bottom:20px">Your review is live and helping other students make better housing decisions.</p>
@@ -4251,6 +4281,7 @@ window.addEventListener('hashchange', () => {
 const _origGo = go;
 
 render();
+trackEvent('session_start', { referrer: document.referrer || 'direct', landing: S.page || 'home' });
 loadUserSubmissions(); // Load user-submitted landlords & properties from Supabase
 
 // Register service worker for PWA / Add to Home Screen
