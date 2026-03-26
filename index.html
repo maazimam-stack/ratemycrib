@@ -115,7 +115,7 @@
 
   /* ===== NAV ===== */
   .nav { background: rgba(10,10,10,0.95); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); height: 60px; display: flex; align-items: center; padding: 0 32px; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid rgba(255,255,255,0.06); }
-  .nav-brand { font-size: 22px; font-weight: 800; color: var(--white); cursor: pointer; letter-spacing: -0.3px; }
+  .nav-brand { font-size: 22px; font-weight: 800; color: #fff; cursor: pointer; letter-spacing: -0.3px; }
   .nav-brand em { font-style: normal; color: var(--orange); }
   .nav-right { margin-left: auto; display: flex; align-items: center; gap: 4px; }
   .nav-link { color: rgba(255,255,255,0.55); font-size: 13.5px; font-weight: 500; cursor: pointer; padding: 7px 14px; border-radius: 8px; transition: all 0.2s ease; }
@@ -562,6 +562,10 @@
   .dm-toggle:hover { background: rgba(255,255,255,0.1); color: white; border-color: rgba(255,255,255,0.3); }
 
   /* ===== SCATTER PLOT ===== */
+  .insight-stat-card { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 20px 16px; text-align: center; box-shadow: var(--shadow-sm); }
+  .insight-stat-val { font-size: 26px; font-weight: 800; color: var(--orange); letter-spacing: -0.5px; }
+  .insight-stat-label { font-size: 12px; color: var(--muted); margin-top: 4px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.3px; }
+  [data-theme="dark"] .insight-stat-card { background: var(--card-bg); border-color: var(--border); }
   .scatter-wrap { background: var(--white); border: 1px solid var(--border); border-radius: 16px; padding: 28px 24px; margin-bottom: 24px; box-shadow: var(--shadow-sm); }
   .scatter-title { font-size: 18px; font-weight: 800; color: var(--text); margin-bottom: 4px; letter-spacing: -0.5px; }
   .scatter-subtitle { font-size: 13px; color: var(--muted); margin-bottom: 20px; line-height: 1.5; }
@@ -1247,6 +1251,7 @@ function Nav() {
       <span class="nav-link ${S.page==='hoods'?'active':''}" onclick="closeNav();go({page:'hoods'})">Neighborhoods</span>
       <span class="nav-link ${S.page==='compare'?'active':''}" onclick="closeNav();go({page:'compare'})">Compare</span>
       <span class="nav-link ${S.page==='scanner'?'active':''}" onclick="closeNav();trackScannerEvent('nav_click',{source:'navbar'});go({page:'scanner'})">Lease Scanner</span>
+      <span class="nav-link ${S.page==='insights'?'active':''}" onclick="closeNav();go({page:'insights'})">Insights</span>
       <button class="nav-cta" onclick="closeNav();go({page:'home',modal:true,stars:0,wouldRentChoice:null,posTags:[],negTags:[],formData:{}})">Rate Your Landlord</button>
       <button class="dm-toggle" onclick="toggleDarkMode()" aria-label="Toggle dark mode" title="Toggle dark mode">${document.documentElement.getAttribute('data-theme')==='dark'?'&#9788;':'&#9790;'}</button>
     </div>
@@ -1328,7 +1333,7 @@ function RentVsRatingChart() {
     return { id: l.id, name: l.name, rating: l.rating, rent: avgRent, reviews: l.reviews, wouldRent: l.wouldRent };
   });
 
-  if (data.length < 8) return ''; // Need enough data points to tell a meaningful story
+  if (data.length < 3) return ''; // Need at least 3 landlords with rent data
 
   const chartW = 100; // % width
   const chartH = 260;
@@ -1376,6 +1381,37 @@ function RentVsRatingChart() {
       '<div class="scatter-legend-item"><div class="scatter-legend-dot" style="background:#16A34A"></div>3.5+ stars</div>' +
       '<div class="scatter-legend-item"><div class="scatter-legend-dot" style="background:#EAB308"></div>2.5\u20133.4 stars</div>' +
       '<div class="scatter-legend-item"><div class="scatter-legend-dot" style="background:#DC2626"></div>Below 2.5</div>' +
+    '</div>' +
+  '</div>';
+}
+
+function InsightsPage() {
+  var chart = RentVsRatingChart();
+  // Build additional stats
+  var allStats = SEED_LANDLORDS.map(getLandlordStats).concat((userLandlords || []).map(function(ul) { return getLandlordStats({ id: ul.id, name: ul.name, props: 0, rating: 0, reviews: 0, wouldRent: 0, responseRate: "—", scores:{maintenance:0,communication:0,fairness:0,moveOut:0}, topTags:[], dist:[0,0,0,0,0] }); }));
+  var withReviews = allStats.filter(function(l) { return l.reviews > 0; });
+  var totalReviews = getReviewCount();
+  var avgRating = withReviews.length ? (withReviews.reduce(function(s,l){ return s + l.rating; }, 0) / withReviews.length).toFixed(2) : '—';
+  var avgWRA = withReviews.length ? Math.round(withReviews.reduce(function(s,l){ return s + l.wouldRent; }, 0) / withReviews.length) : '—';
+  var allRevs = [];
+  withReviews.forEach(function(l) { allRevs = allRevs.concat(getReviewsForLandlord(l).filter(function(r){ return isValidRent(r.monthlyRent); })); });
+  var avgRent = allRevs.length ? '$' + Math.round(allRevs.reduce(function(s,r){ return s + r.monthlyRent; },0) / allRevs.length) : '—';
+
+  return '<div class="insights-page">' +
+    '<div class="container" style="padding-top:40px;padding-bottom:80px">' +
+      '<div style="margin-bottom:32px">' +
+        '<h1 style="font-size:28px;font-weight:800;color:var(--text);margin-bottom:6px;letter-spacing:-0.5px">Housing Insights</h1>' +
+        '<p style="font-size:14px;color:var(--muted);max-width:520px">Data-driven look at UIUC off-campus housing based on ' + totalReviews + ' student reviews.</p>' +
+      '</div>' +
+      '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:16px;margin-bottom:32px">' +
+        '<div class="insight-stat-card"><div class="insight-stat-val">' + withReviews.length + '</div><div class="insight-stat-label">Landlords Reviewed</div></div>' +
+        '<div class="insight-stat-card"><div class="insight-stat-val">' + totalReviews + '</div><div class="insight-stat-label">Total Reviews</div></div>' +
+        '<div class="insight-stat-card"><div class="insight-stat-val">' + avgRating + '</div><div class="insight-stat-label">Avg Rating</div></div>' +
+        '<div class="insight-stat-card"><div class="insight-stat-val">' + avgWRA + '%</div><div class="insight-stat-label">Would Rent Again</div></div>' +
+        '<div class="insight-stat-card"><div class="insight-stat-val">' + avgRent + '</div><div class="insight-stat-label">Avg Monthly Rent</div></div>' +
+      '</div>' +
+      (chart ? chart : '<div class="scatter-wrap" style="text-align:center;padding:48px 24px"><div class="scatter-title">Rent vs. Rating</div><p style="color:var(--muted);font-size:14px;margin-top:8px">Not enough rent data yet — we need at least 8 landlords with rent info. Keep reviewing!</p></div>') +
+      '<p style="margin-top:24px"><span style="color:var(--orange);cursor:pointer;font-weight:600;font-size:14px" onclick="go({page:\'home\',detail:null})">\u2190 Back to landlords</span></p>' +
     '</div>' +
   '</div>';
 }
@@ -3010,7 +3046,8 @@ function LandlordsInfoPage() {
 // ===== MAIN RENDER =====
 function render() {
   let html = Nav() + LandlordTicker();
-  if (S.page === 'home' && !S.detail) html += ShareBanner() + Hero() + '<div class="container">' + RentVsRatingChart() + '</div>' + ResultsList();
+  if (S.page === 'home' && !S.detail) html += ShareBanner() + Hero() + ResultsList();
+  else if (S.page === 'insights') html += InsightsPage();
   else if (S.page === 'detail' || S.detail) html += DetailPage();
   else if (S.page === 'hoods') html += Hoods();
   else if (S.page === 'compare') html += Compare();
@@ -3033,6 +3070,7 @@ window.addEventListener('hashchange', () => {
   } else if (hash === 'neighborhoods') go({page:'hoods', detail:null});
   else if (hash === 'compare') go({page:'compare', detail:null});
   else if (hash === 'scanner') go({page:'scanner', detail:null});
+  else if (hash === 'insights') go({page:'insights', detail:null});
   else go({page:'home', detail:null});
 });
 
