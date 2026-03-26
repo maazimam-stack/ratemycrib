@@ -2173,11 +2173,21 @@ function ResultsList() {
       <button style="margin-top:16px;padding:10px 24px;background:var(--orange);color:white;border:none;border-radius:8px;font-weight:600;font-size:14px;cursor:pointer;font-family:inherit" onclick="go({filter:'all'})">View All Landlords</button>
     </div>` : ''}
 
-    <div style="margin-top:24px;margin-bottom:24px">
-      <div onclick="go({page:'h2h'})" style="padding:20px;background:var(--card-bg);border:1px solid var(--border);border-radius:12px;cursor:pointer;transition:all 0.2s;text-align:center">
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:24px;margin-bottom:24px">
+      <div onclick="go({page:'quiz'})" style="padding:20px;background:var(--card-bg);border:1px solid var(--border);border-radius:12px;cursor:pointer;transition:all 0.2s;text-align:center" onmouseover="this.style.borderColor='var(--orange)'" onmouseout="this.style.borderColor='var(--border)'">
+        <div style="font-size:24px;margin-bottom:6px">&#127968;</div>
+        <div style="font-size:14px;font-weight:700;color:var(--text)">Find My Crib</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px">Take the quiz</div>
+      </div>
+      <div onclick="go({page:'h2h'})" style="padding:20px;background:var(--card-bg);border:1px solid var(--border);border-radius:12px;cursor:pointer;transition:all 0.2s;text-align:center" onmouseover="this.style.borderColor='var(--orange)'" onmouseout="this.style.borderColor='var(--border)'">
         <div style="font-size:24px;margin-bottom:6px">&#9878;</div>
         <div style="font-size:14px;font-weight:700;color:var(--text)">Head-to-Head</div>
-        <div style="font-size:12px;color:var(--muted);margin-top:2px">Compare two landlords side by side</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px">Compare landlords</div>
+      </div>
+      <div onclick="go({page:'rentcheck'})" style="padding:20px;background:var(--card-bg);border:1px solid var(--border);border-radius:12px;cursor:pointer;transition:all 0.2s;text-align:center" onmouseover="this.style.borderColor='var(--orange)'" onmouseout="this.style.borderColor='var(--border)'">
+        <div style="font-size:24px;margin-bottom:6px">&#128176;</div>
+        <div style="font-size:14px;font-weight:700;color:var(--text)">Am I Overpaying?</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px">Check your rent</div>
       </div>
     </div>
 
@@ -3122,6 +3132,358 @@ function runScan() {
   }, 100);
 }
 
+// ===== CONFETTI ANIMATION =====
+function launchConfetti() {
+  var canvas = document.createElement('canvas');
+  canvas.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:9999';
+  document.body.appendChild(canvas);
+  var ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  var pieces = [];
+  var colors = ['#E84A27','#16A34A','#3B82F6','#EAB308','#EC4899','#8B5CF6','#F97316','#14B8A6'];
+  for (var i = 0; i < 120; i++) {
+    pieces.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height * -1,
+      w: Math.random() * 10 + 5,
+      h: Math.random() * 6 + 3,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      vx: (Math.random() - 0.5) * 4,
+      vy: Math.random() * 3 + 2,
+      rot: Math.random() * 360,
+      rotV: (Math.random() - 0.5) * 10,
+      opacity: 1
+    });
+  }
+  var frame = 0;
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    var alive = false;
+    pieces.forEach(function(p) {
+      if (p.opacity <= 0) return;
+      alive = true;
+      p.x += p.vx;
+      p.vy += 0.05;
+      p.y += p.vy;
+      p.rot += p.rotV;
+      if (frame > 60) p.opacity -= 0.01;
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot * Math.PI / 180);
+      ctx.globalAlpha = Math.max(0, p.opacity);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+      ctx.restore();
+    });
+    frame++;
+    if (alive && frame < 200) requestAnimationFrame(draw);
+    else canvas.remove();
+  }
+  requestAnimationFrame(draw);
+}
+
+// ===== HOUSING MATCH QUIZ =====
+var quizStep = 0;
+var quizAnswers = {};
+var quizQuestions = [
+  { id: 'budget', q: 'What\'s your monthly rent budget?', opts: [
+    { label: 'Under $600', icon: '&#128176;', val: 600 },
+    { label: '$600 – $900', icon: '&#127968;', val: 900 },
+    { label: '$900 – $1200', icon: '&#127970;', val: 1200 },
+    { label: '$1200+', icon: '&#128142;', val: 9999 }
+  ]},
+  { id: 'priority', q: 'What matters most to you?', opts: [
+    { label: 'Fast Maintenance', icon: '&#128295;', val: 'maintenance' },
+    { label: 'Good Communication', icon: '&#128172;', val: 'communication' },
+    { label: 'Fair Pricing', icon: '&#9878;', val: 'fairness' },
+    { label: 'Smooth Move-Out', icon: '&#128666;', val: 'moveOut' }
+  ]},
+  { id: 'vibe', q: 'What\'s your ideal living vibe?', opts: [
+    { label: 'Quiet & Studious', icon: '&#128218;', val: 'quiet' },
+    { label: 'Social & Lively', icon: '&#127881;', val: 'social' },
+    { label: 'Modern & Clean', icon: '&#10024;', val: 'modern' },
+    { label: 'Cheap & Functional', icon: '&#128184;', val: 'cheap' }
+  ]},
+  { id: 'dealbreaker', q: 'Biggest dealbreaker?', opts: [
+    { label: 'Pest Issues', icon: '&#128027;', val: 'pests' },
+    { label: 'Hidden Fees', icon: '&#128176;', val: 'fees' },
+    { label: 'Bad Maintenance', icon: '&#128683;', val: 'maintenance' },
+    { label: 'Noise', icon: '&#128266;', val: 'noise' }
+  ]},
+  { id: 'year', q: 'What year are you?', opts: [
+    { label: 'Freshman/Sophomore', icon: '&#127891;', val: 'underclass' },
+    { label: 'Junior/Senior', icon: '&#128218;', val: 'upperclass' },
+    { label: 'Grad Student', icon: '&#129300;', val: 'grad' },
+    { label: 'Other', icon: '&#128075;', val: 'other' }
+  ]}
+];
+
+function quizScore(landlord) {
+  var stats = getLandlordStats(landlord);
+  if (stats.reviews === 0) return -1;
+  var score = 0;
+  // Base: overall rating (0-100)
+  score += (stats.rating / 5) * 30;
+  // Would rent again
+  score += stats.wouldRent * 0.2;
+  // Priority bonus
+  var prio = quizAnswers.priority;
+  if (prio && stats.scores[prio] > 0) score += (stats.scores[prio] / 5) * 20;
+  // Budget fit
+  var budget = quizAnswers.budget;
+  if (budget) {
+    var revs = getReviewsForLandlord(landlord).filter(function(r){ return isValidRent(r.monthlyRent); });
+    if (revs.length > 0) {
+      var avgRent = revs.reduce(function(s,r){return s+r.monthlyRent;},0) / revs.length;
+      if (avgRent <= budget) score += 15;
+      else score -= Math.min(15, (avgRent - budget) / 50 * 5);
+    }
+  }
+  // Dealbreaker penalty
+  var db = quizAnswers.dealbreaker;
+  if (db) {
+    var tags = getSmartTags(landlord);
+    var badTags = tags.filter(function(t){ return t.type === 'bad' || t.type === 'warn'; });
+    badTags.forEach(function(t) {
+      if (db === 'pests' && t.tag === 'Pest Issues') score -= 25;
+      if (db === 'fees' && (t.tag === 'Security Deposit Issues' || t.tag === 'Overpriced')) score -= 25;
+      if (db === 'maintenance' && (t.tag === 'Slow Repairs')) score -= 25;
+      if (db === 'noise' && t.tag === 'Noisy') score -= 25;
+    });
+  }
+  // Vibe bonus
+  var vibe = quizAnswers.vibe;
+  if (vibe) {
+    var tags2 = getSmartTags(landlord);
+    tags2.forEach(function(t) {
+      if (vibe === 'quiet' && t.tag === 'Quiet Building') score += 10;
+      if (vibe === 'modern' && t.tag === 'Clean & Modern') score += 10;
+    });
+    if (vibe === 'quiet' && stats.scores.communication >= 3.5) score += 5;
+    if (vibe === 'cheap') {
+      var crevs = getReviewsForLandlord(landlord).filter(function(r){ return isValidRent(r.monthlyRent); });
+      if (crevs.length > 0) {
+        var cr = crevs.reduce(function(s,r){return s+r.monthlyRent;},0) / crevs.length;
+        if (cr < 700) score += 10;
+      }
+    }
+  }
+  return Math.max(0, Math.round(score));
+}
+
+function QuizPage() {
+  var step = quizStep || 0;
+  var total = quizQuestions.length;
+  if (step < total) {
+    var q = quizQuestions[step];
+    var pct = Math.round((step / total) * 100);
+    return '<div style="background:var(--black);padding:48px 24px 40px;text-align:center">' +
+      '<h2 style="font-size:28px;font-weight:900;color:white;letter-spacing:-0.5px">Find Your Perfect Crib</h2>' +
+      '<p style="color:rgba(255,255,255,0.5);font-size:14px;margin-top:6px">Answer 5 quick questions. We\'ll match you with the best landlords.</p>' +
+    '</div>' +
+    '<div class="container" style="max-width:600px;padding-top:32px;padding-bottom:80px">' +
+      '<div style="background:var(--border);border-radius:6px;height:6px;margin-bottom:24px;overflow:hidden">' +
+        '<div style="background:var(--orange);height:100%;width:' + pct + '%;border-radius:6px;transition:width 0.3s"></div>' +
+      '</div>' +
+      '<div style="font-size:13px;color:var(--muted);margin-bottom:8px">Question ' + (step+1) + ' of ' + total + '</div>' +
+      '<h3 style="font-size:22px;font-weight:800;color:var(--text);margin-bottom:24px">' + q.q + '</h3>' +
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">' +
+        q.opts.map(function(o) {
+          return '<button onclick="quizAnswers[\'' + q.id + '\']=' + (typeof o.val === 'string' ? '\'' + o.val + '\'' : o.val) + ';quizStep=' + (step+1) + ';go({})" style="padding:24px 16px;background:var(--card-bg);border:2px solid var(--border);border-radius:14px;cursor:pointer;text-align:center;font-family:inherit;transition:all 0.2s;color:var(--text)" onmouseover="this.style.borderColor=\'var(--orange)\'" onmouseout="this.style.borderColor=\'var(--border)\'">' +
+            '<div style="font-size:32px;margin-bottom:8px">' + o.icon + '</div>' +
+            '<div style="font-size:14px;font-weight:700">' + o.label + '</div>' +
+          '</button>';
+        }).join('') +
+      '</div>' +
+      (step > 0 ? '<button onclick="quizStep=' + (step-1) + ';go({})" style="margin-top:16px;padding:10px 20px;background:transparent;border:1px solid var(--border);border-radius:8px;color:var(--muted);cursor:pointer;font-family:inherit;font-size:13px">&#8592; Back</button>' : '') +
+    '</div>';
+  }
+  // Results
+  var allStats = SEED_LANDLORDS.map(getLandlordStats).concat(
+    (userLandlords || []).map(function(ul) {
+      return getLandlordStats({ id: ul.id, name: ul.name, props: 0, rating: 0, reviews: 0, wouldRent: 0, responseRate: "—", scores:{maintenance:0,communication:0,fairness:0,moveOut:0}, topTags:[], dist:[0,0,0,0,0] });
+    })
+  );
+  var scored = allStats.map(function(l) { return { landlord: l, score: quizScore(l) }; })
+    .filter(function(s) { return s.score > 0; })
+    .sort(function(a,b) { return b.score - a.score; })
+    .slice(0, 5);
+
+  var medals = ['&#129351;','&#129352;','&#129353;','4','5'];
+  return '<div style="background:var(--black);padding:48px 24px 40px;text-align:center">' +
+    '<div style="font-size:48px;margin-bottom:12px;animation:verdictPop 0.5s ease both">&#127968;</div>' +
+    '<h2 style="font-size:28px;font-weight:900;color:white;letter-spacing:-0.5px;animation:fadeUp 0.5s ease 0.2s both">Your Top Matches</h2>' +
+    '<p style="color:rgba(255,255,255,0.5);font-size:14px;margin-top:6px;animation:fadeUp 0.5s ease 0.3s both">Based on your budget, priorities, and vibe</p>' +
+  '</div>' +
+  '<div class="container" style="max-width:600px;padding-top:32px;padding-bottom:80px">' +
+    scored.map(function(s, i) {
+      var l = s.landlord;
+      var q = qClass(l.rating);
+      var revs = getReviewsForLandlord(l).filter(function(r){ return isValidRent(r.monthlyRent); });
+      var avgRent = revs.length ? Math.round(revs.reduce(function(s,r){return s+r.monthlyRent;},0)/revs.length) : 0;
+      return '<div onclick="go({page:\'detail\',detail:' + l.id + '})" style="display:flex;align-items:center;gap:16px;padding:20px;background:var(--card-bg);border:' + (i===0?'2px solid var(--orange)':'1px solid var(--border)') + ';border-radius:14px;margin-bottom:12px;cursor:pointer;transition:transform 0.2s;animation:fadeUp 0.4s ease ' + (0.2+i*0.1) + 's both" onmouseover="this.style.transform=\'translateY(-2px)\'" onmouseout="this.style.transform=\'none\'">' +
+        '<div style="font-size:28px;min-width:40px;text-align:center">' + medals[i] + '</div>' +
+        '<div style="flex:1">' +
+          '<div style="font-size:16px;font-weight:800;color:var(--text)">' + esc(l.name) + '</div>' +
+          '<div style="font-size:12px;color:var(--muted);margin-top:2px">' + l.rating.toFixed(1) + ' rating · ' + l.wouldRent + '% would rent again' + (avgRent ? ' · ~$' + avgRent + '/mo' : '') + '</div>' +
+          renderSmartTags(l) +
+        '</div>' +
+        '<div style="text-align:right">' +
+          '<div style="font-size:24px;font-weight:900;color:var(--orange)">' + s.score + '</div>' +
+          '<div style="font-size:10px;color:var(--muted)">match</div>' +
+        '</div>' +
+      '</div>';
+    }).join('') +
+    '<div style="display:flex;gap:12px;margin-top:24px">' +
+      '<button onclick="quizStep=0;quizAnswers={};go({})" style="flex:1;padding:14px;background:transparent;border:1px solid var(--border);border-radius:10px;color:var(--text);cursor:pointer;font-family:inherit;font-size:14px;font-weight:600">Retake Quiz</button>' +
+      '<button onclick="go({page:\'home\',detail:null})" style="flex:1;padding:14px;background:var(--orange);border:none;border-radius:10px;color:white;cursor:pointer;font-family:inherit;font-size:14px;font-weight:700">Browse All Landlords</button>' +
+    '</div>' +
+  '</div>';
+}
+
+// ===== AM I OVERPAYING CALCULATOR =====
+function RentCheckPage() {
+  return '<div style="background:var(--black);padding:48px 24px 40px;text-align:center">' +
+    '<h2 style="font-size:28px;font-weight:900;color:white;letter-spacing:-0.5px">Am I Overpaying?</h2>' +
+    '<p style="color:rgba(255,255,255,0.5);font-size:14px;margin-top:6px">Enter your rent and landlord to see how you compare.</p>' +
+  '</div>' +
+  '<div class="container" style="max-width:600px;padding-top:32px;padding-bottom:80px">' +
+    '<div style="background:var(--card-bg);border:1px solid var(--border);border-radius:14px;padding:24px">' +
+      '<label style="font-size:13px;font-weight:600;color:var(--text);display:block;margin-bottom:6px">Your Monthly Rent ($)</label>' +
+      '<input type="number" id="rent-check-amount" placeholder="e.g. 850" style="width:100%;padding:14px;border:2px solid var(--border);border-radius:10px;font-size:18px;font-family:inherit;background:var(--card-bg);color:var(--text);box-sizing:border-box;margin-bottom:16px" />' +
+      '<label style="font-size:13px;font-weight:600;color:var(--text);display:block;margin-bottom:6px">Your Landlord</label>' +
+      '<select id="rent-check-landlord" style="width:100%;padding:14px;border:2px solid var(--border);border-radius:10px;font-size:15px;font-family:inherit;background:var(--card-bg);color:var(--text);box-sizing:border-box;margin-bottom:20px">' +
+        '<option value="">Select your landlord</option>' +
+        SEED_LANDLORDS.map(function(l){ return '<option value="' + l.id + '">' + esc(l.name) + '</option>'; }).join('') +
+      '</select>' +
+      '<button onclick="runRentCheck()" style="width:100%;padding:14px;background:var(--orange);color:white;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit">Check My Rent</button>' +
+    '</div>' +
+    '<div id="rent-check-result" style="margin-top:20px"></div>' +
+  '</div>';
+}
+
+function runRentCheck() {
+  var amount = parseInt(document.getElementById('rent-check-amount').value);
+  var lid = parseInt(document.getElementById('rent-check-landlord').value);
+  if (!amount || amount < 100) { toast('Enter a valid rent amount'); return; }
+  var el = document.getElementById('rent-check-result');
+
+  // Landlord average
+  var landlordAvg = 0, landlordCount = 0, landlordName = '';
+  if (lid) {
+    var l = SEED_LANDLORDS.find(function(x){ return x.id === lid; });
+    if (l) {
+      landlordName = l.name;
+      var lStats = getLandlordStats(l);
+      var lRevs = getReviewsForLandlord(lStats).filter(function(r){ return isValidRent(r.monthlyRent); });
+      if (lRevs.length > 0) {
+        landlordAvg = Math.round(lRevs.reduce(function(s,r){return s+r.monthlyRent;},0) / lRevs.length);
+        landlordCount = lRevs.length;
+      }
+    }
+  }
+
+  // Campus-wide average
+  var allRevs = allReviews().filter(function(r){ return isValidRent(r.monthlyRent); });
+  var campusAvg = allRevs.length ? Math.round(allRevs.reduce(function(s,r){return s+r.monthlyRent;},0) / allRevs.length) : 0;
+
+  // Build result
+  var html = '';
+
+  if (landlordAvg > 0) {
+    var diff = amount - landlordAvg;
+    var pct = Math.round((diff / landlordAvg) * 100);
+    var color = diff > 50 ? '#DC2626' : diff < -50 ? '#16A34A' : '#EAB308';
+    var emoji = diff > 50 ? '&#128200;' : diff < -50 ? '&#127881;' : '&#128528;';
+    var msg = diff > 100 ? 'You\'re paying significantly more than average for ' + esc(landlordName) + '.' :
+              diff > 50 ? 'You\'re paying a bit more than average for ' + esc(landlordName) + '.' :
+              diff < -100 ? 'Great deal! You\'re well under the average for ' + esc(landlordName) + '.' :
+              diff < -50 ? 'Nice — you\'re paying less than average for ' + esc(landlordName) + '.' :
+              'You\'re right around average for ' + esc(landlordName) + '.';
+
+    html += '<div style="background:var(--card-bg);border:1px solid var(--border);border-radius:14px;padding:24px;text-align:center;animation:fadeUp 0.4s ease both">' +
+      '<div style="font-size:40px;margin-bottom:8px">' + emoji + '</div>' +
+      '<div style="font-size:32px;font-weight:900;color:' + color + '">' + (diff > 0 ? '+' : '') + '$' + diff + '/mo</div>' +
+      '<div style="font-size:14px;color:var(--text);margin-top:8px;line-height:1.5">' + msg + '</div>' +
+      '<div style="display:flex;justify-content:center;gap:32px;margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">' +
+        '<div><div style="font-size:20px;font-weight:800;color:var(--text)">$' + amount + '</div><div style="font-size:11px;color:var(--muted)">Your Rent</div></div>' +
+        '<div><div style="font-size:20px;font-weight:800;color:var(--orange)">$' + landlordAvg + '</div><div style="font-size:11px;color:var(--muted)">' + esc(landlordName) + ' Avg</div></div>' +
+        '<div><div style="font-size:20px;font-weight:800;color:var(--muted)">$' + campusAvg + '</div><div style="font-size:11px;color:var(--muted)">Campus Avg</div></div>' +
+      '</div>' +
+      '<div style="font-size:11px;color:var(--muted);margin-top:12px">Based on ' + landlordCount + ' rent report' + (landlordCount!==1?'s':'') + ' for ' + esc(landlordName) + '</div>' +
+    '</div>';
+  } else {
+    var cdiff = amount - campusAvg;
+    var ccolor = cdiff > 50 ? '#DC2626' : cdiff < -50 ? '#16A34A' : '#EAB308';
+    html += '<div style="background:var(--card-bg);border:1px solid var(--border);border-radius:14px;padding:24px;text-align:center;animation:fadeUp 0.4s ease both">' +
+      '<div style="display:flex;justify-content:center;gap:32px;margin-bottom:12px">' +
+        '<div><div style="font-size:24px;font-weight:800;color:var(--text)">$' + amount + '</div><div style="font-size:11px;color:var(--muted)">Your Rent</div></div>' +
+        '<div><div style="font-size:24px;font-weight:800;color:' + ccolor + '">$' + campusAvg + '</div><div style="font-size:11px;color:var(--muted)">Campus Avg</div></div>' +
+      '</div>' +
+      (lid ? '<div style="font-size:13px;color:var(--muted)">Not enough rent data for this landlord yet. Showing campus-wide comparison.</div>' : '<div style="font-size:13px;color:var(--muted)">Select a landlord for a more specific comparison.</div>') +
+    '</div>';
+  }
+
+  el.innerHTML = html;
+}
+
+// ===== HOW SCORES WORK (METHODOLOGY) =====
+function MethodologyPage() {
+  return '<div style="background:var(--black);padding:48px 24px 40px;text-align:center">' +
+    '<h2 style="font-size:28px;font-weight:900;color:white;letter-spacing:-0.5px">How Scores Work</h2>' +
+    '<p style="color:rgba(255,255,255,0.5);font-size:14px;margin-top:6px">Full transparency on every number you see on RateMyCrib.</p>' +
+  '</div>' +
+  '<div class="container" style="max-width:700px;padding-top:32px;padding-bottom:80px">' +
+
+  '<div style="background:var(--card-bg);border:1px solid var(--border);border-radius:14px;padding:24px;margin-bottom:16px">' +
+    '<h3 style="font-size:18px;font-weight:800;color:var(--orange);margin-bottom:10px">&#11088; Overall Rating</h3>' +
+    '<p style="font-size:14px;color:var(--text);line-height:1.7">Each reviewer gives a 1-5 star rating. The overall rating is the <strong>simple average</strong> of all star ratings for that landlord. A landlord with reviews of 5, 3, and 4 would have an overall rating of 4.0.</p>' +
+  '</div>' +
+
+  '<div style="background:var(--card-bg);border:1px solid var(--border);border-radius:14px;padding:24px;margin-bottom:16px">' +
+    '<h3 style="font-size:18px;font-weight:800;color:var(--orange);margin-bottom:10px">&#128200; Sub-Scores</h3>' +
+    '<p style="font-size:14px;color:var(--text);line-height:1.7">Reviewers rate four dimensions on a 1-5 scale: <strong>Maintenance</strong> (speed and quality of repairs), <strong>Communication</strong> (responsiveness and clarity), <strong>Fairness</strong> (pricing, fees, and deposit handling), and <strong>Move-Out</strong> (ease of move-out process and deposit return). Each sub-score is the average of all ratings in that category.</p>' +
+  '</div>' +
+
+  '<div style="background:var(--card-bg);border:1px solid var(--border);border-radius:14px;padding:24px;margin-bottom:16px">' +
+    '<h3 style="font-size:18px;font-weight:800;color:var(--orange);margin-bottom:10px">&#128077; Would Rent Again %</h3>' +
+    '<p style="font-size:14px;color:var(--text);line-height:1.7">Every reviewer answers a simple yes/no: "Would you rent from this landlord again?" The percentage shown is the fraction of reviewers who said yes. This is often the most telling metric — it cuts through nuance and tells you whether tenants would actually go back.</p>' +
+  '</div>' +
+
+  '<div style="background:var(--card-bg);border:1px solid var(--border);border-radius:14px;padding:24px;margin-bottom:16px">' +
+    '<h3 style="font-size:18px;font-weight:800;color:var(--orange);margin-bottom:10px">&#128200; Rating Trend</h3>' +
+    '<p style="font-size:14px;color:var(--text);line-height:1.7">The sparkline chart shows how a landlord\'s ratings have changed over time. Each point is one review plotted chronologically. The trend arrow compares the average of the newest third of reviews to the oldest third. A green upward arrow means they\'re improving; red downward means they\'re slipping.</p>' +
+  '</div>' +
+
+  '<div style="background:var(--card-bg);border:1px solid var(--border);border-radius:14px;padding:24px;margin-bottom:16px">' +
+    '<h3 style="font-size:18px;font-weight:800;color:var(--orange);margin-bottom:10px">&#127991; Smart Tags</h3>' +
+    '<p style="font-size:14px;color:var(--text);line-height:1.7">Tags like "Fast Maintenance" or "Pest Issues" are generated automatically by scanning review text for keyword patterns. A tag only appears if: (1) at least 2 reviews mention the relevant keywords, (2) those reviews represent at least 35-40% of all reviews, and (3) for tags tied to a score dimension, the actual sub-score must back it up. For example, "Great Communication" requires both keyword matches AND a communication score of 3.5+. This prevents a review saying "communication could be better" from triggering a positive tag.</p>' +
+  '</div>' +
+
+  '<div style="background:var(--card-bg);border:1px solid var(--border);border-radius:14px;padding:24px;margin-bottom:16px">' +
+    '<h3 style="font-size:18px;font-weight:800;color:var(--orange);margin-bottom:10px">&#9878; Head-to-Head Composite Score</h3>' +
+    '<p style="font-size:14px;color:var(--text);line-height:1.7">When comparing two landlords head-to-head, the composite score (0-100) is a weighted combination: Overall Rating (30%), Would Rent Again % (25%), Maintenance (12%), Communication (12%), Fairness (12%), and Move-Out (9%). All scores are normalized to a 0-100 scale before weighting.</p>' +
+  '</div>' +
+
+  '<div style="background:var(--card-bg);border:1px solid var(--border);border-radius:14px;padding:24px;margin-bottom:16px">' +
+    '<h3 style="font-size:18px;font-weight:800;color:var(--orange);margin-bottom:10px">&#127968; Housing Match Quiz</h3>' +
+    '<p style="font-size:14px;color:var(--text);line-height:1.7">The quiz scores each landlord on a 0-100 match scale based on your answers. It factors in: budget fit (does their average rent fit your range?), your #1 priority (boosts that sub-score\'s weight), vibe preferences (quiet, modern, social, or budget-focused), and dealbreakers (landlords with matching negative tags get penalized). Results are ranked by total match score.</p>' +
+  '</div>' +
+
+  '<div style="background:var(--card-bg);border:1px solid var(--border);border-radius:14px;padding:24px;margin-bottom:16px">' +
+    '<h3 style="font-size:18px;font-weight:800;color:var(--orange);margin-bottom:10px">&#128176; Rent Comparison</h3>' +
+    '<p style="font-size:14px;color:var(--text);line-height:1.7">The "Am I Overpaying?" tool compares your rent against the average reported rent for your landlord (from all reviews that included rent data) and the campus-wide average. Rent figures come directly from what students report in their reviews — we don\'t pull from listing sites.</p>' +
+  '</div>' +
+
+  '<div style="background:var(--card-bg);border:1px solid var(--border);border-radius:14px;padding:24px;margin-bottom:16px">' +
+    '<h3 style="font-size:18px;font-weight:800;color:var(--orange);margin-bottom:10px">&#128272; Data Integrity</h3>' +
+    '<p style="font-size:14px;color:var(--text);line-height:1.7">Every reviewer certifies they are a current or former tenant. We use device fingerprinting to prevent duplicate reviews. Landlords cannot pay for placement or suppress reviews. Rankings are purely algorithmic based on student-submitted data. All data is stored in a secure database and is not editable after submission.</p>' +
+  '</div>' +
+
+  '</div>';
+}
+
 function Footer() {
   return `<footer>
     <div class="footer-inner">
@@ -3131,13 +3493,22 @@ function Footer() {
       </div>
       <div class="footer-col">
         <h4>Browse</h4>
-        <a onclick="go({page:'home',detail:null})">All Landlords</a>
-        <a onclick="go({page:'hoods'})">Neighborhoods</a>
-        <a onclick="go({page:'compare'})">Compare Prices</a>
-        <a onclick="go({page:'scanner'})">Lease Scanner</a>
+        <a onclick="go({page:'home',detail:null})" style="cursor:pointer">All Landlords</a>
+        <a onclick="go({page:'hoods'})" style="cursor:pointer">Neighborhoods</a>
+        <a onclick="go({page:'compare'})" style="cursor:pointer">Compare Prices</a>
+        <a onclick="go({page:'h2h'})" style="cursor:pointer">Head-to-Head</a>
+        <a onclick="go({page:'insights'})" style="cursor:pointer">Insights</a>
+        <a onclick="go({page:'scanner'})" style="cursor:pointer">Lease Scanner</a>
+      </div>
+      <div class="footer-col">
+        <h4>Tools</h4>
+        <a onclick="go({page:'quiz'})" style="cursor:pointer">Housing Match Quiz</a>
+        <a onclick="go({page:'rentcheck'})" style="cursor:pointer">Am I Overpaying?</a>
+        <a onclick="go({page:'home',modal:true,stars:0,wouldRentChoice:null,posTags:[],negTags:[],formData:{}})" style="cursor:pointer">Rate Your Landlord</a>
       </div>
       <div class="footer-col">
         <h4>Resources</h4>
+        <a onclick="go({page:'methodology'})" style="cursor:pointer">How Scores Work</a>
         <a onclick="go({page:'rights'})" style="cursor:pointer">Know Your Rights</a>
         <a onclick="go({page:'landlords-info'})" style="cursor:pointer">For Landlords</a>
         <a href="https://studentlegal.illinois.edu/" target="_blank">Free UIUC Legal Help</a>
@@ -3517,6 +3888,7 @@ async function submitReview(landlordIdFromDetail) {
   const success = await saveReviewToDb(review);
   if (success) {
     go({modal:false, stars:0, wouldRentChoice:null});
+    launchConfetti();
     showSharePromptEnhanced(landlordName);
   } else {
     if (btn) { btn.disabled = false; btn.textContent = 'Submit My Review'; }
@@ -3818,6 +4190,9 @@ function render() {
   else if (S.page === 'compare') html += Compare();
   else if (S.page === 'h2h') html += HeadToHeadPage();
   else if (S.page === 'scanner') html += LeaseScanner();
+  else if (S.page === 'quiz') html += QuizPage();
+  else if (S.page === 'rentcheck') html += RentCheckPage();
+  else if (S.page === 'methodology') html += MethodologyPage();
   else if (S.page === 'tos') html += TosPage();
   else if (S.page === 'privacy') html += PrivacyPage();
   else if (S.page === 'rights') html += RightsPage();
