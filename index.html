@@ -26,6 +26,11 @@
 <link rel="icon" type="image/x-icon" href="/favicon.ico">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#E84A27">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="RateMyCrib">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -520,7 +525,7 @@
     /* Fix modal neighborhood grid on small screens */
     .modal-box .field div[style*="grid-template-columns"] { grid-template-columns: 1fr !important; }
     /* Fix lease period selects */
-    .modal-box .field div[style*="flex"] select { min-width: 0; font-size: 13px; }
+    .modal-box .field div[style*="flex"] select { min-width: 0; font-size: 16px; }
   }
 
   /* ===== DARK MODE OVERRIDES ===== */
@@ -586,7 +591,17 @@
   [data-theme="dark"] .alert-orange p { color: #FDBA74; }
   [data-theme="dark"] .alert-orange a { color: #FB923C; }
   [data-theme="dark"] .scatter-dot { border-color: rgba(0,0,0,0.4); }
+  [data-theme="dark"] .chip { background: #374151; color: #D1D5DB; border-color: #4B5563; }
+  [data-theme="dark"] .chip.sel-pos { background: rgba(5,150,105,0.2); color: #6EE7B7; border-color: rgba(5,150,105,0.4); }
+  [data-theme="dark"] .chip.sel-neg { background: rgba(239,68,68,0.2); color: #FCA5A5; border-color: rgba(239,68,68,0.4); }
   [data-theme="dark"] .scatter-tooltip { background: #E5E7EB; color: #111827; }
+
+  /* Search bar */
+  .landlord-search { width: 100%; padding: 12px 14px 12px 42px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 16px; font-family: inherit; background: var(--white); color: var(--text); outline: none; transition: border-color 0.2s; }
+  .landlord-search:focus { border-color: var(--orange); box-shadow: 0 0 0 3px rgba(232,74,39,0.1); }
+  .landlord-search::placeholder { color: var(--muted); }
+  [data-theme="dark"] .landlord-search { background: var(--card-bg); color: var(--text); border-color: var(--border); }
+  [data-theme="dark"] .landlord-search:focus { border-color: var(--orange); box-shadow: 0 0 0 3px rgba(232,74,39,0.15); }
 
   /* Dark mode toggle */
   .dm-toggle { background: none; border: 1px solid rgba(255,255,255,0.15); color: rgba(255,255,255,0.6); font-size: 16px; cursor: pointer; padding: 5px 8px; border-radius: 8px; transition: all 0.2s; line-height: 1; }
@@ -1152,7 +1167,7 @@ function allReviews() {
 loadDbReviews();
 
 // ===== STATE =====
-let S = { page:"home", filter:"all", sort:"rating", detail:null, modal:false, stars:0, wouldRentChoice:null, cmpBeds:'all', cmpHood:'all', cmpMaxRent:0, posTags:[], negTags:[], formData:{} };
+let S = { page:"home", filter:"all", sort:"rating", detail:null, modal:false, stars:0, wouldRentChoice:null, cmpBeds:'all', cmpHood:'all', cmpMaxRent:0, posTags:[], negTags:[], formData:{}, search:'', _prevPage:null, _prevDetail:null };
 const go = u => {
   // When navigating to a different page, clear detail unless explicitly set
   if (u.page && u.page !== 'detail' && !('detail' in u)) u.detail = null;
@@ -1515,15 +1530,42 @@ function InsightsPage() {
 function getHeroQuote() {
   const revs = allReviews().filter(r => r.text && r.text.length > 30 && r.text.length < 200 && r.rating >= 1);
   if (revs.length === 0) return '';
-  // Pick a random review, seeded by the day so it changes daily but not on every render
+  // Shuffle reviews deterministically based on day seed, then rotate through them
   const daySeed = Math.floor(Date.now() / 86400000);
-  const pick = revs[daySeed % revs.length];
+  const shuffled = revs.slice().sort((a,b) => {
+    const ha = (a.id || a.text).toString().split('').reduce((s,c) => s + c.charCodeAt(0), daySeed);
+    const hb = (b.id || b.text).toString().split('').reduce((s,c) => s + c.charCodeAt(0), daySeed);
+    return ha - hb;
+  });
+  const pick = shuffled[0];
   const truncated = pick.text.length > 120 ? pick.text.substring(0, 117) + '...' : pick.text;
-  return '<div style="margin-top:16px;animation:fadeUp 0.6s ease 0.4s both;max-width:480px;margin-left:auto;margin-right:auto">' +
-    '<div style="font-size:14px;color:rgba(255,255,255,0.55);font-style:italic;line-height:1.5">&ldquo;' + esc(truncated) + '&rdquo;</div>' +
-    '<div style="font-size:11px;color:rgba(255,255,255,0.3);margin-top:4px">&mdash; ' + esc(pick.author) + ' on ' + esc(pick.landlordName || 'a landlord') + '</div>' +
+  return '<div id="hero-quote" style="margin-top:16px;animation:fadeUp 0.6s ease 0.4s both;max-width:480px;margin-left:auto;margin-right:auto">' +
+    '<div class="hero-quote-text" style="font-size:14px;color:rgba(255,255,255,0.55);font-style:italic;line-height:1.5;transition:opacity 0.5s ease">&ldquo;' + esc(truncated) + '&rdquo;</div>' +
+    '<div class="hero-quote-attr" style="font-size:11px;color:rgba(255,255,255,0.3);margin-top:4px;transition:opacity 0.5s ease">&mdash; ' + esc(pick.author) + ' on ' + esc(pick.landlordName || 'a landlord') + '</div>' +
   '</div>';
 }
+// Rotate hero quote every 6 seconds
+var _heroQuoteIdx = 0;
+setInterval(function() {
+  var el = document.getElementById('hero-quote');
+  if (!el) return;
+  var revs = allReviews().filter(function(r){ return r.text && r.text.length > 30 && r.text.length < 200 && r.rating >= 1; });
+  if (revs.length < 2) return;
+  _heroQuoteIdx = (_heroQuoteIdx + 1) % revs.length;
+  var pick = revs[_heroQuoteIdx];
+  var truncated = pick.text.length > 120 ? pick.text.substring(0, 117) + '...' : pick.text;
+  var textEl = el.querySelector('.hero-quote-text');
+  var attrEl = el.querySelector('.hero-quote-attr');
+  if (!textEl || !attrEl) return;
+  textEl.style.opacity = '0';
+  attrEl.style.opacity = '0';
+  setTimeout(function() {
+    textEl.innerHTML = '&ldquo;' + esc(truncated) + '&rdquo;';
+    attrEl.innerHTML = '&mdash; ' + esc(pick.author) + ' on ' + esc(pick.landlordName || 'a landlord');
+    textEl.style.opacity = '1';
+    attrEl.style.opacity = '1';
+  }, 500);
+}, 6000);
 
 function Hero() {
   const revCount = getReviewCount();
@@ -1556,7 +1598,7 @@ function ResultCard(l) {
   const landlordReviews = getReviewsForLandlord(l).filter(r => isValidRent(r.monthlyRent));
   const avgPrice = landlordReviews.length ? Math.round(landlordReviews.reduce((s,r) => s + r.monthlyRent, 0) / landlordReviews.length) : 0;
   const isNew = l.reviews === 0;
-  return `<div class="result-card" onclick="go({page:'detail',detail:${l.id}})">
+  return `<div class="result-card" data-lname="${esc(l.name.toLowerCase())}" onclick="go({page:'detail',detail:${l.id}})">
     <div class="result-rating-box quality-${q}">
       <div class="result-rating-num">${isNew ? '—' : l.rating.toFixed(1)}</div>
       <div class="result-rating-label">${qLabel(l.rating)}</div>
@@ -1629,8 +1671,15 @@ function ResultsList() {
   const showUnreviewed = S.filter === 'all' && unreviewed.length > 0;
 
   return `<div class="container">
+    <div class="search-bar-wrap" style="margin-bottom:16px">
+      <div style="position:relative">
+        <svg style="position:absolute;left:14px;top:50%;transform:translateY(-50%);pointer-events:none" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="landlord-search" class="landlord-search" placeholder="Search landlords..." value="${esc(S.search)}" oninput="filterLandlordCards(this.value)" autocomplete="off" />
+        ${S.search ? '<button onclick="clearSearch()" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:18px;color:var(--muted);padding:4px 6px;line-height:1">&times;</button>' : ''}
+      </div>
+    </div>
     <div class="results-header">
-      <div class="results-count">${S.hoodFilter ? '<span style="color:var(--orange);font-weight:700">' + esc(S.hoodFilter) + '</span> · ' : ''}${reviewed.length} landlord${reviewed.length!==1?'s':''} with reviews${S.hoodFilter ? ' <span style="color:var(--muted);font-size:12px;cursor:pointer;margin-left:6px" onclick="go({hoodFilter:null})">(clear filter)</span>' : ''}</div>
+      <div class="results-count" id="results-count">${S.hoodFilter ? '<span style="color:var(--orange);font-weight:700">' + esc(S.hoodFilter) + '</span> · ' : ''}${reviewed.length} landlord${reviewed.length!==1?'s':''} with reviews${S.hoodFilter ? ' <span style="color:var(--muted);font-size:12px;cursor:pointer;margin-left:6px" onclick="go({hoodFilter:null})">(clear filter)</span>' : ''}</div>
       <select class="sort-select" onchange="go({sort:this.value})">
         <option value="rating" ${S.sort==='rating'?'selected':''}>Highest Rated</option>
         <option value="reviews" ${S.sort==='reviews'?'selected':''}>Most Reviews</option>
@@ -1640,12 +1689,12 @@ function ResultsList() {
     ${reviewed.map(ResultCard).join("")}
     ${showUnreviewed ? `
       <div style="margin-top:32px;padding-top:24px;border-top:1px solid var(--border)">
-        <h3 style="font-size:14px;font-weight:600;color:rgba(255,255,255,0.4);margin-bottom:16px;text-transform:uppercase;letter-spacing:0.5px">Not yet reviewed</h3>
+        <h3 style="font-size:14px;font-weight:600;color:var(--muted);margin-bottom:16px;text-transform:uppercase;letter-spacing:0.5px">Not yet reviewed</h3>
         ${unreviewed.map(ResultCard).join("")}
       </div>
     ` : ''}
     ${reviewed.length===0 ? `<div class="empty-filter">
-      <div class="empty-filter-icon" style="font-size:28px;color:rgba(255,255,255,0.3)">No results</div>
+      <div class="empty-filter-icon" style="font-size:28px;color:var(--muted)">No results</div>
       <h3>${S.filter==='top'?'No top-rated landlords yet':S.filter==='avoid'?'No low-rated landlords yet':S.filter==='responsive'?'No response data yet':'No landlords match this filter'}</h3>
       <p>${S.filter==='top'||S.filter==='avoid'||S.filter==='responsive'?'Ratings appear once students submit reviews. Be the first!':'Try a different filter or browse all landlords.'}</p>
       <button style="margin-top:16px;padding:10px 24px;background:var(--orange);color:white;border:none;border-radius:8px;font-weight:600;font-size:14px;cursor:pointer;font-family:inherit" onclick="go({filter:'all'})">View All Landlords</button>
@@ -1736,7 +1785,7 @@ function DetailPage() {
         </div>
       </div>`;
     }).join("")}
-    ${revs.length===0?'<p style="text-align:center;color:#7C7C7C;padding:48px">No reviews yet. Be the first!</p>':''}
+    ${revs.length===0?'<p style="text-align:center;color:var(--muted);padding:48px">No reviews yet. Be the first!</p>':''}
 
     ${(() => {
       const reviewAddresses = revs.filter(r => r.property && r.property !== 'Not specified').map(r => r.property);
@@ -1747,13 +1796,13 @@ function DetailPage() {
           const addrRevs = revs.filter(r => r.property === addr);
           const rentRevs = addrRevs.filter(r => isValidRent(r.monthlyRent));
           const avgRent = rentRevs.length ? Math.round(rentRevs.reduce((s,r)=>s+r.monthlyRent,0)/rentRevs.length) : 0;
-          return `<div style="display:flex;align-items:center;justify-content:space-between;padding:14px 8px;border-bottom:1px solid #E8E8E8">
+          return `<div style="display:flex;align-items:center;justify-content:space-between;padding:14px 8px;border-bottom:1px solid var(--border)">
             <div>
               <div style="font-weight:700">${esc(addr)}</div>
-              <div style="font-size:13px;color:#7C7C7C">${addrRevs.length} review${addrRevs.length!==1?'s':''}</div>
+              <div style="font-size:13px;color:var(--muted)">${addrRevs.length} review${addrRevs.length!==1?'s':''}</div>
             </div>
             <div style="text-align:right">
-              ${avgRent ? `<div style="font-weight:700;font-size:18px">$${avgRent}<span style="font-size:12px;color:#7C7C7C;font-weight:400">/mo</span></div>` : ''}
+              ${avgRent ? `<div style="font-weight:700;font-size:18px">$${avgRent}<span style="font-size:12px;color:var(--muted);font-weight:400">/mo</span></div>` : ''}
             </div>
           </div>`;
         }).join('');
@@ -1787,7 +1836,7 @@ function Hoods() {
           <div class="hood-row"><span>Safety</span><strong ${h.safety > 0 ? 'class="'+valClass(h.safety,3.5,2.5)+'"' : ''}>${h.safety > 0 ? h.safety+'/5' : '—'}</strong></div>
           <div class="hood-row"><span>Nightlife</span><strong>${h.nightlife > 0 ? h.nightlife+'/5' : '—'}</strong></div>
           <div class="hood-row"><span>Quiet</span><strong>${h.quiet > 0 ? h.quiet+'/5' : '—'}</strong></div>
-          ${!hasReviews ? '<p style="font-size:11px;color:#7C7C7C;margin-top:8px;text-align:center">Scores appear when students rate this neighborhood.</p>' : ''}
+          ${!hasReviews ? '<p style="font-size:11px;color:var(--muted);margin-top:8px;text-align:center">Scores appear when students rate this neighborhood.</p>' : ''}
           ${hasReviews ? `<div style="margin-top:10px;text-align:center"><span style="color:var(--orange);font-size:12px;font-weight:600;cursor:pointer" onclick="event.stopPropagation();go({page:'home',detail:null,hoodFilter:'${h.name.replace(/'/g,"\\'")}',filter:'all'})">View landlords in ${esc(h.name)} \u2192</span></div>` : ''}
         </div>`;
       }).join("")}
@@ -1878,7 +1927,7 @@ function Compare() {
         </tbody>
       </table>
     </div>
-    <p style="font-size:12px;color:#7C7C7C;margin-top:8px">*Value = Rating per $1,000/mo. Higher is better. Prices are averages from student reviews (per person/month).</p>
+    <p style="font-size:12px;color:var(--muted);margin-top:8px">*Value = Rating per $1,000/mo. Higher is better. Prices are averages from student reviews (per person/month).</p>
     ` : `
     <div style="text-align:center;padding:48px 24px">
       <div style="font-size:20px;margin-bottom:12px;color:rgba(255,255,255,0.3);font-weight:700">—</div>
@@ -1928,7 +1977,7 @@ function Modal() {
 
       <div class="field">
         <label>Rate Your Landlord (optional)</label>
-        <p style="font-size:12px;color:#7C7C7C;margin-bottom:8px">How'd they do in these areas?</p>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:8px">How'd they do in these areas?</p>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
           <div><label style="font-size:12px">Maintenance</label><select id="rev-score-maintenance"><option value="0">—</option>${[1,2,3,4,5].map(n=>`<option value="${n}">${n}/5${n===1?' (Terrible)':n===3?' (Average)':n===5?' (Excellent)':''}</option>`).join("")}</select></div>
           <div><label style="font-size:12px">Communication</label><select id="rev-score-communication"><option value="0">—</option>${[1,2,3,4,5].map(n=>`<option value="${n}">${n}/5${n===1?' (Ghost)':n===3?' (Average)':n===5?' (Very Responsive)':''}</option>`).join("")}</select></div>
@@ -1941,7 +1990,7 @@ function Modal() {
         <label>Property Address</label>
         <input type="text" id="rev-property-custom" placeholder="e.g. 309 E Green St, Apt 4B" oninput="onAddressInput(this)" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-family:inherit;outline:none;" />
         <div id="addr-match-hint" style="display:none;margin-top:6px;padding:8px 12px;border-radius:8px;font-size:12px"></div>
-        <p style="font-size:11px;color:#7C7C7C;margin-top:4px">Street address where you lived. This helps other students find reviews for their building.</p>
+        <p style="font-size:11px;color:var(--muted);margin-top:4px">Street address where you lived. This helps other students find reviews for their building.</p>
       </div>
       <div class="field">
         <label>Neighborhood</label>
@@ -1964,13 +2013,13 @@ function Modal() {
             <option value="">Start...</option>
             ${["Fall 2020","Spring 2021","Summer 2021","Fall 2021","Spring 2022","Summer 2022","Fall 2022","Spring 2023","Summer 2023","Fall 2023","Spring 2024","Summer 2024","Fall 2024","Spring 2025","Summer 2025","Fall 2025","Spring 2026","Summer 2026","Fall 2026"].map(t=>`<option value="${t}">${t}</option>`).join("")}
           </select>
-          <span style="color:#7C7C7C">to</span>
+          <span style="color:var(--muted)">to</span>
           <select id="rev-lease-end" style="flex:1">
             <option value="">End...</option>
             ${["Spring 2021","Summer 2021","Fall 2021","Spring 2022","Summer 2022","Fall 2022","Spring 2023","Summer 2023","Fall 2023","Spring 2024","Summer 2024","Fall 2024","Spring 2025","Summer 2025","Fall 2025","Spring 2026","Summer 2026","Fall 2026","Spring 2027"].map(t=>`<option value="${t}">${t}</option>`).join("")}
           </select>
         </div>
-        <p style="font-size:11px;color:#7C7C7C;margin-top:4px">Helps verify reviews and lets you review the same landlord for different lease periods.</p>
+        <p style="font-size:11px;color:var(--muted);margin-top:4px">Helps verify reviews and lets you review the same landlord for different lease periods.</p>
       </div>
 
       <div class="field">
@@ -1978,14 +2027,14 @@ function Modal() {
         <div style="display:flex;align-items:center;gap:4px">
           <span style="font-size:18px;font-weight:700">$</span>
           <input type="number" id="rev-rent" placeholder="e.g. 750" min="200" max="4000" style="flex:1" />
-          <span style="font-size:13px;color:#7C7C7C">/month</span>
+          <span style="font-size:13px;color:var(--muted)">/month</span>
         </div>
-        <p style="font-size:11px;color:#7C7C7C;margin-top:4px">What you actually pay per month. Helps other students compare real costs.</p>
+        <p style="font-size:11px;color:var(--muted);margin-top:4px">What you actually pay per month. Helps other students compare real costs.</p>
       </div>
 
       <div class="field">
         <label>Rate the Neighborhood (optional)</label>
-        <p style="font-size:12px;color:#7C7C7C;margin-bottom:8px">Help future students know what the area is like.</p>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:8px">Help future students know what the area is like.</p>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
           <div><label style="font-size:12px">Safety</label><select id="rev-hood-safety"><option value="0">—</option>${[1,2,3,4,5].map(n=>`<option value="${n}">${n}/5${n===1?' (Unsafe)':n===3?' (Average)':n===5?' (Very Safe)':''}</option>`).join("")}</select></div>
           <div><label style="font-size:12px">Walkability</label><select id="rev-hood-walk"><option value="0">—</option>${[1,2,3,4,5].map(n=>`<option value="${n}">${n}/5${n===1?' (Need Car)':n===3?' (Decent)':n===5?' (Walk Everywhere)':''}</option>`).join("")}</select></div>
@@ -2604,6 +2653,36 @@ async function loadUserSubmissions() {
 // buildPropertyDropdown removed — address is now always free-text input
 
 // ===== ACTIONS =====
+// Clear the search bar and reset card visibility
+function clearSearch() {
+  S.search = '';
+  var el = document.getElementById('landlord-search');
+  if (el) { el.value = ''; el.focus(); }
+  filterLandlordCards('');
+}
+
+// Search: DOM-level card filtering — no re-render, so input never loses focus
+function filterLandlordCards(query) {
+  S.search = query;
+  var q = query.toLowerCase().trim();
+  var cards = document.querySelectorAll('.result-card[data-lname]');
+  var visible = 0;
+  cards.forEach(function(card) {
+    var name = card.getAttribute('data-lname') || '';
+    if (!q || name.indexOf(q) !== -1) {
+      card.style.display = '';
+      visible++;
+    } else {
+      card.style.display = 'none';
+    }
+  });
+  // Update count text
+  var countEl = document.getElementById('results-count');
+  if (countEl && q) {
+    countEl.innerHTML = '<span style="color:var(--orange);font-weight:700">' + visible + '</span> result' + (visible !== 1 ? 's' : '') + ' for &ldquo;' + esc(q) + '&rdquo; <span style="color:var(--muted);font-size:12px;cursor:pointer;margin-left:6px" onclick="clearSearch()">(clear)</span>';
+  }
+}
+
 function closeModal() {
   go({modal:false, stars:0, wouldRentChoice:null});
 }
@@ -3171,6 +3250,11 @@ function LandlordsInfoPage() {
 
 // ===== MAIN RENDER =====
 function render() {
+  // Track whether this is a real page navigation (vs sort/filter/dark mode toggle)
+  var pageChanged = (S.page !== S._prevPage) || (S.detail !== S._prevDetail);
+  S._prevPage = S.page;
+  S._prevDetail = S.detail;
+
   let html = Nav() + LandlordTicker();
   if (S.page === 'home' && !S.detail) html += ShareBanner() + Hero() + ResultsList();
   else if (S.page === 'insights') html += InsightsPage();
@@ -3184,7 +3268,13 @@ function render() {
   else if (S.page === 'landlords-info') html += LandlordsInfoPage();
   html += Modal() + Footer();
   document.getElementById('app').innerHTML = html;
-  if (!S.detail && !S.modal) window.scrollTo(0, 0);
+  // Only scroll to top on actual page/detail navigation, not on sort/filter/dark mode changes
+  if (pageChanged && !S.modal) window.scrollTo(0, 0);
+  // Re-apply search filter after re-render (preserves search state across sort/dark mode changes)
+  if (S.search && S.page === 'home' && !S.detail) {
+    var searchEl = document.getElementById('landlord-search');
+    if (searchEl) { searchEl.value = S.search; filterLandlordCards(S.search); }
+  }
 }
 
 // Handle browser back/forward
@@ -3205,6 +3295,11 @@ const _origGo = go;
 
 render();
 loadUserSubmissions(); // Load user-submitted landlords & properties from Supabase
+
+// Register service worker for PWA / Add to Home Screen
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js').catch(function(){});
+}
 </script>
 </body>
 </html>
