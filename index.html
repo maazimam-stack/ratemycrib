@@ -277,6 +277,28 @@
   .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(10px); background: var(--black); color: white; padding: 14px 28px; border-radius: 10px; font-size: 14px; font-weight: 600; z-index: 300; opacity: 0; transition: all 0.3s ease; pointer-events: none; box-shadow: var(--shadow-lg); }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
+  /* ===== LANDLORD STOCK TICKER ===== */
+  .ticker-wrap { background: #0D0D0D; border-bottom: 1px solid rgba(232,74,39,0.12); overflow: hidden; position: relative; height: 40px; }
+  .ticker-wrap::before, .ticker-wrap::after { content: ''; position: absolute; top: 0; bottom: 0; width: 48px; z-index: 2; pointer-events: none; }
+  .ticker-wrap::before { left: 0; background: linear-gradient(90deg, #0D0D0D 0%, transparent 100%); }
+  .ticker-wrap::after { right: 0; background: linear-gradient(270deg, #0D0D0D 0%, transparent 100%); }
+  .ticker-track { display: flex; align-items: center; height: 100%; animation: tickerScroll var(--ticker-duration, 45s) linear infinite; width: max-content; }
+  .ticker-track:hover { animation-play-state: paused; }
+  .ticker-item { display: inline-flex; align-items: center; gap: 6px; padding: 0 20px; white-space: nowrap; font-size: 13px; cursor: pointer; border-right: 1px solid rgba(255,255,255,0.06); height: 100%; transition: background 0.2s; }
+  .ticker-item:hover { background: rgba(232,74,39,0.08); }
+  .ticker-name { color: rgba(255,255,255,0.85); font-weight: 700; font-size: 12px; letter-spacing: 0.3px; }
+  .ticker-rating { font-weight: 800; font-size: 13px; font-variant-numeric: tabular-nums; }
+  .ticker-rating.green { color: #22C55E; }
+  .ticker-rating.red { color: #EF4444; }
+  .ticker-rating.yellow { color: #FBBF24; }
+  .ticker-rating.neutral { color: rgba(255,255,255,0.4); }
+  .ticker-arrow { font-size: 10px; font-weight: 700; }
+  .ticker-arrow.up { color: #22C55E; }
+  .ticker-arrow.down { color: #EF4444; }
+  .ticker-arrow.flat { color: rgba(255,255,255,0.25); }
+  .ticker-reviews { font-size: 10px; color: rgba(255,255,255,0.3); font-weight: 500; }
+  @keyframes tickerScroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
   /* ===== SHARE BANNER ===== */
   .share-banner { background: var(--orange); padding: 12px 32px; display: flex; justify-content: center; align-items: center; gap: 14px; }
   .share-banner p { color: white; font-size: 13px; font-weight: 500; }
@@ -1144,6 +1166,50 @@ function Nav() {
   </div>`;
 }
 function closeNav() { const nr = document.querySelector('.nav-right'); if (nr) nr.classList.remove('mobile-open'); }
+
+function LandlordTicker() {
+  // Build stock-ticker items for every landlord with reviews
+  const allLandlords = [
+    ...SEED_LANDLORDS.map(getLandlordStats),
+    ...(userLandlords || []).map(ul => getLandlordStats({ id: ul.id, name: ul.name, props: 0, rating: 0, reviews: 0, wouldRent: 0, responseRate: "—", scores:{maintenance:0,communication:0,fairness:0,moveOut:0}, topTags:[], dist:[0,0,0,0,0] }))
+  ].filter(l => l.reviews > 0);
+
+  if (allLandlords.length === 0) return '';
+
+  // Sort by review count desc so the most-reviewed landlords show first
+  allLandlords.sort((a, b) => b.reviews - a.reviews);
+
+  // Build ticker items — each landlord looks like: GSR 3.8 ▲ (12)
+  const items = allLandlords.map(l => {
+    const r = l.rating.toFixed(1);
+    const colorClass = l.rating >= 3.5 ? 'green' : l.rating >= 2.5 ? 'yellow' : 'red';
+
+    // Trend: compare last 3 reviews avg vs overall avg to simulate movement
+    const revs = getReviewsForLandlord(l);
+    const recentCount = Math.min(3, revs.length);
+    const recentAvg = revs.slice(0, recentCount).reduce((s, rv) => s + rv.rating, 0) / recentCount;
+    const diff = recentAvg - l.rating;
+    let arrow = '—', arrowClass = 'flat';
+    if (diff > 0.15) { arrow = '▲'; arrowClass = 'up'; }
+    else if (diff < -0.15) { arrow = '▼'; arrowClass = 'down'; }
+
+    // Abbreviate long names for ticker
+    const abbrev = l.name.length > 18 ? l.name.substring(0, 16) + '…' : l.name;
+
+    return `<div class="ticker-item" onclick="go({page:'detail',detail:${l.id}})">
+      <span class="ticker-name">${esc(abbrev)}</span>
+      <span class="ticker-rating ${colorClass}">${r}</span>
+      <span class="ticker-arrow ${arrowClass}">${arrow}</span>
+      <span class="ticker-reviews">(${l.reviews})</span>
+    </div>`;
+  }).join('');
+
+  // Duplicate the items so the scroll loops seamlessly
+  const speed = Math.max(25, allLandlords.length * 4); // ~4s per landlord
+  return `<div class="ticker-wrap" style="--ticker-duration:${speed}s">
+    <div class="ticker-track">${items}${items}</div>
+  </div>`;
+}
 
 function ShareBanner() {
   return `<div class="share-banner">
@@ -2781,7 +2847,7 @@ function LandlordsInfoPage() {
 
 // ===== MAIN RENDER =====
 function render() {
-  let html = Nav();
+  let html = Nav() + LandlordTicker();
   if (S.page === 'home' && !S.detail) html += ShareBanner() + Hero() + ResultsList();
   else if (S.page === 'detail' || S.detail) html += DetailPage();
   else if (S.page === 'hoods') html += Hoods();
