@@ -1959,8 +1959,8 @@ function Hero() {
     <h1>The Honest Guide to<br>UIUC <em>Housing</em></h1>
     <p>Read student reviews. Compare prices. No sponsored rankings — ever.</p>
     ${revCount > 0 ? `<div style="display:flex;justify-content:center;gap:24px;margin-top:12px;animation:fadeUp 0.6s ease 0.15s both">
-      <div style="text-align:center"><span style="font-size:24px;font-weight:800;color:var(--orange)">${revCount}</span><span style="font-size:12px;color:rgba(255,255,255,0.45);display:block;margin-top:2px">Student Reviews</span></div>
-      <div style="text-align:center"><span style="font-size:24px;font-weight:800;color:white">${landlordCount}</span><span style="font-size:12px;color:rgba(255,255,255,0.45);display:block;margin-top:2px">Landlords Tracked</span></div>
+      <div style="text-align:center"><span class="hero-countup" data-target="${revCount}" style="font-size:24px;font-weight:800;color:var(--orange)">0</span><span style="font-size:12px;color:rgba(255,255,255,0.45);display:block;margin-top:2px">Student Reviews</span></div>
+      <div style="text-align:center"><span class="hero-countup" data-target="${landlordCount}" style="font-size:24px;font-weight:800;color:white">0</span><span style="font-size:12px;color:rgba(255,255,255,0.45);display:block;margin-top:2px">Landlords Tracked</span></div>
     </div>` : ''}
     ${getHeroQuote()}
     <div style="margin:24px auto 0;text-align:center;animation:fadeUp 0.6s ease 0.3s both">
@@ -3712,6 +3712,30 @@ function render() {
     var searchEl = document.getElementById('landlord-search');
     if (searchEl) { searchEl.value = S.search; filterLandlordCards(S.search); }
   }
+  // Animate hero count-up numbers
+  animateHeroCounts();
+}
+
+function animateHeroCounts() {
+  var els = document.querySelectorAll('.hero-countup');
+  if (!els.length) return;
+  els.forEach(function(el) {
+    var target = parseInt(el.getAttribute('data-target')) || 0;
+    if (target === 0) return;
+    var duration = 1200; // ms
+    var start = null;
+    var startVal = 0;
+    function step(ts) {
+      if (!start) start = ts;
+      var progress = Math.min((ts - start) / duration, 1);
+      // Ease-out cubic for a satisfying deceleration
+      var eased = 1 - Math.pow(1 - progress, 3);
+      var current = Math.round(startVal + (target - startVal) * eased);
+      el.textContent = current;
+      if (progress < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  });
 }
 
 // Handle browser back/forward
