@@ -556,6 +556,8 @@
   [data-theme="dark"] .search-tag { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.5); }
   [data-theme="dark"] .search-tag.active { background: var(--orange); color: white; }
   [data-theme="dark"] .scatter-wrap { background: var(--card-bg); border-color: var(--border); }
+  [data-theme="dark"] .scatter-dot { border-color: rgba(0,0,0,0.4); }
+  [data-theme="dark"] .scatter-tooltip { background: #E5E7EB; color: #111827; }
 
   /* Dark mode toggle */
   .dm-toggle { background: none; border: 1px solid rgba(255,255,255,0.15); color: rgba(255,255,255,0.6); font-size: 16px; cursor: pointer; padding: 5px 8px; border-radius: 8px; transition: all 0.2s; line-height: 1; margin-left: 8px; }
@@ -566,19 +568,20 @@
   .insight-stat-val { font-size: 26px; font-weight: 800; color: var(--orange); letter-spacing: -0.5px; }
   .insight-stat-label { font-size: 12px; color: var(--muted); margin-top: 4px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.3px; }
   [data-theme="dark"] .insight-stat-card { background: var(--card-bg); border-color: var(--border); }
-  .scatter-wrap { background: var(--white); border: 1px solid var(--border); border-radius: 16px; padding: 28px 24px; margin-bottom: 24px; box-shadow: var(--shadow-sm); }
-  .scatter-title { font-size: 18px; font-weight: 800; color: var(--text); margin-bottom: 4px; letter-spacing: -0.5px; }
-  .scatter-subtitle { font-size: 13px; color: var(--muted); margin-bottom: 20px; line-height: 1.5; }
-  .scatter-chart { position: relative; width: 100%; }
-  .scatter-dot { position: absolute; width: 12px; height: 12px; border-radius: 50%; cursor: pointer; transition: all 0.2s; transform: translate(-50%, -50%); z-index: 1; border: 2px solid rgba(255,255,255,0.8); }
-  .scatter-dot:hover { transform: translate(-50%, -50%) scale(1.6); z-index: 10; }
-  .scatter-tooltip { display: none; position: absolute; background: #0A0A0A; color: white; font-size: 12px; padding: 6px 10px; border-radius: 6px; white-space: nowrap; z-index: 20; pointer-events: none; transform: translate(-50%, -120%); font-weight: 600; }
+  .scatter-wrap { background: var(--white); border: 1px solid var(--border); border-radius: 16px; padding: 32px 28px; margin-bottom: 24px; box-shadow: var(--shadow-sm); }
+  .scatter-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; flex-wrap: wrap; gap: 8px; }
+  .scatter-title { font-size: 20px; font-weight: 800; color: var(--text); letter-spacing: -0.5px; }
+  .scatter-subtitle { font-size: 13px; color: var(--muted); margin-bottom: 24px; line-height: 1.5; max-width: 640px; }
+  .scatter-chart { position: relative; width: 100%; overflow: visible; }
+  .scatter-dot { position: absolute; border-radius: 50%; cursor: pointer; transition: transform 0.15s ease, box-shadow 0.15s ease; transform: translate(-50%, -50%); z-index: 2; border: 2px solid rgba(255,255,255,0.9); box-shadow: 0 1px 3px rgba(0,0,0,0.12); }
+  .scatter-dot:hover { transform: translate(-50%, -50%) scale(1.5); z-index: 10; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+  .scatter-tooltip { display: none; position: absolute; background: #0A0A0A; color: white; font-size: 12px; padding: 8px 12px; border-radius: 8px; white-space: nowrap; z-index: 20; pointer-events: none; transform: translate(-50%, -130%); font-weight: 600; line-height: 1.5; box-shadow: 0 4px 16px rgba(0,0,0,0.3); }
   .scatter-dot:hover .scatter-tooltip { display: block; }
-  .scatter-axis-x { text-align: center; font-size: 11px; color: var(--muted); margin-top: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
-  .scatter-axis-y { position: absolute; left: -8px; top: 50%; transform: rotate(-90deg) translateX(-50%); transform-origin: left center; font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; }
-  .scatter-legend { display: flex; gap: 16px; justify-content: center; margin-top: 14px; flex-wrap: wrap; }
-  .scatter-legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--muted); }
-  .scatter-legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .scatter-axis-x { text-align: center; font-size: 11px; color: var(--muted); margin-top: 4px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+  .scatter-axis-y-label { position: absolute; left: 0; top: 50%; transform: rotate(-90deg); font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; display: none; }
+  .scatter-legend { display: flex; gap: 14px; flex-wrap: wrap; }
+  .scatter-legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--muted); font-weight: 500; }
+  .scatter-legend-dot { width: 9px; height: 9px; border-radius: 50%; }
 </style>
 </head>
 <body>
@@ -1335,53 +1338,73 @@ function RentVsRatingChart() {
 
   if (data.length < 3) return ''; // Need at least 3 landlords with rent data
 
-  const chartW = 100; // % width
-  const chartH = 260;
-  const padL = 40, padR = 16, padT = 16, padB = 30;
-  const minRent = Math.min(...data.map(d=>d.rent)) - 50;
-  const maxRent = Math.max(...data.map(d=>d.rent)) + 50;
-  const minRating = 1, maxRating = 5;
+  var chartH = 420;
+  var padL = 48, padR = 24, padT = 32, padB = 48;
+
+  // Dynamic axis ranges based on actual data with breathing room
+  var rents = data.map(function(d){ return d.rent; });
+  var ratings = data.map(function(d){ return d.rating; });
+  var minRent = Math.floor((Math.min.apply(null, rents) - 75) / 50) * 50;
+  var maxRent = Math.ceil((Math.max.apply(null, rents) + 75) / 50) * 50;
+  var minRating = Math.max(0.5, Math.floor(Math.min.apply(null, ratings) * 2 - 1) / 2);
+  var maxRating = Math.min(5.5, Math.ceil(Math.max.apply(null, ratings) * 2 + 1) / 2);
+
+  // Helpers to convert data to position
+  function xPos(rent) { return padL + (rent - minRent) / (maxRent - minRent) * (100 - padL - padR); }
+  function yPos(rating) { return padT + (1 - (rating - minRating) / (maxRating - minRating)) * (chartH - padT - padB); }
 
   var dots = data.map(function(d) {
-    var x = padL + (d.rent - minRent) / (maxRent - minRent) * (100 - padL - padR);
-    var y = padT + (1 - (d.rating - minRating) / (maxRating - minRating)) * (chartH - padT - padB);
+    var x = xPos(d.rent);
+    var y = yPos(d.rating);
     var color = d.rating >= 3.5 ? '#16A34A' : d.rating >= 2.5 ? '#EAB308' : '#DC2626';
-    var size = Math.max(10, Math.min(18, 8 + d.reviews * 1.5));
+    var size = Math.max(12, Math.min(22, 8 + d.reviews * 1.8));
     return '<div class="scatter-dot" style="left:' + x + '%;top:' + y + 'px;width:' + size + 'px;height:' + size + 'px;background:' + color + '" onclick="event.stopPropagation();go({page:\'detail\',detail:' + d.id + '})">' +
-      '<div class="scatter-tooltip">' + esc(d.name) + ': ' + d.rating.toFixed(1) + '\u2605 \u00B7 $' + d.rent + '/mo \u00B7 ' + d.wouldRent + '% would rent again</div>' +
+      '<div class="scatter-tooltip">' + esc(d.name) + '<br>' + d.rating.toFixed(1) + '\u2605 \u00B7 $' + d.rent + '/mo \u00B7 ' + d.wouldRent + '% would rent again</div>' +
     '</div>';
   }).join('');
 
-  // Grid lines
-  var gridLines = [2, 3, 4, 5].map(function(r) {
-    var y = padT + (1 - (r - minRating) / (maxRating - minRating)) * (chartH - padT - padB);
-    return '<div style="position:absolute;left:' + padL + '%;right:' + padR + '%;top:' + y + 'px;border-top:1px dashed rgba(128,128,128,0.15)"></div>' +
-      '<div style="position:absolute;left:4px;top:' + (y-8) + 'px;font-size:10px;color:var(--muted);font-weight:600">' + r + '.0</div>';
-  }).join('');
-
-  // Rent labels on X axis
-  var rentStep = Math.ceil((maxRent - minRent) / 5 / 50) * 50;
-  var rentLabels = [];
-  for (var r = Math.ceil(minRent/rentStep)*rentStep; r <= maxRent; r += rentStep) {
-    var x = padL + (r - minRent) / (maxRent - minRent) * (100 - padL - padR);
-    rentLabels.push('<span style="position:absolute;left:' + x + '%;bottom:0;transform:translateX(-50%);font-size:10px;color:var(--muted);font-weight:500">$' + r + '</span>');
+  // Y-axis grid lines at whole-number ratings within range
+  var gridLines = '';
+  for (var g = Math.ceil(minRating); g <= Math.floor(maxRating); g++) {
+    var gy = yPos(g);
+    gridLines += '<div style="position:absolute;left:' + padL + '%;right:' + padR + '%;top:' + gy + 'px;border-top:1px solid rgba(128,128,128,0.08)"></div>';
+    gridLines += '<div style="position:absolute;left:8px;top:' + (gy - 8) + 'px;font-size:11px;color:var(--muted);font-weight:600">' + g + '.0</div>';
   }
 
+  // X-axis rent labels — clean intervals
+  var rentRange = maxRent - minRent;
+  var rentStep = rentRange <= 400 ? 100 : rentRange <= 800 ? 150 : rentRange <= 1200 ? 200 : 250;
+  var rentLabels = '';
+  var startR = Math.ceil(minRent / rentStep) * rentStep;
+  for (var r = startR; r <= maxRent; r += rentStep) {
+    var rx = xPos(r);
+    rentLabels += '<div style="position:absolute;left:' + rx + '%;bottom:8px;transform:translateX(-50%);font-size:11px;color:var(--muted);font-weight:500">$' + r + '</div>';
+    // Vertical tick
+    gridLines += '<div style="position:absolute;left:' + rx + '%;top:' + padT + 'px;bottom:' + padB + 'px;border-left:1px solid rgba(128,128,128,0.06)"></div>';
+  }
+
+  // Axis lines
+  var axes = '<div style="position:absolute;bottom:' + padB + 'px;left:' + padL + '%;right:' + padR + '%;height:1px;background:var(--border)"></div>' +
+    '<div style="position:absolute;top:' + padT + 'px;bottom:' + padB + 'px;left:' + padL + '%;width:1px;background:var(--border)"></div>';
+
   return '<div class="scatter-wrap">' +
-    '<div class="scatter-title">Rent vs. Rating</div>' +
-    '<div class="scatter-subtitle">Are you getting what you pay for? Dots in the <strong style="color:#16A34A">upper-left</strong> are great deals (high rating, low rent). Dots in the <strong style="color:#DC2626">lower-right</strong> are overpriced for their quality. Bigger dots = more reviews. Click any dot to see the landlord.</div>' +
-    '<div class="scatter-chart" style="height:' + chartH + 'px;margin-left:8px">' +
+    '<div class="scatter-header">' +
+      '<div class="scatter-title">Rent vs. Rating</div>' +
+      '<div class="scatter-legend">' +
+        '<div class="scatter-legend-item"><div class="scatter-legend-dot" style="background:#16A34A"></div>3.5+ stars</div>' +
+        '<div class="scatter-legend-item"><div class="scatter-legend-dot" style="background:#EAB308"></div>2.5\u20133.4</div>' +
+        '<div class="scatter-legend-item"><div class="scatter-legend-dot" style="background:#DC2626"></div>Below 2.5</div>' +
+      '</div>' +
+    '</div>' +
+    '<div class="scatter-subtitle">Are you getting what you pay for? Dots in the <strong style="color:#16A34A">upper-left</strong> are great deals. Dots in the <strong style="color:#DC2626">lower-right</strong> are overpriced. Bigger dots = more reviews.</div>' +
+    '<div class="scatter-chart" style="height:' + chartH + 'px">' +
       gridLines +
+      axes +
       dots +
-      '<div style="position:absolute;bottom:0;left:' + padL + '%;right:' + padR + '%;height:1px;background:var(--border)"></div>' +
-      '<div style="position:relative;height:20px;margin-top:' + chartH + 'px">' + rentLabels.join('') + '</div>' +
+      rentLabels +
     '</div>' +
     '<div class="scatter-axis-x">Avg Monthly Rent \u2192</div>' +
-    '<div class="scatter-legend">' +
-      '<div class="scatter-legend-item"><div class="scatter-legend-dot" style="background:#16A34A"></div>3.5+ stars</div>' +
-      '<div class="scatter-legend-item"><div class="scatter-legend-dot" style="background:#EAB308"></div>2.5\u20133.4 stars</div>' +
-      '<div class="scatter-legend-item"><div class="scatter-legend-dot" style="background:#DC2626"></div>Below 2.5</div>' +
-    '</div>' +
+    '<div class="scatter-axis-y-label">\u2191 Rating</div>' +
   '</div>';
 }
 
