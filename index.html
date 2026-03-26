@@ -1718,13 +1718,13 @@ function showSharePromptEnhanced(landlordName) {
   overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;z-index:300;animation:fadeIn 0.2s';
   overlay.innerHTML =
     '<div style="background:var(--card-bg,#fff);border-radius:20px;padding:32px 28px;max-width:420px;width:92%;text-align:center;animation:slideDown 0.3s;box-shadow:0 20px 60px rgba(0,0,0,0.3);border:1px solid var(--border)">' +
-      '<div style="font-size:40px;margin-bottom:8px">&#127881;</div>' +
+      '<div style="font-size:22px;font-weight:900;color:var(--orange);margin-bottom:8px">Thanks!</div>' +
       '<h3 style="font-size:22px;font-weight:900;margin-bottom:6px;letter-spacing:-0.3px;color:var(--text)">Review Submitted!</h3>' +
       '<p style="font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:20px">Your review is live. Help other Illini make better housing decisions.</p>' +
       '<div class="share-btn-row">' +
-        '<button class="share-opt" onclick="window.open(\'sms:?&body=' + encodedText + '\',\'_blank\')"><div class="share-opt-icon">&#128172;</div><div class="share-opt-label">iMessage</div></button>' +
-        '<button class="share-opt" onclick="window.open(\'https://twitter.com/intent/tweet?text=' + encodedText + '\',\'_blank\')"><div class="share-opt-icon">&#120143;</div><div class="share-opt-label">Twitter</div></button>' +
-        '<button class="share-opt" onclick="copyShareLink();this.querySelector(\'.share-opt-label\').textContent=\'Copied!\'"><div class="share-opt-icon">&#128279;</div><div class="share-opt-label">Copy Link</div></button>' +
+        '<button class="share-opt" onclick="window.open(\'sms:?&body=' + encodedText + '\',\'_blank\')"><div class="share-opt-icon" style="font-weight:700">SMS</div><div class="share-opt-label">iMessage</div></button>' +
+        '<button class="share-opt" onclick="window.open(\'https://twitter.com/intent/tweet?text=' + encodedText + '\',\'_blank\')"><div class="share-opt-icon" style="font-weight:700">X</div><div class="share-opt-label">Twitter</div></button>' +
+        '<button class="share-opt" onclick="copyShareLink();this.querySelector(\'.share-opt-label\').textContent=\'Copied!\'"><div class="share-opt-icon" style="font-weight:700">Link</div><div class="share-opt-label">Copy Link</div></button>' +
       '</div>' +
       (navigator.share ? '<button onclick="navigator.share({title:\'RateMyCrib\',text:\'' + shareText.replace(/'/g,"\\'") + '\',url:\'' + shareUrl + '\'}).catch(function(){});this.textContent=\'Shared!\'" style="width:100%;padding:14px;background:var(--orange);color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:12px">Share via...</button>' : '') +
       '<button onclick="this.closest(\'div\').parentElement.remove()" style="width:100%;padding:12px;background:transparent;color:var(--muted);border:none;font-size:14px;cursor:pointer;font-family:inherit;font-weight:500;margin-top:6px">Maybe later</button>' +
@@ -1750,6 +1750,8 @@ function Nav() {
       <span class="nav-link ${S.page==='h2h'?'active':''}" onclick="closeNav();go({page:'h2h'})">Head-to-Head</span>
       <span class="nav-link ${S.page==='scanner'?'active':''}" onclick="closeNav();trackScannerEvent('nav_click',{source:'navbar'});go({page:'scanner'})">Lease Scanner</span>
       <span class="nav-link ${S.page==='insights'?'active':''}" onclick="closeNav();go({page:'insights'})">Insights</span>
+      <span class="nav-link ${S.page==='quiz'?'active':''}" onclick="closeNav();go({page:'quiz'})">Quiz</span>
+      <span class="nav-link ${S.page==='rentcheck'?'active':''}" onclick="closeNav();go({page:'rentcheck'})">Rent Check</span>
       <button class="nav-cta" onclick="closeNav();go({page:'home',modal:true,stars:0,wouldRentChoice:null,posTags:[],negTags:[],formData:{}})">Rate Your Landlord</button>
     </div>
   </div>`;
@@ -2175,7 +2177,6 @@ function ResultsList() {
 
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:24px;margin-bottom:24px">
       <div onclick="go({page:'quiz'})" style="padding:20px;background:var(--card-bg);border:1px solid var(--border);border-radius:12px;cursor:pointer;transition:all 0.2s;text-align:center" onmouseover="this.style.borderColor='var(--orange)'" onmouseout="this.style.borderColor='var(--border)'">
-        <div style="font-size:24px;margin-bottom:6px">&#127968;</div>
         <div style="font-size:14px;font-weight:700;color:var(--text)">Find My Crib</div>
         <div style="font-size:12px;color:var(--muted);margin-top:2px">Take the quiz</div>
       </div>
@@ -2185,7 +2186,6 @@ function ResultsList() {
         <div style="font-size:12px;color:var(--muted);margin-top:2px">Compare landlords</div>
       </div>
       <div onclick="go({page:'rentcheck'})" style="padding:20px;background:var(--card-bg);border:1px solid var(--border);border-radius:12px;cursor:pointer;transition:all 0.2s;text-align:center" onmouseover="this.style.borderColor='var(--orange)'" onmouseout="this.style.borderColor='var(--border)'">
-        <div style="font-size:24px;margin-bottom:6px">&#128176;</div>
         <div style="font-size:14px;font-weight:700;color:var(--text)">Am I Overpaying?</div>
         <div style="font-size:12px;color:var(--muted);margin-top:2px">Check your rent</div>
       </div>
@@ -3188,34 +3188,34 @@ var quizStep = 0;
 var quizAnswers = {};
 var quizQuestions = [
   { id: 'budget', q: 'What\'s your monthly rent budget?', opts: [
-    { label: 'Under $600', icon: '&#128176;', val: 600 },
-    { label: '$600 – $900', icon: '&#127968;', val: 900 },
-    { label: '$900 – $1200', icon: '&#127970;', val: 1200 },
-    { label: '$1200+', icon: '&#128142;', val: 9999 }
+    { label: 'Under $600', val: 600 },
+    { label: '$600 – $900', val: 900 },
+    { label: '$900 – $1200', val: 1200 },
+    { label: '$1200+', val: 9999 }
   ]},
   { id: 'priority', q: 'What matters most to you?', opts: [
-    { label: 'Fast Maintenance', icon: '&#128295;', val: 'maintenance' },
-    { label: 'Good Communication', icon: '&#128172;', val: 'communication' },
-    { label: 'Fair Pricing', icon: '&#9878;', val: 'fairness' },
-    { label: 'Smooth Move-Out', icon: '&#128666;', val: 'moveOut' }
+    { label: 'Fast Maintenance', val: 'maintenance' },
+    { label: 'Good Communication', val: 'communication' },
+    { label: 'Fair Pricing', val: 'fairness' },
+    { label: 'Smooth Move-Out', val: 'moveOut' }
   ]},
   { id: 'vibe', q: 'What\'s your ideal living vibe?', opts: [
-    { label: 'Quiet & Studious', icon: '&#128218;', val: 'quiet' },
-    { label: 'Social & Lively', icon: '&#127881;', val: 'social' },
-    { label: 'Modern & Clean', icon: '&#10024;', val: 'modern' },
-    { label: 'Cheap & Functional', icon: '&#128184;', val: 'cheap' }
+    { label: 'Quiet & Studious', val: 'quiet' },
+    { label: 'Social & Lively', val: 'social' },
+    { label: 'Modern & Clean', val: 'modern' },
+    { label: 'Cheap & Functional', val: 'cheap' }
   ]},
   { id: 'dealbreaker', q: 'Biggest dealbreaker?', opts: [
-    { label: 'Pest Issues', icon: '&#128027;', val: 'pests' },
-    { label: 'Hidden Fees', icon: '&#128176;', val: 'fees' },
-    { label: 'Bad Maintenance', icon: '&#128683;', val: 'maintenance' },
-    { label: 'Noise', icon: '&#128266;', val: 'noise' }
+    { label: 'Pest Issues', val: 'pests' },
+    { label: 'Hidden Fees', val: 'fees' },
+    { label: 'Bad Maintenance', val: 'maintenance' },
+    { label: 'Noise', val: 'noise' }
   ]},
   { id: 'year', q: 'What year are you?', opts: [
-    { label: 'Freshman/Sophomore', icon: '&#127891;', val: 'underclass' },
-    { label: 'Junior/Senior', icon: '&#128218;', val: 'upperclass' },
-    { label: 'Grad Student', icon: '&#129300;', val: 'grad' },
-    { label: 'Other', icon: '&#128075;', val: 'other' }
+    { label: 'Freshman/Sophomore', val: 'underclass' },
+    { label: 'Junior/Senior', val: 'upperclass' },
+    { label: 'Grad Student', val: 'grad' },
+    { label: 'Other', val: 'other' }
   ]}
 ];
 
@@ -3291,7 +3291,6 @@ function QuizPage() {
       '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">' +
         q.opts.map(function(o) {
           return '<button onclick="quizAnswers[\'' + q.id + '\']=' + (typeof o.val === 'string' ? '\'' + o.val + '\'' : o.val) + ';quizStep=' + (step+1) + ';go({})" style="padding:24px 16px;background:var(--card-bg);border:2px solid var(--border);border-radius:14px;cursor:pointer;text-align:center;font-family:inherit;transition:all 0.2s;color:var(--text)" onmouseover="this.style.borderColor=\'var(--orange)\'" onmouseout="this.style.borderColor=\'var(--border)\'">' +
-            '<div style="font-size:32px;margin-bottom:8px">' + o.icon + '</div>' +
             '<div style="font-size:14px;font-weight:700">' + o.label + '</div>' +
           '</button>';
         }).join('') +
@@ -3310,9 +3309,8 @@ function QuizPage() {
     .sort(function(a,b) { return b.score - a.score; })
     .slice(0, 5);
 
-  var medals = ['&#129351;','&#129352;','&#129353;','4','5'];
+  var medals = ['#1','#2','#3','#4','#5'];
   return '<div style="background:var(--black);padding:48px 24px 40px;text-align:center">' +
-    '<div style="font-size:48px;margin-bottom:12px;animation:verdictPop 0.5s ease both">&#127968;</div>' +
     '<h2 style="font-size:28px;font-weight:900;color:white;letter-spacing:-0.5px;animation:fadeUp 0.5s ease 0.2s both">Your Top Matches</h2>' +
     '<p style="color:rgba(255,255,255,0.5);font-size:14px;margin-top:6px;animation:fadeUp 0.5s ease 0.3s both">Based on your budget, priorities, and vibe</p>' +
   '</div>' +
@@ -3395,7 +3393,7 @@ function runRentCheck() {
     var diff = amount - landlordAvg;
     var pct = Math.round((diff / landlordAvg) * 100);
     var color = diff > 50 ? '#DC2626' : diff < -50 ? '#16A34A' : '#EAB308';
-    var emoji = diff > 50 ? '&#128200;' : diff < -50 ? '&#127881;' : '&#128528;';
+    var verdict = diff > 50 ? 'Above Average' : diff < -50 ? 'Below Average' : 'About Average';
     var msg = diff > 100 ? 'You\'re paying significantly more than average for ' + esc(landlordName) + '.' :
               diff > 50 ? 'You\'re paying a bit more than average for ' + esc(landlordName) + '.' :
               diff < -100 ? 'Great deal! You\'re well under the average for ' + esc(landlordName) + '.' :
@@ -3403,7 +3401,7 @@ function runRentCheck() {
               'You\'re right around average for ' + esc(landlordName) + '.';
 
     html += '<div style="background:var(--card-bg);border:1px solid var(--border);border-radius:14px;padding:24px;text-align:center;animation:fadeUp 0.4s ease both">' +
-      '<div style="font-size:40px;margin-bottom:8px">' + emoji + '</div>' +
+      '<div style="font-size:14px;font-weight:700;color:' + color + ';margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px">' + verdict + '</div>' +
       '<div style="font-size:32px;font-weight:900;color:' + color + '">' + (diff > 0 ? '+' : '') + '$' + diff + '/mo</div>' +
       '<div style="font-size:14px;color:var(--text);margin-top:8px;line-height:1.5">' + msg + '</div>' +
       '<div style="display:flex;justify-content:center;gap:32px;margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">' +
@@ -3437,27 +3435,27 @@ function MethodologyPage() {
   '<div class="container" style="max-width:700px;padding-top:32px;padding-bottom:80px">' +
 
   '<div style="background:var(--card-bg);border:1px solid var(--border);border-radius:14px;padding:24px;margin-bottom:16px">' +
-    '<h3 style="font-size:18px;font-weight:800;color:var(--orange);margin-bottom:10px">&#11088; Overall Rating</h3>' +
+    '<h3 style="font-size:18px;font-weight:800;color:var(--orange);margin-bottom:10px">Overall Rating</h3>' +
     '<p style="font-size:14px;color:var(--text);line-height:1.7">Each reviewer gives a 1-5 star rating. The overall rating is the <strong>simple average</strong> of all star ratings for that landlord. A landlord with reviews of 5, 3, and 4 would have an overall rating of 4.0.</p>' +
   '</div>' +
 
   '<div style="background:var(--card-bg);border:1px solid var(--border);border-radius:14px;padding:24px;margin-bottom:16px">' +
-    '<h3 style="font-size:18px;font-weight:800;color:var(--orange);margin-bottom:10px">&#128200; Sub-Scores</h3>' +
+    '<h3 style="font-size:18px;font-weight:800;color:var(--orange);margin-bottom:10px">Sub-Scores</h3>' +
     '<p style="font-size:14px;color:var(--text);line-height:1.7">Reviewers rate four dimensions on a 1-5 scale: <strong>Maintenance</strong> (speed and quality of repairs), <strong>Communication</strong> (responsiveness and clarity), <strong>Fairness</strong> (pricing, fees, and deposit handling), and <strong>Move-Out</strong> (ease of move-out process and deposit return). Each sub-score is the average of all ratings in that category.</p>' +
   '</div>' +
 
   '<div style="background:var(--card-bg);border:1px solid var(--border);border-radius:14px;padding:24px;margin-bottom:16px">' +
-    '<h3 style="font-size:18px;font-weight:800;color:var(--orange);margin-bottom:10px">&#128077; Would Rent Again %</h3>' +
+    '<h3 style="font-size:18px;font-weight:800;color:var(--orange);margin-bottom:10px">Would Rent Again %</h3>' +
     '<p style="font-size:14px;color:var(--text);line-height:1.7">Every reviewer answers a simple yes/no: "Would you rent from this landlord again?" The percentage shown is the fraction of reviewers who said yes. This is often the most telling metric — it cuts through nuance and tells you whether tenants would actually go back.</p>' +
   '</div>' +
 
   '<div style="background:var(--card-bg);border:1px solid var(--border);border-radius:14px;padding:24px;margin-bottom:16px">' +
-    '<h3 style="font-size:18px;font-weight:800;color:var(--orange);margin-bottom:10px">&#128200; Rating Trend</h3>' +
+    '<h3 style="font-size:18px;font-weight:800;color:var(--orange);margin-bottom:10px">Rating Trend</h3>' +
     '<p style="font-size:14px;color:var(--text);line-height:1.7">The sparkline chart shows how a landlord\'s ratings have changed over time. Each point is one review plotted chronologically. The trend arrow compares the average of the newest third of reviews to the oldest third. A green upward arrow means they\'re improving; red downward means they\'re slipping.</p>' +
   '</div>' +
 
   '<div style="background:var(--card-bg);border:1px solid var(--border);border-radius:14px;padding:24px;margin-bottom:16px">' +
-    '<h3 style="font-size:18px;font-weight:800;color:var(--orange);margin-bottom:10px">&#127991; Smart Tags</h3>' +
+    '<h3 style="font-size:18px;font-weight:800;color:var(--orange);margin-bottom:10px">Smart Tags</h3>' +
     '<p style="font-size:14px;color:var(--text);line-height:1.7">Tags like "Fast Maintenance" or "Pest Issues" are generated automatically by scanning review text for keyword patterns. A tag only appears if: (1) at least 2 reviews mention the relevant keywords, (2) those reviews represent at least 35-40% of all reviews, and (3) for tags tied to a score dimension, the actual sub-score must back it up. For example, "Great Communication" requires both keyword matches AND a communication score of 3.5+. This prevents a review saying "communication could be better" from triggering a positive tag.</p>' +
   '</div>' +
 
@@ -3467,17 +3465,17 @@ function MethodologyPage() {
   '</div>' +
 
   '<div style="background:var(--card-bg);border:1px solid var(--border);border-radius:14px;padding:24px;margin-bottom:16px">' +
-    '<h3 style="font-size:18px;font-weight:800;color:var(--orange);margin-bottom:10px">&#127968; Housing Match Quiz</h3>' +
+    '<h3 style="font-size:18px;font-weight:800;color:var(--orange);margin-bottom:10px">Housing Match Quiz</h3>' +
     '<p style="font-size:14px;color:var(--text);line-height:1.7">The quiz scores each landlord on a 0-100 match scale based on your answers. It factors in: budget fit (does their average rent fit your range?), your #1 priority (boosts that sub-score\'s weight), vibe preferences (quiet, modern, social, or budget-focused), and dealbreakers (landlords with matching negative tags get penalized). Results are ranked by total match score.</p>' +
   '</div>' +
 
   '<div style="background:var(--card-bg);border:1px solid var(--border);border-radius:14px;padding:24px;margin-bottom:16px">' +
-    '<h3 style="font-size:18px;font-weight:800;color:var(--orange);margin-bottom:10px">&#128176; Rent Comparison</h3>' +
+    '<h3 style="font-size:18px;font-weight:800;color:var(--orange);margin-bottom:10px">Rent Comparison</h3>' +
     '<p style="font-size:14px;color:var(--text);line-height:1.7">The "Am I Overpaying?" tool compares your rent against the average reported rent for your landlord (from all reviews that included rent data) and the campus-wide average. Rent figures come directly from what students report in their reviews — we don\'t pull from listing sites.</p>' +
   '</div>' +
 
   '<div style="background:var(--card-bg);border:1px solid var(--border);border-radius:14px;padding:24px;margin-bottom:16px">' +
-    '<h3 style="font-size:18px;font-weight:800;color:var(--orange);margin-bottom:10px">&#128272; Data Integrity</h3>' +
+    '<h3 style="font-size:18px;font-weight:800;color:var(--orange);margin-bottom:10px">Data Integrity</h3>' +
     '<p style="font-size:14px;color:var(--text);line-height:1.7">Every reviewer certifies they are a current or former tenant. We use device fingerprinting to prevent duplicate reviews. Landlords cannot pay for placement or suppress reviews. Rankings are purely algorithmic based on student-submitted data. All data is stored in a secure database and is not editable after submission.</p>' +
   '</div>' +
 
@@ -3658,7 +3656,7 @@ function _doAddressCheck(input) {
     hint.style.display = 'block';
     hint.style.background = 'rgba(33,150,243,0.12)';
     hint.style.color = '#1565c0';
-    hint.innerHTML = '\uD83D\uDCA1 We recognized this address' + srcLabel + ' — auto-selected <strong>' + esc(match.landlordName) + '</strong>. You can change this if it\'s wrong.';
+    hint.innerHTML = 'We recognized this address' + srcLabel + ' — auto-selected <strong>' + esc(match.landlordName) + '</strong>. You can change this if it\'s wrong.';
     // Hide custom landlord input if it was showing
     const customInput = document.getElementById('rev-landlord-custom');
     const suggestBox = document.getElementById('landlord-suggestions');
