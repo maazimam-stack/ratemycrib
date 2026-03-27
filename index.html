@@ -1638,6 +1638,25 @@ function HeadToHead() {
        '<strong style="color:var(--muted);font-size:16px">Dead even</strong>') +
       '<div style="font-size:11px;color:var(--muted);margin-top:8px">Composite score combining rating, would-rent-again %, and all sub-scores</div>' +
     '</div>' +
+  '</div>' +
+
+  // Shareable comparison card
+  '<div id="h2h-share-card" style="margin-top:20px;padding:24px;background:#111;border-radius:14px;border:1px solid #222;text-align:center;animation:verdictReveal 0.4s ease 3.5s both">' +
+    '<div style="display:flex;justify-content:center;align-items:center;gap:20px;margin-bottom:12px">' +
+      '<div style="text-align:center"><div style="font-size:22px;font-weight:900;color:' + (scoreA >= scoreB ? '#E84A27' : '#888') + '">' + esc(a.name) + '</div><div style="font-size:32px;font-weight:900;color:white">' + scoreA + '</div><div style="font-size:12px;color:#888">' + a.rating.toFixed(1) + ' rating · ' + a.wouldRent + '% rent again</div></div>' +
+      '<div style="font-size:14px;font-weight:800;color:#555">vs</div>' +
+      '<div style="text-align:center"><div style="font-size:22px;font-weight:900;color:' + (scoreB >= scoreA ? '#E84A27' : '#888') + '">' + esc(b.name) + '</div><div style="font-size:32px;font-weight:900;color:white">' + scoreB + '</div><div style="font-size:12px;color:#888">' + b.rating.toFixed(1) + ' rating · ' + b.wouldRent + '% rent again</div></div>' +
+    '</div>' +
+    '<div style="font-size:11px;color:#555;margin-bottom:14px">ratemycrib.net — the honest guide to UIUC housing</div>' +
+    '<div style="display:flex;gap:8px;justify-content:center">' +
+      '<button onclick="trackEvent(\'h2h_share\',{method:\'twitter\',a:\'' + esc(a.name) + '\',b:\'' + esc(b.name) + '\'});window.open(\'https://twitter.com/intent/tweet?text=' + encodeURIComponent(
+        (scoreA > scoreB ? a.name + ' beats ' + b.name : scoreB > scoreA ? b.name + ' beats ' + a.name : a.name + ' vs ' + b.name + ' — dead even') +
+        ' (' + scoreA + '-' + scoreB + ') on RateMyCrib. Compare your UIUC landlords: https://ratemycrib.net/#h2h'
+      ) + '\',\'_blank\')" style="padding:8px 16px;background:#222;color:#ccc;border:1px solid #333;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">Share on X</button>' +
+      '<button onclick="trackEvent(\'h2h_share\',{method:\'copy\',a:\'' + esc(a.name) + '\',b:\'' + esc(b.name) + '\'});navigator.clipboard.writeText(\'' +
+        (scoreA > scoreB ? esc(a.name) + ' beats ' + esc(b.name) : scoreB > scoreA ? esc(b.name) + ' beats ' + esc(a.name) : esc(a.name) + ' vs ' + esc(b.name) + ' — dead even') +
+        ' (' + scoreA + '-' + scoreB + ') on RateMyCrib. Compare your UIUC landlords: https://ratemycrib.net/#h2h\');this.textContent=\'Copied!\'" style="padding:8px 16px;background:#222;color:#ccc;border:1px solid #333;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">Copy Result</button>' +
+    '</div>' +
   '</div>';
 }
 
@@ -1719,7 +1738,7 @@ function MapView() {
 }
 
 // ===== ENHANCED SHARE FLOW =====
-function showSharePromptEnhanced(landlordName) {
+function showSharePromptEnhanced(landlordName, review) {
   var lName = landlordName || '';
   var shareUrl = 'https://ratemycrib.net';
   var shareText = lName
@@ -1728,13 +1747,45 @@ function showSharePromptEnhanced(landlordName) {
   var encodedText = encodeURIComponent(shareText + ' ' + shareUrl);
   var encodedUrl = encodeURIComponent(shareUrl);
 
+  // Build "Your Experience vs Average" card
+  var comparisonHtml = '';
+  if (review && review.landlordId) {
+    var landlord = findLandlord(review.landlordId);
+    if (landlord) {
+      var stats = getLandlordStats(landlord);
+      if (stats.reviews > 1) {
+        var diff = (review.rating - stats.rating).toFixed(1);
+        var diffNum = parseFloat(diff);
+        var diffColor = diffNum > 0.3 ? '#16A34A' : diffNum < -0.3 ? '#DC2626' : 'var(--muted)';
+        var diffLabel = diffNum > 0.3 ? 'above' : diffNum < -0.3 ? 'below' : 'right at';
+        var diffSign = diffNum > 0 ? '+' : '';
+        comparisonHtml =
+          '<div style="background:var(--light);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:20px;text-align:left">' +
+            '<div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px">Your Experience vs Average</div>' +
+            '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">' +
+              '<span style="font-size:13px;color:var(--text)">Your Rating</span>' +
+              '<span style="font-size:15px;font-weight:800;color:var(--text)">' + review.rating.toFixed(1) + '</span>' +
+            '</div>' +
+            '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">' +
+              '<span style="font-size:13px;color:var(--text)">' + esc(lName) + ' Average</span>' +
+              '<span style="font-size:15px;font-weight:800;color:var(--text)">' + stats.rating.toFixed(1) + '</span>' +
+            '</div>' +
+            '<div style="border-top:1px solid var(--border);padding-top:8px;text-align:center">' +
+              '<span style="font-size:14px;font-weight:800;color:' + diffColor + '">' + diffSign + diff + '</span>' +
+              '<span style="font-size:12px;color:var(--muted);margin-left:6px">Your experience was ' + diffLabel + ' average</span>' +
+            '</div>' +
+          '</div>';
+      }
+    }
+  }
+
   var overlay = document.createElement('div');
   overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;z-index:300;animation:fadeIn 0.2s';
   overlay.innerHTML =
     '<div style="background:var(--card-bg,#fff);border-radius:20px;padding:32px 28px;max-width:420px;width:92%;text-align:center;animation:slideDown 0.3s;box-shadow:0 20px 60px rgba(0,0,0,0.3);border:1px solid var(--border)">' +
-      '<div style="font-size:22px;font-weight:900;color:var(--orange);margin-bottom:8px">Thanks!</div>' +
       '<h3 style="font-size:22px;font-weight:900;margin-bottom:6px;letter-spacing:-0.3px;color:var(--text)">Review Submitted!</h3>' +
       '<p style="font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:20px">Your review is live. Help other Illini make better housing decisions.</p>' +
+      comparisonHtml +
       '<div class="share-btn-row">' +
         '<button class="share-opt" onclick="trackEvent(\'share_click\',{method:\'sms\'});window.open(\'sms:?&body=' + encodedText + '\',\'_blank\')"><div class="share-opt-icon" style="font-weight:700">SMS</div><div class="share-opt-label">iMessage</div></button>' +
         '<button class="share-opt" onclick="trackEvent(\'share_click\',{method:\'twitter\'});window.open(\'https://twitter.com/intent/tweet?text=' + encodedText + '\',\'_blank\')"><div class="share-opt-icon" style="font-weight:700">X</div><div class="share-opt-label">Twitter</div></button>' +
@@ -3939,7 +3990,7 @@ async function submitReview(landlordIdFromDetail) {
     go({modal:false, stars:0, wouldRentChoice:null});
     trackEvent('review_submitted', { landlord: landlordName, rating: review.rating });
     launchConfetti();
-    showSharePromptEnhanced(landlordName);
+    showSharePromptEnhanced(landlordName, review);
   } else {
     if (btn) { btn.disabled = false; btn.textContent = 'Submit My Review'; }
     toast('Something went wrong. Try again.');
