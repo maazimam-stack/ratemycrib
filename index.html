@@ -222,6 +222,15 @@
   .nav-link { color: rgba(255,255,255,0.55); font-size: 13.5px; font-weight: 500; cursor: pointer; padding: 7px 14px; border-radius: 8px; transition: all 0.2s ease; }
   .nav-link:hover { color: rgba(255,255,255,0.9); background: rgba(255,255,255,0.08); }
   .nav-link.active { color: white; background: rgba(255,255,255,0.12); }
+  .nav-tools-wrap { position: relative; }
+  .nav-tools-btn { color: rgba(255,255,255,0.55); font-size: 13.5px; font-weight: 500; cursor: pointer; padding: 7px 14px; border-radius: 8px; transition: all 0.2s ease; background: none; border: none; font-family: inherit; display: flex; align-items: center; gap: 4px; }
+  .nav-tools-btn:hover { color: rgba(255,255,255,0.9); background: rgba(255,255,255,0.08); }
+  .nav-tools-btn.active { color: white; background: rgba(255,255,255,0.12); }
+  .nav-tools-dropdown { display: none; position: absolute; top: calc(100% + 8px); right: 0; background: rgba(20,20,20,0.98); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 6px; min-width: 200px; z-index: 200; box-shadow: 0 8px 30px rgba(0,0,0,0.5); }
+  .nav-tools-dropdown.open { display: block; animation: slideDown 0.15s ease; }
+  .nav-tools-item { display: block; width: 100%; padding: 10px 14px; color: rgba(255,255,255,0.7); font-size: 13.5px; font-weight: 500; border-radius: 6px; cursor: pointer; transition: all 0.15s; text-align: left; background: none; border: none; font-family: inherit; }
+  .nav-tools-item:hover { color: white; background: rgba(255,255,255,0.08); }
+  .nav-tools-item .tools-desc { display: block; font-size: 11px; color: rgba(255,255,255,0.35); font-weight: 400; margin-top: 1px; }
   .nav-cta { background: var(--orange); color: white; border: none; padding: 8px 20px; border-radius: 8px; font-weight: 600; font-size: 13px; cursor: pointer; transition: all 0.2s ease; font-family: inherit; margin-left: 8px; }
   .nav-cta:hover { background: #D4401F; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(232,74,39,0.3); }
 
@@ -581,6 +590,10 @@
     .nav-right { display: none; position: absolute; top: calc(56px + env(safe-area-inset-top, 0px)); left: 0; right: 0; background: rgba(10,10,10,0.98); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); flex-direction: column; padding: 12px 16px 16px; gap: 2px; border-bottom: 1px solid rgba(255,255,255,0.08); z-index: 99; }
     .nav-right.mobile-open { display: flex; }
     .nav-link { padding: 10px 12px; font-size: 14px; border-radius: 8px; }
+    .nav-tools-wrap { position: static; }
+    .nav-tools-btn { padding: 10px 12px; font-size: 14px; width: 100%; justify-content: space-between; }
+    .nav-tools-dropdown { position: static; background: rgba(255,255,255,0.04); border: none; box-shadow: none; margin: 2px 0 2px 12px; min-width: unset; backdrop-filter: none; -webkit-backdrop-filter: none; padding: 4px; }
+    .nav-tools-item { padding: 8px 12px; font-size: 13px; }
     .nav-cta { margin-left: 0; margin-top: 4px; text-align: center; padding: 10px 20px; font-size: 14px; }
     .nav-brand { font-size: 18px; }
 
@@ -1800,6 +1813,8 @@ function showSharePromptEnhanced(landlordName, review) {
 
 // ===== COMPONENTS =====
 function Nav() {
+  var toolPages = ['compare','h2h','scanner','quiz','rentcheck','insights'];
+  var toolsActive = toolPages.includes(S.page);
   return `<div class="nav">
     <div class="nav-brand" onclick="go({page:'home',detail:null})">Rate<em>My</em>Crib</div>
     <div class="nav-actions">
@@ -1811,17 +1826,25 @@ function Nav() {
     <div class="nav-right">
       <span class="nav-link ${S.page==='home'&&!S.detail?'active':''}" onclick="closeNav();go({page:'home',detail:null})">Landlords</span>
       <span class="nav-link ${S.page==='hoods'?'active':''}" onclick="closeNav();go({page:'hoods'})">Neighborhoods</span>
-      <span class="nav-link ${S.page==='compare'?'active':''}" onclick="closeNav();go({page:'compare'})">Compare</span>
-      <span class="nav-link ${S.page==='h2h'?'active':''}" onclick="closeNav();go({page:'h2h'})">Head-to-Head</span>
-      <span class="nav-link ${S.page==='scanner'?'active':''}" onclick="closeNav();trackScannerEvent('nav_click',{source:'navbar'});go({page:'scanner'})">Lease Scanner</span>
-      <span class="nav-link ${S.page==='insights'?'active':''}" onclick="closeNav();go({page:'insights'})">Insights</span>
-      <span class="nav-link ${S.page==='quiz'?'active':''}" onclick="closeNav();go({page:'quiz'})">Quiz</span>
-      <span class="nav-link ${S.page==='rentcheck'?'active':''}" onclick="closeNav();go({page:'rentcheck'})">Rent Check</span>
-      <button class="nav-cta" onclick="closeNav();go({page:'home',modal:true,stars:0,wouldRentChoice:null,posTags:[],negTags:[],formData:{}})">Rate Your Landlord</button>
+      <div class="nav-tools-wrap">
+        <button class="nav-tools-btn ${toolsActive?'active':''}" onclick="toggleToolsMenu(event)">Tools <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 4l3 3 3-3"/></svg></button>
+        <div class="nav-tools-dropdown" id="tools-dropdown">
+          <button class="nav-tools-item" onclick="closeNav();closeTools();go({page:'h2h'})">Head-to-Head<span class="tools-desc">Compare two landlords</span></button>
+          <button class="nav-tools-item" onclick="closeNav();closeTools();go({page:'compare'})">Price Compare<span class="tools-desc">Side-by-side pricing</span></button>
+          <button class="nav-tools-item" onclick="closeNav();closeTools();go({page:'quiz'})">Find My Crib<span class="tools-desc">Match quiz</span></button>
+          <button class="nav-tools-item" onclick="closeNav();closeTools();go({page:'rentcheck'})">Rent Check<span class="tools-desc">Am I overpaying?</span></button>
+          <button class="nav-tools-item" onclick="closeNav();closeTools();trackScannerEvent('nav_click',{source:'navbar'});go({page:'scanner'})">Lease Scanner<span class="tools-desc">Flag risky clauses</span></button>
+          <button class="nav-tools-item" onclick="closeNav();closeTools();go({page:'insights'})">Insights<span class="tools-desc">Housing data trends</span></button>
+        </div>
+      </div>
+      <button class="nav-cta" onclick="closeNav();closeTools();go({page:'home',modal:true,stars:0,wouldRentChoice:null,posTags:[],negTags:[],formData:{}})">Rate Your Landlord</button>
     </div>
   </div>`;
 }
 function closeNav() { const nr = document.querySelector('.nav-right'); if (nr) nr.classList.remove('mobile-open'); }
+function toggleToolsMenu(e) { e.stopPropagation(); var dd = document.getElementById('tools-dropdown'); if(dd) dd.classList.toggle('open'); }
+function closeTools() { var dd = document.getElementById('tools-dropdown'); if(dd) dd.classList.remove('open'); }
+document.addEventListener('click', function(e) { if(!e.target.closest('.nav-tools-wrap')) closeTools(); });
 function toggleDarkMode() {
   const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
   const newTheme = isDark ? 'light' : 'dark';
@@ -2104,16 +2127,10 @@ setInterval(function() {
 }, 6000);
 
 function Hero() {
-  const revCount = getReviewCount();
-  const landlordCount = SEED_LANDLORDS.length + (userLandlords||[]).length;
   return `<div class="hero">
     <div class="hero-badge">By students, for students — zero landlord influence</div>
     <h1>The Honest Guide to<br>UIUC <em>Housing</em></h1>
     <p>Read student reviews. Compare prices. No sponsored rankings — ever.</p>
-    ${revCount > 0 ? `<div style="display:flex;justify-content:center;gap:24px;margin-top:12px;animation:fadeUp 0.6s ease 0.15s both">
-      <div style="text-align:center"><span class="hero-countup" data-target="${revCount}" style="font-size:24px;font-weight:800;color:var(--orange)">0</span><span style="font-size:12px;color:rgba(255,255,255,0.45);display:block;margin-top:2px">Student Reviews</span></div>
-      <div style="text-align:center"><span class="hero-countup" data-target="${landlordCount}" style="font-size:24px;font-weight:800;color:white">0</span><span style="font-size:12px;color:rgba(255,255,255,0.45);display:block;margin-top:2px">Landlords Tracked</span></div>
-    </div>` : ''}
     ${getHeroQuote()}
     <div style="margin:24px auto 0;text-align:center;animation:fadeUp 0.6s ease 0.3s both">
       <button class="hero-cta" onclick="go({page:'home',modal:true,stars:0,wouldRentChoice:null,posTags:[],negTags:[],formData:{}})">Rate Your Landlord — 60 Seconds</button>
@@ -2212,13 +2229,6 @@ function ResultsList() {
   const showUnreviewed = S.filter === 'all' && unreviewed.length > 0;
 
   return `<div id="results-container" class="container">
-    <div onclick="go({page:'h2h'})" style="display:flex;align-items:center;gap:16px;padding:16px 20px;background:linear-gradient(135deg,var(--card-bg),var(--light));border:1px solid var(--border);border-radius:12px;margin-bottom:16px;cursor:pointer;transition:all 0.2s" onmouseover="this.style.borderColor='var(--orange)'" onmouseout="this.style.borderColor='var(--border)'">
-      <div style="flex:1">
-        <div style="font-size:15px;font-weight:800;color:var(--text);letter-spacing:-0.3px">Signing a lease? Compare landlords first.</div>
-        <div style="font-size:13px;color:var(--muted);margin-top:3px">See how any two landlords stack up side-by-side before you commit.</div>
-      </div>
-      <div style="font-size:13px;font-weight:700;color:var(--orange);white-space:nowrap">Compare &rarr;</div>
-    </div>
     <div class="search-bar-wrap" style="margin-bottom:16px">
       <div style="position:relative">
         <svg style="position:absolute;left:14px;top:50%;transform:translateY(-50%);pointer-events:none" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
@@ -2248,26 +2258,6 @@ function ResultsList() {
       <button style="margin-top:16px;padding:10px 24px;background:var(--orange);color:white;border:none;border-radius:8px;font-weight:600;font-size:14px;cursor:pointer;font-family:inherit" onclick="go({filter:'all'})">View All Landlords</button>
     </div>` : ''}
 
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:24px;margin-bottom:24px">
-      <div onclick="go({page:'quiz'})" style="padding:20px;background:var(--card-bg);border:1px solid var(--border);border-radius:12px;cursor:pointer;transition:all 0.2s;text-align:center" onmouseover="this.style.borderColor='var(--orange)'" onmouseout="this.style.borderColor='var(--border)'">
-        <div style="font-size:14px;font-weight:700;color:var(--text)">Find My Crib</div>
-        <div style="font-size:12px;color:var(--muted);margin-top:2px">Take the quiz</div>
-      </div>
-      <div onclick="go({page:'h2h'})" style="padding:20px;background:var(--card-bg);border:1px solid var(--border);border-radius:12px;cursor:pointer;transition:all 0.2s;text-align:center" onmouseover="this.style.borderColor='var(--orange)'" onmouseout="this.style.borderColor='var(--border)'">
-        <div style="font-size:24px;margin-bottom:6px">&#9878;</div>
-        <div style="font-size:14px;font-weight:700;color:var(--text)">Head-to-Head</div>
-        <div style="font-size:12px;color:var(--muted);margin-top:2px">Compare landlords</div>
-      </div>
-      <div onclick="go({page:'rentcheck'})" style="padding:20px;background:var(--card-bg);border:1px solid var(--border);border-radius:12px;cursor:pointer;transition:all 0.2s;text-align:center" onmouseover="this.style.borderColor='var(--orange)'" onmouseout="this.style.borderColor='var(--border)'">
-        <div style="font-size:14px;font-weight:700;color:var(--text)">Am I Overpaying?</div>
-        <div style="font-size:12px;color:var(--muted);margin-top:2px">Check your rent</div>
-      </div>
-    </div>
-
-    <div class="promo">
-      <div><h3>Free Lease Scanner</h3><p>Upload your lease PDF or paste the text — we'll flag clauses that may conflict with Illinois tenant law.</p></div>
-      <button onclick="trackScannerEvent('cta_click',{source:'home_promo'});go({page:'scanner'})">Scan My Lease</button>
-    </div>
   </div>`;
 }
 
