@@ -1310,8 +1310,10 @@ function toggleScatterHL(id) {
 }
 var _lastTrackedPage = null;
 const go = u => {
-  // When navigating to a different page, clear detail unless explicitly set
+  // When navigating to a different page, clear detail and hoodFilter unless explicitly set
   if (u.page && u.page !== 'detail' && !('detail' in u)) u.detail = null;
+  // Clear hoodFilter when leaving home/detail flow (preserve during home<->detail navigation)
+  if (u.page && u.page !== S.page && !('hoodFilter' in u) && !(u.page === 'detail' && S.page === 'home') && !(u.page === 'home' && S.page === 'detail')) u.hoodFilter = null;
   // Save form state before re-render if modal is open
   if (S.modal) saveFormState();
   Object.assign(S, u);
@@ -1827,10 +1829,10 @@ function showSharePromptEnhanced(landlordName, review) {
 
 // ===== COMPONENTS =====
 function Nav() {
-  var toolPages = ['compare','h2h','scanner','rentcheck','insights'];
+  var toolPages = ['compare','scanner','rentcheck','insights'];
   var toolsActive = toolPages.includes(S.page);
   return `<div class="nav">
-    <div class="nav-brand" onclick="go({page:'home',detail:null})">Rate<em>My</em>Crib</div>
+    <div class="nav-brand" onclick="go({page:'home',detail:null,hoodFilter:null})">Rate<em>My</em>Crib</div>
     <div class="nav-actions">
       <button class="dm-toggle" onclick="toggleDarkMode()" aria-label="Toggle dark mode" title="Toggle dark mode">${document.documentElement.getAttribute('data-theme')==='dark'?'&#9788;':'&#9790;'}</button>
       <button class="nav-toggle" onclick="document.querySelector('.nav-right').classList.toggle('mobile-open')" aria-label="Menu">
@@ -1838,13 +1840,13 @@ function Nav() {
       </button>
     </div>
     <div class="nav-right">
-      <span class="nav-link ${S.page==='home'&&!S.detail?'active':''}" onclick="closeNav();go({page:'home',detail:null})">Landlords</span>
+      <span class="nav-link ${S.page==='home'&&!S.detail?'active':''}" onclick="closeNav();go({page:'home',detail:null,hoodFilter:null})">Landlords</span>
       <span class="nav-link ${S.page==='hoods'?'active':''}" onclick="closeNav();go({page:'hoods'})">Neighborhoods</span>
+      <span class="nav-link ${S.page==='h2h'?'active':''}" onclick="closeNav();go({page:'h2h'})">Head-to-Head</span>
       <span class="nav-link ${S.page==='quiz'?'active':''}" onclick="closeNav();go({page:'quiz'})">Match Quiz</span>
       <div class="nav-tools-wrap">
         <button class="nav-tools-btn ${toolsActive?'active':''}" onclick="toggleToolsMenu(event)">Tools <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 4l3 3 3-3"/></svg></button>
         <div class="nav-tools-dropdown" id="tools-dropdown">
-          <button class="nav-tools-item" onclick="closeNav();closeTools();go({page:'h2h'})">Head-to-Head<span class="tools-desc">Compare two landlords</span></button>
           <button class="nav-tools-item" onclick="closeNav();closeTools();go({page:'compare'})">Price Compare<span class="tools-desc">Side-by-side pricing</span></button>
           <button class="nav-tools-item" onclick="closeNav();closeTools();go({page:'rentcheck'})">Rent Check<span class="tools-desc">Am I overpaying?</span></button>
           <button class="nav-tools-item" onclick="closeNav();closeTools();trackScannerEvent('nav_click',{source:'navbar'});go({page:'scanner'})">Lease Scanner<span class="tools-desc">Flag risky clauses</span></button>
@@ -2095,7 +2097,7 @@ function InsightsPage() {
         '<div class="insight-stat-card"><div class="insight-stat-val">' + avgRent + '</div><div class="insight-stat-label">Avg Monthly Rent</div></div>' +
       '</div>' +
       (chart ? chart : '<div class="scatter-wrap" style="text-align:center;padding:48px 24px"><div class="scatter-title">Rent vs. Rating</div><p style="color:var(--muted);font-size:14px;margin-top:8px">Not enough rent data yet — we need at least 8 landlords with rent info. Keep reviewing!</p></div>') +
-      '<p style="margin-top:24px"><span style="color:var(--orange);cursor:pointer;font-weight:600;font-size:14px" onclick="go({page:\'home\',detail:null})">\u2190 Back to landlords</span></p>' +
+      '<p style="margin-top:24px"><span style="color:var(--orange);cursor:pointer;font-weight:600;font-size:14px" onclick="go({page:\'home\',detail:null,hoodFilter:null})">\u2190 Back to landlords</span></p>' +
     '</div>' +
   '</div>';
 }
@@ -2287,7 +2289,7 @@ function DetailPage() {
 
   return `<div class="detail-top">
     <div class="detail-inner">
-      <span class="back-link" onclick="go({page:'home',detail:null})">&#8592; Back to all landlords</span>
+      <span class="back-link" onclick="go({page:'home',detail:null})">${S.hoodFilter ? '&#8592; Back to ' + esc(S.hoodFilter) + ' landlords' : '&#8592; Back to all landlords'}</span>
       <div class="detail-head">
         <div class="detail-score-circle sc-${q}">
           <div class="detail-score-num">${l.reviews===0 ? '—' : l.rating.toFixed(1)}</div>
@@ -2408,20 +2410,18 @@ function Hoods() {
   </div>
   <div class="container" style="padding-top:32px">
     <div class="hood-grid">
-      ${hoods.map(h => {
-        const hasReviews = h.reviewCount > 0;
+      ${hoods.filter(h => h.reviewCount > 0).map(h => {
         const hoodBounds = {"Campustown":"Green St to University Ave, Wright to 1st St","Lincoln Ave":"Along Lincoln Ave, north of Green St","South Campus":"South of University Ave (PAR, FAR, Ike area)","East Campus":"East of Wright St (ISR, Hendrick House area)","North Champaign":"North of University Ave, west of Neil St","Urbana":"East of Lincoln Ave / Race St into Urbana"};
         return `<div class="hood-card">
           <div class="hood-name">${esc(h.name)}</div>
-          <div class="hood-type">${esc(h.type)}${hasReviews ? ` · ${h.reviewCount} review${h.reviewCount!==1?'s':''}` : ''}</div>
+          <div class="hood-type">${esc(h.type)} · ${h.reviewCount} review${h.reviewCount!==1?'s':''}</div>
           <div style="font-size:11px;color:#9CA3AF;margin-bottom:8px">${hoodBounds[h.name]||''}</div>
           <div class="hood-row"><span>Avg Rent</span><strong>${h.rent > 0 ? '$'+h.rent+'/mo' : '—'}</strong></div>
           <div class="hood-row"><span>Walkability</span><strong>${h.walk > 0 ? h.walk+'/5' : '—'}</strong></div>
           <div class="hood-row"><span>Safety</span><strong ${h.safety > 0 ? 'class="'+valClass(h.safety,3.5,2.5)+'"' : ''}>${h.safety > 0 ? h.safety+'/5' : '—'}</strong></div>
           <div class="hood-row"><span>Nightlife</span><strong>${h.nightlife > 0 ? h.nightlife+'/5' : '—'}</strong></div>
           <div class="hood-row"><span>Quiet</span><strong>${h.quiet > 0 ? h.quiet+'/5' : '—'}</strong></div>
-          ${!hasReviews ? '<p style="font-size:11px;color:var(--muted);margin-top:8px;text-align:center">Scores appear when students rate this neighborhood.</p>' : ''}
-          ${hasReviews ? `<div style="margin-top:10px;text-align:center"><span style="color:var(--orange);font-size:12px;font-weight:600;cursor:pointer" onclick="event.stopPropagation();go({page:'home',detail:null,hoodFilter:'${h.name.replace(/'/g,"\\'")}',filter:'all'})">View landlords in ${esc(h.name)} \u2192</span></div>` : ''}
+          <div style="margin-top:10px;text-align:center"><span style="color:var(--orange);font-size:12px;font-weight:600;cursor:pointer" onclick="event.stopPropagation();go({page:'home',detail:null,hoodFilter:'${h.name.replace(/'/g,"\\'")}',filter:'all'})">View landlords in ${esc(h.name)} \u2192</span></div>
         </div>`;
       }).join("")}
     </div>
@@ -3592,7 +3592,7 @@ function Footer() {
       </div>
       <div class="footer-col">
         <h4>Browse</h4>
-        <a onclick="go({page:'home',detail:null})" style="cursor:pointer">All Landlords</a>
+        <a onclick="go({page:'home',detail:null,hoodFilter:null})" style="cursor:pointer">All Landlords</a>
         <a onclick="go({page:'hoods'})" style="cursor:pointer">Neighborhoods</a>
         <a onclick="go({page:'compare'})" style="cursor:pointer">Compare Prices</a>
         <a onclick="go({page:'h2h'})" style="cursor:pointer">Head-to-Head</a>
