@@ -33,7 +33,7 @@
 <meta name="apple-mobile-web-app-title" content="RateMyCrib">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;0,9..40,900;1,9..40,400&display=swap" rel="stylesheet">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -97,7 +97,7 @@
     --page-bg: #000000;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--white); color: var(--text); -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+  body { font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--white); color: var(--text); -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
   a { text-decoration: none; color: inherit; }
 
   /* ===== ANIMATIONS ===== */
@@ -236,9 +236,9 @@
 
   /* ===== HERO ===== */
   .hero { padding: 80px 32px 64px; text-align: center; background: var(--black); position: relative; overflow: hidden; }
-  .hero::before { content: ''; position: absolute; top: -200px; left: 50%; transform: translateX(-50%); width: 1000px; height: 1000px; background: radial-gradient(circle, rgba(232,74,39,0.15) 0%, rgba(232,74,39,0.05) 30%, transparent 60%); pointer-events: none; }
-  .hero::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(232,74,39,0.3), transparent); }
-  .hero-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(232,74,39,0.12); color: var(--orange); font-size: 13px; font-weight: 600; padding: 8px 18px; border-radius: 50px; margin-bottom: 24px; border: 1px solid rgba(232,74,39,0.2); animation: fadeUp 0.6s ease; backdrop-filter: blur(8px); }
+  .hero::before { content: ''; position: absolute; top: -200px; left: 50%; transform: translateX(-50%); width: 800px; height: 800px; background: radial-gradient(circle, rgba(232,74,39,0.08) 0%, transparent 50%); pointer-events: none; }
+  .hero::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1px; background: var(--border); }
+  .hero-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(232,74,39,0.1); color: var(--orange); font-size: 13px; font-weight: 600; padding: 8px 18px; border-radius: 50px; margin-bottom: 24px; border: 1px solid rgba(232,74,39,0.15); animation: fadeUp 0.6s ease; }
   .hero h1 { font-size: 52px; font-weight: 900; letter-spacing: -2px; line-height: 1.08; margin-bottom: 16px; animation: fadeUp 0.6s ease 0.1s both; color: white; }
   .hero h1 em { font-style: normal; color: var(--orange); }
   .hero p { font-size: 17px; color: rgba(255,255,255,0.55); max-width: 460px; margin: 0 auto 36px; line-height: 1.6; animation: fadeUp 0.6s ease 0.2s both; }
@@ -555,8 +555,8 @@
   .loading-dot:nth-child(3) { animation-delay: 0.3s; }
 
   /* ===== HERO CTA BUTTON ===== */
-  .hero-cta { padding: 18px 48px; font-size: 18px; font-weight: 700; background: var(--orange); color: white; border: none; border-radius: var(--radius); cursor: pointer; font-family: inherit; box-shadow: 0 4px 24px rgba(232,74,39,0.35); transition: all 0.25s ease; letter-spacing: 0.3px; }
-  .hero-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(232,74,39,0.45); }
+  .hero-cta { padding: 18px 48px; font-size: 18px; font-weight: 700; background: var(--orange); color: white; border: none; border-radius: var(--radius); cursor: pointer; font-family: inherit; box-shadow: 0 2px 8px rgba(0,0,0,0.2); transition: all 0.2s ease; letter-spacing: 0.3px; }
+  .hero-cta:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(0,0,0,0.25); }
 
   /* ===== EMPTY FILTER STATE ===== */
   .empty-filter { text-align: center; padding: 48px 24px; }
@@ -828,6 +828,20 @@ const SEED_LANDLORDS = [
   { id:29, name:"Bailey Apartments", props:1, rating:0, reviews:0, wouldRent:0, responseRate:"—",
     scores:{maintenance:0,communication:0,fairness:0,moveOut:0}, topTags:["New Listing"], dist:[0,0,0,0,0] },
 ];
+
+// ────────────────────────────────────────────
+// SEO: SLUG UTILITIES
+// ────────────────────────────────────────────
+function slugify(name) {
+  return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+}
+function findLandlordBySlug(slug) {
+  var all = SEED_LANDLORDS.concat(userLandlords || []);
+  for (var i = 0; i < all.length; i++) {
+    if (slugify(all[i].name) === slug) return all[i];
+  }
+  return null;
+}
 
 // ────────────────────────────────────────────
 // KNOWN PROPERTY → LANDLORD MAPPING
@@ -1813,7 +1827,7 @@ function showSharePromptEnhanced(landlordName, review) {
 
 // ===== COMPONENTS =====
 function Nav() {
-  var toolPages = ['compare','h2h','scanner','quiz','rentcheck','insights'];
+  var toolPages = ['compare','h2h','scanner','rentcheck','insights'];
   var toolsActive = toolPages.includes(S.page);
   return `<div class="nav">
     <div class="nav-brand" onclick="go({page:'home',detail:null})">Rate<em>My</em>Crib</div>
@@ -1826,12 +1840,12 @@ function Nav() {
     <div class="nav-right">
       <span class="nav-link ${S.page==='home'&&!S.detail?'active':''}" onclick="closeNav();go({page:'home',detail:null})">Landlords</span>
       <span class="nav-link ${S.page==='hoods'?'active':''}" onclick="closeNav();go({page:'hoods'})">Neighborhoods</span>
+      <span class="nav-link ${S.page==='quiz'?'active':''}" onclick="closeNav();go({page:'quiz'})">Match Quiz</span>
       <div class="nav-tools-wrap">
         <button class="nav-tools-btn ${toolsActive?'active':''}" onclick="toggleToolsMenu(event)">Tools <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 4l3 3 3-3"/></svg></button>
         <div class="nav-tools-dropdown" id="tools-dropdown">
           <button class="nav-tools-item" onclick="closeNav();closeTools();go({page:'h2h'})">Head-to-Head<span class="tools-desc">Compare two landlords</span></button>
           <button class="nav-tools-item" onclick="closeNav();closeTools();go({page:'compare'})">Price Compare<span class="tools-desc">Side-by-side pricing</span></button>
-          <button class="nav-tools-item" onclick="closeNav();closeTools();go({page:'quiz'})">Find My Crib<span class="tools-desc">Match quiz</span></button>
           <button class="nav-tools-item" onclick="closeNav();closeTools();go({page:'rentcheck'})">Rent Check<span class="tools-desc">Am I overpaying?</span></button>
           <button class="nav-tools-item" onclick="closeNav();closeTools();trackScannerEvent('nav_click',{source:'navbar'});go({page:'scanner'})">Lease Scanner<span class="tools-desc">Flag risky clauses</span></button>
           <button class="nav-tools-item" onclick="closeNav();closeTools();go({page:'insights'})">Insights<span class="tools-desc">Housing data trends</span></button>
@@ -3106,7 +3120,7 @@ function LeaseScanner() {
       <p style="font-size:11px;color:var(--muted);margin-bottom:16px;line-height:1.5">This is a simplified summary for educational purposes, not legal advice. Consult a licensed attorney for advice on your situation.</p>
       <div style="display:flex;gap:10px;flex-wrap:wrap">
         <a onclick="go({page:'rights'})" style="display:inline-block;padding:10px 20px;background:var(--black);color:white;border-radius:8px;font-size:13px;font-weight:600;transition:all 0.2s;cursor:pointer">Full Reference Guide</a>
-        <a href="https://studentlegal.illinois.edu/" target="_blank" style="display:inline-block;padding:10px 20px;background:var(--orange);color:white;border-radius:8px;font-size:13px;font-weight:600;transition:all 0.2s">Free UIUC Legal Help</a>
+        <a href="https://studentlegal.illinois.edu/" target="_blank" style="font-size:13px;font-weight:500;color:var(--muted);text-decoration:underline">UIUC Student Legal Service (free for students)</a>
       </div>
     </div>
   </div>`;
@@ -3596,7 +3610,6 @@ function Footer() {
         <a onclick="go({page:'methodology'})" style="cursor:pointer">How Scores Work</a>
         <a onclick="go({page:'rights'})" style="cursor:pointer">Know Your Rights</a>
         <a onclick="go({page:'landlords-info'})" style="cursor:pointer">For Landlords</a>
-        <a href="https://studentlegal.illinois.edu/" target="_blank">Free UIUC Legal Help</a>
       </div>
       <div class="footer-col">
         <h4>Legal</h4>
@@ -4329,21 +4342,182 @@ function animateHeroCounts() {
 // Handle browser back/forward
 window.addEventListener('hashchange', () => {
   const hash = location.hash.slice(1);
-  if (hash.startsWith('landlord-')) {
+  // Support new SEO-friendly slug URLs: #landlord/green-street-realty
+  if (hash.startsWith('landlord/')) {
+    const slug = hash.split('/')[1];
+    const found = findLandlordBySlug(slug);
+    if (found) go({page:'detail', detail:found.id});
+    else go({page:'home', detail:null});
+  }
+  // Legacy support: #landlord-1
+  else if (hash.startsWith('landlord-')) {
     const id = parseInt(hash.split('-')[1]);
-    if (id) go({page:'detail', detail:id});
-  } else if (hash === 'neighborhoods') go({page:'hoods', detail:null});
+    if (id) {
+      // Redirect old URL to new slug URL
+      const l = findLandlord(id);
+      if (l) { location.hash = '#landlord/' + slugify(l.name); return; }
+      go({page:'detail', detail:id});
+    }
+  }
+  else if (hash === 'neighborhoods') go({page:'hoods', detail:null});
   else if (hash === 'compare') go({page:'compare', detail:null});
   else if (hash === 'head-to-head' || hash === 'h2h') go({page:'h2h', detail:null});
   else if (hash === 'scanner') go({page:'scanner', detail:null});
   else if (hash === 'insights') go({page:'insights', detail:null});
+  else if (hash === 'quiz') go({page:'quiz', detail:null});
+  else if (hash === 'rentcheck') go({page:'rentcheck', detail:null});
+  else if (hash === 'rate') go({page:'home', modal:true, stars:0, wouldRentChoice:null, posTags:[], negTags:[], formData:{}});
   else go({page:'home', detail:null});
 });
 
-// Update hash on navigation
-const _origGo = go;
+// SEO: Update URL hash + document title + meta on every navigation
+(function() {
+  var _origGo = go;
+  var _skipHash = false;
+  go = function(u) {
+    _origGo(u);
+    // Update hash based on current state
+    var newHash = '';
+    if (S.page === 'detail' && S.detail) {
+      var l = findLandlord(S.detail);
+      if (l) newHash = 'landlord/' + slugify(l.name);
+    } else if (S.page === 'hoods') newHash = 'neighborhoods';
+    else if (S.page === 'compare') newHash = 'compare';
+    else if (S.page === 'h2h') newHash = 'head-to-head';
+    else if (S.page === 'scanner') newHash = 'scanner';
+    else if (S.page === 'insights') newHash = 'insights';
+    else if (S.page === 'quiz') newHash = 'quiz';
+    else if (S.page === 'rentcheck') newHash = 'rentcheck';
+
+    // Update hash without triggering hashchange
+    if (newHash) {
+      _skipHash = true;
+      location.hash = '#' + newHash;
+      setTimeout(function(){ _skipHash = false; }, 0);
+    } else if (S.page === 'home' && !S.detail && location.hash) {
+      _skipHash = true;
+      history.replaceState(null, '', location.pathname);
+      setTimeout(function(){ _skipHash = false; }, 0);
+    }
+
+    // Update document title
+    updatePageTitle();
+    // Update meta description
+    updateMetaDescription();
+    // Update JSON-LD structured data
+    updateStructuredData();
+  };
+
+  // Prevent double-navigation from hash updates
+  var origHashHandler = window.onhashchange;
+  window.addEventListener('hashchange', function(e) {
+    if (_skipHash) { e.stopImmediatePropagation(); }
+  }, true);
+})();
+
+function updatePageTitle() {
+  var base = 'RateMyCrib';
+  if (S.page === 'detail' && S.detail) {
+    var l = findLandlord(S.detail);
+    if (l) {
+      var stats = getLandlordStats(l);
+      var ratingText = stats.reviews > 0 ? ' — ' + stats.rating.toFixed(1) + '/5 (' + stats.reviews + ' reviews)' : '';
+      document.title = l.name + ' Reviews' + ratingText + ' | ' + base;
+      return;
+    }
+  }
+  if (S.page === 'hoods') document.title = 'UIUC Neighborhoods — Housing by Area | ' + base;
+  else if (S.page === 'compare') document.title = 'Compare UIUC Landlord Prices | ' + base;
+  else if (S.page === 'h2h') document.title = 'Head-to-Head Landlord Comparison | ' + base;
+  else if (S.page === 'scanner') document.title = 'Free Illinois Lease Scanner | ' + base;
+  else if (S.page === 'insights') document.title = 'UIUC Housing Insights & Data | ' + base;
+  else if (S.page === 'quiz') document.title = 'Find My Crib — Housing Match Quiz | ' + base;
+  else if (S.page === 'rentcheck') document.title = 'Am I Overpaying? — Rent Check | ' + base;
+  else document.title = base + ' — Honest UIUC Housing Reviews by Students';
+}
+
+function updateMetaDescription() {
+  var meta = document.querySelector('meta[name="description"]');
+  if (!meta) return;
+  if (S.page === 'detail' && S.detail) {
+    var l = findLandlord(S.detail);
+    if (l) {
+      var stats = getLandlordStats(l);
+      if (stats.reviews > 0) {
+        meta.content = 'Read ' + stats.reviews + ' student reviews of ' + l.name + '. Rated ' + stats.rating.toFixed(1) + '/5 for maintenance, communication, fairness, and move-out. ' + stats.wouldRent + '% would rent again.';
+      } else {
+        meta.content = l.name + ' — UIUC landlord on RateMyCrib. Be the first to leave a review and help other students.';
+      }
+      return;
+    }
+  }
+  if (S.page === 'hoods') meta.content = 'Browse UIUC off-campus housing by neighborhood — Campustown, Green St, Urbana, and more. See safety, walkability, and nightlife scores.';
+  else if (S.page === 'scanner') meta.content = 'Free Illinois lease scanner. Upload your lease PDF and we\'ll flag clauses that may conflict with Illinois tenant law.';
+  else meta.content = 'The honest guide to off-campus housing at UIUC. Search landlords, read real student reviews, and compare prices. By students, for students.';
+}
+
+function updateStructuredData() {
+  // Remove existing dynamic LD+JSON
+  var existing = document.getElementById('dynamic-jsonld');
+  if (existing) existing.remove();
+
+  if (S.page === 'detail' && S.detail) {
+    var l = findLandlord(S.detail);
+    if (!l) return;
+    var stats = getLandlordStats(l);
+    if (stats.reviews === 0) return;
+
+    var ld = {
+      "@context": "https://schema.org",
+      "@type": "LocalBusiness",
+      "name": l.name,
+      "description": "UIUC landlord/management company reviewed by students on RateMyCrib",
+      "url": "https://ratemycrib.net/#landlord/" + slugify(l.name),
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": stats.rating.toFixed(1),
+        "bestRating": "5",
+        "worstRating": "1",
+        "ratingCount": String(stats.reviews)
+      },
+      "areaServed": {
+        "@type": "City",
+        "name": "Champaign-Urbana",
+        "containedInPlace": { "@type": "State", "name": "Illinois" }
+      }
+    };
+    var script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.id = 'dynamic-jsonld';
+    script.textContent = JSON.stringify(ld);
+    document.head.appendChild(script);
+  }
+}
+
+// Parse initial URL hash on page load
+(function() {
+  var hash = location.hash.slice(1);
+  if (hash.startsWith('landlord/')) {
+    var slug = hash.split('/')[1];
+    var found = findLandlordBySlug(slug);
+    if (found) { S.page = 'detail'; S.detail = found.id; }
+  } else if (hash.startsWith('landlord-')) {
+    var id = parseInt(hash.split('-')[1]);
+    if (id) { S.page = 'detail'; S.detail = id; }
+  } else if (hash === 'neighborhoods') { S.page = 'hoods'; }
+  else if (hash === 'compare') { S.page = 'compare'; }
+  else if (hash === 'head-to-head' || hash === 'h2h') { S.page = 'h2h'; }
+  else if (hash === 'scanner') { S.page = 'scanner'; }
+  else if (hash === 'insights') { S.page = 'insights'; }
+  else if (hash === 'quiz') { S.page = 'quiz'; }
+  else if (hash === 'rentcheck') { S.page = 'rentcheck'; }
+  else if (hash === 'rate') { S.page = 'home'; S.modal = true; }
+})();
 
 render();
+updatePageTitle();
+updateMetaDescription();
+updateStructuredData();
 trackEvent('session_start', { referrer: document.referrer || 'direct', landing: S.page || 'home' });
 loadUserSubmissions(); // Load user-submitted landlords & properties from Supabase
 
