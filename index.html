@@ -1324,6 +1324,16 @@ const go = u => {
     _lastTrackedPage = pageKey;
     trackEvent('page_view', { page: currentPage, detail: S.detail || null });
   }
+  // Track dwell time when leaving a landlord detail page
+  if (S.page === 'detail' && S.detail && u.page && u.page !== 'detail') {
+    var dwellMs = Date.now() - (window._detailEnterTime || Date.now());
+    if (dwellMs > 2000) trackEvent('detail_dwell', { landlord_id: S.detail, seconds: Math.round(dwellMs/1000) });
+  }
+  if (u.page === 'detail' || (u.detail && u.detail !== S.detail)) window._detailEnterTime = Date.now();
+  // Track review form abandonment (opened modal but closing without submit)
+  if ('modal' in u && !u.modal && S.modal && S.stars === 0) {
+    trackEvent('review_form_abandoned', { landlord_id: S.detail || null, had_stars: S.stars > 0, had_text: !!(S.formData && S.formData['rev-text']) });
+  }
   // If closing modal, clear form state and tags
   if ('modal' in u && !u.modal) { S.posTags = []; S.negTags = []; S.formData = {}; }
   render();
@@ -2178,7 +2188,7 @@ function ResultCard(l) {
     </div>
     <div class="result-body">
       <div class="result-name">${esc(l.name)}</div>
-      <div class="result-sub">${isNew ? 'No reviews yet — be the first!' : l.reviews+' student review'+(l.reviews!==1?'s':'')}</div>
+      <div class="result-sub">${isNew ? 'No reviews yet — be the first!' : l.reviews >= 3 ? l.reviews+' student review'+(l.reviews!==1?'s':'') : 'Student-reviewed'}</div>
       ${isNew ? `<div class="result-metrics"><div class="result-metric"><span style="color:#6B7280">Be the first to review this landlord!</span></div></div>` : `<div class="result-metrics">
         <div class="result-metric"><strong style="color:${l.scores.maintenance > 0 ? scoreColor(l.scores.maintenance) : '#6B7280'}">${l.scores.maintenance > 0 ? l.scores.maintenance.toFixed(1) : '—'}</strong><span>Maintenance</span></div>
         <div class="result-metric"><strong style="color:${l.scores.communication > 0 ? scoreColor(l.scores.communication) : '#6B7280'}">${l.scores.communication > 0 ? l.scores.communication.toFixed(1) : '—'}</strong><span>Communication</span></div>
@@ -2204,7 +2214,7 @@ function ResultCard(l) {
     <div class="result-side">
       <div class="would-rent" style="color:${isNew?'#6B7280':l.wouldRent>=50?'#16A34A':'#DC2626'}">${isNew?'—':l.wouldRent+'%'}</div>
       <div class="would-rent-label">would rent<br>again</div>
-      ${avgPrice ? `<div class="result-price">~$${avgPrice}<span>/mo</span></div><div style="font-size:10px;color:#9CA3AF;text-align:center">from ${landlordReviews.length} review${landlordReviews.length!==1?'s':''}</div>` : ''}
+      ${avgPrice ? `<div class="result-price">~$${avgPrice}<span>/mo</span></div>${landlordReviews.length >= 3 ? `<div style="font-size:10px;color:#9CA3AF;text-align:center">from ${landlordReviews.length} reviews</div>` : ''}` : ''}
     </div>
   </div>`;
 }
@@ -2297,7 +2307,7 @@ function DetailPage() {
         </div>
         <div class="detail-info">
           <h1>${esc(l.name)}</h1>
-          <div class="subtitle">${l.reviews===0?'No ratings yet':l.reviews+' student rating'+(l.reviews!==1?'s':'')} · Response rate: ${l.responseRate}</div>
+          <div class="subtitle">${l.reviews===0?'No ratings yet':l.reviews >= 3 ? l.reviews+' student rating'+(l.reviews!==1?'s':'') : 'Student-reviewed'} · Response rate: ${l.responseRate}</div>
           ${l.reviews===0 ? `<div style="color:rgba(255,255,255,0.4);font-size:14px;margin:12px 0">No reviews yet — scores will appear after students submit reviews.</div>` : `<div class="detail-sub-scores">
             ${Object.entries(l.scores).map(([k,v]) => `
               <div class="sub-score">
@@ -2356,7 +2366,7 @@ function DetailPage() {
             <div class="review-score-q">${qLabel(r.rating)}</div>
           </div>
           <div class="review-content">
-            <div class="review-meta"><strong>${esc(r.author)}</strong> · ${esc(r.date)} · ${r.wouldRent ? '<span style="color:#16A34A;font-weight:600">Would rent again</span>' : '<span style="color:#DC2626;font-weight:600">Would NOT rent again</span>'}${isValidRent(r.monthlyRent) ? ' · <span style="color:#2563EB;font-weight:600">$'+r.monthlyRent+'/mo</span>' : ''}</div>
+            <div class="review-meta"><strong>${esc(r.author)}</strong>${r.author === 'Verified Illini' ? ' <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style="display:inline-block;vertical-align:-2px;margin-left:2px"><circle cx="12" cy="12" r="12" fill="#1DA1F2"/><path d="M9.5 12.5l2 2 4-5" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>' : ''} · ${esc(r.date)} · ${r.wouldRent ? '<span style="color:#16A34A;font-weight:600">Would rent again</span>' : '<span style="color:#DC2626;font-weight:600">Would NOT rent again</span>'}${isValidRent(r.monthlyRent) ? ' · <span style="color:#2563EB;font-weight:600">$'+r.monthlyRent+'/mo</span>' : ''}</div>
             <div class="review-property">${esc(r.property)}</div>
             <div class="review-text">${esc(r.text)}</div>
             <div class="review-tags">
@@ -2394,7 +2404,14 @@ function DetailPage() {
         }).join('');
     })()}
 
-    <div class="promo" style="margin-top:32px">
+    <div style="margin-top:40px;padding:28px;background:var(--card-bg);border:1px solid var(--border);border-radius:14px;text-align:center">
+      <div style="font-size:24px;margin-bottom:8px">🏠</div>
+      <h3 style="font-size:17px;font-weight:800;margin:0 0 6px;color:var(--text)">${revs.length > 0 ? 'Rented from ' + esc(l.name) + '?' : 'Lived here?'}</h3>
+      <p style="font-size:13.5px;color:var(--muted);margin:0 0 16px;line-height:1.5">Your review helps other students make better decisions. Takes 60 seconds.</p>
+      <button onclick="trackEvent('lived_here_cta',{landlord_id:${l.id},landlord:'${esc(l.name)}'});go({modal:true,stars:0,wouldRentChoice:null,posTags:[],negTags:[],formData:{}})" style="padding:12px 28px;background:var(--orange);color:white;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:transform 0.15s" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform=''">Leave a Review</button>
+    </div>
+
+    <div class="promo" style="margin-top:20px">
       <div><h3>Lease Red Flag Scanner</h3><p>Upload your lease PDF or paste the text. We'll flag clauses worth reviewing before you sign.</p></div>
       <button onclick="trackScannerEvent('cta_click',{source:'detail_promo'});go({page:'scanner'})">Scan My Lease</button>
     </div>
@@ -2675,8 +2692,12 @@ function Modal() {
       </div>
 
       <div class="field">
-        <label>Verify you're a student (optional, adds trust badge)</label>
-        <input type="email" id="rev-email" placeholder="netid@illinois.edu" />
+        <label>Email <span style="font-weight:400;color:var(--muted)">(optional)</span></label>
+        <div style="display:flex;align-items:center;gap:8px">
+          <input type="email" id="rev-email" placeholder="netid@illinois.edu" style="flex:1" oninput="updateVerifyHint(this.value)" />
+          <span id="verify-badge-preview" style="display:none;font-size:11px;font-weight:700;color:#16A34A;white-space:nowrap;padding:4px 10px;background:rgba(22,163,74,0.1);border-radius:6px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" style="display:inline-block;vertical-align:-1px;margin-right:3px"><circle cx="12" cy="12" r="12" fill="#1DA1F2"/><path d="M9.5 12.5l2 2 4-5" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Verified Illini</span>
+        </div>
+        <p id="verify-hint" style="font-size:11px;color:var(--muted);margin-top:4px">Use your @illinois.edu email to get a <strong style="color:#16A34A">Verified Illini</strong> badge on your review. Any email works, or leave blank.</p>
       </div>
 
       <div class="field" style="background:#FFF7ED;border:1px solid #FED7AA;border-radius:8px;padding:12px 14px">
@@ -3681,6 +3702,19 @@ function closeModal() {
   go({modal:false, stars:0, wouldRentChoice:null});
 }
 
+function updateVerifyHint(val) {
+  var badge = document.getElementById('verify-badge-preview');
+  var hint = document.getElementById('verify-hint');
+  if (!badge || !hint) return;
+  if (val.trim().toLowerCase().endsWith('@illinois.edu')) {
+    badge.style.display = 'inline-block';
+    hint.innerHTML = 'Your review will show a <strong style="color:#16A34A">Verified Illini</strong> badge. Email is never displayed publicly.';
+  } else {
+    badge.style.display = 'none';
+    hint.innerHTML = 'Use your @illinois.edu email to get a <strong style="color:#16A34A">Verified Illini</strong> badge on your review. Any email works, or leave blank.';
+  }
+}
+
 function toggleTag(type, tag) {
   if (type === 'pos') {
     if (S.posTags.includes(tag)) S.posTags = S.posTags.filter(t => t !== tag);
@@ -3883,26 +3917,18 @@ async function submitReview(landlordIdFromDetail) {
   const propCustom = document.getElementById('rev-property-custom')?.value?.trim() || '';
   if (!propCustom) { toast('Please type your property address.'); return; }
 
-  // Soft mismatch warning — never blocks, just asks "are you sure?"
+  // Soft mismatch warning — only warns if address is known to belong to a DIFFERENT landlord
   if (!isCustomLandlord && propCustom.length >= 4) {
     const addrMatch = matchAddressToLandlord(propCustom);
     if (addrMatch && addrMatch.landlordId !== landlordId && addrMatch.source === 'verified') {
       const proceed = confirm(
-        'Heads up: "' + propCustom + '" is typically managed by ' + addrMatch.landlordName +
-        ', but you selected ' + landlordName + '.\n\n' +
-        'Click OK to submit anyway, or Cancel to go back and change the landlord.'
+        'Heads up: "' + propCustom + '" is usually managed by ' + addrMatch.landlordName +
+        '. You selected ' + landlordName + '.\n\n' +
+        'OK to submit as-is, or Cancel to change.'
       );
       if (!proceed) return;
     }
-    // Unverified-address warning — when address doesn't match ANY known property
-    if (!addrMatch) {
-      const proceed = confirm(
-        'We couldn\'t verify "' + propCustom + '" as a known property for any landlord in our database.\n\n' +
-        'Please double-check that the address is correct and spelled properly (e.g. "309 E Green St").\n\n' +
-        'Click OK to submit anyway, or Cancel to go back and fix it.'
-      );
-      if (!proceed) return;
-    }
+    // No warning for unknown addresses — we don't have every property mapped
   }
 
   const text = document.getElementById('rev-text')?.value?.trim();
@@ -4059,14 +4085,52 @@ function toggleReport(reviewId, btn) {
     btn.style.color = '';
     btn.innerHTML = 'Report';
     toast('Report removed.');
-  } else {
-    reported[reviewId] = true;
-    localStorage.setItem('ratemycrib_reported', JSON.stringify(reported));
-    btn.style.borderColor = '#DC2626';
-    btn.style.color = '#DC2626';
-    btn.innerHTML = 'Reported';
-    toast('Review reported. We\'ll look into it.');
+    return;
   }
+  // Show report reason modal
+  var overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px';
+  overlay.innerHTML = '<div style="background:var(--card-bg);border:1px solid var(--border);border-radius:14px;padding:28px;max-width:380px;width:100%;font-family:inherit">' +
+    '<h3 style="margin:0 0 6px;font-size:18px;font-weight:800;color:var(--text)">Report Review</h3>' +
+    '<p style="font-size:13px;color:var(--muted);margin:0 0 18px">Why are you reporting this review?</p>' +
+    '<div id="report-reasons" style="display:flex;flex-direction:column;gap:8px">' +
+      ['Fake or spam','Inappropriate language','Not about this landlord','Landlord/owner posting','Contains personal information'].map(r =>
+        '<button onclick="submitReport(\'' + reviewId + '\',\'' + r + '\',this)" style="padding:12px 16px;background:transparent;border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;font-weight:500;cursor:pointer;text-align:left;font-family:inherit;transition:all 0.15s" onmouseover="this.style.borderColor=\'#DC2626\';this.style.color=\'#DC2626\'" onmouseout="this.style.borderColor=\'var(--border)\';this.style.color=\'var(--text)\'">' + r + '</button>'
+      ).join('') +
+    '</div>' +
+    '<button onclick="this.closest(\'div\').parentElement.remove()" style="width:100%;margin-top:12px;padding:10px;background:transparent;border:none;color:var(--muted);font-size:13px;cursor:pointer;font-family:inherit">Cancel</button>' +
+  '</div>';
+  overlay.addEventListener('click', function(e) { if (e.target === overlay) overlay.remove(); });
+  document.body.appendChild(overlay);
+}
+
+async function submitReport(reviewId, reason, btn) {
+  // Close modal
+  var overlay = btn.closest('div').parentElement.parentElement;
+  if (overlay) overlay.remove();
+  // Save locally
+  var reported = loadReported();
+  reported[reviewId] = reason;
+  localStorage.setItem('ratemycrib_reported', JSON.stringify(reported));
+  // Update button in the review
+  var reportBtns = document.querySelectorAll('.review-actions button:last-child');
+  reportBtns.forEach(function(b) {
+    if (b.getAttribute('onclick') && b.getAttribute('onclick').includes(reviewId)) {
+      b.style.borderColor = '#DC2626';
+      b.style.color = '#DC2626';
+      b.innerHTML = 'Reported';
+    }
+  });
+  // Send to Supabase
+  try {
+    await db.from('reported_reviews').insert({
+      review_id: reviewId,
+      reason: reason,
+      reported_at: new Date().toISOString(),
+      user_agent: navigator.userAgent.substring(0, 200)
+    });
+  } catch(e) { console.error('Report failed:', e); }
+  toast('Thanks — we\'ll review this.');
 }
 
 function copyShareLink() {
@@ -4421,7 +4485,7 @@ function updatePageTitle() {
     var l = findLandlord(S.detail);
     if (l) {
       var stats = getLandlordStats(l);
-      var ratingText = stats.reviews > 0 ? ' — ' + stats.rating.toFixed(1) + '/5 (' + stats.reviews + ' reviews)' : '';
+      var ratingText = stats.reviews >= 3 ? ' — ' + stats.rating.toFixed(1) + '/5 (' + stats.reviews + ' reviews)' : stats.reviews > 0 ? ' — ' + stats.rating.toFixed(1) + '/5' : '';
       document.title = l.name + ' Reviews' + ratingText + ' | ' + base;
       return;
     }
@@ -4443,8 +4507,10 @@ function updateMetaDescription() {
     var l = findLandlord(S.detail);
     if (l) {
       var stats = getLandlordStats(l);
-      if (stats.reviews > 0) {
+      if (stats.reviews >= 3) {
         meta.content = 'Read ' + stats.reviews + ' student reviews of ' + l.name + '. Rated ' + stats.rating.toFixed(1) + '/5 for maintenance, communication, fairness, and move-out. ' + stats.wouldRent + '% would rent again.';
+      } else if (stats.reviews > 0) {
+        meta.content = 'Student reviews of ' + l.name + '. Rated ' + stats.rating.toFixed(1) + '/5 for maintenance, communication, fairness, and move-out on RateMyCrib.';
       } else {
         meta.content = l.name + ' — UIUC landlord on RateMyCrib. Be the first to leave a review and help other students.';
       }
