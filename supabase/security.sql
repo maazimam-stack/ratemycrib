@@ -10,7 +10,7 @@
 -- After running it:
 --   * The public reads reviews and addresses only through two views: reviews_public and user_properties_public.
 --     They leave out device fingerprints and strip unit numbers ("608 E University Ave, Apt 1616" -> "608 E University Ave").
---   * The public can add a review but never edit or delete one. "Helpful" goes through adjust_helpful(), which
+--   * The public can add a review but never edit or delete one, directly or through the views. "Helpful" goes through adjust_helpful(), which
 --     can only move helpful_count up or down by 1.
 --   * site_events, scanner_interest and reported_reviews are write-only for the public.
 --   * New reviews must have a rating of 1-5, 20-5,000 characters of text and start at 0 helpful votes.
@@ -45,17 +45,31 @@ as $$
 $$;
 
 -- 2. Public views: only what the site shows
-create or replace view public.reviews_public as
-  select id, landlord_id, landlord_name, public.rmc_strip_unit(property) as property, author,
-         rating, would_rent, review_text, positive_tags, negative_tags, helpful_count, created_at,
-         monthly_rent, hood_name, hood_safety, hood_walkability, hood_quiet, hood_nightlife,
-         score_maintenance, score_communication, score_fairness, score_move_out
-  from public.reviews;
-  -- device_fingerprint is deliberately left out
+-- Created only if missing: supabase/growth.sql replaces reviews_public with a newer version (badge + held reviews),
+-- and re-running this file must not undo that.
+do $$
+begin
+  if to_regclass('public.reviews_public') is null then
+    create view public.reviews_public as
+      select id, landlord_id, landlord_name, public.rmc_strip_unit(property) as property, author,
+             rating, would_rent, review_text, positive_tags, negative_tags, helpful_count, created_at,
+             monthly_rent, hood_name, hood_safety, hood_walkability, hood_quiet, hood_nightlife,
+             score_maintenance, score_communication, score_fairness, score_move_out
+      from public.reviews;
+      -- device_fingerprint is deliberately left out
+  end if;
+  if to_regclass('public.user_properties_public') is null then
+    create view public.user_properties_public as
+      select id, public.rmc_strip_unit(address) as address, landlord_name, hood_name, submitted_at
+      from public.user_properties;
+  end if;
+end $$;
 
-create or replace view public.user_properties_public as
-  select id, public.rmc_strip_unit(address) as address, landlord_name, hood_name, submitted_at
-  from public.user_properties;
+-- The views run as their owner, so table permissions and row-level security don't apply through them.
+-- Supabase gives anon/authenticated ALL privileges on every new view by default; without this revoke anyone
+-- with the public key could edit or delete reviews through reviews_public (found and fixed Oct 29, 2026).
+revoke insert, update, delete, truncate, references, trigger
+  on public.reviews_public, public.user_properties_public from anon, authenticated, public;
 
 -- 3. "Helpful" votes: +1 or -1 only, never below 0, nothing else about the review can change
 create or replace function public.adjust_helpful(p_review_id text, p_delta integer)
@@ -148,6 +162,9 @@ commit;
 --        case when not has_table_privilege('anon', 'public.reviews', 'DELETE') then 'ok' else 'PROBLEM' end
 -- union all select 'reviews_public: public can read',
 --        case when has_table_privilege('anon', 'public.reviews_public', 'SELECT') then 'ok' else 'PROBLEM' end
+-- union all select 'reviews_public: public cannot edit through the view',
+--        case when not has_table_privilege('anon', 'public.reviews_public', 'UPDATE')
+--              and not has_table_privilege('anon', 'public.reviews_public', 'DELETE') then 'ok' else 'PROBLEM' end
 -- union all select 'waitlist emails: public cannot read',
 --        case when not has_table_privilege('anon', 'public.scanner_interest', 'SELECT') then 'ok' else 'PROBLEM' end
 -- union all select 'tables with row-level security OFF: ' || coalesce(string_agg(c.relname, ', '), 'none'),
