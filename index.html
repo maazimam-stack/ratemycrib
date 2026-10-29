@@ -477,6 +477,21 @@
   /* ===== NEIGHBORHOODS ===== */
   /* ===== BROWSE BY STREET ===== */
   .street-chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 8px; }
+  /* Verified Illini */
+  .verify-box { border: 1.5px solid var(--border); padding: 12px 14px; border-radius: 2px; }
+  .verify-done { border-color: var(--green); background: rgba(22,163,74,0.06); }
+  .verify-title { display: block; font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+  .verify-opt { font-weight: 400; color: var(--muted); }
+  .verify-row { display: flex; gap: 8px; margin-top: 8px; }
+  .verify-row input { flex: 1; min-width: 0; }
+  .verify-btn { min-height: 44px; padding: 8px 16px; border: none; border-radius: 2px; background: var(--brand-navy); color: #fff; font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+  [data-theme="dark"] .verify-btn { background: var(--orange); }
+  .verify-btn[disabled] { opacity: 0.6; cursor: wait; }
+  .verify-msg { font-size: 12px; color: var(--muted); line-height: 1.5; margin-top: 6px; }
+  .verify-err { color: var(--red); font-weight: 600; }
+  .verify-link { background: none; border: none; padding: 0; font: inherit; color: var(--text); text-decoration: underline; cursor: pointer; }
+  .verified-filter { min-height: 36px; padding: 6px 12px; border: 1.5px solid var(--border); border-radius: 2px; background: transparent; color: var(--text); font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
+  .verified-filter.on { border-color: #1DA1F2; background: rgba(29,161,242,0.1); }
   /* Near your classes */
   .near-classes { border: 1.5px solid var(--border); border-top: 4px solid var(--orange); background: var(--card-bg); padding: 20px 20px 16px; margin-bottom: 28px; }
   .near-classes h3 { font-family: var(--font-display); font-size: 22px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.02em; margin-bottom: 14px; }
@@ -931,7 +946,50 @@ try {
 // ===== SUPABASE =====
 const SUPABASE_URL = 'https://expfrmknhdcwnccqjwnq.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV4cGZybWtuaGRjd25jY3Fqd25xIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwNTgyNjksImV4cCI6MjA4OTYzNDI2OX0.IDoYSa-Xpq_TAebacsl_TuI9u48ssia7imjG0ehB9Jg';
-const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { persistSession: false, detectSessionInUrl: false } });
+
+// ===== ANALYTICS (first-party, no cookies) =====
+// Each event carries: a random visitor ID that resets every calendar month (so nobody can be followed over
+// time), a random ID for this tab's visit, and where the visit came from. No names, emails, IP addresses or
+// full browser strings. Browsers that send Global Privacy Control or Do Not Track get no visitor ID at all.
+// Neither ID is ever sent with a review or with the "review posted" event.
+function _rid() {
+  try { const a = new Uint8Array(8); crypto.getRandomValues(a); return Array.from(a, b => b.toString(16).padStart(2, '0')).join(''); }
+  catch (e) { return Math.random().toString(16).slice(2, 18); }
+}
+function trafficSource() {
+  let q = null; try { q = new URLSearchParams(location.search); } catch (e) {}
+  const tag = q && (q.get('utm_source') || q.get('ref') || q.get('src'));
+  if (tag) return tag.toLowerCase().replace(/[^a-z0-9_.-]/g, '').slice(0, 40) || 'other site';
+  let host = ''; try { host = document.referrer ? new URL(document.referrer).hostname.toLowerCase() : ''; } catch (e) {}
+  if (!host || host === location.hostname || /(^|\.)ratemycrib\.net$/.test(host)) return 'direct';
+  const known = [[/reddit/, 'reddit'], [/google\./, 'google'], [/instagram/, 'instagram'], [/facebook|^fb\.|messenger/, 'facebook'],
+    [/^t\.co$|twitter|^x\.com$/, 'x'], [/tiktok/, 'tiktok'], [/linkedin|lnkd\.in/, 'linkedin'], [/groupme/, 'groupme'],
+    [/snapchat/, 'snapchat'], [/discord/, 'discord'], [/illinois\.edu$/, 'illinois.edu'], [/bing\.|duckduckgo|yahoo\.|ecosia|search\.brave/, 'other search']];
+  const hit = known.find(k => k[0].test(host));
+  return hit ? hit[1] : 'other site';
+}
+function deviceClass() {
+  const ua = navigator.userAgent || '';
+  if (/iPad|Tablet|Android(?!.*Mobile)/i.test(ua)) return 'tablet';
+  return /Mobi|iPhone|Android/i.test(ua) ? 'mobile' : 'desktop';
+}
+const ANALYTICS = (function () {
+  const optOut = navigator.globalPrivacyControl === true || navigator.doNotTrack === '1' || window.doNotTrack === '1';
+  const month = new Date().toISOString().slice(0, 7);
+  let vid = null, sid = null, src = null, isNew = false;
+  if (!optOut) {
+    try {
+      const v = JSON.parse(localStorage.getItem('rmc-vid') || 'null');
+      if (v && v.m === month && v.id) vid = v.id;
+      else { vid = _rid(); localStorage.setItem('rmc-vid', JSON.stringify({ m: month, id: vid })); }
+    } catch (e) { vid = null; }
+  }
+  try { sid = sessionStorage.getItem('rmc-sid'); src = sessionStorage.getItem('rmc-src'); } catch (e) {}
+  if (!sid) { sid = _rid(); isNew = true; try { sessionStorage.setItem('rmc-sid', sid); } catch (e) {} }
+  if (!src) { src = trafficSource(); try { sessionStorage.setItem('rmc-src', src); } catch (e) {} }
+  return { vid, sid, src, isNew };
+})();
 // supabase/security.sql locks the raw tables and adds safe views (reviews_public, user_properties_public)
 // and adjust_helpful(). Until it has been run, those don't exist yet, so reads and votes fall back to the
 // old direct calls. After it has been run, the fallbacks are never reached.
@@ -1429,6 +1487,7 @@ async function saveReviewToDb(review) {
     if (review.scoreFairness > 0) row.score_fairness = review.scoreFairness;
     if (review.scoreMoveOut > 0) row.score_move_out = review.scoreMoveOut;
     const { error } = await db.from('reviews').insert(row);
+    if (error && (error.hint === 'already_reviewed' || error.hint === 'rate_limited')) { toast(error.message); return 'shown'; }
     if (error) throw error;
     markReviewedLandlord(review.landlordId);
     await loadDbReviews(); // reload to get the new review with server-assigned id
@@ -1514,7 +1573,7 @@ let go = u => {
 };
 
 function saveFormState() {
-  const ids = ['rev-landlord','rev-landlord-custom','rev-property-custom','rev-hood-select','rev-lease-start','rev-lease-end','rev-rent','rev-text','rev-email','rev-certify','rev-hood-safety','rev-hood-walk','rev-hood-quiet','rev-hood-nightlife','rev-score-maintenance','rev-score-communication','rev-score-fairness','rev-score-moveout'];
+  const ids = ['rev-landlord','rev-landlord-custom','rev-property-custom','rev-hood-select','rev-lease-start','rev-lease-end','rev-rent','rev-text','rev-verify-email','rev-verify-code','rev-certify','rev-hood-safety','rev-hood-walk','rev-hood-quiet','rev-hood-nightlife','rev-score-maintenance','rev-score-communication','rev-score-fairness','rev-score-moveout'];
   const fd = {};
   ids.forEach(id => {
     const el = document.getElementById(id);
@@ -2576,9 +2635,10 @@ function DetailPage() {
   <div class="reviews-section">
     <div class="reviews-header">
       <h2>${revs.length} Student Review${revs.length!==1?'s':''}</h2>
+      ${revs.some(r => r.author === 'Verified Illini') ? `<button type="button" class="verified-filter${S.verifiedOnly ? ' on' : ''}" aria-pressed="${!!S.verifiedOnly}" onclick="trackEvent('verified_filter',{on:${!S.verifiedOnly}});go({verifiedOnly:${!S.verifiedOnly}})">Verified only (${revs.filter(r => r.author === 'Verified Illini').length})</button>` : ''}
       <button class="write-btn" onclick="trackEvent('review_modal_open',{landlord_id:S.detail});go({modal:true,stars:0,wouldRentChoice:null,posTags:[],negTags:[],formData:{}})">+ Review This Landlord</button>
     </div>
-    ${revs.map(r => {
+    ${revs.filter(r => !S.verifiedOnly || r.author === 'Verified Illini').map(r => {
       const rq = qClass(r.rating);
       const isHelped = helped[r.id];
       return `<div class="review-item">
@@ -3346,7 +3406,7 @@ function Modal() {
       <details class="rev-details" id="rev-details" ${S.revDetailsOpen ? 'open' : ''} ontoggle="S.revDetailsOpen = this.open">
         <summary>
           <span class="rev-details-title">Add details (optional)</span>
-          <span class="rev-details-hint">Area scores, rent, lease dates, tags, Verified Illini badge</span>
+          <span class="rev-details-hint">Area scores, rent, lease dates, tags</span>
         </summary>
         <div class="rev-details-body">
       <div class="field">
@@ -3425,17 +3485,11 @@ function Modal() {
         </div>
       </div>
 
-      <div class="field">
-        <label>Email <span style="font-weight:400;color:var(--muted)">(optional)</span></label>
-        <div style="display:flex;align-items:center;gap:8px">
-          <input type="email" id="rev-email" placeholder="netid@illinois.edu" style="flex:1" oninput="updateVerifyHint(this.value)" />
-          <span id="verify-badge-preview" style="display:none;font-size:11px;font-weight:700;color:#16A34A;white-space:nowrap;padding:4px 10px;background:rgba(22,163,74,0.1);border-radius: 2px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" style="display:inline-block;vertical-align:-1px;margin-right:3px"><circle cx="12" cy="12" r="12" fill="#1DA1F2"/><path d="M9.5 12.5l2 2 4-5" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Verified Illini</span>
-        </div>
-        <p id="verify-hint" style="font-size:11px;color:var(--muted);margin-top:4px">Use your @illinois.edu email to get a <strong style="color:#16A34A">Verified Illini</strong> badge on your review. Any email works, or leave blank.</p>
-      </div>
 
         </div>
       </details>
+
+      ${VerifyBlockHTML()}
 
       <div class="field" style="background:#FFF7ED;border:1px solid #FED7AA;border-radius: 2px;padding:12px 14px">
         <label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer;margin:0">
@@ -3445,7 +3499,7 @@ function Modal() {
       </div>
 
       <button class="submit-btn" onclick="submitReview(${l?l.id:'null'})" ${S.stars===0?'disabled':''}>Submit My Review</button>
-      <p class="note">Reviews are anonymous. Email is only used for verification, never displayed.</p>
+      <p class="note">Reviews are anonymous. If you verify, your email is used only to send the code and is deleted when your review posts.</p>
     </div>
   </div>`;
 }
@@ -3676,13 +3730,18 @@ async function trackScannerEvent(eventType, metadata = {}) {
 
 async function trackEvent(eventType, metadata = {}) {
   try {
+    // The "review posted" event carries no visitor or visit ID, so it can't be joined to the rest of a visit
+    const meta = Object.assign({}, metadata, { _src: ANALYTICS.src });
+    if (eventType !== 'review_submitted') { meta._s = ANALYTICS.sid; if (ANALYTICS.vid) meta._v = ANALYTICS.vid; }
+    let refOrigin = null;
+    try { refOrigin = eventType === 'session_start' && document.referrer ? new URL(document.referrer).origin : null; } catch (e) {}
     await db.from('site_events').insert({
       event_type: eventType,
-      metadata: metadata,
+      metadata: meta,
       page: S.page || 'home',
       created_at: new Date().toISOString(),
-      user_agent: navigator.userAgent,
-      referrer: document.referrer || null,
+      user_agent: deviceClass(), // "mobile" / "tablet" / "desktop" only
+      referrer: refOrigin,       // e.g. https://www.reddit.com (never the full address)
       screen: window.innerWidth + 'x' + window.innerHeight
     });
   } catch(e) {
@@ -4415,10 +4474,6 @@ function clearSearch() {
 var _searchTrackTimer = null;
 function filterLandlordCards(query) {
   S.search = query;
-  if (query.length >= 3) {
-    clearTimeout(_searchTrackTimer);
-    _searchTrackTimer = setTimeout(function() { trackEvent('search', { query: query }); }, 800);
-  }
   var q = query.toLowerCase().trim();
   var cards = document.querySelectorAll('.result-card[data-lname]');
   var visible = 0;
@@ -4431,6 +4486,10 @@ function filterLandlordCards(query) {
       card.style.display = 'none';
     }
   });
+  if (q.length >= 3) {
+    clearTimeout(_searchTrackTimer);
+    _searchTrackTimer = setTimeout(function() { trackEvent('search', { query: q.slice(0, 60), results: visible }); }, 800);
+  }
   // Update count text
   var countEl = document.getElementById('results-count');
   if (countEl && q) {
@@ -4446,17 +4505,79 @@ document.addEventListener('keydown', function(e) {
   if (e.key === 'Escape' && S.modal) closeModal();
 });
 
-function updateVerifyHint(val) {
-  var badge = document.getElementById('verify-badge-preview');
-  var hint = document.getElementById('verify-hint');
-  if (!badge || !hint) return;
-  if (val.trim().toLowerCase().endsWith('@illinois.edu')) {
-    badge.style.display = 'inline-block';
-    hint.innerHTML = 'Your review will show a <strong style="color:#16A34A">Verified Illini</strong> badge. Email is never displayed publicly.';
-  } else {
-    badge.style.display = 'none';
-    hint.innerHTML = 'Use your @illinois.edu email to get a <strong style="color:#16A34A">Verified Illini</strong> badge on your review. Any email works, or leave blank.';
+// ===== VERIFIED ILLINI =====
+// A 6-digit code goes to the student's @illinois.edu inbox (Supabase Auth). Proving the code gives this tab a
+// short sign-in that lives in memory only. When the review posts, the database marks it verified and deletes
+// that sign-in, so no email is kept. The badge can't be set from the browser.
+const VERIFY_DOMAIN = '@illinois.edu';
+function VerifyBlockHTML() {
+  const v = S.verify || { stage: 'idle' };
+  const badge = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true" style="display:inline-block;vertical-align:-2px;margin-right:4px"><circle cx="12" cy="12" r="12" fill="#1DA1F2"/><path d="M9.5 12.5l2 2 4-5" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  const msg = v.error ? '<p class="verify-msg verify-err" role="alert">' + esc(v.error) + '</p>' : '';
+  if (v.stage === 'verified') {
+    return '<div class="field verify-box verify-done"><p class="verify-title">' + badge + 'Verified as ' + esc(v.email) + '</p>' +
+      '<p class="verify-msg">Your review will carry the Verified Illini badge. We delete this sign-in as soon as it posts. ' +
+      '<button type="button" class="verify-link" onclick="undoVerify()">Undo</button></p></div>';
   }
+  if (v.stage === 'sent') {
+    return '<div class="field verify-box"><label for="rev-verify-code" class="verify-title">Enter the 6-digit code we emailed to ' + esc(v.email) + '</label>' +
+      '<div class="verify-row"><input type="text" id="rev-verify-code" inputmode="numeric" autocomplete="one-time-code" maxlength="10" placeholder="123456" onkeydown="if(event.key===\'Enter\'){event.preventDefault();checkVerifyCode()}" />' +
+      '<button type="button" class="verify-btn" onclick="checkVerifyCode()"' + (v.busy ? ' disabled' : '') + '>' + (v.busy ? 'Checking…' : 'Verify') + '</button></div>' + msg +
+      '<p class="verify-msg">It can take a minute; check Junk too. <button type="button" class="verify-link" onclick="changeVerifyEmail()">Use a different email</button> · ' +
+      '<button type="button" class="verify-link" onclick="sendVerifyCode(true)">Send a new code</button></p></div>';
+  }
+  return '<div class="field verify-box"><label for="rev-verify-email" class="verify-title">' + badge + 'Get the Verified Illini badge <span class="verify-opt">(optional, recommended)</span></label>' +
+    '<p class="verify-msg">Verified reviews carry more weight with readers and keep fake reviews out. We email you a code. Your email is never shown, and we delete it when your review posts.</p>' +
+    '<div class="verify-row"><input type="email" id="rev-verify-email" autocomplete="email" placeholder="netid@illinois.edu" value="' + esc(v.email || '') + '" onkeydown="if(event.key===\'Enter\'){event.preventDefault();sendVerifyCode()}" />' +
+    '<button type="button" class="verify-btn" onclick="sendVerifyCode()"' + (v.busy ? ' disabled' : '') + '>' + (v.busy ? 'Sending…' : 'Send code') + '</button></div>' + msg + '</div>';
+}
+function verifyRender(patch) {
+  saveFormState();
+  S.verify = Object.assign({}, S.verify || {}, patch);
+  go({});
+}
+function changeVerifyEmail() { verifyRender({ stage: 'idle', error: '' }); }
+async function sendVerifyCode(again) {
+  const input = document.getElementById('rev-verify-email');
+  const email = ((input ? input.value : (S.verify && S.verify.email)) || '').trim().toLowerCase();
+  if (!/^[^\s@]+@illinois\.edu$/.test(email)) {
+    verifyRender({ stage: 'idle', email, error: 'Use your @illinois.edu address (like netid@illinois.edu).' });
+    return;
+  }
+  verifyRender({ stage: again ? 'sent' : 'idle', email, busy: true, error: '' });
+  let error = null;
+  try { ({ error } = await db.auth.signInWithOtp({ email, options: { shouldCreateUser: true } })); } catch (e) { error = e; }
+  if (error) {
+    const status = error.status || 0;
+    const reason = status === 429 || /rate|seconds/i.test(error.message || '') ? 'rate_limited' : 'send_failed';
+    trackEvent('verify_failed', { reason, status });
+    verifyRender({ stage: again ? 'sent' : 'idle', busy: false, error: reason === 'rate_limited'
+      ? 'Too many codes asked for. Wait a minute, then try again.'
+      : "We couldn't send a code right now. You can still post without the badge, or try again later." });
+    return;
+  }
+  trackEvent('verify_code_sent', { again: !!again });
+  verifyRender({ stage: 'sent', email, busy: false, error: '' });
+  setTimeout(() => { const c = document.getElementById('rev-verify-code'); if (c) c.focus(); }, 50);
+}
+async function checkVerifyCode() {
+  const v = S.verify || {};
+  const token = ((document.getElementById('rev-verify-code') || {}).value || '').replace(/\D/g, '');
+  if (token.length < 6) { verifyRender({ error: 'Enter the 6-digit code from the email.' }); return; }
+  verifyRender({ busy: true, error: '' });
+  let error = null, data = null;
+  try { ({ data, error } = await db.auth.verifyOtp({ email: v.email, token, type: 'email' })); } catch (e) { error = e; }
+  if (error || !data || !data.session) {
+    trackEvent('verify_failed', { reason: 'bad_code' });
+    verifyRender({ busy: false, error: "That code didn't work. Use the newest email, or send a new code." });
+    return;
+  }
+  trackEvent('verify_success');
+  verifyRender({ stage: 'verified', busy: false, error: '' });
+}
+async function undoVerify() {
+  try { await db.auth.signOut(); } catch (e) {}
+  verifyRender({ stage: 'idle', busy: false, error: '' });
 }
 
 function toggleTag(type, tag) {
@@ -4684,7 +4805,6 @@ async function submitReview(landlordIdFromDetail) {
 
   const isCustomProperty = true;
   const property = propCustom || 'Not specified';
-  const email = document.getElementById('rev-email')?.value?.trim() || '';
   const leaseStart = document.getElementById('rev-lease-start')?.value || '';
   const leaseEnd = document.getElementById('rev-lease-end')?.value || '';
   const leasePeriod = (leaseStart && leaseEnd) ? leaseStart + ' – ' + leaseEnd : '';
@@ -4734,7 +4854,7 @@ async function submitReview(landlordIdFromDetail) {
   const review = {
     landlordId: landlordId,
     property: property,
-    author: email.endsWith('@illinois.edu') ? 'Verified Illini' : 'Anonymous Student',
+    author: 'Anonymous Student', // the database sets "Verified Illini" itself, only after a real email code
     rating: S.stars,
     wouldRent: S.wouldRentChoice === true,
     text: fullText,
@@ -4757,15 +4877,18 @@ async function submitReview(landlordIdFromDetail) {
   const btn = document.querySelector('.submit-btn');
   if (btn) { btn.disabled = true; btn.textContent = 'Submitting...'; }
 
+  const wasVerified = !!(S.verify && S.verify.stage === 'verified');
   const success = await saveReviewToDb(review);
-  if (success) {
+  if (success === true) {
+    if (wasVerified) { try { await db.auth.signOut(); } catch (e) {} }
+    S.verify = null;
     go({modal:false, stars:0, wouldRentChoice:null});
-    trackEvent('review_submitted', { landlord: landlordName, rating: review.rating });
+    trackEvent('review_submitted', { landlord_id: landlordId || null, landlord: landlordName, rating: review.rating, verified: wasVerified });
     launchConfetti();
     showSharePromptEnhanced(landlordName, review);
   } else {
     if (btn) { btn.disabled = false; btn.textContent = 'Submit My Review'; }
-    toast('Something went wrong. Try again.');
+    if (success !== 'shown') toast('Something went wrong. Try again.');
   }
 }
 
@@ -4925,12 +5048,12 @@ function TosPage() {
 function PrivacyPage() {
   return `<div style="background:var(--black);padding:48px 24px 40px;text-align:center">
     <h2 style="font-size:32px;font-weight:900;color:white;letter-spacing:-1px;margin-bottom:8px">Privacy Policy</h2>
-    <p style="color:rgba(255,255,255,0.5);font-size:15px">Last updated: March 2026</p>
+    <p style="color:rgba(255,255,255,0.5);font-size:15px">Last updated: October 29, 2026</p>
   </div>
   <div class="container" style="max-width:720px;line-height:1.8;font-size:15px">
-    <p style="margin-bottom:16px"><strong>1. What We Collect.</strong> When you submit a review, we collect: your review text, star rating, selected tags, property address, lease period, monthly rent, neighborhood ratings, and an optional email address. We also collect a device fingerprint (a hash of browser properties) solely to prevent duplicate reviews.</p>
-    <p style="margin-bottom:16px"><strong>2. What We Do NOT Collect.</strong> We do not use cookies for tracking. We do not sell your data. We do not collect your real name, IP address, or location. We do not use third-party analytics or advertising trackers.</p>
-    <p style="margin-bottom:16px"><strong>3. Email Addresses.</strong> If you provide an @illinois.edu email for verification, it is used solely to display a "Verified Illini" badge on your review. Your email is never shown publicly, shared with landlords, or used for marketing.</p>
+    <p style="margin-bottom:16px"><strong>1. What We Collect.</strong> When you submit a review, we collect: your review text, star rating, selected tags, property address, lease period, monthly rent and neighborhood ratings. We also collect a device fingerprint (a hash of browser properties) solely to prevent duplicate reviews. To count visits we log which pages are viewed, with a random visitor ID that resets every month, the kind of device (phone, tablet or computer) and the site that sent you (for example reddit.com). The visitor ID is never attached to a review.</p>
+    <p style="margin-bottom:16px"><strong>2. What We Do NOT Collect.</strong> We do not use cookies for tracking. We do not sell your data. We do not collect your real name, IP address, or location, and we do not keep your email. We do not use third-party analytics or advertising trackers.</p>
+    <p style="margin-bottom:16px"><strong>3. Email Verification.</strong> If you choose to verify, we email a one-time code to your @illinois.edu address through our database provider (Supabase). Once your review posts, the review is marked verified and your email is deleted; unused verifications are deleted within a few days. We keep only a one-way code (not your email) so each student can post one verified review per landlord. Your email is never shown publicly, shared with landlords, or used for marketing.</p>
     <p style="margin-bottom:16px"><strong>4. Device Fingerprint.</strong> We generate a simple hash from your browser properties (canvas rendering, screen size, timezone) to limit one review per landlord per device. This fingerprint cannot identify you personally and is not shared with third parties.</p>
     <p style="margin-bottom:16px"><strong>5. Lease Scanner.</strong> Text you paste into the Lease Scanner is processed entirely in your browser. It is never sent to our servers, stored, or shared with anyone.</p>
     <p style="margin-bottom:16px"><strong>6. Data Storage.</strong> Review data is stored in a Supabase (PostgreSQL) database with Row Level Security enabled. Access is restricted to the minimum needed for the Site to function.</p>
@@ -4939,7 +5062,7 @@ function PrivacyPage() {
     <p style="margin-bottom:16px"><strong>9. Children&rsquo;s Privacy.</strong> The Site is not intended for users under the age of 13. We do not knowingly collect personal information from children under 13. If we learn we have collected such data, we will delete it promptly.</p>
     <p style="margin-bottom:16px"><strong>10. Security.</strong> We implement reasonable technical and organizational measures to protect your data, including Row Level Security policies, encrypted connections (HTTPS/TLS), and limited database access. However, no system is 100% secure, and we cannot guarantee absolute security.</p>
     <p style="margin-bottom:16px"><strong>11. Your Rights.</strong> You may request access to, correction of, or deletion of your personal data by emailing us. Illinois residents may have additional rights under applicable state privacy laws. We will respond to verified requests within 30 days.</p>
-    <p style="margin-bottom:16px"><strong>12. Do Not Track.</strong> The Site does not use cookies for tracking and does not respond to Do Not Track signals, because we do not track users across other websites in the first place.</p>
+    <p style="margin-bottom:16px"><strong>12. Do Not Track.</strong> The Site does not use tracking cookies or track you across other websites. If your browser sends Global Privacy Control or Do Not Track, we do not assign the monthly visitor ID at all.</p>
     <p style="margin-bottom:16px"><strong>13. Changes.</strong> We may update this Privacy Policy. The latest version will always be available on this page.</p>
     <p style="margin-bottom:16px"><strong>14. Contact.</strong> Privacy questions? Email <a href="mailto:ratemycrib@proton.me" style="color:var(--orange)">ratemycrib@proton.me</a>.</p>
     <p style="margin-top:32px"><span class="back-link" style="color:var(--orange);cursor:pointer" onclick="go({page:'home',detail:null})">&#8592; Back to home</span></p>
@@ -5340,7 +5463,13 @@ render();
 updatePageTitle();
 updateMetaDescription();
 updateStructuredData();
-trackEvent('session_start', { referrer: document.referrer || 'direct', landing: S.page || 'home' });
+if (ANALYTICS.isNew) {
+  let q = null; try { q = new URLSearchParams(location.search); } catch (e) {}
+  let ref = 'direct'; try { if (document.referrer) ref = new URL(document.referrer).origin; } catch (e) {}
+  trackEvent('session_start', { referrer: ref, landing: S.page || 'home', source: ANALYTICS.src,
+    utm_medium: q && q.get('utm_medium') ? q.get('utm_medium').slice(0, 40) : null,
+    utm_campaign: q && q.get('utm_campaign') ? q.get('utm_campaign').slice(0, 60) : null });
+}
 loadUserSubmissions(); // Load user-submitted landlords & properties from Supabase
 
 // Register service worker for PWA / Add to Home Screen
