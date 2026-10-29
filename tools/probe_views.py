@@ -17,7 +17,8 @@ out = {
   "reviews_count": call("HEAD", "/rest/v1/reviews_public?select=id"),
   "patch_reviews_public": call("PATCH", f"/rest/v1/reviews_public?id=eq.{NOID}", {"review_text": "probe"}),
   "delete_reviews_public": call("DELETE", f"/rest/v1/reviews_public?id=eq.{NOID}"),
-  "patch_user_properties_public": call("PATCH", "/rest/v1/user_properties_public?id=eq.-1", {"address": "probe"}),
+  "patch_user_properties_public": call("PATCH", "/rest/v1/user_properties_public?id=eq.-1", {"landlord_name": "probe"}),
+  "delete_user_properties_public": call("DELETE", "/rest/v1/user_properties_public?id=eq.-1"),
   "patch_reviews_table": call("PATCH", f"/rest/v1/reviews?id=eq.{NOID}", {"review_text": "probe"}),
 }
 os.makedirs("data/probe", exist_ok=True)
