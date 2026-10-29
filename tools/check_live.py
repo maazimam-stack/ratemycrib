@@ -1,4 +1,4 @@
-"""Read-only check that ratemycrib.net serves the merged code. Writes data/probe/live.json."""
+"""Read-only check (after the Pages deploy) that ratemycrib.net serves the merged code. Writes data/probe/live.json."""
 import json, os, time, urllib.request
 def get(path):
     req = urllib.request.Request("https://ratemycrib.net" + path + ("&" if "?" in path else "?") + "t=" + str(int(time.time())), headers={"User-Agent": "RateMyCrib deploy check", "Cache-Control": "no-cache"})
