@@ -1,14 +1,14 @@
 {
  "index": 200,
- "admin": 404,
- "majors": 404,
- "vendor_supabase": 404,
- "csp_meta": false,
- "no_cdn_scripts": false,
- "near_classes": false,
- "verified_code_flow": false,
- "analytics_ids": false,
- "admin_page": false,
- "majors_count": 0,
- "attempt": 12
+ "admin": 200,
+ "majors": 200,
+ "vendor_supabase": 200,
+ "csp_meta": true,
+ "no_cdn_scripts": true,
+ "near_classes": true,
+ "verified_code_flow": true,
+ "analytics_ids": true,
+ "admin_page": true,
+ "majors_count": 154,
+ "attempt": 1
 }
