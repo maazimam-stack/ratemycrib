@@ -16,13 +16,24 @@ q = """[out:json][timeout:120];
 (way["building"]["name"](40.080,-88.260,40.130,-88.195);
  relation["building"]["name"](40.080,-88.260,40.130,-88.195););
 out center tags;"""
-osm = get("https://overpass-api.de/api/interpreter", urllib.parse.urlencode({"data": q}).encode())
-els = json.loads(osm)["elements"]
-buildings = [{"name": e["tags"].get("name"), "alt": e["tags"].get("alt_name") or e["tags"].get("short_name") or "",
-              "addr": " ".join(filter(None, [e["tags"].get("addr:housenumber"), e["tags"].get("addr:street")])),
-              "lat": e["center"]["lat"], "lng": e["center"]["lon"]} for e in els if "center" in e]
-json.dump(buildings, open(f"{OUT}/osm_buildings.json", "w"), indent=0)
-print(len(buildings), "named buildings")
+els = None
+for attempt in range(3):
+    try:
+        els = json.loads(get("https://overpass-api.de/api/interpreter", urllib.parse.urlencode({"data": q}).encode()))["elements"]
+        break
+    except Exception as e:
+        print("overpass attempt", attempt + 1, "failed:", e)
+        time.sleep(30)
+if els is not None:
+    buildings = [{"name": e["tags"].get("name"), "alt": e["tags"].get("alt_name") or e["tags"].get("short_name") or "",
+                  "addr": " ".join(filter(None, [e["tags"].get("addr:housenumber"), e["tags"].get("addr:street")])),
+                  "lat": e["center"]["lat"], "lng": e["center"]["lon"]} for e in els if "center" in e]
+    json.dump(buildings, open(f"{OUT}/osm_buildings.json", "w"), indent=0)
+    print(len(buildings), "named buildings")
+elif os.path.exists(f"{OUT}/osm_buildings.json"):
+    print("overpass unavailable; keeping the existing building file")
+else:
+    raise SystemExit("overpass unavailable and no building file yet")
 
 # 2. Reviewed addresses, from the public view (unit numbers already removed)
 idx = open("index.html", encoding="utf-8").read()
@@ -37,10 +48,14 @@ for p in props:
     for city in ("Champaign", "Urbana", "Savoy"):
         u = "https://geocoding.geo.census.gov/geocoder/locations/onelineaddress?" + urllib.parse.urlencode(
             {"address": f"{street}, {city}, IL", "benchmark": "Public_AR_Current", "format": "json"})
-        try:
-            m = json.loads(get(u))["result"]["addressMatches"]
-        except Exception as e:
-            m = []
+        m = []
+        for attempt in range(2):
+            try:
+                m = json.loads(get(u))["result"]["addressMatches"]
+                break
+            except Exception as e:
+                print("census", street, city, "failed:", e)
+                time.sleep(3)
         time.sleep(0.25)
         for x in m[:3]:
             cands.append({"city": city, "matched": x["matchedAddress"], "lat": x["coordinates"]["y"], "lng": x["coordinates"]["x"]})
