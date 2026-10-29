@@ -1,0 +1,14 @@
+{
+ "index": 200,
+ "admin": 404,
+ "majors": 404,
+ "vendor_supabase": 404,
+ "csp_meta": false,
+ "no_cdn_scripts": false,
+ "near_classes": false,
+ "verified_code_flow": false,
+ "analytics_ids": false,
+ "admin_page": false,
+ "majors_count": 0,
+ "attempt": 12
+}
