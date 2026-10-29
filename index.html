@@ -3728,21 +3728,25 @@ async function trackScannerEvent(eventType, metadata = {}) {
   trackEvent('scanner_' + eventType, metadata);
 }
 
+const PRIVATE_EVENTS = ['review_submitted', 'verify_code_sent', 'verify_success', 'verify_failed'];
 async function trackEvent(eventType, metadata = {}) {
   try {
-    // The "review posted" event carries no visitor or visit ID, so it can't be joined to the rest of a visit
+    // Review and verification events carry no visitor/visit ID, no screen size and only the hour, so they
+    // can't be joined to the rest of a visit or matched to a review by its exact time.
+    const quiet = PRIVATE_EVENTS.indexOf(eventType) !== -1;
     const meta = Object.assign({}, metadata, { _src: ANALYTICS.src });
-    if (eventType !== 'review_submitted') { meta._s = ANALYTICS.sid; if (ANALYTICS.vid) meta._v = ANALYTICS.vid; }
+    if (!quiet) { meta._s = ANALYTICS.sid; if (ANALYTICS.vid) meta._v = ANALYTICS.vid; }
+    const when = new Date(); if (quiet) when.setMinutes(0, 0, 0);
     let refOrigin = null;
     try { refOrigin = eventType === 'session_start' && document.referrer ? new URL(document.referrer).origin : null; } catch (e) {}
     await db.from('site_events').insert({
       event_type: eventType,
       metadata: meta,
       page: S.page || 'home',
-      created_at: new Date().toISOString(),
+      created_at: when.toISOString(),
       user_agent: deviceClass(), // "mobile" / "tablet" / "desktop" only
       referrer: refOrigin,       // e.g. https://www.reddit.com (never the full address)
-      screen: window.innerWidth + 'x' + window.innerHeight
+      screen: quiet ? null : window.innerWidth + 'x' + window.innerHeight
     });
   } catch(e) {
     // Silent fail — analytics should never block UX
@@ -4883,7 +4887,7 @@ async function submitReview(landlordIdFromDetail) {
     if (wasVerified) { try { await db.auth.signOut(); } catch (e) {} }
     S.verify = null;
     go({modal:false, stars:0, wouldRentChoice:null});
-    trackEvent('review_submitted', { landlord_id: landlordId || null, landlord: landlordName, rating: review.rating, verified: wasVerified });
+    trackEvent('review_submitted', { verified: wasVerified });
     launchConfetti();
     showSharePromptEnhanced(landlordName, review);
   } else {
@@ -5053,7 +5057,7 @@ function PrivacyPage() {
   <div class="container" style="max-width:720px;line-height:1.8;font-size:15px">
     <p style="margin-bottom:16px"><strong>1. What We Collect.</strong> When you submit a review, we collect: your review text, star rating, selected tags, property address, lease period, monthly rent and neighborhood ratings. We also collect a device fingerprint (a hash of browser properties) solely to prevent duplicate reviews. To count visits we log which pages are viewed, with a random visitor ID that resets every month, the kind of device (phone, tablet or computer) and the site that sent you (for example reddit.com). The visitor ID is never attached to a review.</p>
     <p style="margin-bottom:16px"><strong>2. What We Do NOT Collect.</strong> We do not use cookies for tracking. We do not sell your data. We do not collect your real name, IP address, or location, and we do not keep your email. We do not use third-party analytics or advertising trackers.</p>
-    <p style="margin-bottom:16px"><strong>3. Email Verification.</strong> If you choose to verify, we email a one-time code to your @illinois.edu address through our database provider (Supabase). Once your review posts, the review is marked verified and your email is deleted; unused verifications are deleted within a few days. We keep only a one-way code (not your email) so each student can post one verified review per landlord. Your email is never shown publicly, shared with landlords, or used for marketing.</p>
+    <p style="margin-bottom:16px"><strong>3. Email Verification.</strong> If you choose to verify, we email a one-time code to your @illinois.edu address through our database provider (Supabase). Once your review posts, it is marked verified and your sign-in account and email are deleted. Unused verifications are deleted within about an hour. No email or account is stored with your review, and reviews show only the date they were posted. Your email is never shown publicly, shared with landlords, or used for marketing.</p>
     <p style="margin-bottom:16px"><strong>4. Device Fingerprint.</strong> We generate a simple hash from your browser properties (canvas rendering, screen size, timezone) to limit one review per landlord per device. This fingerprint cannot identify you personally and is not shared with third parties.</p>
     <p style="margin-bottom:16px"><strong>5. Lease Scanner.</strong> Text you paste into the Lease Scanner is processed entirely in your browser. It is never sent to our servers, stored, or shared with anyone.</p>
     <p style="margin-bottom:16px"><strong>6. Data Storage.</strong> Review data is stored in a Supabase (PostgreSQL) database with Row Level Security enabled. Access is restricted to the minimum needed for the Site to function.</p>

@@ -212,14 +212,16 @@
 // returns nothing; this page holds no data of its own.
 const SUPABASE_URL = 'https://expfrmknhdcwnccqjwnq.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV4cGZybWtuaGRjd25jY3Fqd25xIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwNTgyNjksImV4cCI6MjA4OTYzNDI2OX0.IDoYSa-Xpq_TAebacsl_TuI9u48ssia7imjG0ehB9Jg'; // the public key, same as on the site
-const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { storageKey: 'rmc-admin-auth' } });
+// Sign-in kept for this tab only, so nothing on the public site (same origin) can find a saved admin session later
+const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { storageKey: 'rmc-admin-auth', storage: window.sessionStorage } });
 
-const A = { user: null, tab: 'overview', days: 30, data: null, error: null, loading: false, names: {}, prospects: [], log: [],
+const A = { user: null, tab: 'overview', days: 30, data: null, error: null, loading: false, names: {}, prospects: [], log: [], held: [],
   sort: { key: 'views', dir: -1 }, compose: null, editing: null };
 try { const t = sessionStorage.getItem('rmc-admin-tab'); if (t) A.tab = t; const d = +sessionStorage.getItem('rmc-admin-days'); if ([7, 30, 90].includes(d)) A.days = d; } catch (e) {}
 
 const $ = sel => document.querySelector(sel);
 const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const jsArg = v => esc(JSON.stringify(String(v ?? ''))); // a value inside onclick="..."
 const fmt = n => n == null || isNaN(n) ? '—' : Number(n).toLocaleString('en-US');
 const money = n => n == null || isNaN(n) ? '—' : '$' + Number(n).toLocaleString('en-US', { maximumFractionDigits: 0 });
 const pct = (a, b) => b ? Math.round(a / b * 100) : 0;
@@ -253,11 +255,13 @@ const landlordName = (lid, fallback) => A.names[lid] || fallback || 'Landlord #'
 // ===== Data =====
 async function loadAll() {
   A.loading = true; render();
-  const [{ data, error }, p, l] = await Promise.all([
+  const [{ data, error }, p, l, h] = await Promise.all([
     db.rpc('admin_dashboard', { p_days: A.days }),
     db.from('prospects').select('*').order('updated_at', { ascending: false }),
-    db.from('outreach_log').select('*').order('sent_at', { ascending: false }).limit(50)
+    db.from('outreach_log').select('*').order('sent_at', { ascending: false }).limit(50),
+    db.rpc('admin_held_reviews')
   ]);
+  A.held = h.error ? [] : h.data || [];
   A.loading = false;
   if (error) { A.error = error; A.data = null; }
   else { A.error = null; A.data = data; }
@@ -387,7 +391,7 @@ function Overview() {
   const mobile = pct(c.mobile_sessions, c.sessions);
   const daily = d.daily || [];
   const sumV = daily.reduce((s, r) => s + r.visitors, 0), sumR = daily.reduce((s, r) => s + r.reviews, 0);
-  return '<section>' +
+  return '<section>' + Held() +
     '<h2>Last ' + A.days + ' days</h2><p class="sub">Change is against the ' + A.days + ' days before. Hover a number\'s change to see the earlier figure.</p>' +
     '<dl class="score">' +
       cell('Visitors', c.visitors, p.visitors, visitorsNote || 'Unique browsers, reset monthly') +
@@ -423,6 +427,25 @@ function Overview() {
     '<h2>Pages and features</h2>' +
     '<div class="grid2">' + Pages(d.pages || []) + Features(d.features || {}) + '</div>' +
     '</section>';
+}
+function Held() {
+  if (!A.held.length) return '';
+  return '<h2>Held for review (' + A.held.length + ')</h2><p class="sub">These came in during a burst (more than 5 for one landlord in a day, or more than 40 an hour site-wide), so they stay hidden until you decide. Approve real ones; delete spam.</p>' +
+    '<div class="panel tbl-wrap" style="margin-bottom:8px"><table><thead><tr><th>Landlord</th><th>Review</th><th class="r">Rating</th><th>Posted</th><th></th></tr></thead><tbody>' +
+    A.held.map(r => '<tr><td><strong>' + esc(landlordName(r.landlord_id, r.landlord_name)) + '</strong>' + (r.verified ? '<br><span class="muted" style="font-size:12px">Verified Illini</span>' : '') +
+      (r.property ? '<br><span class="muted" style="font-size:12px">' + esc(r.property) + '</span>' : '') + '</td>' +
+      '<td style="max-width:520px">' + esc(r.review_text) + '</td><td class="r num">' + esc(r.rating) + '</td>' +
+      '<td class="num" style="font-size:12px;white-space:nowrap">' + esc(new Date(r.created_at).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })) + '</td>' +
+      '<td class="r" style="white-space:nowrap"><button type="button" class="btn small primary" onclick="moderate(' + jsArg(r.id) + ',true,this)">Approve</button> ' +
+      '<button type="button" class="btn small danger" onclick="moderate(' + jsArg(r.id) + ',false,this)">Delete</button></td></tr>').join('') +
+    '</tbody></table></div>';
+}
+async function moderate(id, approve, btn) {
+  if (!approve && btn && btn.dataset.armed !== '1') { btn.dataset.armed = '1'; btn.textContent = 'Confirm delete'; setTimeout(() => { if (btn.isConnected) { btn.dataset.armed = ''; btn.textContent = 'Delete'; } }, 4000); return; }
+  const { error } = await db.rpc('admin_moderate_review', { p_review_id: id, p_approve: approve });
+  if (error) { toast('Could not save: ' + error.message); return; }
+  toast(approve ? 'Approved. It is live now.' : 'Deleted');
+  loadAll();
 }
 function Sources(rows, total) {
   if (!rows.length) return '<div class="panel"><p class="empty">No visits in this range yet.</p></div>';
@@ -474,7 +497,7 @@ function Landlords() {
         '<td class="r num">' + fmt(r.reviews_total) + (r.reviews_period ? ' <span class="muted">(+' + fmt(r.reviews_period) + ')</span>' : '') + '</td>' +
         '<td class="r num">' + (r.avg_rating == null ? '—' : r.avg_rating.toFixed(1)) + '</td><td class="r num">' + (r.would_rent_pct == null ? '—' : r.would_rent_pct + '%') + '</td>' +
         '<td class="r num">' + fmt(r.verified) + '</td>' +
-        '<td class="r"><button type="button" class="btn small" onclick="pitchLandlord(\'' + esc(r.lid) + '\')">Pitch</button></td></tr>').join('')
+        '<td class="r"><button type="button" class="btn small" onclick="pitchLandlord(' + jsArg(r.lid) + ')">Pitch</button></td></tr>').join('')
         : '<tr><td colspan="10" class="empty">No landlord activity in this range.</td></tr>') +
     '</tbody></table></div>' +
     '<h2>What students search for</h2><p class="sub">Searches with no match are landlords or buildings students want that the site doesn\'t list yet. Add them, then ask past tenants for reviews.</p>' +

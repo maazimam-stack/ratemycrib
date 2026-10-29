@@ -4,24 +4,28 @@
 -- One transaction (all or nothing), safe to run again.
 --
 -- What it adds:
---   1. A private admin list. Only signed-in admins can call admin_dashboard() or see the outreach tables.
+--   1. A private admin list. Only signed-in admins can call the admin_* functions or see the outreach tables.
 --      After running this file, add yourself in a separate query (keep your email out of the public repo):
 --          insert into private.admins (email) values ('you@example.com');
 --   2. admin_dashboard(days): every number on ratemycrib.net/admin.html, computed in the database.
 --      Visitor-level analytics stay unreadable to the public (site_events is still write-only).
 --   3. prospects + outreach_log: the people you pitch, their status and every email you sent. Admins only.
---   4. Real verification. A review only gets the "Verified Illini" badge when the writer proved they own an
---      @illinois.edu inbox (a 6-digit code). The database sets the badge itself, so it can't be faked from the
---      browser, and it then deletes the sign-in account: we keep no email and no link from review to person.
---      Each NetID gets one verified review per landlord (checked with a keyed hash, not the email).
---      Old reviews that only typed an @illinois.edu address now show as "Anonymous Student": that badge was
---      never checked. Their stored author text is untouched, so this is reversible.
---   5. Flood limits on unverified reviews (bots): 40 per hour site-wide, 10 per landlord per day.
+--   4. Real verification. A review only gets the "Verified Illini" badge when the writer signed in with a code
+--      sent to an @illinois.edu inbox (not a password). The database sets the badge itself, so the browser
+--      can't fake it, then deletes the sign-in account and its email. Nothing that names a person is kept
+--      with or about the review. Old reviews that only typed an @illinois.edu address now show as
+--      "Anonymous Student": that badge was never checked. Their stored author text is untouched (reversible).
+--   5. Floods are held for review instead of going live: more than 40 unverified reviews an hour site-wide,
+--      more than 5 unverified or 5 verified reviews of one landlord in a day. Held reviews wait in admin.html
+--      for you to approve or delete. Above 400 an hour, new unverified reviews are refused outright.
+--   6. Sign-in accounts left over from unused verifications are deleted every 15 minutes (needs pg_cron,
+--      which this file turns on if your project allows it; otherwise it tells you how).
+--
+-- Privacy note: the review row never holds an email or account id. Supabase still keeps its own short-lived
+-- sign-in logs; under Authentication > Settings, keep "write audit logs to the database" off.
 -- ----------------------------------------------------------------------------
 
 begin;
-
-create extension if not exists pgcrypto with schema extensions;
 
 -- 1. Private schema: not exposed through the public API
 create schema if not exists private;
@@ -30,18 +34,10 @@ revoke all on schema private from public;
 create table if not exists private.admins (
   email text primary key check (email = lower(email))
 );
-create table if not exists private.secrets (
-  name  text primary key,
-  value text not null
-);
-insert into private.secrets (name, value)
-  values ('verify_key', encode(extensions.gen_random_bytes(32), 'hex'))
-  on conflict (name) do nothing;
--- One row per (NetID, landlord) that has a verified review. A keyed hash, so it can't be read back as an email,
--- and it has no review id or timestamp, so it can't be joined to a review.
-create table if not exists private.verified_keys (
-  key text primary key
-);
+-- An earlier draft kept a keyed hash per NetID and landlord. Even without the email, anyone holding the
+-- database could test candidate NetIDs against it, so it is gone.
+drop table if exists private.verified_keys;
+drop table if exists private.secrets;
 
 -- The caller's email, only if they proved they own it
 create or replace function private.confirmed_email()
@@ -53,8 +49,20 @@ set search_path = ''
 as $$
   select lower(u.email) from auth.users u where u.id = auth.uid() and u.email_confirmed_at is not null
 $$;
+revoke all on function private.confirmed_email() from public, anon, authenticated;
 
-revoke all on function private.confirmed_email() from public;
+-- Did this session start from an emailed code (not a password)?
+create or replace function private.signed_in_with_email_code()
+returns boolean
+language sql
+stable
+set search_path = ''
+as $$
+  select exists (
+    select 1 from jsonb_array_elements(coalesce(auth.jwt() -> 'amr', '[]'::jsonb)) a
+     where a ->> 'method' in ('otp', 'magiclink', 'email/signup'))
+$$;
+revoke all on function private.signed_in_with_email_code() from public, anon, authenticated;
 
 -- Is the caller an admin? (true/false only; safe to expose)
 create or replace function public.rmc_is_admin()
@@ -69,8 +77,28 @@ $$;
 revoke all on function public.rmc_is_admin() from public;
 grant execute on function public.rmc_is_admin() to anon, authenticated;
 
--- 2. Reviews: the database decides the badge
+-- Remove sign-in accounts that only existed to verify a review (never the admins').
+create or replace function private.forget_unused_signins(p_older_than interval)
+returns integer
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare n integer;
+begin
+  delete from auth.users u
+   where u.created_at < now() - p_older_than
+     and (coalesce(u.encrypted_password, '') = '' or lower(u.email) like '%@illinois.edu')
+     and not exists (select 1 from private.admins a where a.email = lower(u.email));
+  get diagnostics n = row_count;
+  return n;
+end
+$$;
+revoke all on function private.forget_unused_signins(interval) from public, anon, authenticated;
+
+-- 2. Reviews: the database decides the badge, and floods wait for a human
 alter table public.reviews add column if not exists verified boolean not null default false;
+alter table public.reviews add column if not exists held boolean not null default false;
 
 create or replace function private.before_review_insert()
 returns trigger
@@ -80,67 +108,80 @@ set search_path = ''
 as $$
 declare
   v_email  text := private.confirmed_email();
-  v_key    text;
+  v_uid    uuid := auth.uid();
   v_recent integer;
 begin
   -- Never trust these from the browser
   new.verified      := false;
+  new.held          := false;
   new.author        := 'Anonymous Student';
   new.helpful_count := 0;
   new.created_at    := now();
 
-  if v_email like '%@illinois.edu' then
-    v_key := encode(extensions.hmac(
-      v_email || '|' || coalesce(new.landlord_id::text, '') || '|' || lower(btrim(coalesce(new.landlord_name, ''))),
-      (select s.value from private.secrets s where s.name = 'verify_key'), 'sha256'), 'hex');
-    if exists (select 1 from private.verified_keys k where k.key = v_key) then
-      raise exception 'You already left a verified review for this landlord.'
-        using errcode = 'P0001', hint = 'already_reviewed';
-    end if;
-    insert into private.verified_keys (key) values (v_key);
+  if v_email like '%@illinois.edu' and private.signed_in_with_email_code() then
     new.verified := true;
     new.author   := 'Verified Illini';
+    select count(*) into v_recent from public.reviews r
+     where r.verified and r.landlord_id is not distinct from new.landlord_id and r.created_at > now() - interval '1 day';
+    if v_recent >= 5 then new.held := true; end if;
 
     -- Forget who wrote it: delete the sign-in account (and its email) now that it has done its job,
-    -- plus any verification sign-ins that were started but never used.
+    -- plus Supabase's in-database sign-in log for it if that is switched on.
     delete from auth.users u
-     where (u.id = auth.uid() or (u.created_at < now() - interval '2 days' and lower(u.email) like '%@illinois.edu'))
-       and not exists (select 1 from private.admins a where a.email = lower(u.email));
+     where u.id = v_uid and not exists (select 1 from private.admins a where a.email = lower(u.email));
+    begin
+      delete from auth.audit_log_entries e where e.payload ->> 'actor_id' = v_uid::text;
+    exception when others then null; -- table missing or not ours to clean: nothing to do
+    end;
+    perform private.forget_unused_signins(interval '1 hour');
   else
     select count(*) into v_recent from public.reviews r
      where not r.verified and r.created_at > now() - interval '1 hour';
-    if v_recent >= 40 then
-      raise exception 'Lots of reviews are coming in right now. Try again in an hour, or verify with your @illinois.edu email.'
+    if v_recent >= 400 then
+      raise exception 'Too many reviews are coming in right now. Try again in an hour, or verify with your @illinois.edu email.'
         using errcode = 'P0001', hint = 'rate_limited';
     end if;
+    if v_recent >= 40 then new.held := true; end if;
     select count(*) into v_recent from public.reviews r
      where not r.verified and r.landlord_id is not distinct from new.landlord_id and r.created_at > now() - interval '1 day';
-    if v_recent >= 10 then
-      raise exception 'This landlord got a lot of reviews today. Try again tomorrow, or verify with your @illinois.edu email.'
-        using errcode = 'P0001', hint = 'rate_limited';
-    end if;
+    if v_recent >= 5 then new.held := true; end if;
   end if;
   return new;
 end
 $$;
-
-revoke all on function private.before_review_insert() from public;
+revoke all on function private.before_review_insert() from public, anon, authenticated;
 
 drop trigger if exists rmc_before_review_insert on public.reviews;
 create trigger rmc_before_review_insert
   before insert on public.reviews
   for each row execute function private.before_review_insert();
 
--- Public view: the badge comes from the verified column. Same columns as before, plus "verified" at the end.
+-- Public view: the badge comes from the verified column; held reviews stay hidden; the time is the day only,
+-- so a review can't be matched to a sign-in by its exact second. Same columns as before, plus "verified".
 drop view if exists public.reviews_public;
 create view public.reviews_public as
   select id, landlord_id, landlord_name, public.rmc_strip_unit(property) as property,
          case when verified then 'Verified Illini' else 'Anonymous Student' end as author,
-         rating, would_rent, review_text, positive_tags, negative_tags, helpful_count, created_at,
+         rating, would_rent, review_text, positive_tags, negative_tags, helpful_count,
+         date_trunc('day', created_at) as created_at,
          monthly_rent, hood_name, hood_safety, hood_walkability, hood_quiet, hood_nightlife,
          score_maintenance, score_communication, score_fairness, score_move_out, verified
-  from public.reviews;
+  from public.reviews
+  where not held;
+-- The view runs as its owner (no row-level security through it) and Supabase grants ALL on new views by
+-- default, so take every write privilege away again. Without this, anyone could edit reviews through the view.
+revoke all on public.reviews_public from anon, authenticated, public;
 grant select on public.reviews_public to anon, authenticated;
+revoke insert, update, delete, truncate, references, trigger on public.user_properties_public from anon, authenticated, public;
+
+-- Unused-verification cleanup every 15 minutes, if pg_cron is available
+do $$
+begin
+  create extension if not exists pg_cron;
+  perform cron.schedule('rmc-forget-unused-signins', '*/15 * * * *', 'select private.forget_unused_signins(interval ''1 hour'')');
+exception when others then
+  raise notice 'Could not schedule the cleanup (%). Turn on pg_cron under Database > Extensions, then run this file again.', sqlerrm;
+end $$;
 
 -- 3. Outreach: who you pitch and what you sent (admins only)
 create table if not exists public.prospects (
@@ -383,6 +424,7 @@ begin
     'totals', jsonb_build_object(
                'reviews', (select count(*) from rv),
                'verified_reviews', (select count(*) from rv where rv.verified),
+               'held_reviews', (select count(*) from public.reviews r where r.held),
                'landlords_reviewed', (select count(distinct rv.landlord_id) from rv),
                'landlords_with_3plus', (select count(*) from (select rv.landlord_id from rv group by 1 having count(*) >= 3) x),
                'prospects', (select count(*) from public.prospects),
@@ -402,8 +444,46 @@ begin
   return v_out;
 end
 $$;
-revoke all on function public.admin_dashboard(integer) from public;
+revoke all on function public.admin_dashboard(integer) from public, anon;
 grant execute on function public.admin_dashboard(integer) to authenticated;
+
+-- 6. Held reviews: list, approve or delete (admins only)
+create or replace function public.admin_held_reviews()
+returns jsonb
+language plpgsql
+stable
+security definer
+set search_path = ''
+as $$
+begin
+  if not public.rmc_is_admin() then raise exception 'Admins only' using errcode = '42501'; end if;
+  return (select coalesce(jsonb_agg(jsonb_build_object(
+            'id', r.id, 'landlord_id', r.landlord_id, 'landlord_name', r.landlord_name,
+            'property', public.rmc_strip_unit(r.property), 'rating', r.rating, 'would_rent', r.would_rent,
+            'review_text', r.review_text, 'verified', r.verified, 'created_at', r.created_at) order by r.created_at desc), '[]'::jsonb)
+            from public.reviews r where r.held);
+end
+$$;
+revoke all on function public.admin_held_reviews() from public, anon;
+grant execute on function public.admin_held_reviews() to authenticated;
+
+create or replace function public.admin_moderate_review(p_review_id text, p_approve boolean)
+returns void
+language plpgsql
+security definer
+set search_path = ''
+as $$
+begin
+  if not public.rmc_is_admin() then raise exception 'Admins only' using errcode = '42501'; end if;
+  if p_approve then
+    update public.reviews set held = false where id::text = p_review_id and held;
+  else
+    delete from public.reviews where id::text = p_review_id and held;
+  end if;
+end
+$$;
+revoke all on function public.admin_moderate_review(text, boolean) from public, anon;
+grant execute on function public.admin_moderate_review(text, boolean) to authenticated;
 
 commit;
 
