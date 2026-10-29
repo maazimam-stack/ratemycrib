@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data:; connect-src 'self' https://expfrmknhdcwnccqjwnq.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<title>RateMyCrib Admin</title>
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&family=Oswald:wght@500;600&display=swap" rel="stylesheet">
+<script>
+  // Same theme as the site: saved choice first, then the device setting
+  (function () {
+    var t = null; try { t = localStorage.getItem('rmc-theme'); } catch (e) {}
+    if (t !== 'dark' && t !== 'light') t = window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', t);
+  })();
+</script>
+<style>
+  :root {
+    --navy: #13294B; --orange: #FF5F05;
+    --page: #F4F1EA; --surface: #FFFFFF; --sunk: #EEEAE0;
+    --text: #13294B; --muted: #5B6578; --line: #D6D2C8; --line-soft: #E6E2D8;
+    --good: #15803D; --bad: #B91C1C; --warn-bg: #FFF4E5; --warn-line: #F5C38A; --warn-text: #7A3E00;
+    --series-a: #D9530B; --series-b: #2E6BD1;
+    --focus: #2E6BD1;
+    --mono: 'IBM Plex Mono', ui-monospace, monospace;
+    --display: 'Oswald', 'Arial Narrow', sans-serif;
+  }
+  [data-theme="dark"] {
+    --page: #0B0D10; --surface: #14171C; --sunk: #101317;
+    --text: #F5F3EF; --muted: #9AA0AC; --line: #262B33; --line-soft: #1E2229;
+    --good: #4ADE80; --bad: #F87171; --warn-bg: #2A1D0E; --warn-line: #6B4415; --warn-text: #FCD9A8;
+    --series-a: #E06A24; --series-b: #4F86E3;
+    --focus: #4F86E3;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { font-family: 'Public Sans', -apple-system, 'Segoe UI', sans-serif; background: var(--page); color: var(--text); font-size: 14px; line-height: 1.45; -webkit-font-smoothing: antialiased; }
+  ::selection { background: var(--orange); color: #fff; }
+  :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+  a { color: inherit; text-underline-offset: 3px; }
+  button, input, select, textarea { font: inherit; color: inherit; }
+  .num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+  [hidden] { display: none !important; }
+
+  /* Top bar */
+  .bar { background: var(--navy); color: #fff; }
+  .bar-in { max-width: 1240px; margin: 0 auto; padding: 0 16px; min-height: 56px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .brand { font-family: 'Source Serif 4', Georgia, serif; font-weight: 700; font-size: 20px; letter-spacing: -0.01em; text-decoration: none; color: #fff; }
+  .brand em { font-style: normal; color: var(--orange); }
+  .brand small { font-family: var(--display); font-size: 13px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.65); margin-left: 10px; }
+  .bar-right { margin-left: auto; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .who { font-size: 12px; color: rgba(255,255,255,0.7); }
+  .seg { display: inline-flex; border: 1px solid rgba(255,255,255,0.35); border-radius: 2px; }
+  .seg button { background: transparent; border: 0; color: #fff; padding: 6px 12px; min-height: 36px; cursor: pointer; font-size: 13px; font-weight: 600; }
+  .seg button + button { border-left: 1px solid rgba(255,255,255,0.35); }
+  .seg button[aria-pressed="true"] { background: #fff; color: var(--navy); }
+  .ghost { background: transparent; border: 1px solid rgba(255,255,255,0.35); color: #fff; border-radius: 2px; padding: 6px 12px; min-height: 36px; cursor: pointer; font-size: 13px; font-weight: 600; }
+  .ghost:hover, .seg button:hover:not([aria-pressed="true"]) { background: rgba(255,255,255,0.1); }
+
+  .tabs { border-bottom: 1px solid var(--line); background: var(--surface); }
+  .tabs-in { max-width: 1240px; margin: 0 auto; padding: 0 16px; display: flex; gap: 4px; overflow-x: auto; }
+  .tab { background: none; border: 0; border-bottom: 3px solid transparent; padding: 12px 12px 10px; font-weight: 700; font-size: 14px; color: var(--muted); cursor: pointer; white-space: nowrap; }
+  .tab[aria-selected="true"] { color: var(--text); border-bottom-color: var(--orange); }
+
+  main { max-width: 1240px; margin: 0 auto; padding: 24px 16px 64px; }
+  main.loading > section { opacity: 0.55; transition: opacity 0.2s; }
+  h2 { font-family: var(--display); font-weight: 600; font-size: 20px; letter-spacing: 0.01em; text-transform: uppercase; margin: 36px 0 12px; }
+  h2:first-child { margin-top: 0; }
+  h3 { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
+  .sub { color: var(--muted); font-size: 13px; margin: -6px 0 14px; max-width: 75ch; }
+  .panel { background: var(--surface); border: 1px solid var(--line); border-radius: 2px; }
+  .pad { padding: 16px; }
+  .grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+  .grid3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+
+  /* Scoreboard: one table-like strip, not cards */
+  .score { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); background: var(--surface); border: 1px solid var(--line); border-radius: 2px; }
+  .score > div { padding: 14px 16px; border-right: 1px solid var(--line-soft); border-bottom: 1px solid var(--line-soft); min-width: 0; }
+  .score > div:nth-child(4n) { border-right: 0; }
+  .score > div:nth-last-child(-n+4) { border-bottom: 0; }
+  .score dt { font-size: 12px; font-weight: 600; color: var(--muted); }
+  .score dd { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+  .score .v { font-family: var(--mono); font-size: 26px; font-weight: 600; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+  .delta { font-family: var(--mono); font-size: 12px; font-weight: 600; white-space: nowrap; }
+  .delta.up { color: var(--good); } .delta.down { color: var(--bad); } .delta.flat { color: var(--muted); }
+  .score .why { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .money .v { color: var(--text); }
+
+  .note { border: 1px solid var(--warn-line); background: var(--warn-bg); color: var(--warn-text); border-radius: 2px; padding: 12px 14px; font-size: 13px; line-height: 1.5; margin-bottom: 16px; }
+  .note strong { font-weight: 700; }
+  .note code, .guide code { font-family: var(--mono); font-size: 12px; background: var(--sunk); padding: 1px 4px; border-radius: 2px; color: var(--text); }
+
+  /* Charts */
+  .chart-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 8px; flex-wrap: wrap; }
+  .chart-total { font-family: var(--mono); font-size: 13px; color: var(--muted); }
+  .chart { position: relative; }
+  .chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .chart .gridline { stroke: var(--line-soft); stroke-width: 1; }
+  .chart .axis { fill: var(--muted); font-family: var(--mono); font-size: 11px; }
+  .chart .baseline { stroke: var(--line); stroke-width: 1; }
+  .chart .cross { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 3 3; }
+  .tip { position: absolute; pointer-events: none; background: var(--surface); border: 1px solid var(--line); border-radius: 2px; box-shadow: 0 4px 14px rgba(0,0,0,0.12); padding: 8px 10px; font-size: 12px; min-width: 120px; z-index: 5; }
+  .tip b { display: block; font-family: var(--mono); font-size: 15px; }
+  .tip span { color: var(--muted); }
+  .key { display: inline-block; width: 14px; height: 2px; vertical-align: middle; margin-right: 6px; }
+  details.tableview { margin-top: 10px; font-size: 13px; }
+  details.tableview summary { cursor: pointer; color: var(--muted); font-weight: 600; }
+  details.tableview .tbl-wrap { max-height: 240px; overflow: auto; margin-top: 8px; }
+
+  /* Tables */
+  .tbl-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--line-soft); vertical-align: middle; }
+  th { font-size: 12px; font-weight: 700; color: var(--muted); white-space: nowrap; background: var(--surface); position: sticky; top: 0; }
+  td.r, th.r { text-align: right; }
+  td.num, td .num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+  tbody tr:hover { background: var(--sunk); }
+  th button.sort { background: none; border: 0; font-weight: 700; color: inherit; cursor: pointer; padding: 0; font-size: 12px; }
+  th button.sort[aria-sort]::after { content: ''; }
+  .inbar { display: inline-block; height: 6px; background: var(--series-a); vertical-align: middle; margin-right: 8px; border-radius: 0 2px 2px 0; }
+  .muted { color: var(--muted); }
+  .empty { color: var(--muted); padding: 20px 16px; font-size: 13px; }
+
+  /* Funnels */
+  .funnel li { list-style: none; display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) 56px 48px; gap: 10px; align-items: center; padding: 7px 0; border-bottom: 1px solid var(--line-soft); font-size: 13px; }
+  .funnel li:last-child { border-bottom: 0; }
+  .fbar { height: 8px; background: var(--sunk); }
+  .fbar i { display: block; height: 100%; background: var(--series-b); border-radius: 0 2px 2px 0; }
+  .funnel .pct { color: var(--muted); }
+
+  /* Buttons and forms */
+  .btn { min-height: 40px; padding: 8px 14px; border-radius: 2px; border: 1px solid var(--line); background: var(--surface); font-weight: 700; font-size: 13px; cursor: pointer; }
+  .btn:hover { border-color: var(--text); }
+  .btn.primary { background: var(--orange); border-color: var(--orange); color: #fff; }
+  .btn.primary:hover { background: #E85400; }
+  .btn.small { min-height: 32px; padding: 4px 10px; font-size: 12px; }
+  .btn.danger { color: var(--bad); }
+  .btn[disabled] { opacity: 0.55; cursor: not-allowed; }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  label.f { display: block; font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 4px; }
+  input.i, select.i, textarea.i { width: 100%; min-height: 40px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 2px; background: var(--surface); font-size: 14px; }
+  textarea.i { min-height: 260px; line-height: 1.5; resize: vertical; font-size: 13px; }
+  input.i:focus, select.i:focus, textarea.i:focus { outline: 2px solid var(--focus); outline-offset: 0; border-color: var(--focus); }
+  .form-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+  .form-grid .wide { grid-column: span 2; }
+  .form-grid .full { grid-column: 1 / -1; }
+  .status-pill { font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 2px; border: 1px solid var(--line); white-space: nowrap; }
+  select.status { min-height: 32px; padding: 4px 6px; border: 1px solid var(--line); border-radius: 2px; background: var(--surface); font-size: 12px; font-weight: 700; }
+  .pipeline { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); border: 1px solid var(--line); background: var(--surface); border-radius: 2px; }
+  .pipeline > div { padding: 12px 14px; border-right: 1px solid var(--line-soft); }
+  .pipeline > div:last-child { border-right: 0; }
+  .pipeline .v { font-family: var(--mono); font-size: 22px; font-weight: 600; }
+  .pipeline .l { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: capitalize; }
+  .pipeline .m { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+
+  .composer { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 16px; }
+  .merge { font-size: 12px; }
+  .merge dt { font-family: var(--mono); color: var(--muted); }
+  .merge dd { margin: 0 0 6px; font-family: var(--mono); overflow-wrap: anywhere; }
+
+  .toast { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); background: var(--navy); color: #fff; padding: 10px 16px; border-radius: 2px; font-weight: 600; font-size: 13px; z-index: 50; box-shadow: 0 6px 20px rgba(0,0,0,0.25); }
+
+  /* Sign-in */
+  .signin { max-width: 400px; margin: 72px auto; padding: 0 16px; }
+  .signin .panel { padding: 24px; }
+  .signin h1 { font-family: var(--display); font-weight: 600; font-size: 24px; text-transform: uppercase; margin-bottom: 4px; }
+  .signin p { color: var(--muted); font-size: 13px; margin-bottom: 18px; }
+  .signin .err { color: var(--bad); font-weight: 600; margin: 10px 0 0; }
+
+  .guide { max-width: 80ch; }
+  .guide h3 { font-size: 16px; margin: 24px 0 6px; }
+  .guide p, .guide li { font-size: 14px; line-height: 1.6; }
+  .guide ul, .guide ol { padding-left: 20px; margin: 6px 0; }
+  .guide table { margin: 8px 0 16px; font-size: 13px; }
+  .guide td, .guide th { vertical-align: top; }
+
+  @media (max-width: 960px) {
+    .score { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .score > div:nth-child(4n) { border-right: 1px solid var(--line-soft); }
+    .score > div:nth-child(2n) { border-right: 0; }
+    .score > div:nth-last-child(-n+4) { border-bottom: 1px solid var(--line-soft); }
+    .score > div:nth-last-child(-n+2) { border-bottom: 0; }
+    .grid2, .grid3, .composer { grid-template-columns: 1fr; }
+    .pipeline { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .pipeline > div:nth-child(3n) { border-right: 0; }
+    .pipeline > div:nth-child(-n+3) { border-bottom: 1px solid var(--line-soft); }
+    .form-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 520px) {
+    .form-grid { grid-template-columns: 1fr; }
+    .form-grid .wide { grid-column: auto; }
+    .score .v { font-size: 22px; }
+    .funnel li { grid-template-columns: minmax(0, 1fr) 70px 48px; }
+    .funnel li .fbar { display: none; }
+    .brand small { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script src="/vendor/supabase-js-2.118.0.js"></script>
+<script>
+'use strict';
+// ===== RateMyCrib admin =====
+// Reads go through admin-only database functions (supabase/growth.sql). Without an admin sign-in the database
+// returns nothing; this page holds no data of its own.
+const SUPABASE_URL = 'https://expfrmknhdcwnccqjwnq.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV4cGZybWtuaGRjd25jY3Fqd25xIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwNTgyNjksImV4cCI6MjA4OTYzNDI2OX0.IDoYSa-Xpq_TAebacsl_TuI9u48ssia7imjG0ehB9Jg'; // the public key, same as on the site
+// Sign-in kept for this tab only, so nothing on the public site (same origin) can find a saved admin session later
+const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { storageKey: 'rmc-admin-auth', storage: window.sessionStorage } });
+
+const A = { user: null, tab: 'overview', days: 30, data: null, error: null, loading: false, names: {}, prospects: [], log: [], held: [],
+  sort: { key: 'views', dir: -1 }, compose: null, editing: null };
+try { const t = sessionStorage.getItem('rmc-admin-tab'); if (t) A.tab = t; const d = +sessionStorage.getItem('rmc-admin-days'); if ([7, 30, 90].includes(d)) A.days = d; } catch (e) {}
+
+const $ = sel => document.querySelector(sel);
+const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const jsArg = v => esc(JSON.stringify(String(v ?? ''))); // a value inside onclick="..."
+const fmt = n => n == null || isNaN(n) ? '—' : Number(n).toLocaleString('en-US');
+const money = n => n == null || isNaN(n) ? '—' : '$' + Number(n).toLocaleString('en-US', { maximumFractionDigits: 0 });
+const pct = (a, b) => b ? Math.round(a / b * 100) : 0;
+function toast(msg) {
+  document.querySelectorAll('.toast').forEach(x => x.remove());
+  const t = document.createElement('div'); t.className = 'toast'; t.setAttribute('role', 'status'); t.textContent = msg;
+  document.body.appendChild(t); setTimeout(() => t.remove(), 2600);
+}
+function delta(cur, prev) {
+  if (prev == null) return '';
+  if (!prev && !cur) return '<span class="delta flat">no change</span>';
+  if (!prev) return '<span class="delta up">new</span>';
+  const d = Math.round((cur - prev) / prev * 100);
+  const cls = d > 0 ? 'up' : d < 0 ? 'down' : 'flat';
+  return '<span class="delta ' + cls + '" title="Previous ' + A.days + ' days: ' + fmt(prev) + '">' + (d > 0 ? '+' : '') + d + '%</span>';
+}
+
+// ===== Landlord names: the site's own list plus student-added landlords =====
+async function loadNames() {
+  try {
+    const html = await (await fetch('/index.html', { cache: 'no-store' })).text();
+    for (const m of html.matchAll(/\{ id:(\d+), name:"((?:[^"\\]|\\.)*)"/g)) A.names[m[1]] = m[2].replace(/\\"/g, '"');
+  } catch (e) {}
+  try {
+    const { data } = await db.from('user_landlords').select('id,name');
+    (data || []).forEach(r => { if (!A.names[r.id]) A.names[r.id] = r.name; });
+  } catch (e) {}
+}
+const landlordName = (lid, fallback) => A.names[lid] || fallback || 'Landlord #' + lid;
+
+// ===== Data =====
+async function loadAll() {
+  A.loading = true; render();
+  const [{ data, error }, p, l, h] = await Promise.all([
+    db.rpc('admin_dashboard', { p_days: A.days }),
+    db.from('prospects').select('*').order('updated_at', { ascending: false }),
+    db.from('outreach_log').select('*').order('sent_at', { ascending: false }).limit(50),
+    db.rpc('admin_held_reviews')
+  ]);
+  A.held = h.error ? [] : h.data || [];
+  A.loading = false;
+  if (error) { A.error = error; A.data = null; }
+  else { A.error = null; A.data = data; }
+  A.prospects = p.error ? [] : p.data || [];
+  A.log = l.error ? [] : l.data || [];
+  render();
+}
+
+// ===== Charts (hand-drawn SVG; one measure per chart, no second axis) =====
+// Whole-number gridlines: a 1/2/5 x 10^k step, 3-5 lines
+function niceScale(v) {
+  const raw = Math.max(1, v) / 4, p = Math.pow(10, Math.floor(Math.log10(raw))), n = raw / p;
+  const step = Math.max(1, (n <= 1 ? 1 : n <= 2 ? 2 : n <= 5 ? 5 : 10) * p);
+  return { step, max: step * Math.max(1, Math.ceil(Math.max(1, v) / step)) };
+}
+function chartSVG(id, rows, key, kind, color, label) {
+  const W = 640, H = 200, L = 36, R = 8, T = 10, B = 26;
+  const vals = rows.map(r => +r[key] || 0);
+  const { step: tick, max } = niceScale(Math.max(1, ...vals));
+  const n = rows.length, step = (W - L - R) / Math.max(1, n - (kind === 'line' ? 1 : 0));
+  const x = i => kind === 'line' ? L + i * step : L + i * step + step / 2;
+  const y = v => T + (H - T - B) * (1 - v / max);
+  let g = '';
+  for (let v = 0; v <= max + 1e-9; v += tick) { const yy = y(v); g += '<line class="gridline" x1="' + L + '" x2="' + (W - R) + '" y1="' + yy + '" y2="' + yy + '"/><text class="axis" x="' + (L - 6) + '" y="' + (yy + 4) + '" text-anchor="end">' + fmt(v) + '</text>'; }
+  const every = Math.ceil(n / 6);
+  rows.forEach((r, i) => { if (i % every === 0 || i === n - 1) g += '<text class="axis" x="' + x(i) + '" y="' + (H - 8) + '" text-anchor="middle">' + esc(shortDate(r.day)) + '</text>'; });
+  let marks = '';
+  if (kind === 'line') {
+    const d = vals.map((v, i) => (i ? 'L' : 'M') + x(i).toFixed(1) + ' ' + y(v).toFixed(1)).join(' ');
+    marks = '<path d="' + d + '" fill="none" stroke="' + color + '" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>';
+    if (n <= 31) marks += vals.map((v, i) => '<circle cx="' + x(i).toFixed(1) + '" cy="' + y(v).toFixed(1) + '" r="2.5" fill="' + color + '"/>').join('');
+  } else {
+    const bw = Math.max(2, Math.min(18, step - 2));
+    marks = vals.map((v, i) => {
+      if (!v) return '';
+      const h = Math.max(1, y(0) - y(v)), x0 = x(i) - bw / 2, y0 = y(v), rr = Math.min(4, bw / 2, h);
+      return '<path d="M' + x0 + ' ' + y(0) + 'V' + (y0 + rr) + 'Q' + x0 + ' ' + y0 + ' ' + (x0 + rr) + ' ' + y0 + 'H' + (x0 + bw - rr) + 'Q' + (x0 + bw) + ' ' + y0 + ' ' + (x0 + bw) + ' ' + (y0 + rr) + 'V' + y(0) + 'Z" fill="' + color + '"/>';
+    }).join('');
+  }
+  return '<div class="chart" id="' + id + '" data-kind="' + kind + '" data-key="' + key + '" data-label="' + esc(label) + '" data-color="' + color + '">' +
+    '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + esc(label) + ' per day, last ' + A.days + ' days">' + g +
+    '<line class="baseline" x1="' + L + '" x2="' + (W - R) + '" y1="' + y(0) + '" y2="' + y(0) + '"/>' + marks +
+    '<line class="cross" x1="0" x2="0" y1="' + T + '" y2="' + y(0) + '" visibility="hidden"/>' +
+    '<rect class="hit" x="' + L + '" y="0" width="' + (W - L - R) + '" height="' + (H - B) + '" fill="transparent" tabindex="0"/></svg>' +
+    '<div class="tip" hidden></div></div>';
+}
+function shortDate(d) { const t = new Date(d + 'T12:00:00'); return t.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }); }
+function wireChart(el, rows) {
+  if (!el) return;
+  const svg = el.querySelector('svg'), hit = el.querySelector('.hit'), tip = el.querySelector('.tip'), cross = el.querySelector('.cross');
+  const kind = el.dataset.kind, key = el.dataset.key, n = rows.length;
+  const W = 640, L = 36, R = 8, step = (W - L - R) / Math.max(1, n - (kind === 'line' ? 1 : 0));
+  function show(i) {
+    i = Math.max(0, Math.min(n - 1, i));
+    const xx = kind === 'line' ? L + i * step : L + i * step + step / 2;
+    cross.setAttribute('x1', xx); cross.setAttribute('x2', xx); cross.setAttribute('visibility', 'visible');
+    tip.textContent = '';
+    const b = document.createElement('b'); b.textContent = fmt(rows[i][key]);
+    const s = document.createElement('span'); s.textContent = el.dataset.label + ' · ' + new Date(rows[i].day + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+    tip.append(b, s); tip.hidden = false;
+    const scale = svg.getBoundingClientRect().width / W, px = xx * scale;
+    tip.style.left = Math.min(Math.max(0, px - 60), svg.getBoundingClientRect().width - 140) + 'px'; tip.style.top = '0px';
+    el.dataset.i = i;
+  }
+  function hide() { tip.hidden = true; cross.setAttribute('visibility', 'hidden'); }
+  hit.addEventListener('pointermove', e => { const r = svg.getBoundingClientRect(); const xx = (e.clientX - r.left) / r.width * W; show(Math.round((xx - L - (kind === 'line' ? 0 : step / 2)) / step)); });
+  hit.addEventListener('pointerleave', hide);
+  hit.addEventListener('focus', () => show(n - 1));
+  hit.addEventListener('blur', hide);
+  hit.addEventListener('keydown', e => { const i = +(el.dataset.i || n - 1); if (e.key === 'ArrowLeft') { show(i - 1); e.preventDefault(); } if (e.key === 'ArrowRight') { show(i + 1); e.preventDefault(); } });
+}
+
+// ===== Views =====
+function render() {
+  const app = $('#app');
+  if (!A.user) { app.innerHTML = SignIn(); return; }
+  const tabs = [['overview', 'Overview'], ['landlords', 'Landlords & demand'], ['outreach', 'Outreach'], ['guide', 'What we track']];
+  app.innerHTML =
+    '<header class="bar"><div class="bar-in">' +
+      '<a class="brand" href="/">Rate<em>My</em>Crib<small>Admin</small></a>' +
+      '<div class="bar-right">' +
+        '<div class="seg" role="group" aria-label="Date range">' + [7, 30, 90].map(d => '<button type="button" aria-pressed="' + (A.days === d) + '" onclick="setDays(' + d + ')">' + d + ' days</button>').join('') + '</div>' +
+        '<button type="button" class="ghost" onclick="loadAll()">Refresh</button>' +
+        '<span class="who">' + esc(A.user.email) + '</span>' +
+        '<button type="button" class="ghost" onclick="signOut()">Sign out</button>' +
+      '</div></div></header>' +
+    '<nav class="tabs" aria-label="Sections"><div class="tabs-in" role="tablist">' + tabs.map(([k, l]) =>
+      '<button type="button" class="tab" role="tab" aria-selected="' + (A.tab === k) + '" onclick="setTab(\'' + k + '\')">' + l + '</button>').join('') + '</div></nav>' +
+    '<main class="' + (A.loading ? 'loading' : '') + '" aria-busy="' + A.loading + '">' + Body() + '</main>';
+  if (A.data && A.tab === 'overview') { wireChart($('#ch-visitors'), A.data.daily); wireChart($('#ch-reviews'), A.data.daily); }
+  if (A.tab === 'outreach' && A.compose) updatePreviewMeta();
+}
+function Body() {
+  if (A.error) return SetupHelp(A.error);
+  if (!A.data) return '<section><p class="empty">Loading…</p></section>';
+  if (A.tab === 'landlords') return Landlords();
+  if (A.tab === 'outreach') return Outreach();
+  if (A.tab === 'guide') return Guide();
+  return Overview();
+}
+
+function SignIn() {
+  return '<div class="signin"><div class="panel"><h1>RateMyCrib Admin</h1>' +
+    '<p>Sign in with the admin account you created in Supabase (Authentication → Users). Only emails on the admin list can see any data.</p>' +
+    '<form onsubmit="event.preventDefault();signIn()">' +
+      '<label class="f" for="si-email">Email</label><input class="i" id="si-email" type="email" autocomplete="username" required />' +
+      '<label class="f" for="si-pass" style="margin-top:12px">Password</label><input class="i" id="si-pass" type="password" autocomplete="current-password" required />' +
+      '<button class="btn primary" style="width:100%;margin-top:16px" type="submit" id="si-go">Sign in</button>' +
+      '<p class="err" id="si-err" role="alert" hidden></p>' +
+    '</form></div></div>';
+}
+function SetupHelp(err) {
+  const missing = ['PGRST202', '42883', 'PGRST205', '42P01'].includes(err.code);
+  const notAdmin = err.code === '42501' || /admins only/i.test(err.message || '');
+  return '<section><h2>Almost there</h2>' +
+    (missing ? '<div class="note"><strong>The dashboard functions aren\'t in the database yet.</strong> Open Supabase → SQL Editor → New query, paste all of <code>supabase/growth.sql</code> from the repo and press Run. Then refresh this page.</div>' : '') +
+    (notAdmin ? '<div class="note"><strong>You\'re signed in as ' + esc(A.user.email) + ', but that email isn\'t on the admin list.</strong> In Supabase → SQL Editor, run:<br><code>insert into private.admins (email) values (\'' + esc(A.user.email.toLowerCase()) + '\');</code><br>Then press Refresh.</div>' : '') +
+    (!missing && !notAdmin ? '<div class="note"><strong>The database returned an error:</strong> ' + esc(err.message || String(err)) + '</div>' : '') +
+    '<button class="btn" onclick="loadAll()">Try again</button></section>';
+}
+
+function Overview() {
+  const d = A.data, c = d.kpis.current || {}, p = d.kpis.previous || {}, t = d.totals || {};
+  const tracking = d.tracking_since ? new Date(d.tracking_since) : null;
+  const cell = (label, cur, prev, why) => '<div><dt>' + label + '</dt><dd><span class="v">' + fmt(cur) + '</span>' + delta(cur, prev) + '</dd>' + (why ? '<p class="why">' + why + '</p>' : '') + '</div>';
+  const visitorsNote = !tracking ? 'Counting starts when this update goes live' : tracking > new Date(Date.now() - A.days * 864e5) ? 'Counted since ' + tracking.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
+  const mobile = pct(c.mobile_sessions, c.sessions);
+  const daily = d.daily || [];
+  const sumV = daily.reduce((s, r) => s + r.visitors, 0), sumR = daily.reduce((s, r) => s + r.reviews, 0);
+  return '<section>' + Held() +
+    '<h2>Last ' + A.days + ' days</h2><p class="sub">Change is against the ' + A.days + ' days before. Hover a number\'s change to see the earlier figure.</p>' +
+    '<dl class="score">' +
+      cell('Visitors', c.visitors, p.visitors, visitorsNote || 'Unique browsers, reset monthly') +
+      cell('Visits', c.sessions, p.sessions, mobile ? mobile + '% on phones' : '') +
+      cell('Landlord page views', c.landlord_views, p.landlord_views, 'The number landlords care about') +
+      cell('Reviews posted', c.reviews, p.reviews, fmt(c.verified_reviews) + ' verified') +
+      cell('Lease scans', c.scans, p.scans, 'Demand for a paid scanner') +
+      cell('Scanner waitlist sign-ups', c.waitlist, p.waitlist, 'People asking to pay later') +
+      cell('Searches', c.searches, p.searches, 'See Landlords & demand') +
+      cell('Shares', c.shares, p.shares, fmt(d.kpis.returning_visitors) + ' visitors came back on 2+ days') +
+    '</dl>' +
+    '<h2>Revenue</h2><p class="sub">From the Outreach tab. Semester deals count as a quarter of their value per month.</p>' +
+    '<dl class="score money">' +
+      '<div><dt>Booked per month</dt><dd><span class="v">' + money(t.won_monthly) + '</span></dd><p class="why">Deals marked won</p></div>' +
+      '<div><dt>Booked one-time</dt><dd><span class="v">' + money(t.won_one_time) + '</span></dd></div>' +
+      '<div><dt>Open pipeline</dt><dd><span class="v">' + money(t.pipeline_value) + '</span></dd><p class="why">Contacted, replied or meeting</p></div>' +
+      '<div><dt>Prospects</dt><dd><span class="v">' + fmt(t.prospects) + '</span></dd><p class="why">' + fmt(t.landlords_with_3plus) + ' landlords have 3+ reviews</p></div>' +
+    '</dl>' +
+    '<h2>Every day</h2>' +
+    '<div class="grid2">' +
+      '<div class="panel pad"><div class="chart-head"><h3>Visitors per day</h3><span class="chart-total">' + fmt(sumV) + ' visitor-days</span></div>' + chartSVG('ch-visitors', daily, 'visitors', 'line', 'var(--series-a)', 'Visitors') + '</div>' +
+      '<div class="panel pad"><div class="chart-head"><h3>Reviews posted per day</h3><span class="chart-total">' + fmt(sumR) + ' total</span></div>' + chartSVG('ch-reviews', daily, 'reviews', 'bar', 'var(--series-b)', 'Reviews') + '</div>' +
+    '</div>' +
+    '<details class="tableview"><summary>Show the daily numbers as a table</summary><div class="tbl-wrap"><table><thead><tr><th>Day</th><th class="r">Visitors</th><th class="r">Visits</th><th class="r">Page views</th><th class="r">Reviews</th></tr></thead><tbody>' +
+      daily.slice().reverse().map(r => '<tr><td>' + esc(shortDate(r.day)) + '</td><td class="r num">' + fmt(r.visitors) + '</td><td class="r num">' + fmt(r.sessions) + '</td><td class="r num">' + fmt(r.page_views) + '</td><td class="r num">' + fmt(r.reviews) + '</td></tr>').join('') +
+    '</tbody></table></div></details>' +
+    '<h2>Where visits come from</h2><p class="sub">Add <code>?utm_source=groupme</code> (or instagram, newsletter, flyer…) to links you post so each channel shows up here by name.</p>' +
+    Sources(d.sources || [], c.sessions) +
+    '<h2>Funnels</h2>' +
+    '<div class="grid3">' +
+      Funnel('Reviews', d.funnels.review) + Funnel('Lease scanner', d.funnels.scanner) + Funnel('Verified Illini', d.funnels.verify, d.funnels.verify_errors) +
+    '</div>' +
+    '<h2>Pages and features</h2>' +
+    '<div class="grid2">' + Pages(d.pages || []) + Features(d.features || {}) + '</div>' +
+    '</section>';
+}
+function Held() {
+  if (!A.held.length) return '';
+  return '<h2>Held for review (' + A.held.length + ')</h2><p class="sub">These came in during a burst (more than 5 for one landlord in a day, or more than 40 an hour site-wide), so they stay hidden until you decide. Approve real ones; delete spam.</p>' +
+    '<div class="panel tbl-wrap" style="margin-bottom:8px"><table><thead><tr><th>Landlord</th><th>Review</th><th class="r">Rating</th><th>Posted</th><th></th></tr></thead><tbody>' +
+    A.held.map(r => '<tr><td><strong>' + esc(landlordName(r.landlord_id, r.landlord_name)) + '</strong>' + (r.verified ? '<br><span class="muted" style="font-size:12px">Verified Illini</span>' : '') +
+      (r.property ? '<br><span class="muted" style="font-size:12px">' + esc(r.property) + '</span>' : '') + '</td>' +
+      '<td style="max-width:520px">' + esc(r.review_text) + '</td><td class="r num">' + esc(r.rating) + '</td>' +
+      '<td class="num" style="font-size:12px;white-space:nowrap">' + esc(new Date(r.created_at).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })) + '</td>' +
+      '<td class="r" style="white-space:nowrap"><button type="button" class="btn small primary" onclick="moderate(' + jsArg(r.id) + ',true,this)">Approve</button> ' +
+      '<button type="button" class="btn small danger" onclick="moderate(' + jsArg(r.id) + ',false,this)">Delete</button></td></tr>').join('') +
+    '</tbody></table></div>';
+}
+async function moderate(id, approve, btn) {
+  if (!approve && btn && btn.dataset.armed !== '1') { btn.dataset.armed = '1'; btn.textContent = 'Confirm delete'; setTimeout(() => { if (btn.isConnected) { btn.dataset.armed = ''; btn.textContent = 'Delete'; } }, 4000); return; }
+  const { error } = await db.rpc('admin_moderate_review', { p_review_id: id, p_approve: approve });
+  if (error) { toast('Could not save: ' + error.message); return; }
+  toast(approve ? 'Approved. It is live now.' : 'Deleted');
+  loadAll();
+}
+function Sources(rows, total) {
+  if (!rows.length) return '<div class="panel"><p class="empty">No visits in this range yet.</p></div>';
+  const max = Math.max(...rows.map(r => r.sessions));
+  return '<div class="panel tbl-wrap"><table><thead><tr><th>Source</th><th>Visits</th><th class="r">Visitors</th><th class="r">Reviews</th><th class="r">Reviews per 100 visits</th><th class="r">Lease scans</th></tr></thead><tbody>' +
+    rows.map(r => '<tr><td><strong>' + esc(r.source) + '</strong></td><td class="num"><span class="inbar" style="width:' + Math.round(r.sessions / max * 120) + 'px"></span>' + fmt(r.sessions) + ' <span class="muted">(' + pct(r.sessions, total) + '%)</span></td>' +
+      '<td class="r num">' + fmt(r.visitors) + '</td><td class="r num">' + fmt(r.reviews) + '</td><td class="r num">' + (r.sessions ? (r.reviews / r.sessions * 100).toFixed(1) : '—') + '</td><td class="r num">' + fmt(r.scans) + '</td></tr>').join('') +
+    '</tbody></table></div>';
+}
+function Funnel(title, steps, errors) {
+  const first = steps && steps[0] ? steps[0].n : 0, max = Math.max(1, ...(steps || []).map(s => s.n));
+  const errs = errors && Object.keys(errors).length ? '<p class="why muted" style="font-size:12px;margin-top:8px">Problems: ' + Object.entries(errors).map(([k, v]) => esc(k.replace(/_/g, ' ')) + ' ' + fmt(v)).join(', ') + '</p>' : '';
+  return '<div class="panel pad"><h3>' + esc(title) + '</h3><ol class="funnel">' + (steps || []).map((s, i) =>
+    '<li><span>' + esc(s.step) + '</span><span class="fbar" aria-hidden="true"><i style="width:' + Math.round(s.n / max * 100) + '%"></i></span><span class="num r">' + fmt(s.n) + '</span><span class="num pct r">' + (i ? pct(s.n, first) + '%' : '') + '</span></li>').join('') + '</ol>' + errs + '</div>';
+}
+function Pages(rows) {
+  const names = { home: 'Home', detail: 'Landlord pages', streets: 'Streets', scanner: 'Lease scanner', compare: 'Compare', neighborhoods: 'Neighborhoods', h2h: 'Head-to-head', quiz: 'Match quiz', rentcheck: 'Rent check', rights: 'Tenant rights' };
+  if (!rows.length) return '<div class="panel"><p class="empty">No page views yet.</p></div>';
+  const max = Math.max(...rows.map(r => r.views));
+  return '<div class="panel tbl-wrap"><table><thead><tr><th>Page</th><th>Views</th></tr></thead><tbody>' +
+    rows.slice(0, 12).map(r => '<tr><td>' + esc(names[r.page] || r.page) + '</td><td class="num"><span class="inbar" style="width:' + Math.round(r.views / max * 140) + 'px"></span>' + fmt(r.views) + '</td></tr>').join('') + '</tbody></table></div>';
+}
+function Features(f) {
+  const names = { street_toggle: 'Picked a street', major_pick: 'Picked a major', near_classes_show: 'Opened streets near classes', rent_check: 'Ran a rent check', quiz_completed: 'Finished the match quiz', share_click: 'Shared a review', h2h_share: 'Shared a head-to-head', dark_mode_toggle: 'Switched dark mode', scanner_cta_click: 'Clicked a scanner promo' };
+  const rows = Object.keys(names).map(k => [names[k], f[k] || 0]).sort((a, b) => b[1] - a[1]);
+  return '<div class="panel tbl-wrap"><table><thead><tr><th>Feature</th><th class="r">Uses</th></tr></thead><tbody>' +
+    rows.map(([n, v]) => '<tr><td>' + esc(n) + '</td><td class="r num">' + fmt(v) + '</td></tr>').join('') + '</tbody></table></div>';
+}
+
+function landlordRows() {
+  const rows = (A.data.landlords || []).map(l => ({ ...l, name: landlordName(l.lid, l.landlord_name), views: +l.views, visitors: +l.visitors, prev_views: +l.prev_views,
+    reviews_total: +l.reviews_total, reviews_period: +l.reviews_period, rate_clicks: +l.rate_clicks, avg_rating: l.avg_rating == null ? null : +l.avg_rating,
+    would_rent_pct: l.would_rent_pct == null ? null : +l.would_rent_pct, avg_seconds: l.avg_seconds == null ? null : +l.avg_seconds, verified: +l.verified }));
+  const { key, dir } = A.sort;
+  return rows.sort((a, b) => { const x = a[key], y = b[key]; if (x == null && y == null) return 0; if (x == null) return 1; if (y == null) return -1; return (typeof x === 'string' ? x.localeCompare(y) : x - y) * dir; });
+}
+function Landlords() {
+  const rows = landlordRows();
+  const th = (k, l, right) => '<th class="' + (right ? 'r' : '') + '" aria-sort="' + (A.sort.key === k ? (A.sort.dir > 0 ? 'ascending' : 'descending') : 'none') + '"><button type="button" class="sort" onclick="sortBy(\'' + k + '\')">' + l + (A.sort.key === k ? (A.sort.dir > 0 ? ' ↑' : ' ↓') : '') + '</button></th>';
+  const searches = A.data.searches || [];
+  const misses = searches.filter(s => +s.zero_results > 0);
+  return '<section>' +
+    '<h2>Landlords</h2><p class="sub">Page views and visitors are for the last ' + A.days + ' days. Reviews, rating and would-rent are all time. "Rate clicks" counts people who opened the review form from that page.</p>' +
+    '<div class="panel tbl-wrap"><table><thead><tr>' + th('name', 'Landlord') + th('views', 'Page views', 1) + th('visitors', 'Visitors', 1) + th('avg_seconds', 'Avg time', 1) + th('rate_clicks', 'Rate clicks', 1) +
+      th('reviews_total', 'Reviews', 1) + th('avg_rating', 'Rating', 1) + th('would_rent_pct', 'Would rent again', 1) + th('verified', 'Verified', 1) + '<th></th></tr></thead><tbody>' +
+      (rows.length ? rows.map(r => '<tr><td><strong>' + esc(r.name) + '</strong></td>' +
+        '<td class="r num">' + fmt(r.views) + ' ' + delta(r.views, r.prev_views) + '</td><td class="r num">' + fmt(r.visitors) + '</td>' +
+        '<td class="r num">' + (r.avg_seconds == null ? '—' : fmt(r.avg_seconds) + 's') + '</td><td class="r num">' + fmt(r.rate_clicks) + '</td>' +
+        '<td class="r num">' + fmt(r.reviews_total) + (r.reviews_period ? ' <span class="muted">(+' + fmt(r.reviews_period) + ')</span>' : '') + '</td>' +
+        '<td class="r num">' + (r.avg_rating == null ? '—' : r.avg_rating.toFixed(1)) + '</td><td class="r num">' + (r.would_rent_pct == null ? '—' : r.would_rent_pct + '%') + '</td>' +
+        '<td class="r num">' + fmt(r.verified) + '</td>' +
+        '<td class="r"><button type="button" class="btn small" onclick="pitchLandlord(' + jsArg(r.lid) + ')">Pitch</button></td></tr>').join('')
+        : '<tr><td colspan="10" class="empty">No landlord activity in this range.</td></tr>') +
+    '</tbody></table></div>' +
+    '<h2>What students search for</h2><p class="sub">Searches with no match are landlords or buildings students want that the site doesn\'t list yet. Add them, then ask past tenants for reviews.</p>' +
+    '<div class="grid2">' +
+      SearchTable('No match', misses, true) + SearchTable('All searches', searches, false) +
+    '</div></section>';
+}
+function SearchTable(title, rows, onlyMisses) {
+  return '<div class="panel tbl-wrap"><table><thead><tr><th>' + esc(title) + '</th><th class="r">Searches</th><th class="r">People</th>' + (onlyMisses ? '' : '<th class="r">No match</th>') + '</tr></thead><tbody>' +
+    (rows.length ? rows.slice(0, 25).map(s => '<tr><td>' + esc(s.query) + '</td><td class="r num">' + fmt(s.n) + '</td><td class="r num">' + fmt(s.people) + '</td>' + (onlyMisses ? '' : '<td class="r num">' + fmt(s.zero_results) + '</td>') + '</tr>').join('')
+      : '<tr><td colspan="4" class="empty">' + (onlyMisses ? 'Every search found something.' : 'No searches in this range.') + '</td></tr>') + '</tbody></table></div>';
+}
+
+// ===== Outreach =====
+const STATUSES = ['new', 'contacted', 'replied', 'meeting', 'won', 'lost'];
+const SETTINGS_KEY = 'rmc-admin-sender';
+function senderSettings() {
+  let s = {}; try { s = JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}'); } catch (e) {}
+  return Object.assign({ name: '', title: 'Founder', address: '', sponsor_price: '$150', insights_price: '$100', send_with: 'gmail' }, s);
+}
+function saveSettings() {
+  const s = {}; ['name', 'title', 'address', 'sponsor_price', 'insights_price', 'send_with'].forEach(k => { const el = $('#set-' + k); if (el) s[k] = el.value.trim(); });
+  try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(s)); } catch (e) {}
+  toast('Saved on this computer');
+  if (A.compose) { A.compose.body = null; A.compose.subject = null; render(); }
+}
+function Outreach() {
+  const ps = A.prospects, s = senderSettings();
+  const by = STATUSES.map(st => { const list = ps.filter(p => p.status === st); return { st, n: list.length, v: list.reduce((t, p) => t + (+p.deal_value || 0), 0) }; });
+  const landlordOpts = Object.entries(A.names).sort((a, b) => a[1].localeCompare(b[1])).map(([id, n]) => '<option value="' + esc(id) + '">' + esc(n) + '</option>').join('');
+  const e = A.editing || {};
+  return '<section>' +
+    '<h2>Pipeline</h2>' +
+    '<div class="pipeline">' + by.map(b => '<div><div class="l">' + b.st + '</div><div class="v">' + b.n + '</div><div class="m">' + money(b.v) + '</div></div>').join('') + '</div>' +
+    (A.compose ? Composer() : '') +
+    '<h2>' + (A.editing && A.editing.id ? 'Edit prospect' : 'Add a prospect') + '</h2>' +
+    '<form class="panel pad" onsubmit="event.preventDefault();saveProspect()"><div class="form-grid">' +
+      '<div><label class="f" for="p-kind">Type</label><select class="i" id="p-kind">' + [['business', 'Local business'], ['landlord', 'Landlord / manager'], ['campus', 'Campus org'], ['other', 'Other']].map(([v, l]) => '<option value="' + v + '"' + (e.kind === v ? ' selected' : '') + '>' + l + '</option>').join('') + '</select></div>' +
+      '<div class="wide"><label class="f" for="p-name">Business or landlord name</label><input class="i" id="p-name" required maxlength="200" value="' + esc(e.name || '') + '" /></div>' +
+      '<div><label class="f" for="p-landlord">Matches landlord on site</label><select class="i" id="p-landlord"><option value="">None</option>' + landlordOpts.replace('value="' + esc(e.landlord_id) + '"', 'value="' + esc(e.landlord_id) + '" selected') + '</select></div>' +
+      '<div><label class="f" for="p-contact">Contact name</label><input class="i" id="p-contact" value="' + esc(e.contact_name || '') + '" /></div>' +
+      '<div><label class="f" for="p-email">Email</label><input class="i" id="p-email" type="email" value="' + esc(e.email || '') + '" /></div>' +
+      '<div><label class="f" for="p-website">Website</label><input class="i" id="p-website" value="' + esc(e.website || '') + '" /></div>' +
+      '<div><label class="f" for="p-phone">Phone</label><input class="i" id="p-phone" value="' + esc(e.phone || '') + '" /></div>' +
+      '<div><label class="f" for="p-value">Deal value ($)</label><input class="i" id="p-value" type="number" min="0" step="1" value="' + esc(e.deal_value ?? '') + '" /></div>' +
+      '<div><label class="f" for="p-billing">Billed</label><select class="i" id="p-billing">' + ['monthly', 'semester', 'one-time'].map(v => '<option' + (e.billing === v ? ' selected' : '') + '>' + v + '</option>').join('') + '</select></div>' +
+      '<div class="wide"><label class="f" for="p-notes">Notes</label><input class="i" id="p-notes" value="' + esc(e.notes || '') + '" placeholder="e.g. Movers. Busiest in May and August." /></div>' +
+    '</div><div class="row" style="margin-top:12px"><button class="btn primary" type="submit">' + (A.editing && A.editing.id ? 'Save changes' : 'Add prospect') + '</button>' +
+      (A.editing ? '<button class="btn" type="button" onclick="A.editing=null;render()">Cancel</button>' : '') + '</div></form>' +
+    '<h2>Prospects</h2>' +
+    '<div class="panel tbl-wrap"><table><thead><tr><th>Name</th><th>Contact</th><th>Status</th><th class="r">Value</th><th>Last emailed</th><th></th></tr></thead><tbody>' +
+      (ps.length ? ps.map(p => '<tr><td><strong>' + esc(p.name) + '</strong><br><span class="muted" style="font-size:12px">' + esc({ business: 'Local business', landlord: 'Landlord', campus: 'Campus org', other: 'Other' }[p.kind] || p.kind) + (p.notes ? ' · ' + esc(p.notes) : '') + '</span></td>' +
+        '<td>' + esc(p.contact_name || '') + (p.email ? '<br><span class="muted" style="font-size:12px">' + esc(p.email) + '</span>' : '') + '</td>' +
+        '<td><select class="status" aria-label="Status for ' + esc(p.name) + '" onchange="setStatus(' + p.id + ',this.value)">' + STATUSES.map(st => '<option' + (p.status === st ? ' selected' : '') + '>' + st + '</option>').join('') + '</select></td>' +
+        '<td class="r num">' + (p.deal_value ? money(p.deal_value) + '<span class="muted">/' + (p.billing === 'monthly' ? 'mo' : p.billing === 'semester' ? 'sem' : 'once') + '</span>' : '—') + '</td>' +
+        '<td class="num" style="font-size:12px">' + (p.last_contacted_at ? new Date(p.last_contacted_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '—') + '</td>' +
+        '<td class="r" style="white-space:nowrap"><button class="btn small primary" type="button" onclick="openComposer(' + p.id + ')">Email</button> ' +
+          '<button class="btn small" type="button" onclick="editProspect(' + p.id + ')">Edit</button> ' +
+          '<button class="btn small danger" type="button" onclick="deleteProspect(' + p.id + ')">Delete</button></td></tr>').join('')
+        : '<tr><td colspan="6" class="empty">No prospects yet. Add the businesses and people you want to pitch above, or press Pitch on the Landlords tab.</td></tr>') +
+    '</tbody></table></div>' +
+    '<h2>Your sender details</h2><p class="sub">Filled into every email. Kept only in this browser.</p>' +
+    '<form class="panel pad" onsubmit="event.preventDefault();saveSettings()"><div class="form-grid">' +
+      '<div><label class="f" for="set-name">Your name</label><input class="i" id="set-name" value="' + esc(s.name) + '" /></div>' +
+      '<div><label class="f" for="set-title">Your title</label><input class="i" id="set-title" value="' + esc(s.title) + '" /></div>' +
+      '<div><label class="f" for="set-sponsor_price">Sponsor price</label><input class="i" id="set-sponsor_price" value="' + esc(s.sponsor_price) + '" /></div>' +
+      '<div><label class="f" for="set-insights_price">Insights report price</label><input class="i" id="set-insights_price" value="' + esc(s.insights_price) + '" /></div>' +
+      '<div class="wide"><label class="f" for="set-address">Mailing address (required by law in sales emails)</label><input class="i" id="set-address" value="' + esc(s.address) + '" placeholder="RateMyCrib LLC, street, city, state ZIP" /></div>' +
+      '<div><label class="f" for="set-send_with">Open emails in</label><select class="i" id="set-send_with"><option value="gmail"' + (s.send_with === 'gmail' ? ' selected' : '') + '>Gmail</option><option value="mailto"' + (s.send_with === 'mailto' ? ' selected' : '') + '>My mail app</option></select></div>' +
+    '</div><div class="row" style="margin-top:12px"><button class="btn" type="submit">Save</button></div></form>' +
+    '<h2>Sent</h2>' +
+    '<div class="panel tbl-wrap"><table><thead><tr><th>When</th><th>To</th><th>Subject</th><th>Template</th></tr></thead><tbody>' +
+      (A.log.length ? A.log.map(l => { const p = ps.find(x => x.id === l.prospect_id); return '<tr><td class="num" style="font-size:12px">' + new Date(l.sent_at).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) + '</td><td>' + esc(p ? p.name : '—') + '</td><td>' + esc(l.subject || '') + '</td><td class="muted">' + esc(l.template || '') + '</td></tr>'; }).join('')
+        : '<tr><td colspan="4" class="empty">Nothing sent yet. Emails you mark as sent show up here.</td></tr>') +
+    '</tbody></table></div></section>';
+}
+
+// Email templates: real numbers from the dashboard, nothing invented
+const TEMPLATES = {
+  sponsor: { label: 'Local business: sponsor spot', kinds: ['business', 'campus', 'other'],
+    subject: 'Reaching UIUC renters while they pick next year\'s place',
+    body: 'Hi {first_name},\n\nI run RateMyCrib (ratemycrib.net), a free, student-run site where UIUC students read and write reviews of their landlords before signing a lease. In the last {days} days it had {visitors} visitors, {mobile_pct}% of them on phones.\n\nThe people on the site are about to move, so they\'re also looking for {need}. I\'m offering a few local businesses a clearly labeled sponsor spot: your name, a one-line offer and a link on the pages students use most. It never touches reviews or rankings.\n\n- {sponsor_price}/month, cancel anytime\n- A monthly count of how many people saw and clicked it\n\nWould a 10-minute call this week work? I can send a mockup of how it would look first.\n\n{sender_name}\n{sender_title}, RateMyCrib\n{mailing_address}\n\nIf you\'d rather not hear from me, reply "no thanks" and I won\'t email again.' },
+  insights: { label: 'Landlord: monthly insights report', kinds: ['landlord'], landlordOnly: true,
+    subject: 'What students saw about {landlord} on RateMyCrib',
+    body: 'Hi {first_name},\n\nI run RateMyCrib (ratemycrib.net), a student-run review site for Champaign-Urbana housing. In the last {days} days, {landlord}\'s page was viewed {views} times by {landlord_visitors} people. It has {reviews} reviews averaging {rating} out of 5, and {would_rent}% of reviewers would rent again.\n\nI put together a monthly insights report for property managers: page views, how you compare with similar landlords, and the most common praise and complaints in your reviews (anonymized). It\'s {insights_price}/month.\n\nTo be clear: paying never changes a rating, a ranking or which reviews appear. Every review stays up unless it breaks our posted rules.\n\nWould you like a free sample report for last month?\n\n{sender_name}\n{sender_title}, RateMyCrib\n{mailing_address}\n\nIf you\'d rather not hear from me, reply "no thanks" and I won\'t email again.' },
+  followup: { label: 'Follow-up (any)', kinds: ['business', 'landlord', 'campus', 'other'],
+    subject: 'Following up: RateMyCrib',
+    body: 'Hi {first_name},\n\nFollowing up on my note last week in case it got buried. Since then, {visitors} people have used RateMyCrib in the last {days} days.\n\nIs this worth a quick call, or should I check back after lease season?\n\n{sender_name}\n{sender_title}, RateMyCrib\n{mailing_address}\n\nReply "no thanks" and I won\'t email again.' }
+};
+function mergeValues(p) {
+  const d = A.data, c = d.kpis.current || {}, s = senderSettings();
+  const l = p && p.landlord_id ? (d.landlords || []).find(x => String(x.lid) === String(p.landlord_id)) : null;
+  const needs = { business: 'furniture, movers, internet, storage and renters insurance', campus: 'ways to get involved on campus', landlord: 'their next place', other: 'what comes with a move' };
+  return {
+    first_name: (p && p.contact_name ? p.contact_name.split(' ')[0] : '') || 'there',
+    business: p ? p.name : '', landlord: p && p.landlord_id ? landlordName(p.landlord_id, p.name) : (p ? p.name : ''),
+    days: String(A.days), visitors: fmt(c.visitors || c.sessions), sessions: fmt(c.sessions), mobile_pct: String(pct(c.mobile_sessions, c.sessions)),
+    total_reviews: fmt(d.totals.reviews), need: needs[p ? p.kind : 'business'] || needs.other,
+    views: l ? fmt(l.views) : '0', landlord_visitors: l ? fmt(l.visitors) : '0', reviews: l ? fmt(l.reviews_total) : '0',
+    rating: l && l.avg_rating != null ? (+l.avg_rating).toFixed(1) : 'n/a', would_rent: l && l.would_rent_pct != null ? String(l.would_rent_pct) : 'n/a',
+    sponsor_price: s.sponsor_price || '[price]', insights_price: s.insights_price || '[price]',
+    sender_name: s.name || '[your name]', sender_title: s.title || 'Founder', mailing_address: s.address || '[mailing address]'
+  };
+}
+const fill = (tpl, v) => tpl.replace(/\{(\w+)\}/g, (m, k) => v[k] != null ? v[k] : m);
+function openComposer(id, template) {
+  const p = A.prospects.find(x => x.id === id);
+  if (!p) return;
+  const t = template || (p.kind === 'landlord' ? 'insights' : p.last_contacted_at ? 'followup' : 'sponsor');
+  A.compose = { id, template: t, subject: null, body: null };
+  A.tab = 'outreach'; render();
+  const el = $('#composer'); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+function Composer() {
+  const p = A.prospects.find(x => x.id === A.compose.id);
+  if (!p) return '';
+  const t = TEMPLATES[A.compose.template], v = mergeValues(p);
+  if (A.compose.subject == null) A.compose.subject = fill(t.subject, v);
+  if (A.compose.body == null) A.compose.body = fill(t.body, v);
+  const s = senderSettings();
+  const warn = t.landlordOnly ? '<div class="note"><strong>Before you send this to a landlord:</strong> the site currently promises "No landlord money" (link previews), "We are not sponsored by any landlord" (mission page) and "no paid premium listings" (landlords page). Selling landlords anything while those lines are up would be misleading. Update those pages first, keep paid features away from ratings and rankings, and say so publicly.</div>' : '';
+  const adsWarn = !t.landlordOnly && A.compose.template === 'sponsor' ? '<div class="note"><strong>Heads up:</strong> the mission page says "We don\'t run ads." Change it to describe clearly labeled local sponsors before the first sponsor goes live.</div>' : '';
+  const missing = [];
+  if (!p.email) missing.push('this prospect has no email address');
+  if (!s.name) missing.push('your name');
+  if (!s.address) missing.push('your mailing address');
+  return '<h2 id="composer">Email ' + esc(p.name) + '</h2>' + warn + adsWarn +
+    '<div class="composer"><div class="panel pad">' +
+      '<div class="row" style="margin-bottom:12px"><label class="f" for="c-template" style="margin:0">Template</label><select class="i" id="c-template" style="max-width:320px" onchange="A.compose.template=this.value;A.compose.subject=null;A.compose.body=null;render()">' +
+        Object.entries(TEMPLATES).map(([k, x]) => '<option value="' + k + '"' + (k === A.compose.template ? ' selected' : '') + '>' + esc(x.label) + '</option>').join('') + '</select></div>' +
+      '<label class="f" for="c-to">To</label><input class="i" id="c-to" value="' + esc(p.email || '') + '" readonly />' +
+      '<label class="f" for="c-subject" style="margin-top:10px">Subject</label><input class="i" id="c-subject" value="' + esc(A.compose.subject) + '" oninput="A.compose.subject=this.value;updatePreviewMeta()" />' +
+      '<label class="f" for="c-body" style="margin-top:10px">Message</label><textarea class="i" id="c-body" oninput="A.compose.body=this.value;updatePreviewMeta()">' + esc(A.compose.body) + '</textarea>' +
+      '<p class="muted" id="c-left" style="font-size:12px;margin-top:6px"></p>' +
+      (missing.length ? '<p class="muted" style="font-size:12px;color:var(--bad)">Missing: ' + esc(missing.join(', ')) + '.</p>' : '') +
+      '<div class="row" style="margin-top:12px">' +
+        '<button class="btn primary" type="button" onclick="sendEmail()"' + (p.email ? '' : ' disabled') + '>Open in ' + (s.send_with === 'mailto' ? 'mail app' : 'Gmail') + '</button>' +
+        '<button class="btn" type="button" onclick="copyEmail()">Copy</button>' +
+        '<button class="btn" type="button" onclick="markSent()">Mark as sent</button>' +
+        '<button class="btn" type="button" onclick="A.compose=null;render()">Close</button>' +
+      '</div></div>' +
+      '<div class="panel pad"><h3>Numbers used</h3><p class="muted" style="font-size:12px;margin-bottom:10px">Last ' + A.days + ' days, from the dashboard. Change the range at the top to use a different window.</p><dl class="merge">' +
+        Object.entries(v).filter(([k]) => !/sender|address|price|first_name|need|business/.test(k)).map(([k, x]) => '<dt>{' + esc(k) + '}</dt><dd>' + esc(x) + '</dd>').join('') + '</dl></div>' +
+    '</div>';
+}
+function updatePreviewMeta() {
+  const el = $('#c-left'); if (!el || !A.compose) return;
+  const left = (A.compose.body || '').match(/\[[a-z ]+\]|\{\w+\}/g);
+  el.textContent = left ? 'Still to fill in: ' + [...new Set(left)].join(', ') : 'Ready to send.';
+}
+function sendEmail() {
+  const p = A.prospects.find(x => x.id === A.compose.id); if (!p || !p.email) return;
+  const s = senderSettings();
+  const to = encodeURIComponent(p.email), su = encodeURIComponent(A.compose.subject || ''), body = encodeURIComponent(A.compose.body || '');
+  const url = s.send_with === 'mailto' ? 'mailto:' + to + '?subject=' + su + '&body=' + body
+    : 'https://mail.google.com/mail/?view=cm&fs=1&to=' + to + '&su=' + su + '&body=' + body;
+  window.open(url, '_blank', 'noopener');
+  toast('Opened. Press "Mark as sent" after you send it.');
+}
+async function copyEmail() {
+  try { await navigator.clipboard.writeText('Subject: ' + (A.compose.subject || '') + '\n\n' + (A.compose.body || '')); toast('Copied'); }
+  catch (e) { toast('Copy blocked by the browser. Select the text instead.'); }
+}
+async function markSent() {
+  const p = A.prospects.find(x => x.id === A.compose.id); if (!p) return;
+  const now = new Date().toISOString();
+  const { error } = await db.from('outreach_log').insert({ prospect_id: p.id, template: A.compose.template, subject: A.compose.subject, channel: senderSettings().send_with });
+  if (error) { toast('Could not save: ' + error.message); return; }
+  await db.from('prospects').update({ last_contacted_at: now, updated_at: now, status: p.status === 'new' ? 'contacted' : p.status }).eq('id', p.id);
+  A.compose = null; toast('Logged'); loadAll();
+}
+
+async function saveProspect() {
+  const val = id => ($('#' + id).value || '').trim();
+  const row = { kind: val('p-kind'), name: val('p-name'), contact_name: val('p-contact') || null, email: val('p-email') || null, website: val('p-website') || null,
+    phone: val('p-phone') || null, landlord_id: val('p-landlord') ? +val('p-landlord') : null, deal_value: val('p-value') ? +val('p-value') : null,
+    billing: val('p-billing'), notes: val('p-notes') || null, updated_at: new Date().toISOString() };
+  if (!row.name) { toast('Add a name'); return; }
+  const q = A.editing && A.editing.id ? db.from('prospects').update(row).eq('id', A.editing.id) : db.from('prospects').insert(row);
+  const { error } = await q;
+  if (error) { toast('Could not save: ' + error.message); return; }
+  A.editing = null; toast('Saved'); loadAll();
+}
+function editProspect(id) { A.editing = Object.assign({}, A.prospects.find(x => x.id === id)); render(); const f = $('#p-name'); if (f) { f.scrollIntoView({ block: 'center' }); f.focus(); } }
+async function deleteProspect(id) {
+  const p = A.prospects.find(x => x.id === id); if (!p) return;
+  const btns = document.querySelectorAll('button[onclick="deleteProspect(' + id + ')"]');
+  const b = btns[0];
+  if (b && b.dataset.armed !== '1') { b.dataset.armed = '1'; b.textContent = 'Confirm delete'; setTimeout(() => { if (b.isConnected) { b.dataset.armed = ''; b.textContent = 'Delete'; } }, 4000); return; }
+  const { error } = await db.from('prospects').delete().eq('id', id);
+  if (error) { toast('Could not delete: ' + error.message); return; }
+  toast('Deleted'); loadAll();
+}
+async function setStatus(id, status) {
+  const { error } = await db.from('prospects').update({ status, updated_at: new Date().toISOString() }).eq('id', id);
+  if (error) { toast('Could not save: ' + error.message); return; }
+  const p = A.prospects.find(x => x.id === id); if (p) p.status = status;
+  toast('Status: ' + status); loadAll();
+}
+async function pitchLandlord(lid) {
+  let p = A.prospects.find(x => String(x.landlord_id) === String(lid));
+  if (!p) {
+    const { data, error } = await db.from('prospects').insert({ kind: 'landlord', name: landlordName(lid), landlord_id: +lid, billing: 'monthly' }).select().single();
+    if (error) { toast('Could not add: ' + error.message); return; }
+    A.prospects.unshift(data); p = data;
+    toast('Added to Outreach. Add their email before sending.');
+  }
+  openComposer(p.id, 'insights');
+}
+
+function Guide() {
+  return '<section class="guide"><h2>What we track, and why it makes money</h2>' +
+    '<p>Every number here is first-party: it goes from the site to your database, nowhere else. No cookies, no IP addresses, no names. Visitor IDs reset every month and are never attached to reviews.</p>' +
+    '<h3>The audience (sells sponsorships)</h3><table><tbody>' +
+      '<tr><th>Visitors, visits, phone share</th><td>Sponsors buy reach. "X people a month, most on phones, all about to move" is the whole pitch.</td></tr>' +
+      '<tr><th>Where visits come from</th><td>Tells you which posts and channels to repeat. Tag links with <code>?utm_source=</code>.</td></tr>' +
+      '<tr><th>Returning visitors</th><td>Shows people come back while deciding, which makes a sponsor spot worth more than one view.</td></tr>' +
+    '</tbody></table>' +
+    '<h3>Landlord attention (sells insights, only if you choose to take landlord money)</h3><table><tbody>' +
+      '<tr><th>Landlord page views and visitors</th><td>How many people looked at a landlord. The first line of any landlord pitch.</td></tr>' +
+      '<tr><th>Average time on the page, rate clicks</th><td>Shows people read the reviews closely, not just glanced.</td></tr>' +
+      '<tr><th>Searches with no match</th><td>Demand for landlords you don\'t list yet. Adding them grows reviews and pitch targets.</td></tr>' +
+    '</tbody></table>' +
+    '<h3>Student products (sell the lease scanner)</h3><table><tbody>' +
+      '<tr><th>Lease scans, PDF uploads</th><td>Real use of the free scanner, without ever storing a lease.</td></tr>' +
+      '<tr><th>Waitlist offer shown → joined</th><td>The share of scanner users who ask for the paid version. Price it once this is steady.</td></tr>' +
+    '</tbody></table>' +
+    '<h3>Trust (protects all of it)</h3><table><tbody>' +
+      '<tr><th>Reviews per day, verified share</th><td>The product. More verified reviews make every number above easier to sell, and protect against fake-review floods.</td></tr>' +
+      '<tr><th>Verification funnel and problems</th><td>If "send failed" shows up, the email sender in Supabase needs attention.</td></tr>' +
+    '</tbody></table>' +
+    '<h3>Before you charge anyone</h3><ol>' +
+      '<li>The site says "No landlord money. No sponsored rankings," the mission page says "We don\'t run ads," and the landlords page says there are no paid premium listings. Rewrite them to match what you actually sell before the first sale.</li>' +
+      '<li>Label anything paid as "Sponsored" right where it appears.</li>' +
+      '<li>Sales emails need your mailing address and a way to opt out. The templates include both.</li>' +
+    '</ol></section>';
+}
+
+// ===== Actions =====
+function setTab(t) { A.tab = t; try { sessionStorage.setItem('rmc-admin-tab', t); } catch (e) {} render(); }
+function setDays(d) { A.days = d; try { sessionStorage.setItem('rmc-admin-days', d); } catch (e) {} if (A.compose) { A.compose.subject = null; A.compose.body = null; } loadAll(); }
+function sortBy(k) { A.sort = A.sort.key === k ? { key: k, dir: -A.sort.dir } : { key: k, dir: k === 'name' ? 1 : -1 }; render(); }
+async function signIn() {
+  const btn = $('#si-go'), err = $('#si-err');
+  btn.disabled = true; btn.textContent = 'Signing in…'; err.hidden = true;
+  const { data, error } = await db.auth.signInWithPassword({ email: $('#si-email').value.trim(), password: $('#si-pass').value });
+  if (error) { btn.disabled = false; btn.textContent = 'Sign in'; err.textContent = error.message === 'Invalid login credentials' ? 'That email and password don\'t match an account.' : error.message; err.hidden = false; return; }
+  A.user = data.user; await start();
+}
+async function signOut() { await db.auth.signOut(); A.user = null; A.data = null; A.prospects = []; render(); }
+async function start() {
+  render();
+  await loadNames();
+  await loadAll();
+}
+(async function boot() {
+  const { data } = await db.auth.getSession();
+  A.user = data && data.session ? data.session.user : null;
+  if (A.user) start(); else render();
+})();
+</script>
+</body>
+</html>

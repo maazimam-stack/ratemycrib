@@ -149,6 +149,22 @@ CREATE POLICY "Anyone can submit reviews"
 - **Inline handlers:** put user-supplied text inside an `onclick="..."` only through `jsArg()`, never `'${esc(x)}'`. `esc()` is for HTML text and attributes.
 - **Database:** the public reads through `reviews_public` / `user_properties_public` and cannot edit or delete reviews. Rules live in `supabase/security.sql`; re-run it after changing tables.
 
+## Admin dashboard and Verified Illini
+
+`admin.html` (ratemycrib.net/admin.html) is a private dashboard: visitors, sources, landlord page views, searches with no match, funnels for reviews, the lease scanner and verification, plus an outreach list with email drafts filled in from real numbers. The page holds no data; it calls admin-only database functions, so without an admin sign-in it shows nothing.
+
+Setup, once:
+1. Supabase > SQL Editor: run `supabase/growth.sql` (after `security.sql`).
+2. Supabase > Authentication > Users > Add user: your email and a password, tick "Auto Confirm User".
+3. SQL Editor, new query: `insert into private.admins (email) values ('your@email');`
+4. Verified Illini emails a 6-digit code. Supabase's built-in sender only delivers to your own team, so connect a real sender: Authentication > Emails > SMTP Settings (Resend, Postmark or Brevo all work). Then edit the "Magic Link" and "Confirm signup" templates to show `{{ .Token }}` (a code, not a link: school mail scanners open links and use them up). Keep "Confirm email" on.
+5. Database > Extensions: turn on `pg_cron` if `growth.sql` said it couldn't schedule the cleanup, then run `growth.sql` again. It deletes unused verification sign-ins every 15 minutes.
+6. Authentication > Settings: keep "write audit logs to the database" off, so no sign-in history sits next to the reviews.
+
+How verification protects reviewers: the badge needs a sign-in made with an emailed code (a password sign-in never counts), the database sets it, and the sign-in account and its email are deleted the moment the review posts. No email, account id or per-person record is kept with or about a review, and the public sees only the day a review was posted. Bursts (more than 5 reviews of one landlord in a day, or more than 40 an hour) are held, hidden, until you approve them in admin.html.
+
+Analytics are first-party (`site_events`): a random visitor ID that resets monthly, a random visit ID, the device class and the referring site. Browsers sending Global Privacy Control or Do Not Track get no visitor ID. Neither ID is ever sent with a review.
+
 ## Contributing
 
 This is a student project. If you go to UIUC and want to help:
