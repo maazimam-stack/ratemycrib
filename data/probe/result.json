@@ -1,0 +1,25 @@
+{
+ "reviews_count": {
+  "status": 200,
+  "range": "0-90/91",
+  "body": ""
+ },
+ "patch_reviews_public": {
+  "status": 204,
+  "range": "*/0",
+  "body": ""
+ },
+ "delete_reviews_public": {
+  "status": 204,
+  "range": "*/0",
+  "body": ""
+ },
+ "patch_user_properties_public": {
+  "status": 400,
+  "body": "{\"code\":\"0A000\",\"details\":\"View columns that are not columns of their base relation are not updatable.\",\"hint\":null,\"message\":\"cannot update column \\\"address\\\" of view \\\"user_properties_public\\\"\"}"
+ },
+ "patch_reviews_table": {
+  "status": 401,
+  "body": "{\"code\":\"42501\",\"details\":null,\"hint\":null,\"message\":\"permission denied for table reviews\"}"
+ }
+}
