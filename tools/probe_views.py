@@ -1,4 +1,4 @@
-"""Read-only check: can the public key change data through the public views? Every write targets an id that
+"""Read-only check (re-run after the hotfix): can the public key change data through the public views? Every write targets an id that
 cannot exist, so nothing is modified either way. Writes data/probe/result.json."""
 import json, os, re, urllib.request, urllib.error
 idx = open("index.html", encoding="utf-8").read()
