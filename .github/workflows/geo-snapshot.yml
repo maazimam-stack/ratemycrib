@@ -1,0 +1,23 @@
+# One-off data pull for the "major + year" feature. Lives only on the data/catalog-snapshot branch.
+name: Geo snapshot
+on:
+  push:
+    branches: [data/catalog-snapshot]
+    paths: [tools/snapshot_geo.py, .github/workflows/geo-snapshot.yml]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  geo:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - run: git fetch --depth=1 origin main && git show origin/main:index.html > index.html
+      - run: python3 tools/snapshot_geo.py
+      - run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/geo-raw
+          git commit -m "Geo snapshot $(date -u +%Y-%m-%d)" || echo "nothing new"
+          git push
