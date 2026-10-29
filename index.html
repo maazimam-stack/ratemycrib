@@ -897,6 +897,12 @@ try {
 const SUPABASE_URL = 'https://expfrmknhdcwnccqjwnq.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV4cGZybWtuaGRjd25jY3Fqd25xIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwNTgyNjksImV4cCI6MjA4OTYzNDI2OX0.IDoYSa-Xpq_TAebacsl_TuI9u48ssia7imjG0ehB9Jg';
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+// supabase/security.sql locks the raw tables and adds safe views (reviews_public, user_properties_public)
+// and adjust_helpful(). Until it has been run, those don't exist yet, so reads and votes fall back to the
+// old direct calls. After it has been run, the fallbacks are never reached.
+function dbObjectMissing(error) {
+  return !!error && (['42P01', '42883', 'PGRST202', 'PGRST205'].includes(error.code) || /does not exist|could not find/i.test(error.message || ''));
+}
 // ===== SEED DATA =====
 const SEED_LANDLORDS = [
   { id:1, name:"Green Street Realty", props:42, rating:0, reviews:0, wouldRent:0, responseRate:"—",
@@ -1283,7 +1289,8 @@ let dbLoaded = false;
 
 async function loadDbReviews() {
   try {
-    const { data, error, count } = await db.from('reviews').select('*', { count: 'exact' }).order('created_at', { ascending: false });
+    let { data, error, count } = await db.from('reviews_public').select('*', { count: 'exact' }).order('created_at', { ascending: false });
+    if (dbObjectMissing(error)) ({ data, error, count } = await db.from('reviews').select('*', { count: 'exact' }).order('created_at', { ascending: false }));
     if (error) throw error;
     console.log('[RateMyCrib] Supabase returned', (data||[]).length, 'reviews (count:', count, ')');
     if (data && data.length === 0 && count === 0) {
@@ -1403,7 +1410,8 @@ async function incrementHelpful(reviewId) {
     try {
       const existing = dbReviews.find(r => r.id === reviewId);
       if (!existing) return;
-      await db.from('reviews').update({ helpful_count: existing.helpful + 1 }).eq('id', reviewId);
+      const { error } = await db.rpc('adjust_helpful', { p_review_id: reviewId, p_delta: 1 });
+      if (dbObjectMissing(error)) await db.from('reviews').update({ helpful_count: existing.helpful + 1 }).eq('id', reviewId);
     } catch (e) { console.warn('Helpful update failed:', e.message); }
   }
 }
@@ -1580,7 +1588,8 @@ function getReviewCount() {
 // Track total reviews submitted via Supabase
 async function getTotalDbReviewCount() {
   try {
-    const { count, error } = await db.from('reviews').select('*', { count: 'exact', head: true });
+    let { count, error } = await db.from('reviews_public').select('*', { count: 'exact', head: true });
+    if (dbObjectMissing(error)) ({ count, error } = await db.from('reviews').select('*', { count: 'exact', head: true }));
     if (error) throw error;
     return count || 0;
   } catch (e) { return dbReviews.length; }
@@ -3510,14 +3519,14 @@ async function handlePdfUpload(file) {
     if (text && text.length > 50) {
       if (textarea) textarea.value = text;
       toast('PDF text extracted (' + text.length.toLocaleString() + ' characters). Ready to scan!');
-      trackScannerEvent('pdf_upload', { filename: file.name, chars: text.length });
+      trackScannerEvent('pdf_upload', { chars: text.length }); // no file names: they often contain a name or address
     } else {
       toast('Could not extract enough text from this PDF. It may be a scanned image. Try pasting the text manually.');
-      trackScannerEvent('pdf_upload_fail', { filename: file.name, reason: 'insufficient_text' });
+      trackScannerEvent('pdf_upload_fail', { reason: 'insufficient_text' });
     }
   } catch(err) {
     toast('Error reading PDF: ' + err.message);
-    trackScannerEvent('pdf_upload_fail', { filename: file.name, reason: err.message });
+    trackScannerEvent('pdf_upload_fail', { reason: err.message });
   }
   pdfExtracting = false;
   if (uploadZone) uploadZone.innerHTML = '<div class="upload-icon" style="font-size:24px;font-weight:700;color:rgba(255,255,255,0.3)">PDF</div><div class="upload-text"><strong>Click to upload</strong> or drag & drop your lease PDF<br>PDF files up to 20MB</div>';
@@ -3589,7 +3598,7 @@ async function submitInterest() {
     closeInterestPopup();
   } catch(e) {
     // Fallback — log even if table doesn't exist yet
-    trackScannerEvent('interest_submitted_fallback', { email: email });
+    trackScannerEvent('interest_submitted_fallback', { email_domain: email.split('@')[1] }); // never log the full email
     toast('Thanks! We\'ll be in touch.');
     closeInterestPopup();
   }
@@ -4166,7 +4175,8 @@ async function loadUserSubmissions() {
   try {
     const { data: ld } = await db.from('user_landlords').select('*').order('name');
     if (ld) userLandlords = ld;
-    const { data: pp } = await db.from('user_properties').select('*').order('address');
+    let { data: pp, error: ppErr } = await db.from('user_properties_public').select('*').order('address');
+    if (dbObjectMissing(ppErr)) ({ data: pp } = await db.from('user_properties').select('*').order('address'));
     if (pp) userProperties = pp;
     render(); // re-render to include user-submitted landlords in UI
   } catch(e) { /* tables may not exist yet — silent fail */ }
@@ -4570,7 +4580,8 @@ async function markHelpful(reviewId, btn, currentCount) {
     try {
       const existing = dbReviews.find(r => r.id === reviewId);
       if (existing && existing.helpful > 0) {
-        await db.from('reviews').update({ helpful_count: existing.helpful - 1 }).eq('id', reviewId);
+        const { error } = await db.rpc('adjust_helpful', { p_review_id: reviewId, p_delta: -1 });
+        if (dbObjectMissing(error)) await db.from('reviews').update({ helpful_count: existing.helpful - 1 }).eq('id', reviewId);
       }
     } catch(e) { /* silent */ }
     return;
