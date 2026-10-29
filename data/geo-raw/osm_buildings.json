@@ -1,0 +1,7625 @@
+[
+{
+"name": "Jarling's Custard Cup",
+"alt": "",
+"addr": "309 West Kirby Avenue",
+"lat": 40.0977314,
+"lng": -88.2477219
+},
+{
+"name": "Gregory Hall",
+"alt": "",
+"addr": "810 South Wright Street",
+"lat": 40.1056859,
+"lng": -88.2281046
+},
+{
+"name": "Foellinger Auditorium",
+"alt": "",
+"addr": "709 South Mathews Avenue",
+"lat": 40.1059511,
+"lng": -88.2272174
+},
+{
+"name": "Literatures, Cultures & Linguistics Building",
+"alt": "LCLB",
+"addr": "707 South Mathews Avenue",
+"lat": 40.1062804,
+"lng": -88.2261745
+},
+{
+"name": "Mechanical Engineering Lab",
+"alt": "",
+"addr": "105 South Mathews Avenue",
+"lat": 40.1117966,
+"lng": -88.2261556
+},
+{
+"name": "Turner Student Services Building",
+"alt": "",
+"addr": "610 East John Street",
+"lat": 40.10936,
+"lng": -88.2298962
+},
+{
+"name": "Everitt Laboratory",
+"alt": "",
+"addr": "1406 West Green Street",
+"lat": 40.1109099,
+"lng": -88.2282574
+},
+{
+"name": "Harker Hall",
+"alt": "",
+"addr": "1305 West Green Street",
+"lat": 40.1091996,
+"lng": -88.2266697
+},
+{
+"name": "Wohlers Hall",
+"alt": "",
+"addr": "1206 South Sixth Street",
+"lat": 40.1036025,
+"lng": -88.2297403
+},
+{
+"name": "Funk Library",
+"alt": "ACES Library",
+"addr": "1101 South Goodwin Avenue",
+"lat": 40.1028356,
+"lng": -88.2251329
+},
+{
+"name": "Education Building",
+"alt": "",
+"addr": "1310 South Sixth Street",
+"lat": 40.1020773,
+"lng": -88.2296394
+},
+{
+"name": "Culver's",
+"alt": "",
+"addr": "2302 South Neil Street",
+"lat": 40.0854577,
+"lng": -88.2461426
+},
+{
+"name": "University of Illinois College of Law",
+"alt": "",
+"addr": "504 East Pennsylvania Ave",
+"lat": 40.1010079,
+"lng": -88.2316031
+},
+{
+"name": "Art and Design Building",
+"alt": "",
+"addr": "408 Peabody Drive",
+"lat": 40.102017,
+"lng": -88.2319229
+},
+{
+"name": "2085",
+"alt": "",
+"addr": "2083-2087 S Orchard St",
+"lat": 40.0910667,
+"lng": -88.2119389
+},
+{
+"name": "Orchard Downs South Laundry",
+"alt": "",
+"addr": "",
+"lat": 40.0921673,
+"lng": -88.2111108
+},
+{
+"name": "McKinley Health Center",
+"alt": "",
+"addr": "1109 South Lincoln Avenue",
+"lat": 40.1027304,
+"lng": -88.2198829
+},
+{
+"name": "Edward R. Madigan Laboratory",
+"alt": "ERML",
+"addr": "1201 West Gregory Drive",
+"lat": 40.1038059,
+"lng": -88.223822
+},
+{
+"name": "Campus Bike Center",
+"alt": "",
+"addr": "51 East Gregory Drive",
+"lat": 40.1038339,
+"lng": -88.2404604
+},
+{
+"name": "Irwin Indoor Football Facility",
+"alt": "",
+"addr": "301 Peabody Drive",
+"lat": 40.1006644,
+"lng": -88.234173
+},
+{
+"name": "David Kinley Hall",
+"alt": "",
+"addr": "1407 West Gregory Drive",
+"lat": 40.1036124,
+"lng": -88.228405
+},
+{
+"name": "Activities and Recreation Center",
+"alt": "ARC",
+"addr": "201 East Peabody Drive",
+"lat": 40.100781,
+"lng": -88.2360495
+},
+{
+"name": "Huff Hall",
+"alt": "",
+"addr": "1206 South Fourth Street",
+"lat": 40.1035681,
+"lng": -88.2327618
+},
+{
+"name": "Temple Hoyne Buell Hall",
+"alt": "",
+"addr": "611 West Lorado Taft Drive",
+"lat": 40.1020817,
+"lng": -88.2281101
+},
+{
+"name": "Irwin Doctoral Study Hall",
+"alt": "Surveying Building",
+"addr": "607 East Gregory Drive",
+"lat": 40.1039865,
+"lng": -88.2294909
+},
+{
+"name": "Natural History Survey Green House",
+"alt": "",
+"addr": "",
+"lat": 40.1007989,
+"lng": -88.22949
+},
+{
+"name": "McFarland Memorial Bell Tower",
+"alt": "",
+"addr": "",
+"lat": 40.1028307,
+"lng": -88.2271909
+},
+{
+"name": "Natural History Building",
+"alt": "NHB",
+"addr": "1301 West Green Street",
+"lat": 40.1094922,
+"lng": -88.2260305
+},
+{
+"name": "University of Illinois Observatory",
+"alt": "",
+"addr": "901 South Mathews Avenue",
+"lat": 40.1051839,
+"lng": -88.2260548
+},
+{
+"name": "Animal Sciences Laboratory",
+"alt": "",
+"addr": "1201 West Gregory Drive",
+"lat": 40.1038249,
+"lng": -88.2251424
+},
+{
+"name": "Natural Resources Building",
+"alt": "",
+"addr": "615 East Peabody Drive",
+"lat": 40.1011368,
+"lng": -88.2290775
+},
+{
+"name": "Mumford Hall",
+"alt": "",
+"addr": "1301 West Gregory Drive",
+"lat": 40.1036286,
+"lng": -88.2259567
+},
+{
+"name": "Agricultural Engineering Sciences",
+"alt": "",
+"addr": "1304 West Pennsylvania Avenue",
+"lat": 40.1016375,
+"lng": -88.2263437
+},
+{
+"name": "Illini Union",
+"alt": "",
+"addr": "1401 West Green Street",
+"lat": 40.1094007,
+"lng": -88.2272548
+},
+{
+"name": "Mumford House",
+"alt": "",
+"addr": "",
+"lat": 40.1027187,
+"lng": -88.2276576
+},
+{
+"name": "Architecture Building",
+"alt": "",
+"addr": "608 West Lorado Taft Drive",
+"lat": 40.1033588,
+"lng": -88.2290851
+},
+{
+"name": "Natural Resources Garage",
+"alt": "",
+"addr": "608 East Pennsylvania Avenue",
+"lat": 40.1008403,
+"lng": -88.2285852
+},
+{
+"name": "Stock Pavilion",
+"alt": "",
+"addr": "1402 West Pennsylvania Avenue",
+"lat": 40.1010228,
+"lng": -88.227191
+},
+{
+"name": "Art Annex Studio 2",
+"alt": "",
+"addr": "1301 South Goodwin Avenue",
+"lat": 40.1020668,
+"lng": -88.224824
+},
+{
+"name": "National Soybean Research Center",
+"alt": "",
+"addr": "1101 Peabody Drive",
+"lat": 40.1010825,
+"lng": -88.2225774
+},
+{
+"name": "Wood Engineering Laboratory",
+"alt": "",
+"addr": "1305 South Goodwin Avenue",
+"lat": 40.1020577,
+"lng": -88.2258462
+},
+{
+"name": "Plant Sciences Laboratory and Greenhouse",
+"alt": "",
+"addr": "1201 South Dorner Drive",
+"lat": 40.1022125,
+"lng": -88.2227254
+},
+{
+"name": "Turner Hall",
+"alt": "Plant Sciences Building",
+"addr": "1102 South Goodwin Avenue",
+"lat": 40.1029621,
+"lng": -88.224233
+},
+{
+"name": "Turner Hall Greenhouse",
+"alt": "",
+"addr": "",
+"lat": 40.10206,
+"lng": -88.2240105
+},
+{
+"name": "Art Annex Studio 1",
+"alt": "",
+"addr": "1208 Peabody Drive",
+"lat": 40.1018508,
+"lng": -88.2252763
+},
+{
+"name": "Soybean Cyst/Nematode Research Building",
+"alt": "",
+"addr": "",
+"lat": 40.1028454,
+"lng": -88.2228595
+},
+{
+"name": "Agricultural Bioprocess Laboratory",
+"alt": "",
+"addr": "",
+"lat": 40.101159,
+"lng": -88.2255593
+},
+{
+"name": "F29",
+"alt": "",
+"addr": "",
+"lat": 40.1037779,
+"lng": -88.2224985
+},
+{
+"name": "Smith Memorial Hall",
+"alt": "",
+"addr": "805 South Mathews Avenue",
+"lat": 40.1057141,
+"lng": -88.2261119
+},
+{
+"name": "Davenport Hall",
+"alt": "",
+"addr": "607 South Mathews Avenue",
+"lat": 40.107215,
+"lng": -88.2262013
+},
+{
+"name": "Noyes Laboratory",
+"alt": "",
+"addr": "505 South Mathews Avenue",
+"lat": 40.1084353,
+"lng": -88.2260913
+},
+{
+"name": "English Building",
+"alt": "",
+"addr": "608 South Wright Street",
+"lat": 40.1075589,
+"lng": -88.2281563
+},
+{
+"name": "Engineering Hall",
+"alt": "",
+"addr": "1308 West Green Street",
+"lat": 40.1109069,
+"lng": -88.2269804
+},
+{
+"name": "Materials Science & Engineering Building",
+"alt": "MSEB",
+"addr": "1304 West Green Street",
+"lat": 40.1109284,
+"lng": -88.2261035
+},
+{
+"name": "Talbot Laboratory",
+"alt": "",
+"addr": "104 South Wright Street",
+"lat": 40.1118434,
+"lng": -88.2282766
+},
+{
+"name": "Grainger Engineering Library",
+"alt": "",
+"addr": "1301 West Springfield Avenue",
+"lat": 40.112443,
+"lng": -88.2268606
+},
+{
+"name": "Medical Sciences Building",
+"alt": "",
+"addr": "506 South Mathews Avenue",
+"lat": 40.108563,
+"lng": -88.225172
+},
+{
+"name": "Roger Adams Laboratory",
+"alt": "",
+"addr": "600 South Mathews Avenue",
+"lat": 40.1074718,
+"lng": -88.224805
+},
+{
+"name": "Chemical & Life Sciences Building B & C",
+"alt": "",
+"addr": "601 South Goodwin Avenue",
+"lat": 40.1081775,
+"lng": -88.2245164
+},
+{
+"name": "Chemical & Life Sciences Building A",
+"alt": "",
+"addr": "601 South Goodwin Avenue",
+"lat": 40.1075314,
+"lng": -88.2242568
+},
+{
+"name": "Morrill Hall",
+"alt": "",
+"addr": "505 South Goodwin Avenue",
+"lat": 40.1087575,
+"lng": -88.2245595
+},
+{
+"name": "Burrill Hall",
+"alt": "",
+"addr": "407 South Goodwin Avenue",
+"lat": 40.1092941,
+"lng": -88.2248799
+},
+{
+"name": "Louise Freer Hall",
+"alt": "Freer Hall",
+"addr": "906 South Goodwin Avenue",
+"lat": 40.104833,
+"lng": -88.2227302
+},
+{
+"name": "IGB Gatehouse",
+"alt": "",
+"addr": "",
+"lat": 40.1050794,
+"lng": -88.2253008
+},
+{
+"name": "Sidney Lu Mechanical Engineering Building",
+"alt": "Mechanical Engineering Building",
+"addr": "1206 West Green Street",
+"lat": 40.1110059,
+"lng": -88.2247298
+},
+{
+"name": "Bevier Hall",
+"alt": "",
+"addr": "905 South Goodwin Avenue",
+"lat": 40.104791,
+"lng": -88.224418
+},
+{
+"name": "Ceramics Kiln House",
+"alt": "",
+"addr": "107 South Goodwin Avenue",
+"lat": 40.1116261,
+"lng": -88.2246972
+},
+{
+"name": "Campus Recreation Center East",
+"alt": "CRCE",
+"addr": "1102 West Gregory Drive",
+"lat": 40.1047755,
+"lng": -88.2219668
+},
+{
+"name": "Institute for Genomic Biology (IGB)",
+"alt": "",
+"addr": "1206 West Gregory Drive",
+"lat": 40.104787,
+"lng": -88.2248764
+},
+{
+"name": "Ceramics Building",
+"alt": "",
+"addr": "105 South Goodwin Avenue",
+"lat": 40.1117006,
+"lng": -88.2242591
+},
+{
+"name": "Nuclear Radiation Laboratory",
+"alt": "",
+"addr": "",
+"lat": 40.1112169,
+"lng": -88.2244514
+},
+{
+"name": "Transportation Building",
+"alt": "",
+"addr": "104 South Mathews Avenue",
+"lat": 40.1117043,
+"lng": -88.2251971
+},
+{
+"name": "Wesley United Methodist Church",
+"alt": "Wesley UMC",
+"addr": "1203 West Green Street",
+"lat": 40.1098505,
+"lng": -88.2249285
+},
+{
+"name": "Bielfeldt Athletic Administration Building",
+"alt": "",
+"addr": "1700 South Fourth Street",
+"lat": 40.0961597,
+"lng": -88.2321546
+},
+{
+"name": "Ubben Basketball Complex",
+"alt": "",
+"addr": "1750 South Fourth Street",
+"lat": 40.0955836,
+"lng": -88.2313539
+},
+{
+"name": "Van Doren Hall",
+"alt": "",
+"addr": "1215 South Fourth Street",
+"lat": 40.1017602,
+"lng": -88.2339276
+},
+{
+"name": "Flagg Hall",
+"alt": "",
+"addr": "1207 South Fourth Street",
+"lat": 40.1027792,
+"lng": -88.2339533
+},
+{
+"name": "Lundgren Hall",
+"alt": "",
+"addr": "1201 South Fourth Street",
+"lat": 40.1039373,
+"lng": -88.2340472
+},
+{
+"name": "Clark Hall",
+"alt": "",
+"addr": "1203 South Fourth Street",
+"lat": 40.1035828,
+"lng": -88.23402
+},
+{
+"name": "Taft Hall",
+"alt": "",
+"addr": "1213 South Fourth Street",
+"lat": 40.1021222,
+"lng": -88.2337038
+},
+{
+"name": "Barton Hall",
+"alt": "",
+"addr": "1205 South Fourth Street",
+"lat": 40.1032417,
+"lng": -88.2340426
+},
+{
+"name": "Noble Hall",
+"alt": "",
+"addr": "1209 South Fourth Street",
+"lat": 40.1023222,
+"lng": -88.2341943
+},
+{
+"name": "Coble Hall",
+"alt": "",
+"addr": "801 South Wright Street",
+"lat": 40.1087542,
+"lng": -88.2292828
+},
+{
+"name": "Ice Arena",
+"alt": "",
+"addr": "406 East Armory Avenue",
+"lat": 40.1058673,
+"lng": -88.2325373
+},
+{
+"name": "Swanlund Administration Building",
+"alt": "",
+"addr": "601 East John Street",
+"lat": 40.1088289,
+"lng": -88.2300367
+},
+{
+"name": "Armory",
+"alt": "",
+"addr": "505 East Armory Avenue",
+"lat": 40.1047619,
+"lng": -88.231952
+},
+{
+"name": "St John's Catholic Newman Center",
+"alt": "",
+"addr": "604 East Armory Avenue",
+"lat": 40.1061291,
+"lng": -88.2298833
+},
+{
+"name": "Krannert Center for the Performing Arts",
+"alt": "",
+"addr": "500 South Goodwin Avenue",
+"lat": 40.1080214,
+"lng": -88.2227462
+},
+{
+"name": "Harding Band Building",
+"alt": "",
+"addr": "",
+"lat": 40.1047686,
+"lng": -88.2307498
+},
+{
+"name": "Illini Union Bookstore",
+"alt": "",
+"addr": "809 South Wright Street",
+"lat": 40.1083195,
+"lng": -88.229252
+},
+{
+"name": "Japan House",
+"alt": "",
+"addr": "2000 South Lincoln Avenue",
+"lat": 40.0927956,
+"lng": -88.217943
+},
+{
+"name": "NCSA Petascale Computing Facility",
+"alt": "Blue Waters",
+"addr": "1725 South Oak Street",
+"lat": 40.0952591,
+"lng": -88.2420314
+},
+{
+"name": "Illinois Simulator Laboratory",
+"alt": "",
+"addr": "",
+"lat": 40.0904635,
+"lng": -88.2229259
+},
+{
+"name": "President's House",
+"alt": "",
+"addr": "711 West Florida Avenue",
+"lat": 40.0976132,
+"lng": -88.21684
+},
+{
+"name": "Caterpillar Building",
+"alt": "SAIC Building",
+"addr": "1901 South First Street",
+"lat": 40.0923369,
+"lng": -88.2388452
+},
+{
+"name": "I Building",
+"alt": "",
+"addr": "1816 South Oak Street",
+"lat": 40.0929835,
+"lng": -88.2399492
+},
+{
+"name": "EnterpriseWorks",
+"alt": "",
+"addr": "60 Hazelwood Drive",
+"lat": 40.0911082,
+"lng": -88.2401776
+},
+{
+"name": "Atkins Building",
+"alt": "",
+"addr": "1800 South Oak Street",
+"lat": 40.093918,
+"lng": -88.2395819
+},
+{
+"name": "Veterinary Medicine Basic Sciences Building",
+"alt": "",
+"addr": "",
+"lat": 40.0929643,
+"lng": -88.2209505
+},
+{
+"name": "Horticulture Field Laboratory",
+"alt": "",
+"addr": "",
+"lat": 40.0964061,
+"lng": -88.2148231
+},
+{
+"name": "iHotel & Conference Center",
+"alt": "I Hotel and Conference Center",
+"addr": "1900 South First Street",
+"lat": 40.0936723,
+"lng": -88.2367876
+},
+{
+"name": "Champaign Fire Station",
+"alt": "",
+"addr": "",
+"lat": 40.0863291,
+"lng": -88.2443614
+},
+{
+"name": "Firemanship Training Facility",
+"alt": "",
+"addr": "",
+"lat": 40.0854406,
+"lng": -88.2451939
+},
+{
+"name": "Ameren Building",
+"alt": "",
+"addr": "2100 South Oak Street",
+"lat": 40.0895088,
+"lng": -88.2403188
+},
+{
+"name": "State Regional Office Building",
+"alt": "",
+"addr": "2125 South First Street",
+"lat": 40.0877651,
+"lng": -88.2397367
+},
+{
+"name": "Central Illinois Mosque and Islamic Center",
+"alt": "",
+"addr": "106 South Lincoln Avenue",
+"lat": 40.1116578,
+"lng": -88.2189395
+},
+{
+"name": "Z-2 Building",
+"alt": "",
+"addr": "2001 South First Street",
+"lat": 40.0901343,
+"lng": -88.2392183
+},
+{
+"name": "Administrative Information Center",
+"alt": "",
+"addr": "50 Gerty Drive",
+"lat": 40.0873984,
+"lng": -88.2413872
+},
+{
+"name": "Info Tech Center (Z3)",
+"alt": "",
+"addr": "2021 South First Street",
+"lat": 40.088888,
+"lng": -88.2392832
+},
+{
+"name": "Illinois Fire Service Insitute",
+"alt": "",
+"addr": "11 Gerty Drive",
+"lat": 40.0864481,
+"lng": -88.2437178
+},
+{
+"name": "University YMCA",
+"alt": "",
+"addr": "1001 South Wright Street",
+"lat": 40.1065756,
+"lng": -88.2292494
+},
+{
+"name": "The Chapel of Saint John the Divine",
+"alt": "",
+"addr": "1011 South Wright Street",
+"lat": 40.1056226,
+"lng": -88.2292166
+},
+{
+"name": "Psychology Building",
+"alt": "",
+"addr": "603 East Daniel Street",
+"lat": 40.1074769,
+"lng": -88.2299558
+},
+{
+"name": "C7",
+"alt": "",
+"addr": "",
+"lat": 40.1087795,
+"lng": -88.2308257
+},
+{
+"name": "Community United Church of Christ",
+"alt": "Community UCC",
+"addr": "805 South Sixth Street",
+"lat": 40.1082567,
+"lng": -88.2306591
+},
+{
+"name": "Student Services Arcade Building",
+"alt": "",
+"addr": "715 South Wright Street",
+"lat": 40.1097324,
+"lng": -88.229445
+},
+{
+"name": "University Lutheran Church",
+"alt": "",
+"addr": "604 East Chalmers Street",
+"lat": 40.1071071,
+"lng": -88.2299781
+},
+{
+"name": "Kappa Alpha Theta",
+"alt": "",
+"addr": "611 East Daniel Street",
+"lat": 40.1077229,
+"lng": -88.2292432
+},
+{
+"name": "Chi Omega",
+"alt": "",
+"addr": "907 South Wright Street",
+"lat": 40.1072979,
+"lng": -88.2292662
+},
+{
+"name": "University Laboratory High School",
+"alt": "",
+"addr": "1212 West Springfield Avenue",
+"lat": 40.1131368,
+"lng": -88.2252616
+},
+{
+"name": "Coordinated Science Laboratory",
+"alt": "CSL",
+"addr": "1308 West Main Street",
+"lat": 40.1149318,
+"lng": -88.2267559
+},
+{
+"name": "Siebel Center for Computer Science",
+"alt": "Siebel Center",
+"addr": "201 North Goodwin Avenue",
+"lat": 40.1140307,
+"lng": -88.2248176
+},
+{
+"name": "Kenney Gymnasium",
+"alt": "",
+"addr": "1406 Springfield Avenue",
+"lat": 40.1130542,
+"lng": -88.2282948
+},
+{
+"name": "Kenney Gymnasium Annex",
+"alt": "",
+"addr": "",
+"lat": 40.1131294,
+"lng": -88.2276653
+},
+{
+"name": "Newmark Civil Engineering Laboratory",
+"alt": "Newmark;NCEL",
+"addr": "205 North Mathews Avenue",
+"lat": 40.1139977,
+"lng": -88.2265445
+},
+{
+"name": "Digital Computer Laboratory",
+"alt": "DCL",
+"addr": "1304 Springfield Avenue",
+"lat": 40.1131539,
+"lng": -88.2264551
+},
+{
+"name": "National Center for Supercomputing Applications",
+"alt": "NCSA Building",
+"addr": "1205 West Clark Street",
+"lat": 40.1148266,
+"lng": -88.225004
+},
+{
+"name": "Wesley Campus Ministries",
+"alt": "",
+"addr": "1203 West Green Street",
+"lat": 40.1101659,
+"lng": -88.2244338
+},
+{
+"name": "A/C Center",
+"alt": "",
+"addr": "",
+"lat": 40.1095972,
+"lng": -88.2229239
+},
+{
+"name": "Chiller Plant",
+"alt": "",
+"addr": "",
+"lat": 40.1151311,
+"lng": -88.226218
+},
+{
+"name": "Beckman Institute",
+"alt": "",
+"addr": "405 North Mathews Avenue",
+"lat": 40.1157003,
+"lng": -88.2275303
+},
+{
+"name": "University High School Gymnasium",
+"alt": "",
+"addr": "1207 West Stoughton Street",
+"lat": 40.1132798,
+"lng": -88.2247127
+},
+{
+"name": "Illinois Terminal",
+"alt": "",
+"addr": "45 East University Avenue",
+"lat": 40.115804,
+"lng": -88.241144
+},
+{
+"name": "City Building",
+"alt": "",
+"addr": "102 North Neil Street",
+"lat": 40.1164953,
+"lng": -88.2430645
+},
+{
+"name": "Champaign Public Library",
+"alt": "",
+"addr": "200 West Green Street",
+"lat": 40.11129,
+"lng": -88.245908
+},
+{
+"name": "Advanced Computation Building",
+"alt": "",
+"addr": "1011 Springfield Avenue",
+"lat": 40.1124826,
+"lng": -88.2219946
+},
+{
+"name": "Daniels Hall",
+"alt": "",
+"addr": "1010 West Green Street",
+"lat": 40.1110134,
+"lng": -88.2218928
+},
+{
+"name": "Allen Hall",
+"alt": "",
+"addr": "1005 West Gregory Drive",
+"lat": 40.1041266,
+"lng": -88.2207719
+},
+{
+"name": "Engineering Sciences Building",
+"alt": "",
+"addr": "1101 Springfield Avenue",
+"lat": 40.1124444,
+"lng": -88.2230859
+},
+{
+"name": "Astronomy Building",
+"alt": "",
+"addr": "1002 West Green Street",
+"lat": 40.1109241,
+"lng": -88.2208777
+},
+{
+"name": "North Campus Parking Garage",
+"alt": "",
+"addr": "",
+"lat": 40.1158528,
+"lng": -88.2248948
+},
+{
+"name": "Materials Research Laboratory",
+"alt": "",
+"addr": "104 South Goodwin Avenue",
+"lat": 40.111665,
+"lng": -88.2230737
+},
+{
+"name": "Loomis Laboratory of Physics",
+"alt": "",
+"addr": "1110 West Green Street",
+"lat": 40.1111055,
+"lng": -88.2232324
+},
+{
+"name": "Leonard Hall",
+"alt": "",
+"addr": "",
+"lat": 40.1045199,
+"lng": -88.2199332
+},
+{
+"name": "Superconductivity Center",
+"alt": "",
+"addr": "100 South Goodwin Avenue",
+"lat": 40.1121133,
+"lng": -88.2233351
+},
+{
+"name": "Hyatt Place",
+"alt": "",
+"addr": "217 North Neil Street",
+"lat": 40.1179974,
+"lng": -88.2439878
+},
+{
+"name": "M2 on Neil",
+"alt": "",
+"addr": "301 North Neil Street",
+"lat": 40.1187431,
+"lng": -88.2439164
+},
+{
+"name": "Henry Dale & Betty Smith Football Center",
+"alt": "",
+"addr": "1700 South Fourth Street",
+"lat": 40.0998778,
+"lng": -88.2341168
+},
+{
+"name": "Orchard Downs Community Center",
+"alt": "",
+"addr": "West George Huff Drive",
+"lat": 40.0911277,
+"lng": -88.2134229
+},
+{
+"name": "Family & Graduate Housing",
+"alt": "Family and Graduate Housing Office",
+"addr": "1841 Orchard Place",
+"lat": 40.0964068,
+"lng": -88.2139251
+},
+{
+"name": "Orchard Downs North Laundry",
+"alt": "",
+"addr": "South Orchard Street",
+"lat": 40.0952845,
+"lng": -88.2133551
+},
+{
+"name": "Saunders Hall",
+"alt": "",
+"addr": "902 College Court",
+"lat": 40.099726,
+"lng": -88.2197961
+},
+{
+"name": "Carr Hall",
+"alt": "",
+"addr": "1001 West Pennsylvania Avenue",
+"lat": 40.1002851,
+"lng": -88.220967
+},
+{
+"name": "Babcock Hall",
+"alt": "",
+"addr": "1002 College Court",
+"lat": 40.0997172,
+"lng": -88.2209584
+},
+{
+"name": "Blaisdell Hall",
+"alt": "",
+"addr": "901 West Pennsylvania Avenue",
+"lat": 40.1002915,
+"lng": -88.2197967
+},
+{
+"name": "Illini Studio",
+"alt": "",
+"addr": "319 South Prospect Avenue",
+"lat": 40.112927,
+"lng": -88.2580981
+},
+{
+"name": "Krannert View 2",
+"alt": "",
+"addr": "1107 West Oregon Street",
+"lat": 40.1067483,
+"lng": -88.2224839
+},
+{
+"name": "Anita Purves Nature Center",
+"alt": "",
+"addr": "1505 North Broadway Avenue",
+"lat": 40.127122,
+"lng": -88.2095763
+},
+{
+"name": "Crash Champions",
+"alt": "",
+"addr": "802 East Perkins Road",
+"lat": 40.127885,
+"lng": -88.1984911
+},
+{
+"name": "2116",
+"alt": "",
+"addr": "2116 S Orchard Street",
+"lat": 40.0900459,
+"lng": -88.2118392
+},
+{
+"name": "Delta Gamma",
+"alt": "",
+"addr": "1207 West Nevada Street",
+"lat": 40.105588,
+"lng": -88.225122
+},
+{
+"name": "Asian American Cultural Center",
+"alt": "",
+"addr": "1210 West Nevada Street",
+"lat": 40.1063214,
+"lng": -88.2247773
+},
+{
+"name": "Alpha Delta Pi",
+"alt": "",
+"addr": "1202 West Nevada Street",
+"lat": 40.1062596,
+"lng": -88.2241096
+},
+{
+"name": "The Bread Company",
+"alt": "",
+"addr": "706 South Goodwin Avenue",
+"lat": 40.1066842,
+"lng": -88.2236243
+},
+{
+"name": "Department of African American Studies",
+"alt": "",
+"addr": "1201 West Nevada Street",
+"lat": 40.1057187,
+"lng": -88.2240872
+},
+{
+"name": "La Casa Cultural Latina",
+"alt": "",
+"addr": "1203 West Nevada Street",
+"lat": 40.1057021,
+"lng": -88.2243519
+},
+{
+"name": "Krannert View 3",
+"alt": "",
+"addr": "1108 West Nevada Street",
+"lat": 40.1062407,
+"lng": -88.2224628
+},
+{
+"name": "Nevada Building Computer Lab",
+"alt": "Nevada ICS Computer Lab",
+"addr": "1203 1/2 West Nevada Street",
+"lat": 40.1055406,
+"lng": -88.2244506
+},
+{
+"name": "Channing-Murray Foundation",
+"alt": "",
+"addr": "1209 West Oregon Street",
+"lat": 40.106772,
+"lng": -88.2252008
+},
+{
+"name": "Campus Honors Program",
+"alt": "Honors House or \"Ho Ho\"",
+"addr": "1205 West Oregon Street",
+"lat": 40.1067035,
+"lng": -88.2246076
+},
+{
+"name": "Department of Latina/Latino Studies",
+"alt": "",
+"addr": "1207 West Oregon Street",
+"lat": 40.10668,
+"lng": -88.2248297
+},
+{
+"name": "Gender & Women's Studies",
+"alt": "",
+"addr": "1205 West Nevada Street",
+"lat": 40.1056937,
+"lng": -88.2246899
+},
+{
+"name": "Asian American Studies",
+"alt": "",
+"addr": "1208 West Nevada Street",
+"lat": 40.1061526,
+"lng": -88.2247692
+},
+{
+"name": "Gamma Phi Beta",
+"alt": "",
+"addr": "1110 West Nevada Street",
+"lat": 40.1062622,
+"lng": -88.2227746
+},
+{
+"name": "Bruce D. Nesbitt African American Cultural Center",
+"alt": "",
+"addr": "1212 West Nevada Street",
+"lat": 40.1061332,
+"lng": -88.2251557
+},
+{
+"name": "Gregory Place West",
+"alt": "",
+"addr": "701 South Gregory Street",
+"lat": 40.1064919,
+"lng": -88.2218726
+},
+{
+"name": "American Indian Studies",
+"alt": "",
+"addr": "1204 West Nevada Street",
+"lat": 40.1062037,
+"lng": -88.2243116
+},
+{
+"name": "Busey Hall",
+"alt": "",
+"addr": "1111 West Nevada Street",
+"lat": 40.1056194,
+"lng": -88.2226567
+},
+{
+"name": "Evans Hall",
+"alt": "",
+"addr": "1115 West Nevada Street",
+"lat": 40.1056203,
+"lng": -88.2233484
+},
+{
+"name": "Early Child Development Laboratory",
+"alt": "",
+"addr": "1005 West Nevada Street",
+"lat": 40.1055857,
+"lng": -88.2207417
+},
+{
+"name": "Child Development Building",
+"alt": "",
+"addr": "1105 West Nevada Street",
+"lat": 40.1056205,
+"lng": -88.2219298
+},
+{
+"name": "Dance Administration Building",
+"alt": "",
+"addr": "",
+"lat": 40.1056553,
+"lng": -88.2205817
+},
+{
+"name": "Institute of Government and Public Affairs",
+"alt": "",
+"addr": "1007 West Nevada Street",
+"lat": 40.1056473,
+"lng": -88.2212987
+},
+{
+"name": "The Nevadan",
+"alt": "",
+"addr": "903 West Nevada Street",
+"lat": 40.1057592,
+"lng": -88.2196609
+},
+{
+"name": "Dance Studio",
+"alt": "",
+"addr": "",
+"lat": 40.1056768,
+"lng": -88.2199435
+},
+{
+"name": "Spurlock Museum",
+"alt": "",
+"addr": "600 South Gregory Street",
+"lat": 40.1076255,
+"lng": -88.2207857
+},
+{
+"name": "Admissions and Records Building",
+"alt": "",
+"addr": "901 West Illinois Street",
+"lat": 40.1083819,
+"lng": -88.2206763
+},
+{
+"name": "Levis Faculty Center",
+"alt": "",
+"addr": "919 West Illinois Street",
+"lat": 40.1086837,
+"lng": -88.2211231
+},
+{
+"name": "Alice Campbell Alumni Center",
+"alt": "",
+"addr": "601 South Lincoln Avenue",
+"lat": 40.1079889,
+"lng": -88.2199115
+},
+{
+"name": "CSL Plasma",
+"alt": "",
+"addr": "312 West Kirby Avenue",
+"lat": 40.0987006,
+"lng": -88.247813
+},
+{
+"name": "Arby's",
+"alt": "",
+"addr": "509 North Cunningham Avenue",
+"lat": 40.1178105,
+"lng": -88.2048116
+},
+{
+"name": "Carter's Furniture",
+"alt": "",
+"addr": "410 North Vine Street",
+"lat": 40.1152994,
+"lng": -88.2042538
+},
+{
+"name": "Illini Pantry",
+"alt": "",
+"addr": "606 South Sixth Street",
+"lat": 40.111048,
+"lng": -88.2301955
+},
+{
+"name": "KFC",
+"alt": "Kentucky Fried Chicken",
+"addr": "410 West University Avenue",
+"lat": 40.1167623,
+"lng": -88.2122481
+},
+{
+"name": "Maize",
+"alt": "",
+"addr": "1305 South Neil Street",
+"lat": 40.1014323,
+"lng": -88.2443689
+},
+{
+"name": "Walgreens",
+"alt": "",
+"addr": "1509 South Neil Street",
+"lat": 40.0986171,
+"lng": -88.2451658
+},
+{
+"name": "Walgreens",
+"alt": "",
+"addr": "302 East University Avenue",
+"lat": 40.1169125,
+"lng": -88.2040334
+},
+{
+"name": "Oglesby Hall",
+"alt": "",
+"addr": "1005 College Court",
+"lat": 40.0989364,
+"lng": -88.2215178
+},
+{
+"name": "Trelease Hall",
+"alt": "",
+"addr": "901 College Court",
+"lat": 40.0989559,
+"lng": -88.2203506
+},
+{
+"name": "The Tower at Third",
+"alt": "",
+"addr": "302 East John Street",
+"lat": 40.1093171,
+"lng": -88.2348636
+},
+{
+"name": "NYC Halal Bros",
+"alt": "Halal Bros",
+"addr": "301 East Green Street",
+"lat": 40.10997,
+"lng": -88.2351549
+},
+{
+"name": "309 Green",
+"alt": "",
+"addr": "309 East Green Street",
+"lat": 40.1099827,
+"lng": -88.2343444
+},
+{
+"name": "Cohen Center for Jewish Life",
+"alt": "",
+"addr": "503 East John Street",
+"lat": 40.1087548,
+"lng": -88.2316111
+},
+{
+"name": "Station A Post Office",
+"alt": "USPS",
+"addr": "302 East Green Street",
+"lat": 40.1104998,
+"lng": -88.2351569
+},
+{
+"name": "University Centre",
+"alt": "",
+"addr": "",
+"lat": 40.109905,
+"lng": -88.240779
+},
+{
+"name": "Walgreens",
+"alt": "",
+"addr": "407 East Green Street",
+"lat": 40.1099804,
+"lng": -88.2327403
+},
+{
+"name": "Jimmy John's Franchise LLC",
+"alt": "",
+"addr": "2202 Fox Drive",
+"lat": 40.0877547,
+"lng": -88.2488915
+},
+{
+"name": "CVS Pharmacy",
+"alt": "CVS",
+"addr": "107 West Green Street",
+"lat": 40.1095624,
+"lng": -88.2443207
+},
+{
+"name": "Henry Administration Building",
+"alt": "",
+"addr": "506 South Wright Street",
+"lat": 40.1083802,
+"lng": -88.2282366
+},
+{
+"name": "Altgeld Hall",
+"alt": "",
+"addr": "1409 West Green Street",
+"lat": 40.1093159,
+"lng": -88.22839
+},
+{
+"name": "Chemistry Annex",
+"alt": "",
+"addr": "601 South Mathews Avenue",
+"lat": 40.1078109,
+"lng": -88.2260761
+},
+{
+"name": "Armory House Suites",
+"alt": "",
+"addr": "1008 South Second Street",
+"lat": 40.1058921,
+"lng": -88.2367173
+},
+{
+"name": "Armory House Main",
+"alt": "",
+"addr": "1010 South Second Street",
+"lat": 40.1056349,
+"lng": -88.2367343
+},
+{
+"name": "Graduate School of Library and Information Science",
+"alt": "",
+"addr": "501 East Daniel Street",
+"lat": 40.1076551,
+"lng": -88.2315057
+},
+{
+"name": "Burnham 310",
+"alt": "",
+"addr": "310 East Springfield Avenue",
+"lat": 40.1130241,
+"lng": -88.234747
+},
+{
+"name": "Irwin Academic Center",
+"alt": "",
+"addr": "402 East Armory Avenue",
+"lat": 40.1057534,
+"lng": -88.2331279
+},
+{
+"name": "Phi Kappa Sigma",
+"alt": "",
+"addr": "313 East Chalmers Street",
+"lat": 40.1062204,
+"lng": -88.233883
+},
+{
+"name": "Red Hair",
+"alt": "",
+"addr": "713 South Sixth Street",
+"lat": 40.1093834,
+"lng": -88.2306202
+},
+{
+"name": "Bromley Hall",
+"alt": "",
+"addr": "910 South Third Street",
+"lat": 40.1070572,
+"lng": -88.2349722
+},
+{
+"name": "Speech and Hearing Science Building",
+"alt": "",
+"addr": "901 South Sixth Street",
+"lat": 40.1076465,
+"lng": -88.2307354
+},
+{
+"name": "Park Place Tower",
+"alt": "",
+"addr": "202 East Green Street",
+"lat": 40.1105181,
+"lng": -88.2367054
+},
+{
+"name": "Urbana Public Parking",
+"alt": "",
+"addr": "111 East Main Street",
+"lat": 40.1120179,
+"lng": -88.2079784
+},
+{
+"name": "Elliott Counselling Group",
+"alt": "",
+"addr": "309 West Clark Street",
+"lat": 40.1150545,
+"lng": -88.2479973
+},
+{
+"name": "Wampler Apartments",
+"alt": "",
+"addr": "412 West Clark Street",
+"lat": 40.1155159,
+"lng": -88.2496544
+},
+{
+"name": "Law Offices of Bruce Ratcliffe",
+"alt": "",
+"addr": "404 West Clark Street",
+"lat": 40.1155095,
+"lng": -88.2489424
+},
+{
+"name": "Holy Cross Parish Center",
+"alt": "",
+"addr": "405 West Clark Street",
+"lat": 40.1150296,
+"lng": -88.2492856
+},
+{
+"name": "Holy Cross School",
+"alt": "",
+"addr": "410 West White Street",
+"lat": 40.1146549,
+"lng": -88.2496085
+},
+{
+"name": "Memory Lane Photography",
+"alt": "",
+"addr": "617 West Clark Street",
+"lat": 40.1151177,
+"lng": -88.2536466
+},
+{
+"name": "Robeson's, Inc.",
+"alt": "",
+"addr": "201 South State Street",
+"lat": 40.1150333,
+"lng": -88.2472588
+},
+{
+"name": "Holy Cross Church",
+"alt": "",
+"addr": "",
+"lat": 40.1150379,
+"lng": -88.2488416
+},
+{
+"name": "Lincoln Square",
+"alt": "",
+"addr": "300 South Broadway Avenue",
+"lat": 40.1106338,
+"lng": -88.2071624
+},
+{
+"name": "Healey Place",
+"alt": "",
+"addr": "601 South First Street",
+"lat": 40.111137,
+"lng": -88.2390432
+},
+{
+"name": "The University Group",
+"alt": "University Group Apartments",
+"addr": "309 South First Street",
+"lat": 40.1132681,
+"lng": -88.2389929
+},
+{
+"name": "Circle K",
+"alt": "",
+"addr": "59 East Green Street",
+"lat": 40.1098894,
+"lng": -88.239012
+},
+{
+"name": "Community Building",
+"alt": "",
+"addr": "2221 South First Street",
+"lat": 40.0853587,
+"lng": -88.2387762
+},
+{
+"name": "University of Illinois Community Credit Union",
+"alt": "UICCU",
+"addr": "2201 South First Street",
+"lat": 40.0868849,
+"lng": -88.2388076
+},
+{
+"name": "First & Armory Residences",
+"alt": "",
+"addr": "1012 South First Street",
+"lat": 40.1056484,
+"lng": -88.238425
+},
+{
+"name": "First & Armory Residences",
+"alt": "",
+"addr": "1010 South First Street",
+"lat": 40.1059582,
+"lng": -88.2382658
+},
+{
+"name": "102 E. Gregory",
+"alt": "",
+"addr": "102 East Gregory Drive",
+"lat": 40.1042487,
+"lng": -88.2381246
+},
+{
+"name": "Physiology Research Laboratory",
+"alt": "",
+"addr": "301 Hazelwood Drive",
+"lat": 40.0905901,
+"lng": -88.2362634
+},
+{
+"name": "Stonecreek Church",
+"alt": "",
+"addr": "2502 South Race Street",
+"lat": 40.0850912,
+"lng": -88.208546
+},
+{
+"name": "Urbana High School",
+"alt": "",
+"addr": "1002 South Race Street",
+"lat": 40.1036785,
+"lng": -88.2079028
+},
+{
+"name": "Busey Bank",
+"alt": "",
+"addr": "201 West Main Street",
+"lat": 40.1121536,
+"lng": -88.2096717
+},
+{
+"name": "Champaign County Courthouse",
+"alt": "",
+"addr": "101 East Main Street",
+"lat": 40.1120255,
+"lng": -88.2064952
+},
+{
+"name": "Urbana-Champaign Independent Media Center",
+"alt": "UC-IMC",
+"addr": "202 South Broadway Avenue",
+"lat": 40.1114053,
+"lng": -88.2069202
+},
+{
+"name": "Hotel Royer",
+"alt": "",
+"addr": "210 South Broadway Avenue",
+"lat": 40.1111061,
+"lng": -88.2078826
+},
+{
+"name": "Tres Nopales",
+"alt": "",
+"addr": "114 South Race Street",
+"lat": 40.1119451,
+"lng": -88.2086681
+},
+{
+"name": "Hertbert & Orville's Barber Company",
+"alt": "",
+"addr": "121 West Water Street",
+"lat": 40.1132485,
+"lng": -88.2084021
+},
+{
+"name": "Urbana Free Library",
+"alt": "",
+"addr": "210 West Green Street",
+"lat": 40.1113103,
+"lng": -88.2094827
+},
+{
+"name": "Urbana First United Methodist Church",
+"alt": "",
+"addr": "304 South Race Street",
+"lat": 40.1103254,
+"lng": -88.2084621
+},
+{
+"name": "US District Court Clerk",
+"alt": "",
+"addr": "201 South Vine Street",
+"lat": 40.1113001,
+"lng": -88.2055286
+},
+{
+"name": "Starbucks",
+"alt": "",
+"addr": "102 North Vine Street",
+"lat": 40.1129682,
+"lng": -88.2046225
+},
+{
+"name": "Advance Auto Parts",
+"alt": "",
+"addr": "110 North Vine Street",
+"lat": 40.1131969,
+"lng": -88.2043103
+},
+{
+"name": "Emma's",
+"alt": "",
+"addr": "114 North Vine Street",
+"lat": 40.1135132,
+"lng": -88.2031341
+},
+{
+"name": "Niemanns",
+"alt": "",
+"addr": "331 East Stoughton Street",
+"lat": 40.1130777,
+"lng": -88.2339659
+},
+{
+"name": "Hampton Inn Champaign/Urbana",
+"alt": "Hampton Inn",
+"addr": "1200 West University Avenue",
+"lat": 40.1170782,
+"lng": -88.2247185
+},
+{
+"name": "Perkins",
+"alt": "",
+"addr": "1214 West University Avenue",
+"lat": 40.1166463,
+"lng": -88.2254496
+},
+{
+"name": "Church of the Living God",
+"alt": "",
+"addr": "312 East Bradley Avenue",
+"lat": 40.1279978,
+"lng": -88.2343792
+},
+{
+"name": "Douglass Square Management Office",
+"alt": "",
+"addr": "414 Nathaniel Burch Drive",
+"lat": 40.1281449,
+"lng": -88.2325516
+},
+{
+"name": "Pilgrim Missionary Baptist Church",
+"alt": "Pilgrim MBC",
+"addr": "1310 North Sixth Street",
+"lat": 40.1295283,
+"lng": -88.2295874
+},
+{
+"name": "Public Safety Building",
+"alt": "",
+"addr": "1110 West Springfield Avenue",
+"lat": 40.1129935,
+"lng": -88.2234853
+},
+{
+"name": "Dunkin'",
+"alt": "Dunkin' Donuts",
+"addr": "1302 North Prospect Avenue",
+"lat": 40.1286769,
+"lng": -88.2574254
+},
+{
+"name": "Enterprise",
+"alt": "Enterprise",
+"addr": "1212 North Prospect Avenue",
+"lat": 40.1281237,
+"lng": -88.257515
+},
+{
+"name": "BB Automotive Service",
+"alt": "",
+"addr": "1202 North Prospect Avenue",
+"lat": 40.1274035,
+"lng": -88.2575207
+},
+{
+"name": "No-Limit Check Cashing",
+"alt": "",
+"addr": "1304 North Prospect Avenue",
+"lat": 40.1288253,
+"lng": -88.2574623
+},
+{
+"name": "Premier Sound & Design",
+"alt": "",
+"addr": "1104 North Prospect Avenue",
+"lat": 40.1265782,
+"lng": -88.2574755
+},
+{
+"name": "The Salvation Army Corps Community Center",
+"alt": "",
+"addr": "502 North Prospect Avenue",
+"lat": 40.1204643,
+"lng": -88.2572617
+},
+{
+"name": "Mariscos Los Reyes",
+"alt": "",
+"addr": "1308 North Prospect Avenue",
+"lat": 40.1293768,
+"lng": -88.2575564
+},
+{
+"name": "Car-X",
+"alt": "",
+"addr": "906 West Bradley Avenue",
+"lat": 40.1275403,
+"lng": -88.2587712
+},
+{
+"name": "Jiffy Lube",
+"alt": "",
+"addr": "1201 North Prospect Avenue",
+"lat": 40.1276058,
+"lng": -88.2583973
+},
+{
+"name": "Asian Supermarket",
+"alt": "Asian Mart",
+"addr": "1215 North Prospect Avenue",
+"lat": 40.1287204,
+"lng": -88.2584795
+},
+{
+"name": "Prospect Plaza",
+"alt": "",
+"addr": "1401 North Prospect Avenue",
+"lat": 40.1295261,
+"lng": -88.2586009
+},
+{
+"name": "Rainstorm Express",
+"alt": "",
+"addr": "1209 North Prospect Avenue",
+"lat": 40.1282274,
+"lng": -88.2585922
+},
+{
+"name": "Historic Cattle Bank",
+"alt": "",
+"addr": "102 East University Avenue",
+"lat": 40.1164863,
+"lng": -88.2385941
+},
+{
+"name": "Champaign Police Department",
+"alt": "",
+"addr": "82 East University Avenue",
+"lat": 40.1167484,
+"lng": -88.2392814
+},
+{
+"name": "Dr. Anita B. Pride, Chiropractic Physician",
+"alt": "",
+"addr": "110 North First Street",
+"lat": 40.1167487,
+"lng": -88.2385515
+},
+{
+"name": "Emerald City Lounge",
+"alt": "",
+"addr": "118 North First Street",
+"lat": 40.1169246,
+"lng": -88.2384495
+},
+{
+"name": "Fiesta Cafe",
+"alt": "",
+"addr": "216 South First Street",
+"lat": 40.1147731,
+"lng": -88.2384771
+},
+{
+"name": "Glass FX",
+"alt": "",
+"addr": "103 East Clark Street",
+"lat": 40.1152005,
+"lng": -88.2383373
+},
+{
+"name": "Illini Plastics Supply",
+"alt": "",
+"addr": "201 South First Street",
+"lat": 40.1150949,
+"lng": -88.2389498
+},
+{
+"name": "Amy\u2019s Place",
+"alt": "",
+"addr": "120 North First Street",
+"lat": 40.1170395,
+"lng": -88.2384507
+},
+{
+"name": "Land of Lincoln Legal Assistance",
+"alt": "",
+"addr": "302 North First Street",
+"lat": 40.1185654,
+"lng": -88.2385366
+},
+{
+"name": "Locks of Glory",
+"alt": "",
+"addr": "124 North First Street",
+"lat": 40.1171356,
+"lng": -88.2385211
+},
+{
+"name": "Manzella's",
+"alt": "",
+"addr": "115 South First Street",
+"lat": 40.1158422,
+"lng": -88.2389889
+},
+{
+"name": "Living Yoga Center",
+"alt": "LYC",
+"addr": "212 South First Street",
+"lat": 40.1149369,
+"lng": -88.2385232
+},
+{
+"name": "Central Illinois Bakehouse",
+"alt": "",
+"addr": "208 North First Street",
+"lat": 40.1180383,
+"lng": -88.2385522
+},
+{
+"name": "Peoples Performance Automotive",
+"alt": "",
+"addr": "209 South First Street",
+"lat": 40.1146831,
+"lng": -88.239074
+},
+{
+"name": "Prosperity Gardens",
+"alt": "",
+"addr": "303 North First Street",
+"lat": 40.1188181,
+"lng": -88.2389907
+},
+{
+"name": "Radio Doctors",
+"alt": "",
+"addr": "104 East White Street",
+"lat": 40.1146345,
+"lng": -88.238166
+},
+{
+"name": "Rose & Taylor",
+"alt": "",
+"addr": "124 North First Street",
+"lat": 40.1171801,
+"lng": -88.2385215
+},
+{
+"name": "Corson Music",
+"alt": "",
+"addr": "71 East University Avenue",
+"lat": 40.1160172,
+"lng": -88.2391716
+},
+{
+"name": "1103 Euclid Apartments",
+"alt": "",
+"addr": "1103 Euclid Street",
+"lat": 40.1048418,
+"lng": -88.2348837
+},
+{
+"name": "CPM Apartments",
+"alt": "",
+"addr": "48 East John Street",
+"lat": 40.1093024,
+"lng": -88.2399672
+},
+{
+"name": "CPM Illinois Court",
+"alt": "",
+"addr": "804 West Illinois Street",
+"lat": 40.1094663,
+"lng": -88.2183566
+},
+{
+"name": "Urbana Commons",
+"alt": "",
+"addr": "809 West Springfield Avenue",
+"lat": 40.1125902,
+"lng": -88.2186624
+},
+{
+"name": "Urbana Commons",
+"alt": "",
+"addr": "813 West Springfield Avenue",
+"lat": 40.1125265,
+"lng": -88.2190098
+},
+{
+"name": "Arbor Apartments",
+"alt": "",
+"addr": "1112 South Second Street",
+"lat": 40.1042894,
+"lng": -88.2373415
+},
+{
+"name": "Arbor Apartments: Cedar",
+"alt": "",
+"addr": "1112 Arbor Street",
+"lat": 40.1042908,
+"lng": -88.2362973
+},
+{
+"name": "Arbor Apartments: Linden",
+"alt": "",
+"addr": "214;216 East Gregory Drive",
+"lat": 40.1042946,
+"lng": -88.2360662
+},
+{
+"name": "Arbor Apartments: Maple",
+"alt": "",
+"addr": "1113 South Third Street",
+"lat": 40.1042927,
+"lng": -88.2358344
+},
+{
+"name": "Arbor Apartments: Pine",
+"alt": "",
+"addr": "1110;1110 1/2 Arbor Street",
+"lat": 40.104457,
+"lng": -88.2362172
+},
+{
+"name": "Arbor Apartments: Sycamore",
+"alt": "",
+"addr": "1111;1111 1/2 South Third Street",
+"lat": 40.1044589,
+"lng": -88.2359845
+},
+{
+"name": "Arbor Apartments: Walnut",
+"alt": "",
+"addr": "1107;1109 South Third Street",
+"lat": 40.1045862,
+"lng": -88.2358311
+},
+{
+"name": "Gregory Schoolhouse Lofts",
+"alt": "",
+"addr": "202 West Columbia Avenue",
+"lat": 40.1215229,
+"lng": -88.2455232
+},
+{
+"name": "The Georgian",
+"alt": "",
+"addr": "1005 South Sixth Street",
+"lat": 40.1062417,
+"lng": -88.2307527
+},
+{
+"name": "Barrelhouse 34",
+"alt": "",
+"addr": "34 Main Street",
+"lat": 40.1174812,
+"lng": -88.2420065
+},
+{
+"name": "Stoughton Place",
+"alt": "",
+"addr": "704 West Stoughton Street",
+"lat": 40.1134434,
+"lng": -88.2165928
+},
+{
+"name": "Urbana City Hall",
+"alt": "",
+"addr": "400 South Vine Street",
+"lat": 40.1100048,
+"lng": -88.2045601
+},
+{
+"name": "Fire Station #2",
+"alt": "",
+"addr": "1901 South Prospect Avenue",
+"lat": 40.0923915,
+"lng": -88.2579186
+},
+{
+"name": "Champaign Fire Station #1",
+"alt": "",
+"addr": "307 South Randolph Street",
+"lat": 40.1140027,
+"lng": -88.2458653
+},
+{
+"name": "Fire Station #3",
+"alt": "",
+"addr": "702 West Bradley Avenue",
+"lat": 40.1274092,
+"lng": -88.2534749
+},
+{
+"name": "American Legion Post 24",
+"alt": "",
+"addr": "705 Bloomington Road",
+"lat": 40.1300969,
+"lng": -88.2539751
+},
+{
+"name": "Area Wide Reporting Service",
+"alt": "",
+"addr": "301 West White Street",
+"lat": 40.1141876,
+"lng": -88.2470315
+},
+{
+"name": "Bickers Construction",
+"alt": "",
+"addr": "1305 North Harris Avenue",
+"lat": 40.1285806,
+"lng": -88.2535234
+},
+{
+"name": "Bullock Garages",
+"alt": "",
+"addr": "703 Bloomington Road",
+"lat": 40.1300046,
+"lng": -88.2535093
+},
+{
+"name": "JSJ Property Management",
+"alt": "",
+"addr": "302 West Springfield Avenue",
+"lat": 40.112835,
+"lng": -88.2473232
+},
+{
+"name": "Electric Automotive of Champaign",
+"alt": "",
+"addr": "1307 North Harris Avenue",
+"lat": 40.1288114,
+"lng": -88.2535844
+},
+{
+"name": "Mike's Auto Glass Plus",
+"alt": "",
+"addr": "1303 North Harris Avenue",
+"lat": 40.1283351,
+"lng": -88.253665
+},
+{
+"name": "New Foundation Missionary Baptist Church",
+"alt": "",
+"addr": "922 West Eureka Street",
+"lat": 40.1256596,
+"lng": -88.2600751
+},
+{
+"name": "Fannie May",
+"alt": "",
+"addr": "402 South Neil Street",
+"lat": 40.1123142,
+"lng": -88.2431232
+},
+{
+"name": "Champaign Post Office",
+"alt": "",
+"addr": "600 North Neil Street",
+"lat": 40.1215863,
+"lng": -88.2430169
+},
+{
+"name": "Campbell Hall",
+"alt": "",
+"addr": "300 North Goodwin Avenue",
+"lat": 40.1150203,
+"lng": -88.22354
+},
+{
+"name": "Computing Applications Building",
+"alt": "",
+"addr": "605 East Springfield Avenue",
+"lat": 40.1124293,
+"lng": -88.2298769
+},
+{
+"name": "Shelford Vivarium",
+"alt": "",
+"addr": "606 East Healey Street",
+"lat": 40.1118534,
+"lng": -88.2296875
+},
+{
+"name": "University of Illinois Community Credit Union",
+"alt": "UICCU",
+"addr": "206 East University Avenue",
+"lat": 40.116881,
+"lng": -88.2057622
+},
+{
+"name": "McDonald's",
+"alt": "",
+"addr": "601 North Cunningham Avenue",
+"lat": 40.1182474,
+"lng": -88.2044391
+},
+{
+"name": "St. John's Chapel",
+"alt": "",
+"addr": "604 East Armory Avenue",
+"lat": 40.1057699,
+"lng": -88.230041
+},
+{
+"name": "Europa House",
+"alt": "",
+"addr": "802 West Oregon Street",
+"lat": 40.1076892,
+"lng": -88.2180652
+},
+{
+"name": "Europa House",
+"alt": "",
+"addr": "603 South Busey Avenue",
+"lat": 40.1079281,
+"lng": -88.2180708
+},
+{
+"name": "Mark Foutch Pavilion",
+"alt": "",
+"addr": "",
+"lat": 40.1003057,
+"lng": -88.2505058
+},
+{
+"name": "Dixon Graphics Screen Printing",
+"alt": "",
+"addr": "312 South Neil Street",
+"lat": 40.1129409,
+"lng": -88.2432037
+},
+{
+"name": "World Harvest",
+"alt": "",
+"addr": "306 Springfield Avenue",
+"lat": 40.1126245,
+"lng": -88.211447
+},
+{
+"name": "Courier Cafe",
+"alt": "",
+"addr": "111 North Race Street",
+"lat": 40.1129442,
+"lng": -88.2093747
+},
+{
+"name": "Hendrick House",
+"alt": "",
+"addr": "904 West Green Street",
+"lat": 40.110862,
+"lng": -88.2199155
+},
+{
+"name": "Burger King",
+"alt": "",
+"addr": "1106 West University Avenue",
+"lat": 40.1166527,
+"lng": -88.2231918
+},
+{
+"name": "Taco Bell",
+"alt": "",
+"addr": "1003 West University Avenue",
+"lat": 40.1162242,
+"lng": -88.2211308
+},
+{
+"name": "Hot Wok Express",
+"alt": "",
+"addr": "1102 West University Avenue",
+"lat": 40.11667,
+"lng": -88.2226156
+},
+{
+"name": "Green Street Towers",
+"alt": "",
+"addr": "616 East Green Street",
+"lat": 40.1106317,
+"lng": -88.2296073
+},
+{
+"name": "Bousfield Hall",
+"alt": "",
+"addr": "1214 South First Street",
+"lat": 40.1019996,
+"lng": -88.2377743
+},
+{
+"name": "Student Dining and Residential Programs",
+"alt": "",
+"addr": "301 East Gregory Drive",
+"lat": 40.1036226,
+"lng": -88.2352136
+},
+{
+"name": "Nugent Hall",
+"alt": "",
+"addr": "207 East Gregory Drive",
+"lat": 40.1036209,
+"lng": -88.2365996
+},
+{
+"name": "Solon House",
+"alt": "",
+"addr": "503 South State Street",
+"lat": 40.1113144,
+"lng": -88.2473481
+},
+{
+"name": "Environmental Health and Safety Building",
+"alt": "",
+"addr": "101 South Gregory Street",
+"lat": 40.1120677,
+"lng": -88.22095
+},
+{
+"name": "Pi Kappa Phi",
+"alt": "",
+"addr": "306 East Gregory Drive",
+"lat": 40.1043141,
+"lng": -88.234831
+},
+{
+"name": "Psi Upsilon Fraternity",
+"alt": "",
+"addr": "313 East Armory Avenue",
+"lat": 40.1051318,
+"lng": -88.233827
+},
+{
+"name": "Presby Hall",
+"alt": "",
+"addr": "405 East John Street",
+"lat": 40.108522,
+"lng": -88.2325598
+},
+{
+"name": "Evans Scholars House",
+"alt": "",
+"addr": "1003 South Third Street",
+"lat": 40.106143,
+"lng": -88.2356607
+},
+{
+"name": "Kappa Sigma",
+"alt": "",
+"addr": "212 East Daniel Street",
+"lat": 40.1082622,
+"lng": -88.2356887
+},
+{
+"name": "Sigma Kappa",
+"alt": "",
+"addr": "305 East John Street",
+"lat": 40.1087833,
+"lng": -88.234717
+},
+{
+"name": "The Dean",
+"alt": "",
+"addr": "708 South Sixth Street",
+"lat": 40.1098552,
+"lng": -88.2300953
+},
+{
+"name": "Bunny's Tavern",
+"alt": "",
+"addr": "119 West Water Street",
+"lat": 40.1132082,
+"lng": -88.2082968
+},
+{
+"name": "Canaan Baptist Church",
+"alt": "",
+"addr": "402 West Main Street",
+"lat": 40.1133148,
+"lng": -88.21174
+},
+{
+"name": "Kirby Tire & Auto Service",
+"alt": "",
+"addr": "303 West Main Street",
+"lat": 40.1126036,
+"lng": -88.2106801
+},
+{
+"name": "Stratford Residences",
+"alt": "",
+"addr": "202 North Race Street",
+"lat": 40.1138242,
+"lng": -88.2087212
+},
+{
+"name": "Boardwalk 501",
+"alt": "",
+"addr": "501 East Healey Street",
+"lat": 40.111155,
+"lng": -88.2318509
+},
+{
+"name": "Boardwalk 505",
+"alt": "",
+"addr": "505 East Healey Street",
+"lat": 40.1111607,
+"lng": -88.2313565
+},
+{
+"name": "Windstream Communications",
+"alt": "",
+"addr": "503 East Healey Street",
+"lat": 40.1110469,
+"lng": -88.2316081
+},
+{
+"name": "The Station",
+"alt": "",
+"addr": "100 North Chestnut Street",
+"lat": 40.1168738,
+"lng": -88.2406294
+},
+{
+"name": "JSM Office",
+"alt": "",
+"addr": "505 South Fifth Street",
+"lat": 40.1120499,
+"lng": -88.2324115
+},
+{
+"name": "Virginia Theater",
+"alt": "",
+"addr": "203 West Park Avenue",
+"lat": 40.116998,
+"lng": -88.2455428
+},
+{
+"name": "Wendy's",
+"alt": "",
+"addr": "505 North Cunningham Avenue",
+"lat": 40.1172369,
+"lng": -88.2051149
+},
+{
+"name": "nuEra",
+"alt": "",
+"addr": "105 East University Avenue",
+"lat": 40.115974,
+"lng": -88.2060325
+},
+{
+"name": "Auto Bath Systems",
+"alt": "",
+"addr": "306 East University Avenue",
+"lat": 40.1167649,
+"lng": -88.2028282
+},
+{
+"name": "Bankier Apartments",
+"alt": "",
+"addr": "",
+"lat": 40.1105628,
+"lng": -88.2323722
+},
+{
+"name": "Kappa Delta Sorority",
+"alt": "",
+"addr": "110 East Armory Avenue",
+"lat": 40.1056277,
+"lng": -88.2376378
+},
+{
+"name": "Kappa Delta Ro Fraternity",
+"alt": "",
+"addr": "1110 South Second Street",
+"lat": 40.1045769,
+"lng": -88.2372656
+},
+{
+"name": "Theta Xi Fraternity",
+"alt": "",
+"addr": "205 East Armory Avenue",
+"lat": 40.1050518,
+"lng": -88.2369332
+},
+{
+"name": "Printing and Photographic Services",
+"alt": "",
+"addr": "54 East Gregory Drive",
+"lat": 40.1047373,
+"lng": -88.2398585
+},
+{
+"name": "Delta Chi",
+"alt": "",
+"addr": "1111 South First Street",
+"lat": 40.1046123,
+"lng": -88.2392105
+},
+{
+"name": "Alpha Gamma Rho",
+"alt": "AGR",
+"addr": "58 East Gregory Drive",
+"lat": 40.1043501,
+"lng": -88.2391767
+},
+{
+"name": "Geological Survey Laboratory",
+"alt": "",
+"addr": "1116 South Oak Street",
+"lat": 40.1043456,
+"lng": -88.2411522
+},
+{
+"name": "Personal Services Building",
+"alt": "",
+"addr": "52 East Gregory Drive",
+"lat": 40.1045826,
+"lng": -88.2404469
+},
+{
+"name": "Illini Manor",
+"alt": "",
+"addr": "401 East Chalmers Street",
+"lat": 40.1066306,
+"lng": -88.2330449
+},
+{
+"name": "Illini Tower",
+"alt": "",
+"addr": "409 East Chalmers Street",
+"lat": 40.1064504,
+"lng": -88.2323607
+},
+{
+"name": "Police Training Institute",
+"alt": "",
+"addr": "1004 South Fourth Street",
+"lat": 40.1064249,
+"lng": -88.2330312
+},
+{
+"name": "Sherman Hall",
+"alt": "",
+"addr": "909 South Fifth Street",
+"lat": 40.1072086,
+"lng": -88.2327011
+},
+{
+"name": "Alpha Epsilon Phi",
+"alt": "",
+"addr": "904 South Third Street",
+"lat": 40.107647,
+"lng": -88.2350872
+},
+{
+"name": "Phi Kappa Tau",
+"alt": "",
+"addr": "310 East Gregory Drive",
+"lat": 40.1043849,
+"lng": -88.2341715
+},
+{
+"name": "Bethel African Methodist Episcopal Church",
+"alt": "Bethel AME Church",
+"addr": "401 East Park Street",
+"lat": 40.1170864,
+"lng": -88.2333558
+},
+{
+"name": "Busey Bank",
+"alt": "",
+"addr": "100 West University Avenue",
+"lat": 40.1165461,
+"lng": -88.2447178
+},
+{
+"name": "Carle Neuroscience Institute",
+"alt": "",
+"addr": "610 North Lincoln Avenue",
+"lat": 40.1179786,
+"lng": -88.2189053
+},
+{
+"name": "Champaign Armory",
+"alt": "",
+"addr": "109 East Park Street",
+"lat": 40.1170338,
+"lng": -88.2375571
+},
+{
+"name": "Clutch Cuts",
+"alt": "ClutchCuts",
+"addr": "202 South Neil Street",
+"lat": 40.1152183,
+"lng": -88.2433207
+},
+{
+"name": "Bombay Market",
+"alt": "",
+"addr": "134 East University Avenue",
+"lat": 40.1165897,
+"lng": -88.2373843
+},
+{
+"name": "Emmanuel Memorial Episcopal Church",
+"alt": "",
+"addr": "208 West University Avenue",
+"lat": 40.1165995,
+"lng": -88.2463554
+},
+{
+"name": "Executive Center",
+"alt": "",
+"addr": "115 North Neil Street",
+"lat": 40.1169956,
+"lng": -88.243861
+},
+{
+"name": "Housing Authority of Champaign County",
+"alt": "HACC",
+"addr": "205 West Park Avenue",
+"lat": 40.1169986,
+"lng": -88.2459075
+},
+{
+"name": "Jon's Pipe Shop",
+"alt": "",
+"addr": "44 East University Avenue",
+"lat": 40.116548,
+"lng": -88.2414617
+},
+{
+"name": "Champaign Park Avenue Seventh-Day Adventist Church",
+"alt": "Champaign Park Avenue SDA Church",
+"addr": "212 East Park Street",
+"lat": 40.1176184,
+"lng": -88.2356712
+},
+{
+"name": "Pawn King",
+"alt": "",
+"addr": "1004 West University Avenue",
+"lat": 40.1167916,
+"lng": -88.2213265
+},
+{
+"name": "Salem Baptist Church",
+"alt": "",
+"addr": "500 East Park Street",
+"lat": 40.1176345,
+"lng": -88.2316539
+},
+{
+"name": "Tri-Color Locksmith",
+"alt": "",
+"addr": "1002 University Avenue",
+"lat": 40.1166906,
+"lng": -88.220912
+},
+{
+"name": "Kesler Hall",
+"alt": "",
+"addr": "",
+"lat": 40.1220754,
+"lng": -88.2132758
+},
+{
+"name": "Lincoln Bookbindery",
+"alt": "",
+"addr": "1601 North Coler Avenue",
+"lat": 40.1276609,
+"lng": -88.2163369
+},
+{
+"name": "Pavilion at Crystal Lake Park",
+"alt": "",
+"addr": "",
+"lat": 40.1187954,
+"lng": -88.2129554
+},
+{
+"name": "Rogers Supply Company",
+"alt": "RSC",
+"addr": "350 North Walnut Street",
+"lat": 40.1194049,
+"lng": -88.2407487
+},
+{
+"name": "AT&T",
+"alt": "",
+"addr": "201 South Neil Street",
+"lat": 40.1150546,
+"lng": -88.2440498
+},
+{
+"name": "Car-X",
+"alt": "",
+"addr": "601 East University Avenue",
+"lat": 40.116026,
+"lng": -88.2301676
+},
+{
+"name": "Carle Foundation Hospital Auxiliary Guest House",
+"alt": "",
+"addr": "602 Church Street",
+"lat": 40.1185083,
+"lng": -88.2147842
+},
+{
+"name": "Clark Quad West Apartments",
+"alt": "",
+"addr": "406 East Clark Street",
+"lat": 40.1156156,
+"lng": -88.2328156
+},
+{
+"name": "ImpactLife",
+"alt": "",
+"addr": "1408 West University Avenue",
+"lat": 40.1166554,
+"lng": -88.2279983
+},
+{
+"name": "Don Moyer Boys & Girls Club",
+"alt": "",
+"addr": "201 East Park Street",
+"lat": 40.1170234,
+"lng": -88.2367306
+},
+{
+"name": "Far East Grocery",
+"alt": "",
+"addr": "105 South Fifth Street",
+"lat": 40.1157338,
+"lng": -88.2323424
+},
+{
+"name": "Medical Office Building",
+"alt": "",
+"addr": "",
+"lat": 40.1171173,
+"lng": -88.227751
+},
+{
+"name": "Brainstorm Escapes",
+"alt": "",
+"addr": "61 East University Avenue",
+"lat": 40.1160818,
+"lng": -88.239722
+},
+{
+"name": "U-Haul",
+"alt": "",
+"addr": "306 East University Avenue",
+"lat": 40.1166137,
+"lng": -88.2346169
+},
+{
+"name": "Dodson, Piraino & Associates",
+"alt": "",
+"addr": "501 West University Avenue",
+"lat": 40.1160364,
+"lng": -88.2504406
+},
+{
+"name": "The Oaks",
+"alt": "",
+"addr": "405-407 West University Avenue",
+"lat": 40.1159973,
+"lng": -88.2492959
+},
+{
+"name": "Wright View",
+"alt": "",
+"addr": "203 South Wright Street",
+"lat": 40.115038,
+"lng": -88.2292531
+},
+{
+"name": "Circle K",
+"alt": "",
+"addr": "609 East University Avenue",
+"lat": 40.1160676,
+"lng": -88.2297658
+},
+{
+"name": "Food Center",
+"alt": "",
+"addr": "508 South Vine Street",
+"lat": 40.1087174,
+"lng": -88.2044006
+},
+{
+"name": "Marathon",
+"alt": "",
+"addr": "508 South Vine Street",
+"lat": 40.1086892,
+"lng": -88.2046846
+},
+{
+"name": "Meadowbrook Park Garden Pavillion",
+"alt": "",
+"addr": "",
+"lat": 40.0799975,
+"lng": -88.2078292
+},
+{
+"name": "Potbelly",
+"alt": "",
+"addr": "501 East Green Street",
+"lat": 40.110068,
+"lng": -88.2318662
+},
+{
+"name": "Ron's Campus Locksmith",
+"alt": "",
+"addr": "502 East Green Street",
+"lat": 40.1104487,
+"lng": -88.2318521
+},
+{
+"name": "Rkooa Hair Design",
+"alt": "",
+"addr": "506 East Green Street",
+"lat": 40.1104499,
+"lng": -88.2317289
+},
+{
+"name": "McDonald's",
+"alt": "",
+"addr": "1605 South Neil Street",
+"lat": 40.0975248,
+"lng": -88.2452439
+},
+{
+"name": "Green St Realty",
+"alt": "",
+"addr": "108 West Green Street",
+"lat": 40.1104197,
+"lng": -88.2444437
+},
+{
+"name": "O'Reilly Auto Parts",
+"alt": "",
+"addr": "1208 North Cunningham Avenue",
+"lat": 40.1249357,
+"lng": -88.1998956
+},
+{
+"name": "Right Balance Motorsports",
+"alt": "RBM",
+"addr": "1108 North Cunningham Avenue",
+"lat": 40.1242322,
+"lng": -88.2004567
+},
+{
+"name": "Wolfram Research",
+"alt": "Wolfram",
+"addr": "100 Trade Centre Drive",
+"lat": 40.0972655,
+"lng": -88.2458336
+},
+{
+"name": "Physical Plant Service Building",
+"alt": "",
+"addr": "1501 South Oak Street",
+"lat": 40.099197,
+"lng": -88.2425856
+},
+{
+"name": "Homewood Suites",
+"alt": "",
+"addr": "1417 South Neil Street",
+"lat": 40.0995947,
+"lng": -88.2458132
+},
+{
+"name": "Hilton Garden Inn",
+"alt": "",
+"addr": "1501 South Neil Street",
+"lat": 40.0991315,
+"lng": -88.2462002
+},
+{
+"name": "Holiday Inn",
+"alt": "",
+"addr": "101 Trade Centre Drive",
+"lat": 40.0963885,
+"lng": -88.2460135
+},
+{
+"name": "Smitty's Car Wash",
+"alt": "",
+"addr": "1703 South Neil Street",
+"lat": 40.0957386,
+"lng": -88.2455705
+},
+{
+"name": "The Ribeye",
+"alt": "",
+"addr": "1701 South Neil Street",
+"lat": 40.0961553,
+"lng": -88.2454132
+},
+{
+"name": "Steak 'n Shake",
+"alt": "",
+"addr": "1709 South Neil Street",
+"lat": 40.0949601,
+"lng": -88.2458215
+},
+{
+"name": "Champaign County Chamber of Commerce",
+"alt": "",
+"addr": "303 West Kirby Avenue",
+"lat": 40.0978131,
+"lng": -88.2471576
+},
+{
+"name": "GHR Engineers & Associates, Inc.",
+"alt": "GHR Engineers",
+"addr": "1615 S Neil St",
+"lat": 40.0964038,
+"lng": -88.2452052
+},
+{
+"name": "Gameday Spirit Fanstore",
+"alt": "Gameday Spirit",
+"addr": "1602 South Neil Street",
+"lat": 40.0976986,
+"lng": -88.2444063
+},
+{
+"name": "Sooie Bros.",
+"alt": "",
+"addr": "103 West Kirby Avenue",
+"lat": 40.097743,
+"lng": -88.2457321
+},
+{
+"name": "Flora Gems",
+"alt": "",
+"addr": "302 West Kirby Avenue",
+"lat": 40.098317,
+"lng": -88.2468759
+},
+{
+"name": "The Organ Loft Apartments",
+"alt": "",
+"addr": "112 West Hill Street",
+"lat": 40.1195107,
+"lng": -88.2441348
+},
+{
+"name": "Unit 4 Special Education \u2013 Young Adult Program",
+"alt": "",
+"addr": "402 North Randolph Street",
+"lat": 40.1194441,
+"lng": -88.2449696
+},
+{
+"name": "Washington Square",
+"alt": "",
+"addr": "108 West Washington Street",
+"lat": 40.1206497,
+"lng": -88.2445858
+},
+{
+"name": "Trudo Auto Repair",
+"alt": "",
+"addr": "505 North Walnut Street",
+"lat": 40.1205713,
+"lng": -88.2416264
+},
+{
+"name": "Dunkin'",
+"alt": "Dunkin' Donuts",
+"addr": "515 South Neil Street",
+"lat": 40.1104955,
+"lng": -88.2439385
+},
+{
+"name": "Tepper Electric",
+"alt": "",
+"addr": "608 South Neil Street",
+"lat": 40.1096096,
+"lng": -88.2430394
+},
+{
+"name": "Mittendorf-Calvert Funeral Home",
+"alt": "",
+"addr": "611 East Pennsylvania Avenue",
+"lat": 40.100208,
+"lng": -88.2265031
+},
+{
+"name": "St. Patrick Catholic Church",
+"alt": "St. Patrick's Catholic Church",
+"addr": "708 West Main Street",
+"lat": 40.11469,
+"lng": -88.216954
+},
+{
+"name": "Espresso Royale",
+"alt": "",
+"addr": "1117 West Oregon Street",
+"lat": 40.1068233,
+"lng": -88.2236257
+},
+{
+"name": "Stone Creek Church",
+"alt": "",
+"addr": "910 West Springfield Avenue",
+"lat": 40.1130294,
+"lng": -88.2204334
+},
+{
+"name": "B Spirits",
+"alt": "",
+"addr": "306 West Main Street",
+"lat": 40.1131264,
+"lng": -88.2108712
+},
+{
+"name": "Silvercreek",
+"alt": "Silver Creek",
+"addr": "402 North Race Street",
+"lat": 40.1154962,
+"lng": -88.2087366
+},
+{
+"name": "Black Dog Smoke & Ale House",
+"alt": "Black Dog",
+"addr": "320 North Chestnut Street",
+"lat": 40.1179415,
+"lng": -88.2402615
+},
+{
+"name": "Zeta Tau Alpha Sorority House",
+"alt": "",
+"addr": "1404 South Lincoln Avenue",
+"lat": 40.100083,
+"lng": -88.2184269
+},
+{
+"name": "Farm House",
+"alt": "",
+"addr": "809 West Pennsylvania Avenue",
+"lat": 40.1003566,
+"lng": -88.2186946
+},
+{
+"name": "Office for the Protection of Research Subjects",
+"alt": "",
+"addr": "805 West Pennsylvania Avenue",
+"lat": 40.1003854,
+"lng": -88.2181203
+},
+{
+"name": "Delta Zeta Sorority House",
+"alt": "",
+"addr": "710 West Ohio Street",
+"lat": 40.1039922,
+"lng": -88.2167485
+},
+{
+"name": "Alpha Chi Sigma Fraternity House",
+"alt": "",
+"addr": "606 West Ohio Street",
+"lat": 40.1039964,
+"lng": -88.2151802
+},
+{
+"name": "Alpha Xi Delta Sorority House",
+"alt": "",
+"addr": "715 West Michigan Avenue",
+"lat": 40.1015054,
+"lng": -88.2171826
+},
+{
+"name": "Delta Kappa Epsilon Fraternity House",
+"alt": "",
+"addr": "713 West Ohio Street",
+"lat": 40.1034786,
+"lng": -88.2172817
+},
+{
+"name": "Beta Sigma Psi Fraternity House",
+"alt": "",
+"addr": "706 West Ohio Street",
+"lat": 40.1039679,
+"lng": -88.2163465
+},
+{
+"name": "Alpha Tau Omega",
+"alt": "",
+"addr": "1101 West Pennsylvania Avenue",
+"lat": 40.1000906,
+"lng": -88.2224725
+},
+{
+"name": "The Station Theatre",
+"alt": "",
+"addr": "223 North Broadway Avenue",
+"lat": 40.1148161,
+"lng": -88.2081474
+},
+{
+"name": "Sigma Nu Fraternity",
+"alt": "",
+"addr": "1009 West Pennsylvania Avenue",
+"lat": 40.100213,
+"lng": -88.2217043
+},
+{
+"name": "Alpha Gamma Delta Fraternity House",
+"alt": "",
+"addr": "1106 South Lincoln Avenue",
+"lat": 40.1031847,
+"lng": -88.2188177
+},
+{
+"name": "Office of the Public Defender - Central District of Illinois",
+"alt": "Public Defender's Office;Federal Public Defender's Office",
+"addr": "300 West Main Street",
+"lat": 40.1128959,
+"lng": -88.2102953
+},
+{
+"name": "Encanto Restaurant and Bar",
+"alt": "",
+"addr": "115 West Main Street",
+"lat": 40.1121737,
+"lng": -88.208107
+},
+{
+"name": "Community Center for the Arts",
+"alt": "",
+"addr": "202 West Main Street",
+"lat": 40.1127105,
+"lng": -88.209084
+},
+{
+"name": "Rose Bowl Tavern",
+"alt": "",
+"addr": "106 North Race Street",
+"lat": 40.1128891,
+"lng": -88.2087609
+},
+{
+"name": "Dairy Experimental Round Barns",
+"alt": "",
+"addr": "1201 West Saint Mary's Road",
+"lat": 40.0936319,
+"lng": -88.224372
+},
+{
+"name": "Dairy Experimental Round Barns",
+"alt": "",
+"addr": "1201 West Saint Mary's Road",
+"lat": 40.0937758,
+"lng": -88.2241445
+},
+{
+"name": "Dairy Experimental Round Barns",
+"alt": "",
+"addr": "1201 West Saint Mary's Road",
+"lat": 40.0939522,
+"lng": -88.2234945
+},
+{
+"name": "Dairy Experimental Round Barns",
+"alt": "",
+"addr": "1201 West Saint Mary's Road",
+"lat": 40.0939299,
+"lng": -88.2248489
+},
+{
+"name": "Gothic Revival Cottage",
+"alt": "",
+"addr": "108 North Webber Street",
+"lat": 40.1136776,
+"lng": -88.1990086
+},
+{
+"name": "Darius E. Phebus Administration Office",
+"alt": "The Cottage",
+"addr": "303 West University Avenue",
+"lat": 40.1159631,
+"lng": -88.2100691
+},
+{
+"name": "Gallery Art Bar",
+"alt": "",
+"addr": "119 West Main Street",
+"lat": 40.1121921,
+"lng": -88.2083096
+},
+{
+"name": "Wease Fine Jewelry",
+"alt": "",
+"addr": "123 West Main Street",
+"lat": 40.11217,
+"lng": -88.2084421
+},
+{
+"name": "Bohemia",
+"alt": "",
+"addr": "135 West Main Street",
+"lat": 40.1121664,
+"lng": -88.208777
+},
+{
+"name": "Illinois National Guard",
+"alt": "",
+"addr": "600 East University Avenue",
+"lat": 40.1176004,
+"lng": -88.2016961
+},
+{
+"name": "Sears Osborn House",
+"alt": "",
+"addr": "701 North Coler Avenue",
+"lat": 40.1185679,
+"lng": -88.2159804
+},
+{
+"name": "The Griggs House",
+"alt": "",
+"addr": "505 West Main Street",
+"lat": 40.1135062,
+"lng": -88.213835
+},
+{
+"name": "The Halberstadt House",
+"alt": "",
+"addr": "104 North Central Avenue",
+"lat": 40.1133999,
+"lng": -88.2111375
+},
+{
+"name": "The Marriott House",
+"alt": "",
+"addr": "506 West Main Street",
+"lat": 40.1141908,
+"lng": -88.2138312
+},
+{
+"name": "Kappa Kappa Gamma Sorority House",
+"alt": "",
+"addr": "1102 South Lincoln Avenue",
+"lat": 40.1034722,
+"lng": -88.2187894
+},
+{
+"name": "The Garvey House",
+"alt": "",
+"addr": "2016 Burlison Drive",
+"lat": 40.092944,
+"lng": -88.206344
+},
+{
+"name": "The Reed-Sutton House",
+"alt": "",
+"addr": "1207 South Busey Avenue",
+"lat": 40.1021426,
+"lng": -88.217861
+},
+{
+"name": "The Smith-Russell House",
+"alt": "",
+"addr": "801 West Indiana Avenue",
+"lat": 40.1025367,
+"lng": -88.2178519
+},
+{
+"name": "The Ezekiel Boyden House",
+"alt": "",
+"addr": "404 West Illinois Street",
+"lat": 40.1093293,
+"lng": -88.2121418
+},
+{
+"name": "The Joseph Royer House",
+"alt": "",
+"addr": "801 West Oregon Street",
+"lat": 40.1071956,
+"lng": -88.217985
+},
+{
+"name": "The Richards-Latowsky House",
+"alt": "",
+"addr": "305 West High Street",
+"lat": 40.1096867,
+"lng": -88.2109373
+},
+{
+"name": "Round Table House 1",
+"alt": "",
+"addr": "West Elm Street",
+"lat": 40.1117076,
+"lng": -88.2152984
+},
+{
+"name": "Gillespie Apts",
+"alt": "",
+"addr": "901 South Second Street",
+"lat": 40.1076204,
+"lng": -88.2373817
+},
+{
+"name": "Triangle Fraternity",
+"alt": "",
+"addr": "112 East Daniel Street",
+"lat": 40.1082071,
+"lng": -88.2375
+},
+{
+"name": "Alpha Epsilon Pi",
+"alt": "\u0391\u0395\u03a0",
+"addr": "110 East Chalmers Street",
+"lat": 40.1067686,
+"lng": -88.2376346
+},
+{
+"name": "Johnstowne",
+"alt": "",
+"addr": "502 East John Street",
+"lat": 40.1092472,
+"lng": -88.2316485
+},
+{
+"name": "Art Mart",
+"alt": "",
+"addr": "1705 South Prospect Avenue",
+"lat": 40.0961797,
+"lng": -88.2581246
+},
+{
+"name": "Busey Bank",
+"alt": "",
+"addr": "909 West Kirby Avenue",
+"lat": 40.0977679,
+"lng": -88.2592283
+},
+{
+"name": "First Financial Bank",
+"alt": "",
+"addr": "1611 South Prospect Avenue",
+"lat": 40.0970909,
+"lng": -88.2580926
+},
+{
+"name": "Faith United Methodist Church",
+"alt": "Faith UMC",
+"addr": "1719 South Prospect Avenue",
+"lat": 40.095133,
+"lng": -88.2584967
+},
+{
+"name": "Lincolnshire Professional Building",
+"alt": "",
+"addr": "1701 South Prospect Avenue",
+"lat": 40.09663,
+"lng": -88.2581235
+},
+{
+"name": "Prospect Bank",
+"alt": "",
+"addr": "1601 South Prospect Avenue",
+"lat": 40.0976659,
+"lng": -88.2580849
+},
+{
+"name": "Good Shepherd Lutheran Church",
+"alt": "",
+"addr": "2101 South Prospect Avenue",
+"lat": 40.0890842,
+"lng": -88.2582134
+},
+{
+"name": "Lincolnshire Center",
+"alt": "",
+"addr": "907-909 Arrow Road",
+"lat": 40.0970472,
+"lng": -88.2589263
+},
+{
+"name": "Speed Lube",
+"alt": "",
+"addr": "901 West Springfield Avenue",
+"lat": 40.1123046,
+"lng": -88.2582127
+},
+{
+"name": "Grace Lutheran Church",
+"alt": "",
+"addr": "313 South Prospect Avenue",
+"lat": 40.1130904,
+"lng": -88.2586618
+},
+{
+"name": "Champaign Unit 4 School District Administrative Center",
+"alt": "",
+"addr": "502 West Windsor Road",
+"lat": 40.0840727,
+"lng": -88.2504809
+},
+{
+"name": "The Church of Jesus Christ of Latter-day Saints",
+"alt": "",
+"addr": "604 West Windsor Road",
+"lat": 40.0842833,
+"lng": -88.2530267
+},
+{
+"name": "Urbana Masonic Lodge",
+"alt": "",
+"addr": "14 Bel Aire Court",
+"lat": 40.0849387,
+"lng": -88.2516998
+},
+{
+"name": "State Universities Retirement System",
+"alt": "SURS",
+"addr": "1901 Fox Drive",
+"lat": 40.0927495,
+"lng": -88.2501694
+},
+{
+"name": "The News-Gazette",
+"alt": "",
+"addr": "2101 Fox Drive",
+"lat": 40.0886088,
+"lng": -88.2507779
+},
+{
+"name": "Academy High",
+"alt": "",
+"addr": "2001 Fox Drive",
+"lat": 40.091633,
+"lng": -88.2513685
+},
+{
+"name": "Hidaya Academy",
+"alt": "",
+"addr": "1906 Fox Drive",
+"lat": 40.0919038,
+"lng": -88.248978
+},
+{
+"name": "University Food and Liquor",
+"alt": "",
+"addr": "211 West University Avenue",
+"lat": 40.1159307,
+"lng": -88.2465261
+},
+{
+"name": "Chase",
+"alt": "",
+"addr": "201 West University Avenue",
+"lat": 40.116052,
+"lng": -88.245678
+},
+{
+"name": "Civil and Environmental Engineering Building",
+"alt": "CEEB",
+"addr": "301 North Mathews Avenue",
+"lat": 40.1147492,
+"lng": -88.2261334
+},
+{
+"name": "Home2 Suites by Hilton Champaign/Urbana",
+"alt": "",
+"addr": "2013 South Neil Street",
+"lat": 40.0923179,
+"lng": -88.2473763
+},
+{
+"name": "First Mennonite Church",
+"alt": "",
+"addr": "904 West Springfield Avenue",
+"lat": 40.1130258,
+"lng": -88.2196622
+},
+{
+"name": "Campus Center",
+"alt": "",
+"addr": "601 South Sixth Street",
+"lat": 40.1111676,
+"lng": -88.2309803
+},
+{
+"name": "Urbana Boulders",
+"alt": "",
+"addr": "1502 North Cunningham Avenue",
+"lat": 40.1259173,
+"lng": -88.19902
+},
+{
+"name": "DQ Grill & Chill",
+"alt": "Dairy Queen",
+"addr": "911 West University Avenue",
+"lat": 40.1161295,
+"lng": -88.2202774
+},
+{
+"name": "Alpha Epsilon Pi Senior Apartment",
+"alt": "",
+"addr": "306 South Fifth Street",
+"lat": 40.1138463,
+"lng": -88.2318279
+},
+{
+"name": "MHM Properties",
+"alt": "",
+"addr": "303 South Fifth Street",
+"lat": 40.1141452,
+"lng": -88.2324723
+},
+{
+"name": "Alpha Sigma Phi",
+"alt": "",
+"addr": "211 East Armory Avenue",
+"lat": 40.1051165,
+"lng": -88.2358804
+},
+{
+"name": "Sammy's Fraternity",
+"alt": "",
+"addr": "213 East Armory Avenue",
+"lat": 40.1051316,
+"lng": -88.2352313
+},
+{
+"name": "The Suites at Third",
+"alt": "",
+"addr": "707 South Third Street",
+"lat": 40.1093649,
+"lng": -88.2359994
+},
+{
+"name": "Skelton Place",
+"alt": "",
+"addr": "302 East White Street",
+"lat": 40.114104,
+"lng": -88.2367122
+},
+{
+"name": "Flats on White",
+"alt": "",
+"addr": "202 East White Street",
+"lat": 40.1146464,
+"lng": -88.2366002
+},
+{
+"name": "Circle K",
+"alt": "",
+"addr": "609 East University Avenue",
+"lat": 40.1160716,
+"lng": -88.229409
+},
+{
+"name": "Wolfe School",
+"alt": "",
+"addr": "401 East Healey Street",
+"lat": 40.1112182,
+"lng": -88.2331695
+},
+{
+"name": "HERE Champaign",
+"alt": "",
+"addr": "308 East Green Street",
+"lat": 40.1105528,
+"lng": -88.2340311
+},
+{
+"name": "Wassaja Hall",
+"alt": "",
+"addr": "1202 South First Street",
+"lat": 40.1034877,
+"lng": -88.2379581
+},
+{
+"name": "Evers Laboratory",
+"alt": "",
+"addr": "1909 South Oak Street",
+"lat": 40.0916804,
+"lng": -88.2411837
+},
+{
+"name": "Building 12",
+"alt": "",
+"addr": "Melrose Village Circle",
+"lat": 40.1292209,
+"lng": -88.2240393
+},
+{
+"name": "Phi Kappa Theta",
+"alt": "",
+"addr": "1106 South Third Street",
+"lat": 40.1048382,
+"lng": -88.235219
+},
+{
+"name": "Phi Sigma Kappa Fraternity",
+"alt": "",
+"addr": "1004 South Second Street",
+"lat": 40.1061263,
+"lng": -88.2367192
+},
+{
+"name": "The Colony Workspaces",
+"alt": "",
+"addr": "701 Devonshire Drive",
+"lat": 40.0879228,
+"lng": -88.2543967
+},
+{
+"name": "Building 4",
+"alt": "",
+"addr": "15 Bailey Drive",
+"lat": 40.0846818,
+"lng": -88.2418279
+},
+{
+"name": "Building 5",
+"alt": "",
+"addr": "35 Bailey Drive",
+"lat": 40.0846955,
+"lng": -88.241195
+},
+{
+"name": "Building 6",
+"alt": "",
+"addr": "65 Bailey Drive",
+"lat": 40.084693,
+"lng": -88.2405361
+},
+{
+"name": "Building 11",
+"alt": "",
+"addr": "2204 Griffith Drive",
+"lat": 40.085415,
+"lng": -88.2423031
+},
+{
+"name": "Papa John's",
+"alt": "",
+"addr": "106 East Green Street",
+"lat": 40.1103857,
+"lng": -88.2380457
+},
+{
+"name": "Twin City Equipment",
+"alt": "",
+"addr": "51 East Chester Street",
+"lat": 40.1157586,
+"lng": -88.2401907
+},
+{
+"name": "Near North Luxury Apartments",
+"alt": "",
+"addr": "315 East University Avenue",
+"lat": 40.1161683,
+"lng": -88.2337838
+},
+{
+"name": "AutoZone",
+"alt": "",
+"addr": "311 East University Avenue",
+"lat": 40.1160519,
+"lng": -88.2340721
+},
+{
+"name": "Speed Lube",
+"alt": "",
+"addr": "307 East University Avenue",
+"lat": 40.1159797,
+"lng": -88.2347366
+},
+{
+"name": "Tumble Inn Tavern",
+"alt": "",
+"addr": "302 South Neil Street",
+"lat": 40.1137612,
+"lng": -88.2431165
+},
+{
+"name": "Clay Dooley Tire and Auto Services",
+"alt": "Clay Dooley",
+"addr": "311 South Neil Street",
+"lat": 40.1133416,
+"lng": -88.2439766
+},
+{
+"name": "State Farm",
+"alt": "",
+"addr": "106 West Springfield Avenue",
+"lat": 40.1128754,
+"lng": -88.2445354
+},
+{
+"name": "Custom Flooring & Interiors",
+"alt": "",
+"addr": "315 South Neil Street",
+"lat": 40.1129615,
+"lng": -88.2438573
+},
+{
+"name": "AT&T",
+"alt": "",
+"addr": "",
+"lat": 40.1138283,
+"lng": -88.244816
+},
+{
+"name": "Nick's Paints",
+"alt": "",
+"addr": "110 West John Street",
+"lat": 40.1091072,
+"lng": -88.244704
+},
+{
+"name": "Anytime Fitness",
+"alt": "",
+"addr": "109 West John Street",
+"lat": 40.1084094,
+"lng": -88.2443164
+},
+{
+"name": "Safelite AutoGlass",
+"alt": "",
+"addr": "719 South Neil Street",
+"lat": 40.1073826,
+"lng": -88.2438233
+},
+{
+"name": "Polyvinyl",
+"alt": "",
+"addr": "717 South Neil Street",
+"lat": 40.1075326,
+"lng": -88.2440424
+},
+{
+"name": "Ittonken",
+"alt": "",
+"addr": "715 South Neil Street",
+"lat": 40.1076828,
+"lng": -88.2439217
+},
+{
+"name": "Hall Insurance Services",
+"alt": "",
+"addr": "711 South Neil Street",
+"lat": 40.1080166,
+"lng": -88.2436824
+},
+{
+"name": "Dark Tower Comics and Collectibles",
+"alt": "",
+"addr": "205 North Market Street",
+"lat": 40.1171868,
+"lng": -88.2417134
+},
+{
+"name": "Lincoln Building",
+"alt": "",
+"addr": "44 Main Street",
+"lat": 40.1174021,
+"lng": -88.2416629
+},
+{
+"name": "Yeh Student Center",
+"alt": "",
+"addr": "",
+"lat": 40.1141694,
+"lng": -88.2261076
+},
+{
+"name": "Eden Supportive Living",
+"alt": "",
+"addr": "222 North State Street",
+"lat": 40.1177789,
+"lng": -88.2465887
+},
+{
+"name": "Jane Addams Book Shop",
+"alt": "",
+"addr": "208 North Neil Street",
+"lat": 40.1176471,
+"lng": -88.2432922
+},
+{
+"name": "Chophouse on Main",
+"alt": "",
+"addr": "2 Main Street",
+"lat": 40.1178504,
+"lng": -88.2433105
+},
+{
+"name": "Nando Milano",
+"alt": "",
+"addr": "204 North Neil Street",
+"lat": 40.1175372,
+"lng": -88.2433054
+},
+{
+"name": "Cowboy Monkey",
+"alt": "",
+"addr": "6 Taylor Street",
+"lat": 40.1175033,
+"lng": -88.2431482
+},
+{
+"name": "Dim Sum House",
+"alt": "",
+"addr": "402 East Green Street",
+"lat": 40.1104736,
+"lng": -88.2333088
+},
+{
+"name": "Bankier Apartments",
+"alt": "",
+"addr": "406 East Green Street",
+"lat": 40.1104422,
+"lng": -88.232904
+},
+{
+"name": "Forage Kitchen",
+"alt": "",
+"addr": "503 East Green Street",
+"lat": 40.1100811,
+"lng": -88.2317376
+},
+{
+"name": "Nuclear Physics Lab",
+"alt": "",
+"addr": "",
+"lat": 40.1021829,
+"lng": -88.2425913
+},
+{
+"name": "Nuclear Physics Laboratory",
+"alt": "",
+"addr": "25 Stadium Drive",
+"lat": 40.1022079,
+"lng": -88.2421607
+},
+{
+"name": "University Press Building",
+"alt": "",
+"addr": "",
+"lat": 40.100674,
+"lng": -88.2430494
+},
+{
+"name": "Housing Food Stores",
+"alt": "",
+"addr": "1321 South Oak Street",
+"lat": 40.1007316,
+"lng": -88.2422544
+},
+{
+"name": "Round Balconies",
+"alt": "",
+"addr": "1107 South Second Street",
+"lat": 40.1045941,
+"lng": -88.2379267
+},
+{
+"name": "Alpha Rho Chi",
+"alt": "APX",
+"addr": "1108 South First Street",
+"lat": 40.1046022,
+"lng": -88.2383076
+},
+{
+"name": "Delta Kappa Epsilon Fraternity",
+"alt": "",
+"addr": "311 East Armory Avenue",
+"lat": 40.1051178,
+"lng": -88.2341743
+},
+{
+"name": "University Baptist Church",
+"alt": "UBC-BHM",
+"addr": "314 East Daniel Street",
+"lat": 40.1082309,
+"lng": -88.2337807
+},
+{
+"name": "Sutton House",
+"alt": "",
+"addr": "312 East Daniel Street",
+"lat": 40.108186,
+"lng": -88.2340209
+},
+{
+"name": "Stratford House",
+"alt": "",
+"addr": "310 East Daniel Street",
+"lat": 40.1082288,
+"lng": -88.2342462
+},
+{
+"name": "Theta Chi",
+"alt": "",
+"addr": "303 East John Street",
+"lat": 40.1087082,
+"lng": -88.2350531
+},
+{
+"name": "Delta Tau Delta",
+"alt": "",
+"addr": "401 East John Street",
+"lat": 40.1086581,
+"lng": -88.2331767
+},
+{
+"name": "School of Labor & Employment Relations",
+"alt": "",
+"addr": "504 East Armory Avenue",
+"lat": 40.1056463,
+"lng": -88.2315332
+},
+{
+"name": "Alpha Phi",
+"alt": "",
+"addr": "508 East Armory Avenue",
+"lat": 40.1057347,
+"lng": -88.2310502
+},
+{
+"name": "Smile Student Living",
+"alt": "",
+"addr": "615 South Wright Street",
+"lat": 40.1110513,
+"lng": -88.229358
+},
+{
+"name": "Optical Physics Engineering Building",
+"alt": "",
+"addr": "607 East Healey Street",
+"lat": 40.1113192,
+"lng": -88.2294897
+},
+{
+"name": "Pi Kappa Alpha",
+"alt": "\u03a0\u039a\u0391",
+"addr": "102 East Chalmers Street",
+"lat": 40.1068051,
+"lng": -88.2383013
+},
+{
+"name": "Phi Sigma Sigma",
+"alt": "\u03a6\u03a3\u03a3",
+"addr": "902 South Second Street",
+"lat": 40.1075575,
+"lng": -88.2367011
+},
+{
+"name": "Sigma Alpha Epsilon",
+"alt": "",
+"addr": "211 East Daniel Street",
+"lat": 40.1076542,
+"lng": -88.2356803
+},
+{
+"name": "C10",
+"alt": "",
+"addr": "",
+"lat": 40.108232,
+"lng": -88.2315424
+},
+{
+"name": "Sigma Chi",
+"alt": "",
+"addr": "410 East John Street",
+"lat": 40.1094174,
+"lng": -88.2324577
+},
+{
+"name": "Phi Gamma Delta",
+"alt": "Beckwith Hall",
+"addr": "201 East John Street",
+"lat": 40.1087406,
+"lng": -88.2365957
+},
+{
+"name": "The Red Lion",
+"alt": "",
+"addr": "211 East Green Street",
+"lat": 40.1099694,
+"lng": -88.2356395
+},
+{
+"name": "Delta Delta Delta",
+"alt": "\u0394\u0394\u0394",
+"addr": "508 East Chalmers Street",
+"lat": 40.1071927,
+"lng": -88.231163
+},
+{
+"name": "Pi Beta Phi",
+"alt": "",
+"addr": "1005 South Wright Street",
+"lat": 40.1062482,
+"lng": -88.2293243
+},
+{
+"name": "The Forge on Lincoln Leasing Center",
+"alt": "",
+"addr": "1321 North Lincoln Avenue",
+"lat": 40.124741,
+"lng": -88.2213998
+},
+{
+"name": "KCM Auto Care",
+"alt": "",
+"addr": "1709 North Cunningham Avenue",
+"lat": 40.1295839,
+"lng": -88.1991697
+},
+{
+"name": "Champaign Counseling",
+"alt": "",
+"addr": "7 Dunlap Court",
+"lat": 40.0800989,
+"lng": -88.247851
+},
+{
+"name": "Centrec Consulting Group",
+"alt": "",
+"addr": "3 College Park Court",
+"lat": 40.0803866,
+"lng": -88.2484468
+},
+{
+"name": "Strive Wealth Management",
+"alt": "",
+"addr": "6 Dunlap Court",
+"lat": 40.0801399,
+"lng": -88.2488046
+},
+{
+"name": "Erickson Clinic",
+"alt": "",
+"addr": "2 College Park Court",
+"lat": 40.0803954,
+"lng": -88.2477625
+},
+{
+"name": "MTK Technologies, Inc.",
+"alt": "",
+"addr": "1 College Park Court",
+"lat": 40.080932,
+"lng": -88.2476589
+},
+{
+"name": "Thomas Mamer Attorneys at Law",
+"alt": "",
+"addr": "2005 North Dunlap Avenue",
+"lat": 40.0815067,
+"lng": -88.2477009
+},
+{
+"name": "Larry Kanfer Photography Gallery",
+"alt": "",
+"addr": "2103 North Dunlap Avenue",
+"lat": 40.0823714,
+"lng": -88.2476004
+},
+{
+"name": "Advocus",
+"alt": "",
+"addr": "2101 Windsor Place",
+"lat": 40.0825258,
+"lng": -88.2488051
+},
+{
+"name": "BodyWork Associates",
+"alt": "",
+"addr": "407 West Windsor Road",
+"lat": 40.0832362,
+"lng": -88.2488914
+},
+{
+"name": "W. Eric Martin, DDS, PC",
+"alt": "",
+"addr": "403 West Windsor Road",
+"lat": 40.0832333,
+"lng": -88.2486447
+},
+{
+"name": "First State Bank",
+"alt": "",
+"addr": "101 West Windsor Road",
+"lat": 40.0832286,
+"lng": -88.2475522
+},
+{
+"name": "BankChampaign",
+"alt": "",
+"addr": "2101 South Neil Street",
+"lat": 40.0893262,
+"lng": -88.2467189
+},
+{
+"name": "Building 7",
+"alt": "",
+"addr": "40 Bailey Drive",
+"lat": 40.0853975,
+"lng": -88.2410867
+},
+{
+"name": "Building 8",
+"alt": "",
+"addr": "60 Bailey Drive",
+"lat": 40.085306,
+"lng": -88.2407675
+},
+{
+"name": "Building 9",
+"alt": "",
+"addr": "2210 Kirk Drive",
+"lat": 40.0858041,
+"lng": -88.2409245
+},
+{
+"name": "Koester Law, PLLC",
+"alt": "",
+"addr": "801 West Springfield Avenue",
+"lat": 40.1124134,
+"lng": -88.2561488
+},
+{
+"name": "CU Dentists",
+"alt": "",
+"addr": "805 West Springfield Avenue",
+"lat": 40.1124528,
+"lng": -88.2566191
+},
+{
+"name": "Manpower",
+"alt": "",
+"addr": "810 West Springfield Avenue",
+"lat": 40.1128315,
+"lng": -88.2569277
+},
+{
+"name": "St. Mary Catholic Church",
+"alt": "The Church of Saint Mary",
+"addr": "612 East Park Street",
+"lat": 40.1177048,
+"lng": -88.2295568
+},
+{
+"name": "307 E. Armory Apartments",
+"alt": "",
+"addr": "307 East Armory Avenue",
+"lat": 40.1051456,
+"lng": -88.2347081
+},
+{
+"name": "Whitehall Apartments Garage",
+"alt": "",
+"addr": "",
+"lat": 40.1137957,
+"lng": -88.2496527
+},
+{
+"name": "Whitehall Apartments",
+"alt": "",
+"addr": "407 West White Street",
+"lat": 40.1139083,
+"lng": -88.2494266
+},
+{
+"name": "Laura Apartments",
+"alt": "",
+"addr": "307 South Prairie Street",
+"lat": 40.1135984,
+"lng": -88.2488533
+},
+{
+"name": "Specialty Small Engine Services",
+"alt": "",
+"addr": "110 West Healey Street",
+"lat": 40.1120059,
+"lng": -88.2446322
+},
+{
+"name": "Do it Best",
+"alt": "",
+"addr": "107 West Springfield Avenue",
+"lat": 40.1123095,
+"lng": -88.2444517
+},
+{
+"name": "Advanced Medical Transport",
+"alt": "",
+"addr": "408 South Neil Street",
+"lat": 40.1118663,
+"lng": -88.2431503
+},
+{
+"name": "The Brake Shop",
+"alt": "",
+"addr": "308 South Market Street",
+"lat": 40.1132016,
+"lng": -88.2426892
+},
+{
+"name": "New Covenant Fellowship",
+"alt": "",
+"addr": "124 West White Street",
+"lat": 40.1146439,
+"lng": -88.2449184
+},
+{
+"name": "The Axe Bar",
+"alt": "",
+"addr": "114 South Neil Street",
+"lat": 40.1157166,
+"lng": -88.2432218
+},
+{
+"name": "Christie Clinic",
+"alt": "",
+"addr": "",
+"lat": 40.1155985,
+"lng": -88.2439555
+},
+{
+"name": "Christie Clinic Radiation Oncology",
+"alt": "",
+"addr": "109 West University Avenue",
+"lat": 40.1160983,
+"lng": -88.2448517
+},
+{
+"name": "Stipes Publishing",
+"alt": "",
+"addr": "",
+"lat": 40.1166192,
+"lng": -88.2457587
+},
+{
+"name": "The Parkview",
+"alt": "",
+"addr": "305 West University Avenue",
+"lat": 40.1160316,
+"lng": -88.2475227
+},
+{
+"name": "Harvest Market",
+"alt": "",
+"addr": "2029 South Neil Street",
+"lat": 40.0908829,
+"lng": -88.2480393
+},
+{
+"name": "Bacon & Van Buskirk Glass Co.",
+"alt": "",
+"addr": "801 South Neil Street",
+"lat": 40.1065381,
+"lng": -88.24395
+},
+{
+"name": "Promise Healthcare",
+"alt": "",
+"addr": "821 South Neil Street",
+"lat": 40.1060959,
+"lng": -88.2436751
+},
+{
+"name": "1319-1317",
+"alt": "",
+"addr": "",
+"lat": 40.1240338,
+"lng": -88.2223589
+},
+{
+"name": "EcoWater Systems of Urbana",
+"alt": "",
+"addr": "1302 North Lincoln Avenue",
+"lat": 40.1239738,
+"lng": -88.2192566
+},
+{
+"name": "Owens Funeral Home",
+"alt": "",
+"addr": "101 North Elm Street",
+"lat": 40.1165563,
+"lng": -88.25067
+},
+{
+"name": "Heath & Vaughn Funeral Home",
+"alt": "",
+"addr": "201 North Elm Street",
+"lat": 40.1175555,
+"lng": -88.2505675
+},
+{
+"name": "Henry Ahrens House",
+"alt": "",
+"addr": "212 East University Avenue",
+"lat": 40.1165611,
+"lng": -88.2356684
+},
+{
+"name": "Harvest House",
+"alt": "",
+"addr": "702 West Washington Street",
+"lat": 40.1056948,
+"lng": -88.2162194
+},
+{
+"name": "University of Illinois Pollinatarium",
+"alt": "",
+"addr": "",
+"lat": 40.0872325,
+"lng": -88.2145962
+},
+{
+"name": "Dublin Street Church of Christ",
+"alt": "",
+"addr": "",
+"lat": 40.1214408,
+"lng": -88.2274382
+},
+{
+"name": "Greater Holy Temple Church",
+"alt": "",
+"addr": "",
+"lat": 40.1209401,
+"lng": -88.2285344
+},
+{
+"name": "GHTC Fellowship Hall",
+"alt": "",
+"addr": "1405 West Dublin Street",
+"lat": 40.1209574,
+"lng": -88.2278967
+},
+{
+"name": "King Park Pavilion",
+"alt": "",
+"addr": "",
+"lat": 40.1217216,
+"lng": -88.2220189
+},
+{
+"name": "Aspen Tap House",
+"alt": "",
+"addr": "2001 South Neil Street",
+"lat": 40.0923116,
+"lng": -88.246198
+},
+{
+"name": "Sam's Cafe",
+"alt": "",
+"addr": "115 North Walnut Street",
+"lat": 40.1169863,
+"lng": -88.2426694
+},
+{
+"name": "Les Gourmets Cuisine",
+"alt": "",
+"addr": "113 North Walnut Street",
+"lat": 40.1169079,
+"lng": -88.2427013
+},
+{
+"name": "The Caffeine Rx",
+"alt": "",
+"addr": "107 North Walnut Street",
+"lat": 40.1167997,
+"lng": -88.2427467
+},
+{
+"name": "Village Roots",
+"alt": "",
+"addr": "105 North Walnut Street",
+"lat": 40.1167238,
+"lng": -88.2427908
+},
+{
+"name": "Pizzeria Antica",
+"alt": "",
+"addr": "10 East Chester Street",
+"lat": 40.116863,
+"lng": -88.2429939
+},
+{
+"name": "Quality",
+"alt": "",
+"addr": "110 North Neil Street",
+"lat": 40.1168538,
+"lng": -88.2432843
+},
+{
+"name": "Circles Boutique",
+"alt": "",
+"addr": "114 North Neil Street",
+"lat": 40.116935,
+"lng": -88.2432627
+},
+{
+"name": "Hound\u2019s Court",
+"alt": "The Blind Pig 2",
+"addr": "120 North Neil Street",
+"lat": 40.1171817,
+"lng": -88.2432276
+},
+{
+"name": "Dandy Hound",
+"alt": "The Blind Pig 2",
+"addr": "9 Taylor Street",
+"lat": 40.1172237,
+"lng": -88.2430712
+},
+{
+"name": "The Literary",
+"alt": "",
+"addr": "122 North Neil Street",
+"lat": 40.1172758,
+"lng": -88.2432506
+},
+{
+"name": "Esquire Lounge",
+"alt": "",
+"addr": "106 North Walnut Street",
+"lat": 40.1166851,
+"lng": -88.2422329
+},
+{
+"name": "Robert's",
+"alt": "",
+"addr": "28 East Chester Street",
+"lat": 40.1165739,
+"lng": -88.242165
+},
+{
+"name": "Suzu's Bakery",
+"alt": "",
+"addr": "114 North Walnut Street",
+"lat": 40.1168338,
+"lng": -88.2421762
+},
+{
+"name": "Hound\u2019s Rest",
+"alt": "",
+"addr": "120 North Walnut Street",
+"lat": 40.1169345,
+"lng": -88.2421255
+},
+{
+"name": "Fleurish",
+"alt": "",
+"addr": "122 North Walnut Street",
+"lat": 40.117012,
+"lng": -88.2420928
+},
+{
+"name": "Seven Saints",
+"alt": "",
+"addr": "32 East Chester Street",
+"lat": 40.1165577,
+"lng": -88.2419938
+},
+{
+"name": "Live Action Games",
+"alt": "",
+"addr": "111 North Market Street",
+"lat": 40.1167959,
+"lng": -88.2419036
+},
+{
+"name": "WEFT 90.1 fm",
+"alt": "",
+"addr": "113 North Market Street",
+"lat": 40.1168442,
+"lng": -88.241872
+},
+{
+"name": "Haypenny Market",
+"alt": "",
+"addr": "115 North Market Street",
+"lat": 40.1168957,
+"lng": -88.2418513
+},
+{
+"name": "Pour Bros. Taproom",
+"alt": "",
+"addr": "40 East University Avenue",
+"lat": 40.1165876,
+"lng": -88.2415852
+},
+{
+"name": "First Mid Bank & Trust",
+"alt": "",
+"addr": "114 West Church Street",
+"lat": 40.1184979,
+"lng": -88.2442627
+},
+{
+"name": "Church Street Square",
+"alt": "",
+"addr": "206 North Randolph Street",
+"lat": 40.1179886,
+"lng": -88.2448471
+},
+{
+"name": "Watson's Shack and Rail",
+"alt": "",
+"addr": "211 North Neil Street",
+"lat": 40.117738,
+"lng": -88.2438969
+},
+{
+"name": "Spritz Jewelers",
+"alt": "",
+"addr": "205 West Park Avenue",
+"lat": 40.1176442,
+"lng": -88.2438964
+},
+{
+"name": "Hamilton Walker's",
+"alt": "",
+"addr": "201 North Neil Street",
+"lat": 40.1174924,
+"lng": -88.2438958
+},
+{
+"name": "Orpheum Champaign",
+"alt": "",
+"addr": "346 North Neil Street",
+"lat": 40.1194926,
+"lng": -88.2425488
+},
+{
+"name": "Signarama",
+"alt": "",
+"addr": "520 North Hickory Street",
+"lat": 40.1206178,
+"lng": -88.2421274
+},
+{
+"name": "Uptown on Columbia",
+"alt": "",
+"addr": "529 North Hickory Street",
+"lat": 40.1206438,
+"lng": -88.2428121
+},
+{
+"name": "The Quarters",
+"alt": "",
+"addr": "11 East Columbia Avenue",
+"lat": 40.1209096,
+"lng": -88.2428067
+},
+{
+"name": "First United Methodist Church",
+"alt": "First UMC",
+"addr": "210 West Church Street",
+"lat": 40.1185432,
+"lng": -88.2463609
+},
+{
+"name": "Springer Cultural Center",
+"alt": "",
+"addr": "301 North Randolph Street",
+"lat": 40.118545,
+"lng": -88.245571
+},
+{
+"name": "Hickory Point Bank",
+"alt": "",
+"addr": "202 West Park Avenue",
+"lat": 40.1175424,
+"lng": -88.2454742
+},
+{
+"name": "Long's Garage",
+"alt": "",
+"addr": "503 East Main Street",
+"lat": 40.1124113,
+"lng": -88.202242
+},
+{
+"name": "Impressions Window Tinting",
+"alt": "",
+"addr": "509 East Main Street",
+"lat": 40.1126517,
+"lng": -88.2016218
+},
+{
+"name": "Webber Street Christian Church",
+"alt": "",
+"addr": "107 South Webber Street",
+"lat": 40.1120787,
+"lng": -88.1995831
+},
+{
+"name": "Campus Middle School For Girls",
+"alt": "",
+"addr": "108 South Webber Street",
+"lat": 40.1120084,
+"lng": -88.1987151
+},
+{
+"name": "First Presbyterian Church",
+"alt": "",
+"addr": "302 West Church Street",
+"lat": 40.1185363,
+"lng": -88.2472111
+},
+{
+"name": "Meyer Capel",
+"alt": "",
+"addr": "306 West Church Street",
+"lat": 40.1185404,
+"lng": -88.2476626
+},
+{
+"name": "Greener Goods Shop + Refillery",
+"alt": "",
+"addr": "110 South Neil Street",
+"lat": 40.1158228,
+"lng": -88.2432955
+},
+{
+"name": "Huntington Tower",
+"alt": "",
+"addr": "201 West Springfield Avenue",
+"lat": 40.1123391,
+"lng": -88.2455508
+},
+{
+"name": "Champaign Auto Sales",
+"alt": "",
+"addr": "407 South Neil Street",
+"lat": 40.111877,
+"lng": -88.243915
+},
+{
+"name": "WCIA",
+"alt": "",
+"addr": "509 South Neil Street",
+"lat": 40.1108243,
+"lng": -88.2440519
+},
+{
+"name": "Wolfram Research Shipping & Receiving",
+"alt": "Wolfram Shipping & Receiving",
+"addr": "112 West Green Street",
+"lat": 40.1104279,
+"lng": -88.2448305
+},
+{
+"name": "Christie Clinic Leadership Center",
+"alt": "",
+"addr": "206 West White Street",
+"lat": 40.1146258,
+"lng": -88.2460446
+},
+{
+"name": "Champaign Psychic",
+"alt": "",
+"addr": "204 West Springfield Avenue",
+"lat": 40.1128318,
+"lng": -88.2456339
+},
+{
+"name": "Larry D. Buhrmester & Associates",
+"alt": "Buhrmester & Associates",
+"addr": "202 West Springfield Avenue",
+"lat": 40.1128956,
+"lng": -88.245388
+},
+{
+"name": "Barbara's Alterations",
+"alt": "",
+"addr": "71 East Chester Street",
+"lat": 40.1155177,
+"lng": -88.2393161
+},
+{
+"name": "Rumours Hat Shoppe",
+"alt": "",
+"addr": "75 East Chester Street",
+"lat": 40.1155382,
+"lng": -88.2391035
+},
+{
+"name": "Urbana Bah\u00e1'\u00ed Center",
+"alt": "",
+"addr": "807 East Green Street",
+"lat": 40.1106383,
+"lng": -88.1984156
+},
+{
+"name": "DP's Beauty Supply",
+"alt": "",
+"addr": "1102 East Washington Street",
+"lat": 40.105866,
+"lng": -88.1954527
+},
+{
+"name": "Huaraches Moroleon",
+"alt": "",
+"addr": "805 Philo Road",
+"lat": 40.1058307,
+"lng": -88.1951868
+},
+{
+"name": "Boneyard Boulders",
+"alt": "",
+"addr": "119 East University Avenue",
+"lat": 40.1160525,
+"lng": -88.2377967
+},
+{
+"name": "NY Alts",
+"alt": "",
+"addr": "125 East University Avenue",
+"lat": 40.1160539,
+"lng": -88.2376367
+},
+{
+"name": "Byers Vacuum",
+"alt": "",
+"addr": "77 East University Avenue",
+"lat": 40.1161463,
+"lng": -88.2389886
+},
+{
+"name": "UpClose Printing",
+"alt": "",
+"addr": "120 West White Street",
+"lat": 40.1146441,
+"lng": -88.2446182
+},
+{
+"name": "Impact Physical Therapy",
+"alt": "",
+"addr": "602 South Neil Street",
+"lat": 40.1100162,
+"lng": -88.2424529
+},
+{
+"name": "Opera House",
+"alt": "",
+"addr": "312 West Springfield Avenue",
+"lat": 40.1126291,
+"lng": -88.2117072
+},
+{
+"name": "Phillips Recreation Center",
+"alt": "",
+"addr": "505 West Stoughton Street",
+"lat": 40.1125732,
+"lng": -88.2136709
+},
+{
+"name": "901 Western",
+"alt": "",
+"addr": "901 Western Avenue",
+"lat": 40.1119409,
+"lng": -88.2199823
+},
+{
+"name": "Avionics",
+"alt": "Flying Machine",
+"addr": "202 South First Street",
+"lat": 40.1151976,
+"lng": -88.2385343
+},
+{
+"name": "Cooperative Nursery School",
+"alt": "",
+"addr": "",
+"lat": 40.1111719,
+"lng": -88.2148935
+},
+{
+"name": "First Presbyterian Church of Urbana",
+"alt": "",
+"addr": "602 West Green Street",
+"lat": 40.110939,
+"lng": -88.2149527
+},
+{
+"name": "Cunningham Township Supervisor's Office",
+"alt": "",
+"addr": "205 West Green Street",
+"lat": 40.1104918,
+"lng": -88.2095136
+},
+{
+"name": "The New Yorker",
+"alt": "",
+"addr": "302 South Cedar Street",
+"lat": 40.1104718,
+"lng": -88.2101359
+},
+{
+"name": "Bruno Law Offices",
+"alt": "",
+"addr": "301 West Green Street",
+"lat": 40.1105009,
+"lng": -88.2105339
+},
+{
+"name": "Unitarian Universalist Church of Urbana-Champaign",
+"alt": "UUCUC",
+"addr": "309 West Green Street",
+"lat": 40.1104378,
+"lng": -88.2113754
+},
+{
+"name": "Coler Crossing",
+"alt": "",
+"addr": "701 West Green Street",
+"lat": 40.110406,
+"lng": -88.2163283
+},
+{
+"name": "Carriage Lane",
+"alt": "",
+"addr": "709 West Green Street",
+"lat": 40.1103299,
+"lng": -88.2170071
+},
+{
+"name": "Carriage Way",
+"alt": "",
+"addr": "302 South Busey Avenue",
+"lat": 40.1101039,
+"lng": -88.2173182
+},
+{
+"name": "H&R Block",
+"alt": "",
+"addr": "114 North Vine Street",
+"lat": 40.1130641,
+"lng": -88.2030934
+},
+{
+"name": "Athletico Physical Therapy",
+"alt": "",
+"addr": "114 North Vine Street",
+"lat": 40.1129063,
+"lng": -88.2030942
+},
+{
+"name": "Xinh Xinh Caf\u00e9",
+"alt": "",
+"addr": "114 North Vine Street",
+"lat": 40.1131956,
+"lng": -88.2030928
+},
+{
+"name": "Diamond Day Spa",
+"alt": "",
+"addr": "114 North Vine Street",
+"lat": 40.1132482,
+"lng": -88.2030926
+},
+{
+"name": "Pretty Nails Spa",
+"alt": "",
+"addr": "114 North Vine Street",
+"lat": 40.1134061,
+"lng": -88.2030918
+},
+{
+"name": "Wingstop",
+"alt": "",
+"addr": "114 North Vine Street",
+"lat": 40.1128579,
+"lng": -88.2040447
+},
+{
+"name": "China Garden",
+"alt": "",
+"addr": "114 North Vine Street",
+"lat": 40.1134586,
+"lng": -88.2030915
+},
+{
+"name": "Schnucks",
+"alt": "",
+"addr": "200 North Vine Street",
+"lat": 40.1139989,
+"lng": -88.2030217
+},
+{
+"name": "First Mid Bank & Trust",
+"alt": "",
+"addr": "601 South Vine Street",
+"lat": 40.1082048,
+"lng": -88.2052358
+},
+{
+"name": "Vine Street Motor Co.",
+"alt": "",
+"addr": "507 South Vine Street",
+"lat": 40.1086849,
+"lng": -88.2052997
+},
+{
+"name": "Green Street Realty",
+"alt": "",
+"addr": "510 South Neil Street",
+"lat": 40.1108276,
+"lng": -88.2431156
+},
+{
+"name": "DIGS",
+"alt": "",
+"addr": "32 East Springfield Avenue",
+"lat": 40.1129066,
+"lng": -88.2413157
+},
+{
+"name": "Leonard's Pawn Shop",
+"alt": "Leonard's Pawn & Jewelry",
+"addr": "48 East Springfield Avenue",
+"lat": 40.1128846,
+"lng": -88.2402857
+},
+{
+"name": "Lovers Playground",
+"alt": "",
+"addr": "33 East Springfield Avenue",
+"lat": 40.1123406,
+"lng": -88.2405672
+},
+{
+"name": "Rick's Automotive Service",
+"alt": "Rick's Automotive",
+"addr": "54 East Springfield Avenue",
+"lat": 40.1128559,
+"lng": -88.2395137
+},
+{
+"name": "DD Fish",
+"alt": "",
+"addr": "401 South First Street",
+"lat": 40.1128209,
+"lng": -88.239191
+},
+{
+"name": "Wells Fargo Advisors",
+"alt": "",
+"addr": "2237 South Neil Street",
+"lat": 40.0858096,
+"lng": -88.247132
+},
+{
+"name": "Women's Health Practice",
+"alt": "",
+"addr": "2109 South Neil Street",
+"lat": 40.0876972,
+"lng": -88.2468142
+},
+{
+"name": "Three Hierarchs Greek Orthodox Church",
+"alt": "",
+"addr": "2010 Three Hierarchs Court",
+"lat": 40.0902123,
+"lng": -88.249197
+},
+{
+"name": "Biaggi's Ristorante Italiano",
+"alt": "",
+"addr": "2235 South Neil Street",
+"lat": 40.0865541,
+"lng": -88.246983
+},
+{
+"name": "KinderCare",
+"alt": "KinderCare Learning Center",
+"addr": "410 Devonshire Drive",
+"lat": 40.0902096,
+"lng": -88.2499946
+},
+{
+"name": "Chipotle",
+"alt": "",
+"addr": "2037 South Neil Street",
+"lat": 40.0905346,
+"lng": -88.2463844
+},
+{
+"name": "Haymakers",
+"alt": "",
+"addr": "202 Devonshire Drive",
+"lat": 40.0902355,
+"lng": -88.2474786
+},
+{
+"name": "SangEat Indian Restaurant & Bar",
+"alt": "SangEat",
+"addr": "1905 South Neil Street",
+"lat": 40.0929521,
+"lng": -88.2460487
+},
+{
+"name": "Jiffy Lube",
+"alt": "",
+"addr": "1901 South Neil Street",
+"lat": 40.0936261,
+"lng": -88.2457409
+},
+{
+"name": "Family Service",
+"alt": "",
+"addr": "405 South State Street",
+"lat": 40.1121344,
+"lng": -88.2471589
+},
+{
+"name": "Illini Smiles",
+"alt": "",
+"addr": "303 West Springfield Avenue",
+"lat": 40.1124056,
+"lng": -88.2471325
+},
+{
+"name": "St. John Bosco Convent",
+"alt": "",
+"addr": "1007 South Sixth Street",
+"lat": 40.1060655,
+"lng": -88.2307608
+},
+{
+"name": "St. John's Rectory",
+"alt": "",
+"addr": "1011 South Sixth Street",
+"lat": 40.1058463,
+"lng": -88.2307076
+},
+{
+"name": "Alpha Delta Phi",
+"alt": "",
+"addr": "401 East Daniel Street",
+"lat": 40.1075565,
+"lng": -88.2330796
+},
+{
+"name": "Skyline Tower",
+"alt": "",
+"addr": "519 East Green Street",
+"lat": 40.110047,
+"lng": -88.2307622
+},
+{
+"name": "Haymakers Gas Station",
+"alt": "",
+"addr": "202 Devonshire Drive",
+"lat": 40.0899717,
+"lng": -88.247393
+},
+{
+"name": "Rainstorm",
+"alt": "",
+"addr": "302 Devonshire Drive",
+"lat": 40.08997,
+"lng": -88.2482938
+},
+{
+"name": "401 Hardwick Apartments",
+"alt": "",
+"addr": "401 East University Avenue",
+"lat": 40.11604,
+"lng": -88.2331607
+},
+{
+"name": "407 Hardwick Apartments",
+"alt": "",
+"addr": "407 East University Avenue",
+"lat": 40.1160655,
+"lng": -88.2324859
+},
+{
+"name": "Golden Wok",
+"alt": "",
+"addr": "405 East University Avenue",
+"lat": 40.1160204,
+"lng": -88.2328475
+},
+{
+"name": "Eastern Engineering",
+"alt": "",
+"addr": "404 East University Avenue",
+"lat": 40.1166026,
+"lng": -88.233212
+},
+{
+"name": "First Federal",
+"alt": "",
+"addr": "301 West Springfield Avenue",
+"lat": 40.1122001,
+"lng": -88.2106608
+},
+{
+"name": "Klose Knit",
+"alt": "",
+"addr": "311 West Springfield Avenue",
+"lat": 40.1122032,
+"lng": -88.2116385
+},
+{
+"name": "Glenn Poor's TV Service",
+"alt": "",
+"addr": "609 West Springfield Avenue",
+"lat": 40.112474,
+"lng": -88.2155298
+},
+{
+"name": "Zarbuck Chiropractic Clinic",
+"alt": "",
+"addr": "711 West Springfield Avenue",
+"lat": 40.1126228,
+"lng": -88.2174222
+},
+{
+"name": "Circle K",
+"alt": "",
+"addr": "810 West Green Street",
+"lat": 40.1110103,
+"lng": -88.2188059
+},
+{
+"name": "Circle K",
+"alt": "",
+"addr": "810 West Green Street",
+"lat": 40.110853,
+"lng": -88.2190567
+},
+{
+"name": "Eastview Apartments",
+"alt": "",
+"addr": "806 West Green Street",
+"lat": 40.110979,
+"lng": -88.2185589
+},
+{
+"name": "Campus Oaks",
+"alt": "",
+"addr": "502 West Green Street",
+"lat": 40.1110561,
+"lng": -88.2136184
+},
+{
+"name": "Brick Place",
+"alt": "",
+"addr": "404 West Green Street",
+"lat": 40.1108808,
+"lng": -88.2120913
+},
+{
+"name": "Berns Clancy & Associates",
+"alt": "BCA",
+"addr": "405 East Main Street",
+"lat": 40.1123973,
+"lng": -88.2029641
+},
+{
+"name": "Illini Oil Change",
+"alt": "",
+"addr": "301 East Main Street",
+"lat": 40.1122142,
+"lng": -88.2047012
+},
+{
+"name": "Dixon Graphics Commercial Printing",
+"alt": "",
+"addr": "105 West John Street",
+"lat": 40.1085039,
+"lng": -88.2441771
+},
+{
+"name": "Strides",
+"alt": "",
+"addr": "70 East Washington Street",
+"lat": 40.1203169,
+"lng": -88.2396643
+},
+{
+"name": "Smalley's Woodworking",
+"alt": "",
+"addr": "36 East Columbia Avenue",
+"lat": 40.121271,
+"lng": -88.2414308
+},
+{
+"name": "Kohinoor",
+"alt": "",
+"addr": "6 East Columbia Avenue",
+"lat": 40.1212726,
+"lng": -88.2422174
+},
+{
+"name": "Columbia Street Roastery",
+"alt": "",
+"addr": "24 East Columbia Avenue",
+"lat": 40.1212718,
+"lng": -88.2419797
+},
+{
+"name": "Papa Del's",
+"alt": "",
+"addr": "1201 South Neil Street",
+"lat": 40.1032431,
+"lng": -88.2441829
+},
+{
+"name": "First Financial Bank",
+"alt": "",
+"addr": "1205 South Neil Street",
+"lat": 40.1029039,
+"lng": -88.2442159
+},
+{
+"name": "Oak Street Library Facility",
+"alt": "",
+"addr": "809 South Oak Street",
+"lat": 40.1083561,
+"lng": -88.2419828
+},
+{
+"name": "Circle K",
+"alt": "",
+"addr": "59 East Green Street",
+"lat": 40.1098907,
+"lng": -88.2393561
+},
+{
+"name": "Vinny's By The Slice & More",
+"alt": "",
+"addr": "50 East Green Street",
+"lat": 40.1105137,
+"lng": -88.240021
+},
+{
+"name": "Locust III Apartments",
+"alt": "",
+"addr": "908 South Locust Street",
+"lat": 40.1072149,
+"lng": -88.2399685
+},
+{
+"name": "Lofts 54",
+"alt": "",
+"addr": "54 East Chalmers Street",
+"lat": 40.1068817,
+"lng": -88.2399247
+},
+{
+"name": "Native American Studies",
+"alt": "",
+"addr": "1206 West Nevada Street",
+"lat": 40.1061446,
+"lng": -88.224499
+},
+{
+"name": "Sigma Delta Tau",
+"alt": "",
+"addr": "1104 West Nevada Street",
+"lat": 40.1062829,
+"lng": -88.2221217
+},
+{
+"name": "Chez Veterans Center",
+"alt": "",
+"addr": "908 West Nevada Street",
+"lat": 40.1063181,
+"lng": -88.2203868
+},
+{
+"name": "Tau Kappa Epsilon Senior House",
+"alt": "",
+"addr": "1014 South Oak Street",
+"lat": 40.105529,
+"lng": -88.2412789
+},
+{
+"name": "Meat Science Lab",
+"alt": "",
+"addr": "1503 South Maryland Drive",
+"lat": 40.0994396,
+"lng": -88.2231034
+},
+{
+"name": "Taft House",
+"alt": "",
+"addr": "1401 South Maryland Drive",
+"lat": 40.1002715,
+"lng": -88.2232165
+},
+{
+"name": "Alpha Omicron Pi",
+"alt": "",
+"addr": "706 South Mathews Avenue",
+"lat": 40.1063934,
+"lng": -88.2251213
+},
+{
+"name": "1008 S 4th",
+"alt": "",
+"addr": "1008 South Fourth Street",
+"lat": 40.1061066,
+"lng": -88.2330165
+},
+{
+"name": "Taco Bell",
+"alt": "",
+"addr": "1707 South Neil Street",
+"lat": 40.0954573,
+"lng": -88.2455542
+},
+{
+"name": "MTD",
+"alt": "",
+"addr": "1101 East University Avenue",
+"lat": 40.1153681,
+"lng": -88.1956259
+},
+{
+"name": "Pard's Western Shop",
+"alt": "",
+"addr": "306 North Maple Street",
+"lat": 40.1149973,
+"lng": -88.2017368
+},
+{
+"name": "Old Delhi Music",
+"alt": "",
+"addr": "402 North Maple Street",
+"lat": 40.1155021,
+"lng": -88.2019854
+},
+{
+"name": "MG Auto Sales",
+"alt": "",
+"addr": "501 East University Avenue",
+"lat": 40.1159445,
+"lng": -88.2020611
+},
+{
+"name": "Champaign Garden Inn",
+"alt": "",
+"addr": "411 West Hill Street",
+"lat": 40.1189277,
+"lng": -88.2498355
+},
+{
+"name": "The Glenn Building",
+"alt": "",
+"addr": "",
+"lat": 40.1189347,
+"lng": -88.2486971
+},
+{
+"name": "H Mart",
+"alt": "",
+"addr": "220 North Broadway Avenue",
+"lat": 40.1144216,
+"lng": -88.2058418
+},
+{
+"name": "Comcast",
+"alt": "",
+"addr": "",
+"lat": 40.1032848,
+"lng": -88.2041244
+},
+{
+"name": "710 Mart",
+"alt": "",
+"addr": "",
+"lat": 40.1065548,
+"lng": -88.2236223
+},
+{
+"name": "Historic Pavillion",
+"alt": "",
+"addr": "",
+"lat": 40.1039248,
+"lng": -88.2112383
+},
+{
+"name": "The Bills House",
+"alt": "",
+"addr": "",
+"lat": 40.1118228,
+"lng": -88.2142289
+},
+{
+"name": "Busey's Hall / Princess Theater",
+"alt": "",
+"addr": "",
+"lat": 40.1127454,
+"lng": -88.2083642
+},
+{
+"name": "Pennsylvania Avenue Baptist Church",
+"alt": "",
+"addr": "600 East Pennsylvania Avenue",
+"lat": 40.1011724,
+"lng": -88.2007505
+},
+{
+"name": "Heartland Bank",
+"alt": "",
+"addr": "602 South Vine Street",
+"lat": 40.1082594,
+"lng": -88.2045921
+},
+{
+"name": "The Weiner Companies",
+"alt": "",
+"addr": "211 East Green Street",
+"lat": 40.1105944,
+"lng": -88.2052283
+},
+{
+"name": "AutoZone",
+"alt": "",
+"addr": "606 East Main Street",
+"lat": 40.1134498,
+"lng": -88.2004733
+},
+{
+"name": "Dyno-Tune",
+"alt": "",
+"addr": "",
+"lat": 40.1119273,
+"lng": -88.2046758
+},
+{
+"name": "The Yard on Broadway",
+"alt": "",
+"addr": "401 North Broadway Avenue",
+"lat": 40.1151998,
+"lng": -88.2080272
+},
+{
+"name": "South Garage",
+"alt": "",
+"addr": "",
+"lat": 40.1157199,
+"lng": -88.2135998
+},
+{
+"name": "North Garage",
+"alt": "",
+"addr": "",
+"lat": 40.1171263,
+"lng": -88.2138436
+},
+{
+"name": "Circle K",
+"alt": "",
+"addr": "507 West University Avenue",
+"lat": 40.1162478,
+"lng": -88.2133728
+},
+{
+"name": "Merry Ann's Diner",
+"alt": "",
+"addr": "1510 South Neil Street",
+"lat": 40.0983917,
+"lng": -88.2442471
+},
+{
+"name": "Parcadia",
+"alt": "",
+"addr": "302 North Broadway Avenue",
+"lat": 40.1151707,
+"lng": -88.2064115
+},
+{
+"name": "Champaign-Urbana Adventures in Time and Space",
+"alt": "CU Adventures in Time and Space",
+"addr": "302 North Broadway Avenue",
+"lat": 40.1154266,
+"lng": -88.2062848
+},
+{
+"name": "Courtesy Cleaners Laundromat",
+"alt": "",
+"addr": "402 North Broadway Avenue",
+"lat": 40.1158163,
+"lng": -88.2071572
+},
+{
+"name": "7 Brew",
+"alt": "7 Brew",
+"addr": "410 North Broadway Avenue",
+"lat": 40.1161039,
+"lng": -88.2071122
+},
+{
+"name": "Millhouse Plaza",
+"alt": "",
+"addr": "408 North Race Street",
+"lat": 40.1158345,
+"lng": -88.2088473
+},
+{
+"name": "Windy City Express",
+"alt": "",
+"addr": "410 North Race Street",
+"lat": 40.1161973,
+"lng": -88.2086877
+},
+{
+"name": "Carle Foundation Hospital Research",
+"alt": "",
+"addr": "221 North Broadway Avenue",
+"lat": 40.1145697,
+"lng": -88.2078781
+},
+{
+"name": "Analog Wine Library",
+"alt": "",
+"addr": "129 North Race Street",
+"lat": 40.1134477,
+"lng": -88.2091895
+},
+{
+"name": "Canaan Academy",
+"alt": "",
+"addr": "207 North Central Avenue",
+"lat": 40.1136768,
+"lng": -88.2118286
+},
+{
+"name": "Carle Center for Quality Excellence",
+"alt": "",
+"addr": "409 West University Avenue",
+"lat": 40.1162063,
+"lng": -88.2169896
+},
+{
+"name": "Anderson Building",
+"alt": "",
+"addr": "406 North Busey Avenue",
+"lat": 40.1159909,
+"lng": -88.216955
+},
+{
+"name": "Facilities Administration",
+"alt": "",
+"addr": "401 West University Avenue",
+"lat": 40.116293,
+"lng": -88.2160062
+},
+{
+"name": "Expanding Children\u2019s Hearing Opportunities",
+"alt": "ECHO",
+"addr": "805 West Park Street",
+"lat": 40.117108,
+"lng": -88.2179909
+},
+{
+"name": "Subway",
+"alt": "",
+"addr": "802 West University Avenue",
+"lat": 40.1167105,
+"lng": -88.2176717
+},
+{
+"name": "Midas",
+"alt": "",
+"addr": "304 West University Avenue",
+"lat": 40.1168229,
+"lng": -88.2101847
+},
+{
+"name": "West Main Dental",
+"alt": "",
+"addr": "204 West University Avenue",
+"lat": 40.1167109,
+"lng": -88.2095705
+},
+{
+"name": "Lindy Lu's",
+"alt": "",
+"addr": "202 West University Avenue",
+"lat": 40.1167624,
+"lng": -88.2092753
+},
+{
+"name": "Patel Law, PC",
+"alt": "",
+"addr": "108 West University Avenue",
+"lat": 40.1167293,
+"lng": -88.2085053
+},
+{
+"name": "Good Friends Animal Hospital",
+"alt": "",
+"addr": "908 East Main Street",
+"lat": 40.1132116,
+"lng": -88.1972339
+},
+{
+"name": "Building 4",
+"alt": "",
+"addr": "",
+"lat": 40.1277704,
+"lng": -88.222234
+},
+{
+"name": "Cunningham Township Assessors Office",
+"alt": "",
+"addr": "205 1/2 West Green Street",
+"lat": 40.1104914,
+"lng": -88.2095822
+},
+{
+"name": "Dollar General",
+"alt": "",
+"addr": "1204 North Market Street",
+"lat": 40.1275655,
+"lng": -88.2384873
+},
+{
+"name": "Midtown Plaza South",
+"alt": "",
+"addr": "310 South First Street",
+"lat": 40.113044,
+"lng": -88.2382898
+},
+{
+"name": "Midtown Plaza North",
+"alt": "",
+"addr": "302 South First Street",
+"lat": 40.1138431,
+"lng": -88.2383774
+},
+{
+"name": "Carle Addiction Recovery Center",
+"alt": "The Forum at Carle",
+"addr": "204 West University Avenue",
+"lat": 40.1178992,
+"lng": -88.2138658
+},
+{
+"name": "Carle Foundation Hospital South Clinic",
+"alt": "Carle South",
+"addr": "",
+"lat": 40.1159692,
+"lng": -88.2146699
+},
+{
+"name": "Circle K",
+"alt": "",
+"addr": "",
+"lat": 40.116166,
+"lng": -88.2136905
+},
+{
+"name": "Housing Maintenance Shop",
+"alt": "",
+"addr": "511 Hazelwood Drive",
+"lat": 40.0903801,
+"lng": -88.213916
+},
+{
+"name": "Housing Warehouse",
+"alt": "",
+"addr": "511 Hazelwood Drive",
+"lat": 40.0898086,
+"lng": -88.2139388
+},
+{
+"name": "Illini Union Warehouse #2",
+"alt": "",
+"addr": "",
+"lat": 40.0903577,
+"lng": -88.2132149
+},
+{
+"name": "Legends",
+"alt": "Legends Bar and Grill",
+"addr": "522 East Green Street",
+"lat": 40.1105658,
+"lng": -88.2312395
+},
+{
+"name": "TownePlace Suites",
+"alt": "",
+"addr": "603 South Sixth Street",
+"lat": 40.1106017,
+"lng": -88.2309369
+},
+{
+"name": "The Church of Jesus Christ of Latter-day Saints Institute of Religion",
+"alt": "",
+"addr": "402 South Lincoln Avenue",
+"lat": 40.1096722,
+"lng": -88.2189628
+},
+{
+"name": "KAMS",
+"alt": "",
+"addr": "102 East Green Street",
+"lat": 40.1104338,
+"lng": -88.2382756
+},
+{
+"name": "Korean Church of Champaign-Urbana",
+"alt": "",
+"addr": "",
+"lat": 40.1109193,
+"lng": -88.2153812
+},
+{
+"name": "Bilbrey Bandstand",
+"alt": "",
+"addr": "",
+"lat": 40.1169045,
+"lng": -88.2489932
+},
+{
+"name": "The LINC Leasing Center",
+"alt": "",
+"addr": "1601 North Lincoln Avenue",
+"lat": 40.1281668,
+"lng": -88.2203561
+},
+{
+"name": "Demirjian Indoor Golf Facility",
+"alt": "",
+"addr": "1415 Saint Mary's Road",
+"lat": 40.0938227,
+"lng": -88.228133
+},
+{
+"name": "Building 14",
+"alt": "",
+"addr": "Melrose Village Cir",
+"lat": 40.1298166,
+"lng": -88.2240739
+},
+{
+"name": "Building 8",
+"alt": "",
+"addr": "",
+"lat": 40.1296998,
+"lng": -88.2227648
+},
+{
+"name": "Building 13",
+"alt": "",
+"addr": "Melrose Village Cir",
+"lat": 40.1294509,
+"lng": -88.2233734
+},
+{
+"name": "Building 11",
+"alt": "",
+"addr": "",
+"lat": 40.1291892,
+"lng": -88.22328
+},
+{
+"name": "Building 7",
+"alt": "",
+"addr": "",
+"lat": 40.1293319,
+"lng": -88.2225572
+},
+{
+"name": "Building 21",
+"alt": "",
+"addr": "",
+"lat": 40.1284797,
+"lng": -88.2240623
+},
+{
+"name": "Building 20",
+"alt": "",
+"addr": "",
+"lat": 40.1279611,
+"lng": -88.2240484
+},
+{
+"name": "Building 19",
+"alt": "",
+"addr": "",
+"lat": 40.1276884,
+"lng": -88.2237502
+},
+{
+"name": "Building 18",
+"alt": "",
+"addr": "",
+"lat": 40.1276701,
+"lng": -88.2231819
+},
+{
+"name": "Building 6",
+"alt": "",
+"addr": "",
+"lat": 40.1283954,
+"lng": -88.2227103
+},
+{
+"name": "Building 17",
+"alt": "",
+"addr": "",
+"lat": 40.1280283,
+"lng": -88.2228986
+},
+{
+"name": "Building 5",
+"alt": "",
+"addr": "",
+"lat": 40.1281315,
+"lng": -88.2224995
+},
+{
+"name": "Building 3",
+"alt": "",
+"addr": "",
+"lat": 40.127731,
+"lng": -88.2215542
+},
+{
+"name": "Building 2",
+"alt": "",
+"addr": "",
+"lat": 40.1281489,
+"lng": -88.2213411
+},
+{
+"name": "Building 1",
+"alt": "",
+"addr": "",
+"lat": 40.1285665,
+"lng": -88.2213439
+},
+{
+"name": "Maintenance Building",
+"alt": "",
+"addr": "",
+"lat": 40.1298156,
+"lng": -88.2234856
+},
+{
+"name": "Carle Orthopedics and Sports Medicine",
+"alt": "",
+"addr": "2300 South First Street",
+"lat": 40.0842152,
+"lng": -88.2371071
+},
+{
+"name": "The Den on University",
+"alt": "",
+"addr": "1007 West University Avenue",
+"lat": 40.1161266,
+"lng": -88.2219178
+},
+{
+"name": "The Hartford",
+"alt": "",
+"addr": "310 West Hill Street",
+"lat": 40.1194307,
+"lng": -88.2480273
+},
+{
+"name": "Hessel Park Church",
+"alt": "",
+"addr": "700 West Kirby Avenue",
+"lat": 40.0984576,
+"lng": -88.2539505
+},
+{
+"name": "Hessel Park Family Dentistry",
+"alt": "",
+"addr": "314 West Kirby Avenue",
+"lat": 40.0982852,
+"lng": -88.2484255
+},
+{
+"name": "Hunny's Smoke Shop & More",
+"alt": "",
+"addr": "712 South Sixth Street",
+"lat": 40.1094468,
+"lng": -88.2302205
+},
+{
+"name": "Agronomy Seed House",
+"alt": "",
+"addr": "2102 South Wright Street",
+"lat": 40.091081,
+"lng": -88.2274529
+},
+{
+"name": "Press Box",
+"alt": "",
+"addr": "",
+"lat": 40.0965252,
+"lng": -88.2302199
+},
+{
+"name": "Campus Instructional Facility",
+"alt": "CIF",
+"addr": "1405 Springfield Avenue",
+"lat": 40.1124626,
+"lng": -88.2282767
+},
+{
+"name": "North Woods Pavilion",
+"alt": "",
+"addr": "",
+"lat": 40.1223451,
+"lng": -88.2092674
+},
+{
+"name": "Circle K",
+"alt": "",
+"addr": "1301 South Neil Street",
+"lat": 40.10204,
+"lng": -88.2442509
+},
+{
+"name": "Circle K",
+"alt": "",
+"addr": "1301 South Neil Street",
+"lat": 40.101797,
+"lng": -88.2443348
+},
+{
+"name": "First Federal",
+"alt": "",
+"addr": "1311 South Neil Street",
+"lat": 40.1006586,
+"lng": -88.2447489
+},
+{
+"name": "State Farm Center",
+"alt": "",
+"addr": "1800 South First Street",
+"lat": 40.0962904,
+"lng": -88.2359038
+},
+{
+"name": "International Studies Building",
+"alt": "",
+"addr": "910 South Fifth Street",
+"lat": 40.1072121,
+"lng": -88.2316475
+},
+{
+"name": "Filler Marching Illini Instructional Tower",
+"alt": "",
+"addr": "",
+"lat": 40.1036882,
+"lng": -88.2394422
+},
+{
+"name": "Townsend Hall",
+"alt": "",
+"addr": "918 West Illinois Street",
+"lat": 40.1098439,
+"lng": -88.2209232
+},
+{
+"name": "Food Service Building",
+"alt": "",
+"addr": "1010 West Illinois Street",
+"lat": 40.1099418,
+"lng": -88.2217437
+},
+{
+"name": "Wardall Hall",
+"alt": "",
+"addr": "1012 West Illinois Street",
+"lat": 40.1094881,
+"lng": -88.2217569
+},
+{
+"name": "Joe's Brewery",
+"alt": "",
+"addr": "706 South Fifth Street",
+"lat": 40.1097964,
+"lng": -88.2317834
+},
+{
+"name": "Kung Fu BBQ",
+"alt": "",
+"addr": "510 East John Street",
+"lat": 40.10936,
+"lng": -88.2308589
+},
+{
+"name": "Sigma Phi Epsilon Fraternity",
+"alt": "",
+"addr": "1105 South Fourth Street",
+"lat": 40.1048423,
+"lng": -88.2337842
+},
+{
+"name": "Acacia",
+"alt": "",
+"addr": "302 East Armory Avenue",
+"lat": 40.1056855,
+"lng": -88.23489
+},
+{
+"name": "Delta Upsilon",
+"alt": "",
+"addr": "312 East Armory Avenue",
+"lat": 40.1057155,
+"lng": -88.233886
+},
+{
+"name": "Phi Delta Theta",
+"alt": "",
+"addr": "309 East Chalmers Street",
+"lat": 40.1062406,
+"lng": -88.2343085
+},
+{
+"name": "Phi Kappa Psi",
+"alt": "\u03a6\u039a\u03a8",
+"addr": "911 South Fourth Street",
+"lat": 40.1068515,
+"lng": -88.2339488
+},
+{
+"name": "Zeta Beta Tau",
+"alt": "\u0396\u0392\u03a4",
+"addr": "907 South Fourth Street",
+"lat": 40.1072665,
+"lng": -88.2338855
+},
+{
+"name": "Hub Champaign Daniel",
+"alt": "",
+"addr": "812 South Sixth Street",
+"lat": 40.1083146,
+"lng": -88.2297531
+},
+{
+"name": "Siebel Center for Design",
+"alt": "",
+"addr": "1208 South Fourth Street",
+"lat": 40.102724,
+"lng": -88.2324742
+},
+{
+"name": "Victory Park Pavilion",
+"alt": "",
+"addr": "",
+"lat": 40.111274,
+"lng": -88.1974655
+},
+{
+"name": "Champaign County Sheriff's Office",
+"alt": "",
+"addr": "204 East Main Street",
+"lat": 40.1130397,
+"lng": -88.2057844
+},
+{
+"name": "American Way Storage",
+"alt": "",
+"addr": "202 North Maple Street",
+"lat": 40.1139017,
+"lng": -88.2021323
+},
+{
+"name": "Langacker Law",
+"alt": "",
+"addr": "210 North Broadway Avenue",
+"lat": 40.1140415,
+"lng": -88.207218
+},
+{
+"name": "Kurland Steel Company",
+"alt": "",
+"addr": "510 East Main Street",
+"lat": 40.1131195,
+"lng": -88.2015143
+},
+{
+"name": "Sherwin-Williams",
+"alt": "",
+"addr": "203 North Vine Street",
+"lat": 40.1138071,
+"lng": -88.2053346
+},
+{
+"name": "Brown House",
+"alt": "",
+"addr": "703 South Coler Avenue",
+"lat": 40.107037,
+"lng": -88.216221
+},
+{
+"name": "First Church of Christ Scientist",
+"alt": "",
+"addr": "501 West Oregon Street",
+"lat": 40.1072119,
+"lng": -88.2133142
+},
+{
+"name": "American Football House",
+"alt": "",
+"addr": "704 West High Street",
+"lat": 40.1099706,
+"lng": -88.2165731
+},
+{
+"name": "Twice is Nice",
+"alt": "",
+"addr": "607 West Elm Street",
+"lat": 40.1112665,
+"lng": -88.2154085
+},
+{
+"name": "Greencrest Apartments",
+"alt": "",
+"addr": "710 West Green Street",
+"lat": 40.1108398,
+"lng": -88.2171151
+},
+{
+"name": "Greenhouse co-op",
+"alt": "",
+"addr": "411 West Green Street",
+"lat": 40.1104315,
+"lng": -88.2129
+},
+{
+"name": "Edge of Mall",
+"alt": "",
+"addr": "109 West Illinois Street",
+"lat": 40.1089605,
+"lng": -88.208435
+},
+{
+"name": "Greencrest Apartments",
+"alt": "",
+"addr": "708 West Green Street",
+"lat": 40.1108455,
+"lng": -88.2169487
+},
+{
+"name": "Tagore House",
+"alt": "",
+"addr": "508 West High Street",
+"lat": 40.1099975,
+"lng": -88.2138375
+},
+{
+"name": "PNC Bank",
+"alt": "",
+"addr": "507 South Broadway Avenue",
+"lat": 40.108648,
+"lng": -88.2076805
+},
+{
+"name": "Steve Beckett Law Office LLC",
+"alt": "",
+"addr": "508 South Broadway Avenue",
+"lat": 40.1086198,
+"lng": -88.2069256
+},
+{
+"name": "Astor Place",
+"alt": "",
+"addr": "605 West Green Street",
+"lat": 40.110383,
+"lng": -88.2151965
+},
+{
+"name": "Brooks House Co-op",
+"alt": "",
+"addr": "505 West Green Street",
+"lat": 40.110402,
+"lng": -88.2137719
+},
+{
+"name": "Koinonia House",
+"alt": "",
+"addr": "308 East Daniel Street",
+"lat": 40.1081288,
+"lng": -88.2345573
+},
+{
+"name": "Lancaster Apartments",
+"alt": "",
+"addr": "112 East Chalmers Street",
+"lat": 40.1068301,
+"lng": -88.2372798
+},
+{
+"name": "Delta Zeta",
+"alt": "",
+"addr": "111 East John Street",
+"lat": 40.1087495,
+"lng": -88.2372836
+},
+{
+"name": "Seven07",
+"alt": "",
+"addr": "707 South Fourth Street",
+"lat": 40.1096041,
+"lng": -88.234111
+},
+{
+"name": "McKinley Memorial Presbyterian Church",
+"alt": "",
+"addr": "805 South Fifth Street",
+"lat": 40.1087705,
+"lng": -88.2323809
+},
+{
+"name": "Athletico Physical Therapy",
+"alt": "",
+"addr": "1612 South Neil Street",
+"lat": 40.0967423,
+"lng": -88.2445894
+},
+{
+"name": "Central Receiving Building",
+"alt": "",
+"addr": "1609 South Oak Street",
+"lat": 40.0967745,
+"lng": -88.2434221
+},
+{
+"name": "Lake House",
+"alt": "",
+"addr": "",
+"lat": 40.1182807,
+"lng": -88.2101299
+},
+{
+"name": "Dankle-Brunson-Lee Family Dentistry",
+"alt": "",
+"addr": "102 West Springfield Avenue",
+"lat": 40.1127697,
+"lng": -88.2438555
+},
+{
+"name": "Empty Tomb",
+"alt": "",
+"addr": "301 North Fourth Street",
+"lat": 40.1185758,
+"lng": -88.2341531
+},
+{
+"name": "Altorfer",
+"alt": "",
+"addr": "808 West Bradley Avenue",
+"lat": 40.127538,
+"lng": -88.2558066
+},
+{
+"name": "Milestone Pediatrics & Urgent Care",
+"alt": "",
+"addr": "1422 South Neil Street",
+"lat": 40.099221,
+"lng": -88.2441888
+},
+{
+"name": "Octave",
+"alt": "",
+"addr": "202 South Fourth Street",
+"lat": 40.1147119,
+"lng": -88.2330563
+},
+{
+"name": "Manor Motel",
+"alt": "",
+"addr": "1102 North Cunningham Avenue",
+"lat": 40.1233689,
+"lng": -88.2006232
+},
+{
+"name": "Sylvia's Irish Inn - Bed & Breakfast Accommodation | B&B Room | Motel in Urbana, IL",
+"alt": "",
+"addr": "",
+"lat": 40.1110529,
+"lng": -88.2116261
+},
+{
+"name": "Carmon's",
+"alt": "",
+"addr": "804 North Neil Street",
+"lat": 40.123761,
+"lng": -88.2430469
+},
+{
+"name": "Arby's",
+"alt": "",
+"addr": "2310 South Neil Street",
+"lat": 40.0847032,
+"lng": -88.2462606
+},
+{
+"name": "Car-X",
+"alt": "",
+"addr": "2216 South Neil Street",
+"lat": 40.0865622,
+"lng": -88.2459808
+},
+{
+"name": "Mike Williams",
+"alt": "",
+"addr": "1414 South Neil Street",
+"lat": 40.0997442,
+"lng": -88.2441114
+},
+{
+"name": "Smoothie King",
+"alt": "",
+"addr": "1904 South Neil Street",
+"lat": 40.0929284,
+"lng": -88.2451394
+},
+{
+"name": "Coach House Garages",
+"alt": "",
+"addr": "1810 South Neil Street",
+"lat": 40.0933337,
+"lng": -88.2450141
+},
+{
+"name": "Global Smoke & Vape",
+"alt": "",
+"addr": "1804 South Neil Street",
+"lat": 40.0940238,
+"lng": -88.2448933
+},
+{
+"name": "Castle Home Comfort",
+"alt": "",
+"addr": "2100 South Neil Street",
+"lat": 40.0899014,
+"lng": -88.2455906
+},
+{
+"name": "Scoreboard",
+"alt": "",
+"addr": "",
+"lat": 40.0982796,
+"lng": -88.2359303
+},
+{
+"name": "Grounds storage barn",
+"alt": "",
+"addr": "",
+"lat": 40.0865738,
+"lng": -88.2167692
+},
+{
+"name": "Raising Cane's",
+"alt": "",
+"addr": "411 East Green Street",
+"lat": 40.1100568,
+"lng": -88.232278
+},
+{
+"name": "Business Instructional Facility",
+"alt": "BIF",
+"addr": "515 East Gregory Drive",
+"lat": 40.1035834,
+"lng": -88.2309554
+},
+{
+"name": "The Den Hair Emporium",
+"alt": "",
+"addr": "117 South Market Street",
+"lat": 40.1158837,
+"lng": -88.242202
+},
+{
+"name": "Old National Bank",
+"alt": "",
+"addr": "812 West Springfield Avenue",
+"lat": 40.1130438,
+"lng": -88.257494
+},
+{
+"name": "Susan and Clint Atkins Baseball Training Center",
+"alt": "",
+"addr": "",
+"lat": 40.0971988,
+"lng": -88.230917
+},
+{
+"name": "Rex and Alice A. Martin Softball Training Center",
+"alt": "",
+"addr": "",
+"lat": 40.0974612,
+"lng": -88.2260813
+},
+{
+"name": "NuEra",
+"alt": "",
+"addr": "102 East Green Street",
+"lat": 40.1104334,
+"lng": -88.2384818
+},
+{
+"name": "Herff Jones",
+"alt": "",
+"addr": "1000 North Market Street",
+"lat": 40.1256284,
+"lng": -88.2378474
+},
+{
+"name": "Sunset Funeral Home",
+"alt": "",
+"addr": "710 North Neil Street",
+"lat": 40.1231782,
+"lng": -88.2427776
+},
+{
+"name": "Rosecrance",
+"alt": "",
+"addr": "801 North Walnut Street",
+"lat": 40.1240505,
+"lng": -88.2414637
+},
+{
+"name": "VUE",
+"alt": "",
+"addr": "711 South Fourth Street",
+"lat": 40.1092555,
+"lng": -88.2341249
+},
+{
+"name": "Fifth Dimension Collision Repair",
+"alt": "",
+"addr": "806 East Perkins Road",
+"lat": 40.1277338,
+"lng": -88.197987
+},
+{
+"name": "Scoreboard",
+"alt": "",
+"addr": "",
+"lat": 40.0951715,
+"lng": -88.2274036
+},
+{
+"name": "E15",
+"alt": "",
+"addr": "",
+"lat": 40.1002507,
+"lng": -88.232581
+},
+{
+"name": "Neves Group",
+"alt": "",
+"addr": "801 West Bradley Avenue",
+"lat": 40.1269703,
+"lng": -88.2550993
+},
+{
+"name": "Yugo Urbana Illinois",
+"alt": "",
+"addr": "410 North Lincoln Avenue",
+"lat": 40.1159145,
+"lng": -88.2184242
+},
+{
+"name": "M&M Auto Sales",
+"alt": "",
+"addr": "703 North Cunningham Avenue",
+"lat": 40.1191575,
+"lng": -88.203929
+},
+{
+"name": "Campus Centre",
+"alt": "",
+"addr": "",
+"lat": 40.1108205,
+"lng": -88.2291665
+},
+{
+"name": "Steven S. Wymer Hall",
+"alt": "Wymer Hall",
+"addr": "503 East Gregory Drive",
+"lat": 40.1035347,
+"lng": -88.2318329
+},
+{
+"name": "University of Illinois Foundation",
+"alt": "University of Illinois Foundation Philanthropy Center",
+"addr": "303 Saint Mary's Road",
+"lat": 40.0939334,
+"lng": -88.2347409
+},
+{
+"name": "Blair Park Pavilion",
+"alt": "",
+"addr": "",
+"lat": 40.0995745,
+"lng": -88.2067901
+},
+{
+"name": "Wood N\u2019 Hog BBQ",
+"alt": "",
+"addr": "101 West University Avenue",
+"lat": 40.1162126,
+"lng": -88.2078887
+},
+{
+"name": "RIPE Greenhouse",
+"alt": "",
+"addr": "",
+"lat": 40.0920491,
+"lng": -88.2333476
+},
+{
+"name": "Panda Express",
+"alt": "",
+"addr": "106 East University Avenue",
+"lat": 40.1168069,
+"lng": -88.2066994
+},
+{
+"name": "Culver's",
+"alt": "",
+"addr": "201 West University Avenue",
+"lat": 40.1161373,
+"lng": -88.2095111
+},
+{
+"name": "NIKA House",
+"alt": "",
+"addr": "810 West Oregon Street",
+"lat": 40.1077091,
+"lng": -88.2190065
+},
+{
+"name": "Imported Swine Research Laboratory",
+"alt": "",
+"addr": "201 Hazelwood Drive",
+"lat": 40.089832,
+"lng": -88.237236
+},
+{
+"name": "Gibson Health of Urbana",
+"alt": "",
+"addr": "520 North Cunningham Avenue",
+"lat": 40.1175046,
+"lng": -88.2038685
+},
+{
+"name": "JC's Cabaret",
+"alt": "",
+"addr": "604 North Cunningham Avenue",
+"lat": 40.1178611,
+"lng": -88.2037808
+},
+{
+"name": "Urbana True Tires",
+"alt": "True Tires & Automotive",
+"addr": "608 North Cunningham Avenue",
+"lat": 40.1182648,
+"lng": -88.2035059
+},
+{
+"name": "Speed Lube",
+"alt": "",
+"addr": "710 North Cunningham Avenue",
+"lat": 40.1196786,
+"lng": -88.2026641
+},
+{
+"name": "AJ's Station",
+"alt": "",
+"addr": "712 North Cunningham Avenue",
+"lat": 40.1199289,
+"lng": -88.2025274
+},
+{
+"name": "Circle K",
+"alt": "",
+"addr": "507 West University Avenue",
+"lat": 40.116091,
+"lng": -88.2133496
+},
+{
+"name": "Property Accounting Surplus Equipment",
+"alt": "",
+"addr": "",
+"lat": 40.096113,
+"lng": -88.2147123
+},
+{
+"name": "Mt. Olive Missionary Baptist Church",
+"alt": "",
+"addr": "808 East Bradley Avenue",
+"lat": 40.127659,
+"lng": -88.2259872
+},
+{
+"name": "BMW Motorcycles of Urbana",
+"alt": "",
+"addr": "1602 North Lincoln Avenue",
+"lat": 40.1276811,
+"lng": -88.2191974
+},
+{
+"name": "Toro Loco",
+"alt": "",
+"addr": "1601 North Cunningham Avenue",
+"lat": 40.1280522,
+"lng": -88.1999615
+},
+{
+"name": "The Cottages at Illinois Leasing Office",
+"alt": "",
+"addr": "905 Welch Drive",
+"lat": 40.1179169,
+"lng": -88.2203235
+},
+{
+"name": "Nuclear Engineering Laboratory",
+"alt": "",
+"addr": "103 South Goodwin Avenue",
+"lat": 40.1117822,
+"lng": -88.2246253
+},
+{
+"name": "Douglass Community Center",
+"alt": "",
+"addr": "804 North Fifth Street",
+"lat": 40.1234996,
+"lng": -88.2309245
+},
+{
+"name": "Niro\u2019s Gyros",
+"alt": "",
+"addr": "401 West Kirby Avenue",
+"lat": 40.0977916,
+"lng": -88.2484834
+},
+{
+"name": "Halfway House",
+"alt": "",
+"addr": "",
+"lat": 40.1089339,
+"lng": -88.2257665
+},
+{
+"name": "Depke Gases and Welding Supplies",
+"alt": "",
+"addr": "806 West Bradley Avenue",
+"lat": 40.1276692,
+"lng": -88.2183151
+},
+{
+"name": "Hope Center",
+"alt": "",
+"addr": "1802 North Lincoln Avenue",
+"lat": 40.1294811,
+"lng": -88.219037
+},
+{
+"name": "Personal Performance",
+"alt": "",
+"addr": "1804 North Lincoln Avenue",
+"lat": 40.129666,
+"lng": -88.2189389
+},
+{
+"name": "Dollar General",
+"alt": "",
+"addr": "805 North Lincoln Avenue",
+"lat": 40.1194738,
+"lng": -88.2197843
+},
+{
+"name": "Plant Services Building \u2013 Northeast",
+"alt": "",
+"addr": "107 South Gregory Street",
+"lat": 40.1118134,
+"lng": -88.2213192
+},
+{
+"name": "Woodlawn & Lincoln Cemeteries Administration Building",
+"alt": "",
+"addr": "",
+"lat": 40.1291181,
+"lng": -88.2168477
+},
+{
+"name": "Leek and Sons Funeral Home",
+"alt": "",
+"addr": "1215 West Bradley Avenue",
+"lat": 40.1267631,
+"lng": -88.2257317
+},
+{
+"name": "Noel Education Center",
+"alt": "",
+"addr": "",
+"lat": 40.1266823,
+"lng": -88.2029761
+},
+{
+"name": "UC Auto",
+"alt": "",
+"addr": "1101 North Cunningham Avenue",
+"lat": 40.1233997,
+"lng": -88.2019696
+},
+{
+"name": "Unique Charm",
+"alt": "",
+"addr": "1002 North Cunningham Avenue",
+"lat": 40.1222336,
+"lng": -88.201497
+},
+{
+"name": "Morning Star Free Will Baptist Church",
+"alt": "",
+"addr": "",
+"lat": 40.1233854,
+"lng": -88.2274728
+},
+{
+"name": "King's Barber Shop",
+"alt": "",
+"addr": "",
+"lat": 40.1119656,
+"lng": -88.2130255
+},
+{
+"name": "The Boxcar on Prospect",
+"alt": "The Boxcar",
+"addr": "703 North Prospect Avenue",
+"lat": 40.1225192,
+"lng": -88.2582039
+},
+{
+"name": "Otto Baum Company, Inc.",
+"alt": "",
+"addr": "",
+"lat": 40.1219023,
+"lng": -88.223909
+},
+{
+"name": "El Patron Ballroom",
+"alt": "",
+"addr": "1006 North Cunningham Avenue",
+"lat": 40.1224753,
+"lng": -88.2012369
+},
+{
+"name": "Bangkok Thai Restaurant & Pho 911",
+"alt": "",
+"addr": "1104 North Cunningham Avenue",
+"lat": 40.123636,
+"lng": -88.2005842
+},
+{
+"name": "PDR Automotive",
+"alt": "",
+"addr": "1008 North Cunningham Avenue",
+"lat": 40.122819,
+"lng": -88.2011605
+},
+{
+"name": "Beaumont Animal Clinic",
+"alt": "",
+"addr": "1304 North Cunningham Avenue",
+"lat": 40.1258542,
+"lng": -88.1996782
+},
+{
+"name": "CIBM Bank",
+"alt": "",
+"addr": "1514 North Cunningham Avenue",
+"lat": 40.127192,
+"lng": -88.1989547
+},
+{
+"name": "BBA Auto Sales",
+"alt": "",
+"addr": "610 North Cunningham Avenue",
+"lat": 40.1185961,
+"lng": -88.2034003
+},
+{
+"name": "Cunningham Motor Sales",
+"alt": "Cunningham Motors Sales;Cunningham Motors",
+"addr": "801 North Cunningham Avenue",
+"lat": 40.1210522,
+"lng": -88.2028253
+},
+{
+"name": "Homerun Meat and Grocery",
+"alt": "",
+"addr": "904 North Fourth Street",
+"lat": 40.1245296,
+"lng": -88.233441
+},
+{
+"name": "Sharks Fish and Chicken",
+"alt": "",
+"addr": "1217 North Prospect Avenue",
+"lat": 40.1290739,
+"lng": -88.258326
+},
+{
+"name": "Champaign Public Library - Douglass Branch",
+"alt": "",
+"addr": "504 East Grove Street",
+"lat": 40.1233543,
+"lng": -88.231463
+},
+{
+"name": "McCabe Bros. Tool Rental",
+"alt": "",
+"addr": "411 North Wright Street",
+"lat": 40.1196483,
+"lng": -88.2290592
+},
+{
+"name": "Pacifica on Green",
+"alt": "",
+"addr": "28 East Green Street",
+"lat": 40.1108082,
+"lng": -88.2416195
+},
+{
+"name": "Walker Funeral Service",
+"alt": "",
+"addr": "704 North Fourth Street",
+"lat": 40.1225279,
+"lng": -88.2335497
+},
+{
+"name": "Specialized Recruiting Group",
+"alt": "",
+"addr": "400 North Broadway Avenue",
+"lat": 40.1153701,
+"lng": -88.2072646
+},
+{
+"name": "Music Building",
+"alt": "",
+"addr": "1114 West Nevada Street",
+"lat": 40.1063853,
+"lng": -88.2232719
+},
+{
+"name": "Ron's Truck & Auto Repair",
+"alt": "",
+"addr": "1707 North Cunningham Avenue",
+"lat": 40.1291866,
+"lng": -88.198976
+},
+{
+"name": "Kedplasma United States",
+"alt": "",
+"addr": "907 North Lincoln Avenue",
+"lat": 40.1210681,
+"lng": -88.2199375
+},
+{
+"name": "Dos Reales",
+"alt": "",
+"addr": "1407 North Prospect Avenue",
+"lat": 40.1299177,
+"lng": -88.2584167
+},
+{
+"name": "Octave",
+"alt": "",
+"addr": "210 South Fourth Street",
+"lat": 40.1151089,
+"lng": -88.2328246
+},
+{
+"name": "Shelden Hall",
+"alt": "",
+"addr": "",
+"lat": 40.103752,
+"lng": -88.2199223
+},
+{
+"name": "Lincoln/Allen Dining Hall",
+"alt": "",
+"addr": "",
+"lat": 40.1040914,
+"lng": -88.220425
+},
+{
+"name": "Music and Performing Arts Library",
+"alt": "",
+"addr": "1114 West Nevada Street",
+"lat": 40.1066435,
+"lng": -88.2228805
+},
+{
+"name": "Carle Foundation Hospital North Building",
+"alt": "Carle North",
+"addr": "",
+"lat": 40.1173923,
+"lng": -88.2154771
+},
+{
+"name": "Hickory River Smokehouse",
+"alt": "",
+"addr": "1706 North Cunningham Avenue",
+"lat": 40.1288136,
+"lng": -88.1977873
+},
+{
+"name": "Dust & Son Auto Supplies",
+"alt": "Dust & Son",
+"addr": "1702 North Cunningham Avenue",
+"lat": 40.1285185,
+"lng": -88.1980556
+},
+{
+"name": "Extra Space Storage",
+"alt": "",
+"addr": "1710 North Cunningham Avenue",
+"lat": 40.1290704,
+"lng": -88.1977748
+},
+{
+"name": "Kavita and Lalit Bahl Smart Bridge",
+"alt": "",
+"addr": "",
+"lat": 40.1144228,
+"lng": -88.2263008
+},
+{
+"name": "McKechnie Family LIFE Home",
+"alt": "",
+"addr": "75 Bailey Drive",
+"lat": 40.0847251,
+"lng": -88.2400428
+},
+{
+"name": "Building 1",
+"alt": "",
+"addr": "2240 Griffith Drive",
+"lat": 40.0857585,
+"lng": -88.2418667
+},
+{
+"name": "Building 3",
+"alt": "",
+"addr": "2208 Kirk Drive",
+"lat": 40.0857678,
+"lng": -88.2411921
+},
+{
+"name": "Men's SAFE House",
+"alt": "",
+"addr": "404 West Main Street",
+"lat": 40.1134322,
+"lng": -88.211969
+},
+{
+"name": "Trinity Lutheran Church",
+"alt": "",
+"addr": "701 East Florida Avenue",
+"lat": 40.0978397,
+"lng": -88.1994673
+},
+{
+"name": "Bennett Administrative Center",
+"alt": "",
+"addr": "102 East Main Street",
+"lat": 40.1130361,
+"lng": -88.2071134
+},
+{
+"name": "JJ's Luggage & Shoe Repair",
+"alt": "",
+"addr": "109 South Walnut Street",
+"lat": 40.115778,
+"lng": -88.2431238
+},
+{
+"name": "Blue Ethiopian Cuisine & Cafe",
+"alt": "",
+"addr": "117 North Walnut Street",
+"lat": 40.1170415,
+"lng": -88.2426133
+},
+{
+"name": "Jazzie Looks",
+"alt": "",
+"addr": "122 North First Street",
+"lat": 40.1170934,
+"lng": -88.2385124
+},
+{
+"name": "Golden Hour",
+"alt": "",
+"addr": "301 Bloomington Road",
+"lat": 40.1274154,
+"lng": -88.2479159
+},
+{
+"name": "Champaign Church of the Brethren",
+"alt": "",
+"addr": "1210 North Neil Street",
+"lat": 40.1282252,
+"lng": -88.2432362
+},
+{
+"name": "Domino's",
+"alt": "",
+"addr": "407 East University Avenue",
+"lat": 40.1159227,
+"lng": -88.2029472
+},
+{
+"name": "Circle K",
+"alt": "",
+"addr": "1809 North Cunningham Avenue",
+"lat": 40.1300526,
+"lng": -88.1986631
+},
+{
+"name": "Domino's",
+"alt": "",
+"addr": "1301 North Prospect Avenue",
+"lat": 40.129291,
+"lng": -88.2583332
+},
+{
+"name": "Jim's Place",
+"alt": "",
+"addr": "403 West Kirby Avenue",
+"lat": 40.0977491,
+"lng": -88.2487644
+},
+{
+"name": "Apostolic Faith Church",
+"alt": "",
+"addr": "901 North Prospect Avenue",
+"lat": 40.1247128,
+"lng": -88.2583009
+},
+{
+"name": "Don's 24 Hour Towing",
+"alt": "",
+"addr": "1307 North Harris Avenue",
+"lat": 40.1278916,
+"lng": -88.2537044
+},
+{
+"name": "Pro Auto Fix",
+"alt": "",
+"addr": "1402 Hagan Street",
+"lat": 40.1298619,
+"lng": -88.2545071
+},
+{
+"name": "All Souls Presbyterian Church",
+"alt": "All Souls PCA",
+"addr": "202 West Illinois Street",
+"lat": 40.1093984,
+"lng": -88.2092866
+},
+{
+"name": "Legacy on Park",
+"alt": "",
+"addr": "101 West Park Street",
+"lat": 40.117063,
+"lng": -88.207815
+},
+{
+"name": "Big JJ Fish & Chicken",
+"alt": "",
+"addr": "1114 North Market Street",
+"lat": 40.1269557,
+"lng": -88.2386092
+},
+{
+"name": "Meadowbrook Park Prairie Play Pavilion",
+"alt": "",
+"addr": "",
+"lat": 40.0830933,
+"lng": -88.2012617
+},
+{
+"name": "Icon",
+"alt": "",
+"addr": "309 East Springfield Avenue",
+"lat": 40.1120728,
+"lng": -88.2344846
+},
+{
+"name": "Urbana Park District Advisory Committee Pavilion",
+"alt": "UPDAC Pavilion",
+"addr": "",
+"lat": 40.1264913,
+"lng": -88.2086022
+},
+{
+"name": "Urbana Park District Planning and Operations",
+"alt": "",
+"addr": "1011 Kerr Ave",
+"lat": 40.1214628,
+"lng": -88.1965481
+},
+{
+"name": "Parking Carport",
+"alt": "",
+"addr": "",
+"lat": 40.1212979,
+"lng": -88.1961403
+},
+{
+"name": "Urbana Park District Vehicle Storage",
+"alt": "",
+"addr": "",
+"lat": 40.1209093,
+"lng": -88.1963857
+},
+{
+"name": "Alpha & Omega Church of Jesus Christ",
+"alt": "",
+"addr": "400 West Bradley Avenue",
+"lat": 40.1274012,
+"lng": -88.2483532
+},
+{
+"name": "Boochie's Place",
+"alt": "",
+"addr": "804 North Randolph Street",
+"lat": 40.1229231,
+"lng": -88.2450173
+},
+{
+"name": "Hessel on the Park Leasing Office",
+"alt": "",
+"addr": "1862 Valley Road",
+"lat": 40.0948052,
+"lng": -88.2486856
+},
+{
+"name": "Elegant Nails Lounge",
+"alt": "",
+"addr": "",
+"lat": 40.0874637,
+"lng": -88.2459132
+},
+{
+"name": "Patricia's",
+"alt": "",
+"addr": "2208 South Neil Street",
+"lat": 40.0870038,
+"lng": -88.2459334
+},
+{
+"name": "Teamsters Local 26",
+"alt": "",
+"addr": "908 North Neil Street",
+"lat": 40.124623,
+"lng": -88.2431215
+},
+{
+"name": "Illini Union Art Gallery",
+"alt": "",
+"addr": "",
+"lat": 40.1098133,
+"lng": -88.2276317
+},
+{
+"name": "H&A Rentals",
+"alt": "",
+"addr": "1007 North Cunningham Avenue",
+"lat": 40.1225895,
+"lng": -88.202085
+},
+{
+"name": "Hong Qi Automotive",
+"alt": "",
+"addr": "1005 North Cunningham Avenue",
+"lat": 40.1223591,
+"lng": -88.2020917
+},
+{
+"name": "English Brothers Company",
+"alt": "",
+"addr": "807 North Neil Street",
+"lat": 40.1233945,
+"lng": -88.2437636
+},
+{
+"name": "Champaign\u2013Urbana Auto Park",
+"alt": "",
+"addr": "308 West University Avenue",
+"lat": 40.1168415,
+"lng": -88.2104002
+},
+{
+"name": "Black Fox Convenient & Liquor",
+"alt": "",
+"addr": "602 North Cunningham Avenue",
+"lat": 40.1177918,
+"lng": -88.2038338
+},
+{
+"name": "Crispin Auto Sales",
+"alt": "Crispin Auto",
+"addr": "1010 North Cunningham Avenue",
+"lat": 40.1231558,
+"lng": -88.2009039
+},
+{
+"name": "Main Library",
+"alt": "",
+"addr": "1408 West Gregory Drive",
+"lat": 40.1047193,
+"lng": -88.2289898
+},
+{
+"name": "Weston Hall",
+"alt": "",
+"addr": "204 East Peabody Drive",
+"lat": 40.1029889,
+"lng": -88.2352973
+},
+{
+"name": "Scott Hall",
+"alt": "",
+"addr": "202 East Peabody Drive",
+"lat": 40.1020587,
+"lng": -88.2366708
+},
+{
+"name": "Snyder Hall",
+"alt": "",
+"addr": "206 East Peabody Drive",
+"lat": 40.1022214,
+"lng": -88.2351345
+},
+{
+"name": "Hopkins Hall",
+"alt": "",
+"addr": "1208 South First Street",
+"lat": 40.1025418,
+"lng": -88.237757
+},
+{
+"name": "Urbana Commons",
+"alt": "",
+"addr": "105 North Busey Avenue",
+"lat": 40.1125464,
+"lng": -88.2181041
+},
+{
+"name": "Disability Resources and Educational Services",
+"alt": "DRES",
+"addr": "1207 South Oak Street",
+"lat": 40.103233,
+"lng": -88.2420067
+},
+{
+"name": "Garage/Car Pool",
+"alt": "",
+"addr": "",
+"lat": 40.0964556,
+"lng": -88.2421723
+},
+{
+"name": "Urbana Middle School",
+"alt": "",
+"addr": "1201 South Vine Street",
+"lat": 40.1029431,
+"lng": -88.2058875
+},
+{
+"name": "Chabad Center for Jewish Life and Living",
+"alt": "",
+"addr": "209 East Armory Avenue",
+"lat": 40.1048839,
+"lng": -88.2362877
+},
+{
+"name": "Children's Research Center",
+"alt": "",
+"addr": "2202 Kirk Drive",
+"lat": 40.0866054,
+"lng": -88.2408748
+},
+{
+"name": "Sigma Phi Delta Fraternity",
+"alt": "",
+"addr": "302 East Gregory Drive",
+"lat": 40.1043197,
+"lng": -88.235208
+},
+{
+"name": "The Inman",
+"alt": "Inman Hotel",
+"addr": "17 East University Avenue",
+"lat": 40.1160516,
+"lng": -88.2424887
+},
+{
+"name": "Maywood",
+"alt": "",
+"addr": "51 East John Street",
+"lat": 40.1086396,
+"lng": -88.2398545
+},
+{
+"name": "Doris Kelley Christopher Hall",
+"alt": "Family Resiliency Center",
+"addr": "904 West Nevada Street",
+"lat": 40.1062908,
+"lng": -88.2196473
+},
+{
+"name": "Atkins Tennis Center",
+"alt": "",
+"addr": "1751 South Goodwin Avenue",
+"lat": 40.0963504,
+"lng": -88.2273543
+},
+{
+"name": "Electrical and Computer Engineering Building",
+"alt": "ECE Building",
+"addr": "306 North Wright Street",
+"lat": 40.1149331,
+"lng": -88.2282421
+},
+{
+"name": "Holonyak Micro and Nanotechnology Laboratory",
+"alt": "HMNTL",
+"addr": "208 North Wright Street",
+"lat": 40.1139553,
+"lng": -88.2280509
+},
+{
+"name": "ClarkLindsey",
+"alt": "",
+"addr": "101 West Windsor Road",
+"lat": 40.0824492,
+"lng": -88.2079302
+},
+{
+"name": "Lincoln Hall",
+"alt": "",
+"addr": "702 South Wright Street",
+"lat": 40.1066127,
+"lng": -88.2281809
+},
+{
+"name": "Archives and Special Collections Facility",
+"alt": "",
+"addr": "1402 West Gregory Drive",
+"lat": 40.1047106,
+"lng": -88.2271691
+},
+{
+"name": "Gregory Towers",
+"alt": "",
+"addr": "1107 South Fourth Street",
+"lat": 40.1044285,
+"lng": -88.2337734
+},
+{
+"name": "South 3rd Lofts",
+"alt": "",
+"addr": "512 South Third Street",
+"lat": 40.1120659,
+"lng": -88.2349916
+},
+{
+"name": "Green Balconies",
+"alt": "",
+"addr": "508 East Healey Street",
+"lat": 40.1117466,
+"lng": -88.2309454
+},
+{
+"name": "75 Armory",
+"alt": "",
+"addr": "75 East Armory Avenue",
+"lat": 40.1050232,
+"lng": -88.2390419
+},
+{
+"name": "Hospital Building",
+"alt": "",
+"addr": "",
+"lat": 40.1180791,
+"lng": -88.227618
+},
+{
+"name": "The Rive Champaign",
+"alt": "",
+"addr": "212 East Green Street",
+"lat": 40.1105268,
+"lng": -88.2359949
+},
+{
+"name": "Latitude Apartments",
+"alt": "",
+"addr": "608 East University Avenue",
+"lat": 40.1166465,
+"lng": -88.2297565
+},
+{
+"name": "One Main",
+"alt": "",
+"addr": "1 Main Street",
+"lat": 40.1184055,
+"lng": -88.2429816
+},
+{
+"name": "Fernie\u2019s High Horse",
+"alt": "",
+"addr": "South Race Street",
+"lat": 40.1118248,
+"lng": -88.2087293
+},
+{
+"name": "Twin City Bible Church",
+"alt": "",
+"addr": "806 West Michigan Avenue",
+"lat": 40.1022117,
+"lng": -88.2185956
+},
+{
+"name": "Alpha Chi Omega",
+"alt": "",
+"addr": "904 South Lincoln Avenue",
+"lat": 40.1051702,
+"lng": -88.2186833
+},
+{
+"name": "Building 2",
+"alt": "",
+"addr": "30 Bailey Drive",
+"lat": 40.0854492,
+"lng": -88.2415153
+},
+{
+"name": "The City Center",
+"alt": "",
+"addr": "505 South Chestnut Street",
+"lat": 40.1110884,
+"lng": -88.2427491
+},
+{
+"name": "Lincoln Avenue Residence Halls",
+"alt": "LAR",
+"addr": "1005 South Lincoln Avenue",
+"lat": 40.1041388,
+"lng": -88.2199526
+},
+{
+"name": "Gregory Place East",
+"alt": "",
+"addr": "700 South Gregory Street",
+"lat": 40.1064926,
+"lng": -88.2211587
+},
+{
+"name": "Circle K",
+"alt": "",
+"addr": "1809 North Cunningham Avenue",
+"lat": 40.1300932,
+"lng": -88.1984911
+},
+{
+"name": "Park Place",
+"alt": "",
+"addr": "107 North Elm Street",
+"lat": 40.1169046,
+"lng": -88.2506867
+},
+{
+"name": "VCA Heritage Animal Hospital",
+"alt": "",
+"addr": "2101 North Dunlap Avenue",
+"lat": 40.0819534,
+"lng": -88.2476142
+},
+{
+"name": "AT&T",
+"alt": "",
+"addr": "708 South Fourth Street",
+"lat": 40.1094793,
+"lng": -88.2331544
+},
+{
+"name": "Courtesy Motel",
+"alt": "",
+"addr": "403 North Vine Street",
+"lat": 40.1154808,
+"lng": -88.2056833
+},
+{
+"name": "Legacy202",
+"alt": "",
+"addr": "202 East Daniel Street",
+"lat": 40.108302,
+"lng": -88.2365878
+},
+{
+"name": "The Vineyard Church of Central Illinois",
+"alt": "",
+"addr": "1500 North Lincoln Avenue",
+"lat": 40.1264689,
+"lng": -88.2178832
+},
+{
+"name": "Latitude West",
+"alt": "",
+"addr": "508 East University Avenue",
+"lat": 40.1166399,
+"lng": -88.2312896
+}
+]
