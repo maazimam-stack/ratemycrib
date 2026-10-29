@@ -141,6 +141,14 @@ CREATE POLICY "Anyone can submit reviews"
 </script>
 ```
 
+## Security and privacy
+
+- **Lease scanner:** leases are read and scanned entirely in the browser. Lease text and PDF file names are never uploaded, stored or logged; analytics record only counts.
+- **No third-party scripts:** pdf.js and supabase-js are pinned and served from `/vendor/` (pdf.js 3.11.174, supabase-js 2.118.0), so no outside script runs on the page where leases are pasted. To upgrade, replace the file and update the `<script src>` in `index.html`.
+- **Content Security Policy** (a `<meta>` tag at the top of `index.html`): the page may only run its own scripts and only send data to itself and the Supabase project. If you add a new outside service (analytics, fonts, images, APIs), add its host to the policy or the browser will block it.
+- **Inline handlers:** put user-supplied text inside an `onclick="..."` only through `jsArg()`, never `'${esc(x)}'`. `esc()` is for HTML text and attributes.
+- **Database:** the public reads through `reviews_public` / `user_properties_public` and cannot edit or delete reviews. Rules live in `supabase/security.sql`; re-run it after changing tables.
+
 ## Contributing
 
 This is a student project. If you go to UIUC and want to help:
