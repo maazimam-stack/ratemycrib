@@ -305,6 +305,9 @@
   .quality-mid .result-rating-label { color: #92400E; }
   .quality-low .result-rating-label { color: #991B1B; }
   .quality-neutral .result-rating-label { color: #9CA3AF; }
+  .result-rating-box.quality-early { background: #F3F4F6; }
+  .quality-early .result-rating-num { color: #374151; }
+  .quality-early .result-rating-label { color: #4B5563; }
 
   .result-body { flex: 1; padding: 20px 24px; }
   .result-name { font-size: 18px; font-weight: 700; margin-bottom: 3px; letter-spacing: -0.3px; }
@@ -348,6 +351,9 @@
   .sc-mid .detail-score-label { color: var(--rating-mixed); }
   .sc-low .detail-score-label { color: var(--rating-poor); }
   .sc-neutral .detail-score-label { color: #9CA3AF; }
+  .detail-score-circle.sc-early { background: rgba(154,160,172,0.16); }
+  .sc-early .detail-score-num { color: #E8ECF3; }
+  .sc-early .detail-score-label { color: #C3CAD6; }
 
   .detail-info h1 { font-size: 30px; font-weight: 800; margin-bottom: 6px; letter-spacing: -0.5px; color: white; }
   .detail-info .subtitle { font-size: 14px; color: rgba(255,255,255,0.45); margin-bottom: 20px; }
@@ -398,7 +404,7 @@
   .review-actions button:hover { border-color: var(--text); color: var(--text); background: var(--light); }
 
   /* ===== WRITE REVIEW MODAL ===== */
-  .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.5); -webkit- display: flex; align-items: center; justify-content: center; z-index: 200; animation: fadeIn 0.2s ease; }
+  .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 200; animation: fadeIn 0.2s ease; }
   .modal-box { background: var(--card-bg); border-radius: 2px; padding: 36px; max-width: 540px; width: 92%; max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow-lg); animation: slideDown 0.3s ease; }
   .modal-close { position: absolute; top: 12px; right: 16px; background: none; border: none; font-size: 28px; color: var(--muted); cursor: pointer; padding: 4px 8px; line-height: 1; border-radius: 2px; transition: all 0.2s; z-index: 1; }
   .modal-close:hover { background: var(--light); color: var(--text); }
@@ -410,6 +416,18 @@
   .field input, .field textarea, .field select { width: 100%; padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 2px; font-size: 14px; font-family: inherit; outline: none; transition: all 0.2s; }
   .field input:focus, .field textarea:focus, .field select:focus { border-color: var(--orange); box-shadow: 0 0 0 3px rgba(255,95,5,0.08); }
   .field textarea { height: 120px; resize: vertical; }
+  .field textarea.rev-text-short { height: 88px; }
+  .field-hint { font-size: 11px; color: var(--muted); margin-top: 4px; }
+  .rev-details { border: 1.5px solid var(--border); border-radius: 2px; margin-bottom: 20px; }
+  .rev-details > summary { cursor: pointer; padding: 14px 16px; list-style: none; display: flex; flex-direction: column; gap: 2px; min-height: 44px; box-sizing: border-box; }
+  .rev-details > summary::-webkit-details-marker { display: none; }
+  .rev-details > summary:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+  .rev-details-title { font-size: 14px; font-weight: 700; color: var(--text); }
+  .rev-details-title::before { content: '+'; display: inline-block; width: 18px; font-weight: 800; color: var(--orange); }
+  .rev-details[open] .rev-details-title::before { content: '\2212'; }
+  .rev-details-hint { font-size: 12px; color: var(--muted); padding-left: 18px; }
+  .rev-details[open] > summary { border-bottom: 1px solid var(--border); }
+  .rev-details-body { padding: 16px 16px 0; }
   .star-row { display: flex; gap: 4px; }
   .star-row span { font-size: 36px; cursor: pointer; color: #E5E7EB; transition: all 0.15s; user-select: none; }
   .star-row span.on { color: #F59E0B; filter: drop-shadow(0 1px 2px rgba(245,158,11,0.3)); }
@@ -454,6 +472,50 @@
   .share-banner button:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
 
   /* ===== NEIGHBORHOODS ===== */
+  /* ===== BROWSE BY STREET ===== */
+  .street-chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 8px; }
+  .street-chip { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 8px 14px; border: 1.5px solid var(--border); border-radius: 2px; background: var(--card-bg); color: var(--text); font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; transition: border-color 0.15s, background 0.15s; }
+  .street-chip:hover { border-color: var(--orange); }
+  .street-chip:focus-visible, .street-remove:focus-visible, .street-clear button:focus-visible, .bldg-reviews summary:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+  .street-chip.on { background: var(--brand-navy); border-color: var(--brand-navy); color: #fff; }
+  .street-chip-n { font-family: 'IBM Plex Mono', 'SF Mono', Menlo, monospace; font-size: 12px; font-weight: 600; color: var(--muted); }
+  .street-chip.on .street-chip-n { color: rgba(255,255,255,0.75); }
+  .street-chip[hidden], .street-none[hidden] { display: none; }
+  .street-none { font-size: 14px; color: var(--muted); margin: 8px 0; }
+  .street-clear { margin: 4px 0 0; }
+  .street-clear button, .street-remove { background: none; border: none; padding: 6px 0; font: inherit; font-size: 13px; font-weight: 600; color: var(--orange); cursor: pointer; }
+  .street-empty { margin-top: 28px; padding: 24px; border: 1px dashed var(--border); border-radius: 2px; font-size: 15px; line-height: 1.6; color: var(--text); background: var(--card-bg); }
+  .street-section { margin-top: 36px; }
+  .street-head { display: flex; align-items: baseline; gap: 6px 16px; flex-wrap: wrap; border-bottom: 2px solid var(--text); padding-bottom: 8px; margin-bottom: 4px; }
+  .street-head h3 { font-size: 24px; font-weight: 800; letter-spacing: -0.4px; margin: 0; }
+  .street-head-meta { font-size: 13px; color: var(--muted); flex: 1 1 auto; }
+  .street-block { font-family: 'IBM Plex Mono', 'SF Mono', Menlo, monospace; font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); padding: 16px 0 8px; }
+  .bldg { display: flex; gap: 16px; padding: 16px; border: 1px solid var(--border); border-radius: 2px; background: var(--card-bg); margin-bottom: 10px; }
+  .bldg-score { flex: 0 0 68px; align-self: flex-start; text-align: center; padding: 10px 4px; border-radius: 2px; }
+  .bldg-score-num { font-size: 24px; font-weight: 800; line-height: 1; }
+  .bldg-score-n { font-size: 10px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; margin-top: 5px; }
+  .bldg-score.st-high { background: #ECFDF5; color: #065F46; }
+  .bldg-score.st-mid { background: #FFFBEB; color: #92400E; }
+  .bldg-score.st-low { background: #FEF2F2; color: #991B1B; }
+  .bldg-score.st-early { background: #F3F4F6; color: #374151; }
+  .bldg-body { flex: 1; min-width: 0; }
+  .bldg-addr { font-size: 17px; font-weight: 700; line-height: 1.3; }
+  .bldg-name { font-weight: 500; color: var(--muted); }
+  .bldg-landlords { font-size: 14px; margin-top: 2px; color: var(--muted); }
+  .bldg-landlords a { color: var(--orange); font-weight: 600; }
+  .bldg-landlords a:hover { text-decoration: underline; }
+  .bldg-meta { display: flex; flex-wrap: wrap; gap: 2px 14px; font-size: 13px; color: var(--muted); margin-top: 6px; }
+  .bldg-reviews { margin-top: 8px; }
+  .bldg-reviews summary { cursor: pointer; display: inline-flex; align-items: center; min-height: 36px; font-size: 13px; font-weight: 700; color: var(--text); }
+  .bldg-review { border-top: 1px solid var(--border); padding: 10px 0 4px; }
+  .bldg-review-meta { font-size: 12px; color: var(--muted); }
+  .bldg-review p { font-size: 14px; line-height: 1.55; margin-top: 4px; overflow-wrap: anywhere; }
+  .st-yes { color: #16A34A; font-weight: 600; }
+  .st-no { color: #DC2626; font-weight: 600; }
+  .street-foot { margin: 36px 0 8px; text-align: center; font-size: 13px; color: var(--muted); display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .home-street-link { margin-top: 8px; font-size: 13px; color: var(--muted); }
+  .home-street-link a { color: var(--orange); font-weight: 600; }
+  @media (max-width: 600px) { .bldg { gap: 12px; padding: 14px; } .bldg-score { flex-basis: 56px; } .street-head h3 { font-size: 21px; } }
   .hood-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
   .hood-card { border: 1px solid var(--border); border-radius: 2px; padding: 24px; transition: all 0.25s ease; background: var(--white); box-shadow: var(--shadow-sm); }
   .hood-card:hover { box-shadow: 0 12px 40px rgba(0,0,0,0.08); border-color: rgba(255,95,5,0.2); }
@@ -666,6 +728,9 @@
   [data-theme="dark"] .result-rating-box.quality-mid { background: rgba(217,164,65,0.12); }
   [data-theme="dark"] .result-rating-box.quality-low { background: rgba(240,85,74,0.12); }
   [data-theme="dark"] .result-rating-box.quality-neutral { background: rgba(154,160,172,0.12); }
+  [data-theme="dark"] .result-rating-box.quality-early { background: rgba(154,160,172,0.12); }
+  [data-theme="dark"] .quality-early .result-rating-num { color: #E5E7EB; }
+  [data-theme="dark"] .quality-early .result-rating-label { color: #C3CAD6; }
   [data-theme="dark"] .quality-high .result-rating-num { color: var(--rating-great); }
   [data-theme="dark"] .quality-mid .result-rating-num { color: var(--rating-mixed); }
   [data-theme="dark"] .quality-low .result-rating-num { color: var(--rating-poor); }
@@ -684,6 +749,12 @@
   [data-theme="dark"] .modal-box .field label { color: #D1D5DB; }
   [data-theme="dark"] .modal-box .field input, [data-theme="dark"] .modal-box .field select, [data-theme="dark"] .modal-box .field textarea { background: #000000; border-color: #1F1F1F; color: #E5E7EB; }
   [data-theme="dark"] .sort-select { background: #111111; border-color: #1F1F1F; color: #E5E7EB; }
+  [data-theme="dark"] .bldg-score.st-high { background: rgba(5,150,105,0.18); color: #6EE7B7; }
+  [data-theme="dark"] .bldg-score.st-mid { background: rgba(217,164,65,0.16); color: #F2C14E; }
+  [data-theme="dark"] .bldg-score.st-low { background: rgba(239,68,68,0.16); color: #FCA5A5; }
+  [data-theme="dark"] .bldg-score.st-early { background: rgba(154,160,172,0.14); color: #D1D5DB; }
+  [data-theme="dark"] .street-chip.on { background: #F5F3EF; border-color: #F5F3EF; color: #13294B; }
+  [data-theme="dark"] .street-chip.on .street-chip-n { color: #5B6578; }
   [data-theme="dark"] .hood-card { background: var(--card-bg); border-color: var(--border); }
   [data-theme="dark"] .hood-card:hover { border-color: rgba(255,95,5,0.3); }
   [data-theme="dark"] footer { background: #000000; border-color: #1F1F1F; }
@@ -826,6 +897,12 @@ try {
 const SUPABASE_URL = 'https://expfrmknhdcwnccqjwnq.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV4cGZybWtuaGRjd25jY3Fqd25xIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwNTgyNjksImV4cCI6MjA4OTYzNDI2OX0.IDoYSa-Xpq_TAebacsl_TuI9u48ssia7imjG0ehB9Jg';
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+// supabase/security.sql locks the raw tables and adds safe views (reviews_public, user_properties_public)
+// and adjust_helpful(). Until it has been run, those don't exist yet, so reads and votes fall back to the
+// old direct calls. After it has been run, the fallbacks are never reached.
+function dbObjectMissing(error) {
+  return !!error && (['42P01', '42883', 'PGRST202', 'PGRST205'].includes(error.code) || /does not exist|could not find/i.test(error.message || ''));
+}
 // ===== SEED DATA =====
 const SEED_LANDLORDS = [
   { id:1, name:"Green Street Realty", props:42, rating:0, reviews:0, wouldRent:0, responseRate:"—",
@@ -1212,7 +1289,8 @@ let dbLoaded = false;
 
 async function loadDbReviews() {
   try {
-    const { data, error, count } = await db.from('reviews').select('*', { count: 'exact' }).order('created_at', { ascending: false });
+    let { data, error, count } = await db.from('reviews_public').select('*', { count: 'exact' }).order('created_at', { ascending: false });
+    if (dbObjectMissing(error)) ({ data, error, count } = await db.from('reviews').select('*', { count: 'exact' }).order('created_at', { ascending: false }));
     if (error) throw error;
     console.log('[RateMyCrib] Supabase returned', (data||[]).length, 'reviews (count:', count, ')');
     if (data && data.length === 0 && count === 0) {
@@ -1332,7 +1410,8 @@ async function incrementHelpful(reviewId) {
     try {
       const existing = dbReviews.find(r => r.id === reviewId);
       if (!existing) return;
-      await db.from('reviews').update({ helpful_count: existing.helpful + 1 }).eq('id', reviewId);
+      const { error } = await db.rpc('adjust_helpful', { p_review_id: reviewId, p_delta: 1 });
+      if (dbObjectMissing(error)) await db.from('reviews').update({ helpful_count: existing.helpful + 1 }).eq('id', reviewId);
     } catch (e) { console.warn('Helpful update failed:', e.message); }
   }
 }
@@ -1365,7 +1444,9 @@ function toggleScatterHL(id) {
   go({highlightLandlords: list});
 }
 var _lastTrackedPage = null;
-const go = u => {
+// `let`, not `const`: the SEO/hash wrapper further down reassigns go(). With `const` that
+// reassignment threw on every page load and stopped the rest of the startup script.
+let go = u => {
   // When navigating to a different page, clear detail and hoodFilter unless explicitly set
   if (u.page && u.page !== 'detail' && !('detail' in u)) u.detail = null;
   // Clear hoodFilter when leaving home/detail flow (preserve during home<->detail navigation)
@@ -1391,7 +1472,7 @@ const go = u => {
     trackEvent('review_form_abandoned', { landlord_id: S.detail || null, had_stars: S.stars > 0, had_text: !!(S.formData && S.formData['rev-text']) });
   }
   // If closing modal, clear form state and tags
-  if ('modal' in u && !u.modal) { S.posTags = []; S.negTags = []; S.formData = {}; }
+  if ('modal' in u && !u.modal) { S.posTags = []; S.negTags = []; S.formData = {}; S.revDetailsOpen = false; }
   render();
   // Restore form state after re-render if modal is still open
   if (S.modal) restoreFormState();
@@ -1465,6 +1546,30 @@ function getReviewsForLandlord(landlord) {
 
 const qClass = r => r === 0 ? "neutral" : r >= 4.0 ? "high" : r >= 2.5 ? "mid" : "low";
 const qLabel = r => r === 0 ? "NEW" : r >= 4.0 ? "AWESOME" : r >= 3.5 ? "GOOD" : r >= 2.5 ? "OK" : r >= 2.0 ? "POOR" : "AWFUL";
+// Ranking honesty: 1-2 reviews is an early read, not a verdict.
+const MIN_LABEL_REVIEWS = 3;  // AWESOME...AWFUL labels and verdict colors need this many reviews
+const MIN_TREND_REVIEWS = 5;  // trend arrows and sparklines need this many reviews
+const PRIOR_WEIGHT = 3;       // weighted ranking: every landlord starts with 3 "virtual" site-average reviews
+function siteMeanRating() {
+  const rs = allReviews().filter(r => r.rating > 0);
+  return rs.length ? rs.reduce((s, r) => s + r.rating, 0) / rs.length : 3;
+}
+function siteWouldRentPct() {
+  const rs = allReviews();
+  return rs.length ? rs.filter(r => r.wouldRent).length / rs.length * 100 : 50;
+}
+// Bayesian average: few reviews pull toward the site mean, many reviews speak for themselves
+function weightedRating(l, mean) {
+  if (!l.reviews) return 0;
+  return (PRIOR_WEIGHT * mean + l.rating * l.reviews) / (PRIOR_WEIGHT + l.reviews);
+}
+function weightedWouldRent(l, meanPct) {
+  if (!l.reviews) return 0;
+  return (PRIOR_WEIGHT * meanPct + l.wouldRent * l.reviews) / (PRIOR_WEIGHT + l.reviews);
+}
+const landlordQClass = l => l.reviews === 0 ? "neutral" : l.reviews < MIN_LABEL_REVIEWS ? "early" : qClass(l.rating);
+const landlordQLabel = l => l.reviews === 0 ? "NEW" : l.reviews < MIN_LABEL_REVIEWS ? "EARLY READ" : qLabel(l.rating);
+const reviewCountText = n => n + ' student review' + (n !== 1 ? 's' : '');
 const valClass = (v, good, ok) => v >= good ? "val-good" : v >= ok ? "val-ok" : "val-bad";
 const scoreColor = s => s === 0 ? "#6B7280" : s >= 4.0 ? "#4ADE80" : s >= 2.5 ? "#D9A441" : "#F0554A";
 const esc = s => s.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -1483,7 +1588,8 @@ function getReviewCount() {
 // Track total reviews submitted via Supabase
 async function getTotalDbReviewCount() {
   try {
-    const { count, error } = await db.from('reviews').select('*', { count: 'exact', head: true });
+    let { count, error } = await db.from('reviews_public').select('*', { count: 'exact', head: true });
+    if (dbObjectMissing(error)) ({ count, error } = await db.from('reviews').select('*', { count: 'exact', head: true }));
     if (error) throw error;
     return count || 0;
   } catch (e) { return dbReviews.length; }
@@ -1645,8 +1751,10 @@ function HeadToHead() {
   var revsB = getReviewsForLandlord(b).filter(function(r){ return isValidRent(r.monthlyRent); });
   var rentA = revsA.length ? Math.round(revsA.reduce(function(s,r){return s+r.monthlyRent;},0)/revsA.length) : 0;
   var rentB = revsB.length ? Math.round(revsB.reduce(function(s,r){return s+r.monthlyRent;},0)/revsB.length) : 0;
-  var trendA = getLandlordTrend(a);
-  var trendB = getLandlordTrend(b);
+  // Trends need MIN_TREND_REVIEWS; with fewer, one review swings the line
+  var noTrend = { arrow: '', label: 'Too few reviews', color: '', diff: 0, points: [] };
+  var trendA = a.reviews >= MIN_TREND_REVIEWS ? getLandlordTrend(a) : noTrend;
+  var trendB = b.reviews >= MIN_TREND_REVIEWS ? getLandlordTrend(b) : noTrend;
 
   function win(va, vb, higher) {
     if (va === 0 && vb === 0) return ['',''];
@@ -1908,6 +2016,7 @@ function Nav() {
     <div class="nav-right">
       <span class="nav-link ${S.page==='home'&&!S.detail?'active':''}" onclick="closeNav();go({page:'home',detail:null,hoodFilter:null})">Landlords</span>
       <span class="nav-link ${S.page==='hoods'?'active':''}" onclick="closeNav();go({page:'hoods'})">Neighborhoods</span>
+      <span class="nav-link ${S.page==='streets'?'active':''}" onclick="closeNav();go({page:'streets'})">Streets</span>
       <span class="nav-link ${S.page==='h2h'?'active':''}" onclick="closeNav();go({page:'h2h'})">Head-to-Head</span>
       <span class="nav-link ${S.page==='quiz'?'active':''}" onclick="closeNav();go({page:'quiz'})">Match Quiz</span>
       <div class="nav-tools-wrap">
@@ -1954,16 +2063,19 @@ function LandlordTicker() {
   // Build ticker items — each landlord looks like: GSR 3.8 ▲ (12)
   const items = allLandlords.map(l => {
     const r = l.rating.toFixed(1);
-    const colorClass = l.rating >= 3.5 ? 'green' : l.rating >= 2.5 ? 'yellow' : 'red';
+    const colorClass = l.reviews < MIN_LABEL_REVIEWS ? 'neutral' : l.rating >= 3.5 ? 'green' : l.rating >= 2.5 ? 'yellow' : 'red';
 
     // Trend: compare last 3 reviews avg vs overall avg to simulate movement
     const revs = getReviewsForLandlord(l);
     const recentCount = Math.min(3, revs.length);
     const recentAvg = revs.slice(0, recentCount).reduce((s, rv) => s + rv.rating, 0) / recentCount;
     const diff = recentAvg - l.rating;
-    let arrow = '—', arrowClass = 'flat';
-    if (diff > 0.15) { arrow = '▲'; arrowClass = 'up'; }
-    else if (diff < -0.15) { arrow = '▼'; arrowClass = 'down'; }
+    let arrow = '', arrowClass = 'flat';
+    if (l.reviews >= MIN_TREND_REVIEWS) {
+      arrow = '—';
+      if (diff > 0.15) { arrow = '▲'; arrowClass = 'up'; }
+      else if (diff < -0.15) { arrow = '▼'; arrowClass = 'down'; }
+    }
 
     // Abbreviate long names for ticker
     const abbrev = l.name.length > 18 ? l.name.substring(0, 16) + '…' : l.name;
@@ -1971,7 +2083,7 @@ function LandlordTicker() {
     return `<div class="ticker-item" onclick="go({page:'detail',detail:${l.id}})">
       <span class="ticker-name">${esc(abbrev)}</span>
       <span class="ticker-rating ${colorClass}">${r}</span>
-      <span class="ticker-arrow ${arrowClass}">${arrow}</span>
+      ${arrow ? `<span class="ticker-arrow ${arrowClass}">${arrow}</span>` : ''}
       <span class="ticker-reviews">(${l.reviews})</span>
     </div>`;
   }).join('');
@@ -2235,16 +2347,16 @@ function Hero() {
 }
 
 function ResultCard(l) {
-  const q = qClass(l.rating);
+  const q = landlordQClass(l);
   // Price comes from real reviews only
   const landlordReviews = getReviewsForLandlord(l).filter(r => isValidRent(r.monthlyRent));
   const avgPrice = landlordReviews.length ? Math.round(landlordReviews.reduce((s,r) => s + r.monthlyRent, 0) / landlordReviews.length) : 0;
   const isNew = l.reviews === 0;
-  const trend = !isNew ? getLandlordTrend(l) : null;
+  const trend = l.reviews >= MIN_TREND_REVIEWS ? getLandlordTrend(l) : null;
   return `<div class="result-card" data-lname="${esc(l.name.toLowerCase())}" onclick="go({page:'detail',detail:${l.id}})">
     <div class="result-rating-box quality-${q}">
       <div class="result-rating-num">${isNew ? '—' : l.rating.toFixed(1)}</div>
-      <div class="result-rating-label">${qLabel(l.rating)}</div>
+      <div class="result-rating-label">${landlordQLabel(l)}</div>
       ${trend && trend.points.length >= 2 ? `<div class="result-trend" style="display:flex;align-items:center;gap:4px;margin-top:4px">
         ${sparklineSVG(trend.points, 48, 18, trend.color)}
         <span style="font-size:10px;font-weight:700;color:${trend.color}">${trend.arrow}${trend.label}</span>
@@ -2252,7 +2364,7 @@ function ResultCard(l) {
     </div>
     <div class="result-body">
       <div class="result-name">${esc(l.name)}</div>
-      <div class="result-sub">${isNew ? 'No reviews yet — be the first!' : l.reviews >= 3 ? l.reviews+' student review'+(l.reviews!==1?'s':'') : 'Student-reviewed'}</div>
+      <div class="result-sub">${isNew ? 'No reviews yet — be the first!' : reviewCountText(l.reviews)}</div>
       ${isNew ? `<div class="result-metrics"><div class="result-metric"><span style="color:#6B7280">Be the first to review this landlord!</span></div></div>` : `<div class="result-metrics">
         <div class="result-metric"><strong style="color:${l.scores.maintenance > 0 ? scoreColor(l.scores.maintenance) : '#6B7280'}">${l.scores.maintenance > 0 ? l.scores.maintenance.toFixed(1) : '—'}</strong><span>Maintenance</span></div>
         <div class="result-metric"><strong style="color:${l.scores.communication > 0 ? scoreColor(l.scores.communication) : '#6B7280'}">${l.scores.communication > 0 ? l.scores.communication.toFixed(1) : '—'}</strong><span>Communication</span></div>
@@ -2292,8 +2404,8 @@ function ResultsList() {
     return getLandlordStats(fake);
   }).filter(l => l.reviews > 0);
   let list = [...seedStats, ...userStats];
-  if (S.filter === "top") list = list.filter(l => l.rating >= 3.5 && l.reviews > 0);
-  else if (S.filter === "avoid") list = list.filter(l => l.rating > 0 && l.rating < 2.5 && l.reviews > 0);
+  if (S.filter === "top") list = list.filter(l => l.rating >= 3.5 && l.reviews >= MIN_LABEL_REVIEWS);
+  else if (S.filter === "avoid") list = list.filter(l => l.rating > 0 && l.rating < 2.5 && l.reviews >= MIN_LABEL_REVIEWS);
   else if (S.filter === "responsive") list = list.filter(l => parseInt(l.responseRate) >= 60);
 
   // Neighborhood filter from Hoods page link
@@ -2309,9 +2421,18 @@ function ResultsList() {
   const unreviewed = list.filter(l => l.reviews === 0);
 
   // Sort reviewed landlords by selected sort
-  if (S.sort === "rating") reviewed.sort((a,b) => b.rating - a.rating);
-  else if (S.sort === "reviews") reviewed.sort((a,b) => b.reviews - a.reviews);
-  else if (S.sort === "wouldRent") reviewed.sort((a,b) => b.wouldRent - a.wouldRent);
+  // Landlords with MIN_LABEL_REVIEWS+ reviews are ranked first; early reads (1-2 reviews) follow.
+  // Within each group the order is weighted, so one glowing (or furious) review can't decide it.
+  const rankTier = l => l.reviews >= MIN_LABEL_REVIEWS ? 0 : 1;
+  if (S.sort === "rating") {
+    const mean = siteMeanRating();
+    reviewed.sort((a,b) => (rankTier(a) - rankTier(b)) || (weightedRating(b, mean) - weightedRating(a, mean)) || (b.reviews - a.reviews));
+  }
+  else if (S.sort === "reviews") reviewed.sort((a,b) => (b.reviews - a.reviews) || (b.rating - a.rating));
+  else if (S.sort === "wouldRent") {
+    const meanPct = siteWouldRentPct();
+    reviewed.sort((a,b) => (rankTier(a) - rankTier(b)) || (weightedWouldRent(b, meanPct) - weightedWouldRent(a, meanPct)) || (b.reviews - a.reviews));
+  }
 
   // Unreviewed sorted alphabetically
   unreviewed.sort((a,b) => a.name.localeCompare(b.name));
@@ -2325,10 +2446,11 @@ function ResultsList() {
         <input type="text" id="landlord-search" class="landlord-search" placeholder="Search landlords..." value="${esc(S.search)}" oninput="filterLandlordCards(this.value)" autocomplete="off" />
         ${S.search ? '<button onclick="clearSearch()" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:18px;color:var(--muted);padding:4px 6px;line-height:1">&times;</button>' : ''}
       </div>
+      <p class="home-street-link">Want to live near your classes? <a href="#streets">Browse reviews by street</a></p>
     </div>
     <div class="results-header">
       <div class="results-count" id="results-count">${S.hoodFilter ? '<span style="color:var(--orange);font-weight:700">' + esc(S.hoodFilter) + '</span> · ' : ''}${reviewed.length} landlord${reviewed.length!==1?'s':''} with reviews${S.hoodFilter ? ' <span style="color:var(--muted);font-size:12px;cursor:pointer;margin-left:6px" onclick="go({hoodFilter:null})">(clear filter)</span>' : ''}</div>
-      <select class="sort-select" onchange="go({sort:this.value})">
+      <select class="sort-select" aria-label="Sort landlords" title="Ratings are weighted by number of reviews — see How Scores Work" onchange="go({sort:this.value})">
         <option value="rating" ${S.sort==='rating'?'selected':''}>Highest Rated</option>
         <option value="reviews" ${S.sort==='reviews'?'selected':''}>Most Reviews</option>
         <option value="wouldRent" ${S.sort==='wouldRent'?'selected':''}>Would Rent Again %</option>
@@ -2355,7 +2477,7 @@ function DetailPage() {
   const raw = findLandlord(S.detail);
   if (!raw) return '';
   const l = getLandlordStats(raw);
-  const q = qClass(l.rating);
+  const q = landlordQClass(l);
   const revs = getReviewsForLandlord(l);
   const maxDist = Math.max(...l.dist) || 1;
   const helped = loadHelpful();
@@ -2367,11 +2489,11 @@ function DetailPage() {
       <div class="detail-head">
         <div class="detail-score-circle sc-${q}">
           <div class="detail-score-num">${l.reviews===0 ? '—' : l.rating.toFixed(1)}</div>
-          <div class="detail-score-label">${qLabel(l.rating)}</div>
+          <div class="detail-score-label">${landlordQLabel(l)}</div>
         </div>
         <div class="detail-info">
           <h1>${esc(l.name)}</h1>
-          <div class="subtitle">${l.reviews===0?'No ratings yet':l.reviews >= 3 ? l.reviews+' student rating'+(l.reviews!==1?'s':'') : 'Student-reviewed'} · Response rate: ${l.responseRate}</div>
+          <div class="subtitle">${l.reviews===0?'No ratings yet':reviewCountText(l.reviews)}${l.reviews > 0 && l.reviews < MIN_LABEL_REVIEWS ? ' · Early read: too few reviews for a verdict' : ''} · Response rate: ${l.responseRate}</div>
           ${l.reviews===0 ? `<div style="color:rgba(255,255,255,0.4);font-size:14px;margin:12px 0">No reviews yet — scores will appear after students submit reviews.</div>` : `<div class="detail-sub-scores">
             ${Object.entries(l.scores).map(([k,v]) => `
               <div class="sub-score">
@@ -2396,7 +2518,7 @@ function DetailPage() {
               </div>
             `).join("")}
           </div>
-          ${revs.length >= 2 ? (function(){
+          ${revs.length >= MIN_TREND_REVIEWS ? (function(){
             var trend = getLandlordTrend(l);
             if (!trend || trend.points.length < 2) return '';
             return '<div style="margin-top:20px;padding:16px 20px;background:var(--card-bg,#fff);border:1px solid var(--border);border-radius: 2px;max-width:360px">' +
@@ -2431,7 +2553,7 @@ function DetailPage() {
           </div>
           <div class="review-content">
             <div class="review-meta"><strong>${esc(r.author)}</strong>${r.author === 'Verified Illini' ? ' <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style="display:inline-block;vertical-align:-2px;margin-left:2px"><circle cx="12" cy="12" r="12" fill="#1DA1F2"/><path d="M9.5 12.5l2 2 4-5" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>' : ''} · ${esc(r.date)} · ${r.wouldRent ? '<span style="color:#16A34A;font-weight:600">Would rent again</span>' : '<span style="color:#DC2626;font-weight:600">Would NOT rent again</span>'}${isValidRent(r.monthlyRent) ? ' · <span style="color:#2563EB;font-weight:600">$'+r.monthlyRent+'/mo</span>' : ''}</div>
-            <div class="review-property">${esc(r.property)}</div>
+            <div class="review-property">${esc(reviewAddressLabel(r))}</div>
             <div class="review-text">${esc(r.text)}</div>
             <div class="review-tags">
               ${(r.pos||[]).map(t=>`<span class="rtag rtag-pos">${esc(t)}</span>`).join("")}
@@ -2448,18 +2570,26 @@ function DetailPage() {
     ${revs.length===0?'<p style="text-align:center;color:var(--muted);padding:48px">No reviews yet. Be the first!</p>':''}
 
     ${(() => {
-      const reviewAddresses = revs.filter(r => r.property && r.property !== 'Not specified').map(r => r.property);
-      const uniqueAddresses = [...new Set(reviewAddresses)];
-      if (uniqueAddresses.length === 0) return '';
+      // One row per building (unit numbers dropped), linked to that street on the Streets page
+      const groups = {};
+      revs.forEach(r => {
+        if (!r.property || r.property === 'Not specified') return;
+        const p = buildStreetIndex().placeOf.get(r);
+        const label = reviewAddressLabel(r);
+        const g = groups[label] = groups[label] || { label, streetKey: p ? p.streetKey : '', streetLabel: p ? p.streetLabel : '', reviews: [] };
+        g.reviews.push(r);
+      });
+      const places = Object.values(groups);
+      if (places.length === 0) return '';
       return `<h3 style="font-size:18px;font-weight:700;margin-top:40px;margin-bottom:16px">Reviewed Addresses</h3>` +
-        uniqueAddresses.map(addr => {
-          const addrRevs = revs.filter(r => r.property === addr);
+        places.map(g => {
+          const addrRevs = g.reviews;
           const rentRevs = addrRevs.filter(r => isValidRent(r.monthlyRent));
           const avgRent = rentRevs.length ? Math.round(rentRevs.reduce((s,r)=>s+r.monthlyRent,0)/rentRevs.length) : 0;
-          return `<div style="display:flex;align-items:center;justify-content:space-between;padding:14px 8px;border-bottom:1px solid var(--border)">
+          return `<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 8px;border-bottom:1px solid var(--border)">
             <div>
-              <div style="font-weight:700">${esc(addr)}</div>
-              <div style="font-size:13px;color:var(--muted)">${addrRevs.length} review${addrRevs.length!==1?'s':''}</div>
+              <div style="font-weight:700">${esc(g.label)}</div>
+              <div style="font-size:13px;color:var(--muted)">${addrRevs.length} review${addrRevs.length!==1?'s':''}${g.streetKey ? ` · <a href="#streets/${g.streetKey}" style="color:var(--orange);font-weight:600">Others on ${esc(g.streetLabel)}</a>` : ''}</div>
             </div>
             <div style="text-align:right">
               ${avgRent ? `<div style="font-weight:700;font-size:18px">$${avgRent}<span style="font-size:12px;color:var(--muted);font-weight:400">/mo</span></div>` : ''}
@@ -2508,6 +2638,323 @@ function Hoods() {
   </div>`;
 }
 
+// ===== BROWSE BY STREET =====
+// Reviewers type addresses freely: "309 e green", "711 S 4th St (The VUE)", "604 W Stoughton st, 18".
+// parseStreetAddress() turns that into a building (house number + direction + street), drops any
+// unit number, and keeps a building name given in parentheses. buildStreetIndex() groups every
+// review by street and building, in order along the street, for the Streets page.
+const STREET_SUFFIXES = { st:'St', street:'St', ave:'Ave', av:'Ave', avenue:'Ave', dr:'Dr', drive:'Dr', blvd:'Blvd', boulevard:'Blvd', ct:'Ct', court:'Ct', pl:'Pl', place:'Pl', rd:'Rd', road:'Rd', ln:'Ln', lane:'Ln', way:'Way', cir:'Cir', circle:'Cir', ter:'Ter', terrace:'Ter', pkwy:'Pkwy', parkway:'Pkwy', sq:'Sq', square:'Sq' };
+const STREET_DIRS = { n:'N', north:'N', s:'S', south:'S', e:'E', east:'E', w:'W', west:'W' };
+const ORDINAL_STREETS = { '1st':'First', first:'First', '2nd':'Second', second:'Second', '3rd':'Third', third:'Third', '4th':'Fourth', fourth:'Fourth', '5th':'Fifth', fifth:'Fifth', '6th':'Sixth', sixth:'Sixth', '7th':'Seventh', seventh:'Seventh', '8th':'Eighth', eighth:'Eighth', '9th':'Ninth', ninth:'Ninth', '10th':'Tenth', tenth:'Tenth' };
+const ORDINAL_NUMBERS = { First:'1st', Second:'2nd', Third:'3rd', Fourth:'4th', Fifth:'5th', Sixth:'6th', Seventh:'7th', Eighth:'8th', Ninth:'9th', Tenth:'10th' };
+// Streets around campus: usual suffix (for "212 Chalmers") and whether they run east-west or north-south
+// (so "711 E 4th St" is read as 711 4th St, since a north-south street has no East side).
+const CU_STREETS = {
+  green:['St','ew'], john:['St','ew'], daniel:['St','ew'], chalmers:['St','ew'], armory:['Ave','ew'], healey:['St','ew'],
+  stoughton:['St','ew'], clark:['St','ew'], white:['St','ew'], springfield:['Ave','ew'], university:['Ave','ew'],
+  main:['St','ew'], illinois:['St','ew'], nevada:['St','ew'], oregon:['St','ew'], iowa:['St','ew'], ohio:['St','ew'],
+  pennsylvania:['Ave','ew'], california:['Ave','ew'], peabody:['Dr','ew'], gregory:['Dr','ew'], kirby:['Ave','ew'],
+  church:['St','ew'], hill:['St','ew'], park:['St','ew'], elm:['St','ew'],
+  wright:['St','ns'], first:['St','ns'], second:['St','ns'], third:['St','ns'], fourth:['St','ns'], fifth:['St','ns'],
+  sixth:['St','ns'], locust:['St','ns'], lincoln:['Ave','ns'], goodwin:['Ave','ns'], mathews:['Ave','ns'],
+  busey:['Ave','ns'], neil:['St','ns'], state:['St','ns'], randolph:['St','ns'], race:['St','ns']
+};
+const ADDRESS_STOP_WORDS = { apt:1, apartment:1, unit:1, ste:1, suite:1, rm:1, room:1, bldg:1, building:1, fl:1, floor:1, no:1, champaign:1, urbana:1, savoy:1, il:1 };
+
+function parseStreetAddress(raw) {
+  if (!raw) return null;
+  const text = String(raw);
+  const named = text.match(/\(([^)]{2,40})\)/);
+  const buildingName = named ? named[1].trim() : '';
+  // The comma-separated piece that starts with a house number, without the parenthesized name
+  const seg = text.replace(/\([^)]*\)/g, ' ').split(/[,;\n]/).map(p => p.trim()).find(p => /^\d/.test(p));
+  if (!seg) return null;
+  const toks = seg.toLowerCase().replace(/[.#]/g, ' ').replace(/[^a-z0-9\s-]/g, ' ').split(/\s+/).filter(t => /[a-z0-9]/.test(t));
+  const num = toks[0] && toks[0].match(/^(\d{1,5})/);
+  if (!num) return null;
+  const number = parseInt(num[1], 10);
+  if (!number) return null;
+  let i = 1, dir = '';
+  if (toks[i] && STREET_DIRS[toks[i]] && toks[i + 1]) { dir = STREET_DIRS[toks[i]]; i++; }
+  const name = [];
+  let suffix = '';
+  for (; i < toks.length; i++) {
+    const t = toks[i];
+    if (STREET_SUFFIXES[t] && name.length) { suffix = STREET_SUFFIXES[t]; break; }
+    if (ADDRESS_STOP_WORDS[t] || (/\d/.test(t) && !ORDINAL_STREETS[t]) || t === '-') break;
+    if (name.length === 3) break;
+    name.push(ORDINAL_STREETS[t] || (t.charAt(0).toUpperCase() + t.slice(1)));
+  }
+  if (!name.length) return null;
+  const nameKey = name.join(' ').toLowerCase();
+  const known = CU_STREETS[nameKey];
+  if (!suffix && known) suffix = known[0];
+  if (known && dir && (known[1] === 'ew') !== (dir === 'E' || dir === 'W')) dir = '';
+  return { number, dir, name: name.join(' '), nameKey, suffix, buildingName };
+}
+
+const streetLabelOf = a => a.name + (a.suffix ? ' ' + a.suffix : '');
+const buildingLabelOf = (number, dir, street) => number + ' ' + (dir ? dir + ' ' : '') + street;
+
+// The address to show for a review: the building, never the unit ("608 E University Ave, Apt 1616" -> "608 E University Ave")
+function displayAddress(raw) {
+  if (!raw || raw === 'Not specified') return raw || '';
+  const a = parseStreetAddress(raw);
+  if (a) return buildingLabelOf(a.number, a.dir, streetLabelOf(a)) + (a.buildingName ? ' (' + a.buildingName + ')' : '');
+  return stripUnit(raw);
+}
+function stripUnit(raw) {
+  return String(raw || '').replace(/\s*,?\s*(?:#|\b(?:apt|apartment|unit|ste|suite|rm|room)\b\.?)\s*[\w-]+/gi, '').replace(/,\s*(?=[\w-]{1,5}\s*$)(?=[^,]*\d)[\w-]{1,5}\s*$/, '').replace(/\s+,/g, ',').trim();
+}
+
+function withinOneEdit(a, b) {
+  if (a === b) return true;
+  if (Math.abs(a.length - b.length) > 1) return false;
+  let i = 0, j = 0, edits = 0;
+  while (i < a.length && j < b.length) {
+    if (a[i] === b[j]) { i++; j++; continue; }
+    if (++edits > 1) return false;
+    if (a.length > b.length) i++; else if (b.length > a.length) j++; else { i++; j++; }
+  }
+  return edits + (a.length - i) + (b.length - j) <= 1;
+}
+
+let _streetIndexCache = { src: null, n: -1, idx: null };
+function buildStreetIndex() {
+  const revs = allReviews();
+  const ul = (typeof userLandlords !== 'undefined' && userLandlords) ? userLandlords.length : 0;
+  if (_streetIndexCache.src === dbReviews && _streetIndexCache.n === revs.length && _streetIndexCache.ul === ul) return _streetIndexCache.idx;
+  const parsed = [];
+  let unplaced = 0;
+  revs.forEach(r => {
+    const a = parseStreetAddress(r.property);
+    if (a) parsed.push({ r, a }); else unplaced++;
+  });
+  // "212 Chalmers" -> Chalmers St when every other review of that street name agrees on the suffix
+  const suffixes = {};
+  parsed.forEach(({ a }) => { if (a.suffix) (suffixes[a.nameKey] = suffixes[a.nameKey] || {})[a.suffix] = 1; });
+  parsed.forEach(({ a }) => {
+    const s = suffixes[a.nameKey] ? Object.keys(suffixes[a.nameKey]) : [];
+    if (!a.suffix && s.length === 1) a.suffix = s[0];
+    a.street = streetLabelOf(a);
+    a.key = slugify(a.street);
+  });
+  // Typos: "905 welsh dr" and "905 Welch Dr" are one street when the names differ by one letter, share a
+  // suffix and share a house number. The less-used spelling is folded into the more-used one.
+  const byKey = {};
+  parsed.forEach(({ a }) => {
+    const k = byKey[a.key] = byKey[a.key] || { nameKey: a.nameKey, name: a.name, suffix: a.suffix, street: a.street, count: 0, numbers: {} };
+    k.count++; k.numbers[a.number] = 1;
+  });
+  const keys = Object.keys(byKey).sort((x, y) => byKey[y].count - byKey[x].count);
+  const renamed = {};
+  keys.forEach((k, i) => {
+    if (renamed[k]) return;
+    for (let j = i + 1; j < keys.length; j++) {
+      const a = byKey[k], b = byKey[keys[j]];
+      if (renamed[keys[j]] || a.suffix !== b.suffix || a.nameKey.length < 4 || b.nameKey.length < 4 || !withinOneEdit(a.nameKey, b.nameKey)) continue;
+      if (Object.keys(b.numbers).some(n => a.numbers[n])) renamed[keys[j]] = k;
+    }
+  });
+  parsed.forEach(({ a }) => {
+    const to = renamed[a.key] && byKey[renamed[a.key]];
+    if (to) { a.name = to.name; a.nameKey = to.nameKey; a.street = to.street; a.key = renamed[a.key]; }
+  });
+  // "212 Green St" -> 212 E Green St when every other review of that building agrees on the direction
+  const dirs = {};
+  parsed.forEach(({ a }) => { if (a.dir) (dirs[a.key + '|' + a.number] = dirs[a.key + '|' + a.number] || {})[a.dir] = 1; });
+  parsed.forEach(({ a }) => {
+    const d = dirs[a.key + '|' + a.number] ? Object.keys(dirs[a.key + '|' + a.number]) : [];
+    if (!a.dir && d.length === 1) a.dir = d[0];
+  });
+
+  const streets = {};
+  parsed.forEach(({ r, a }) => {
+    const st = streets[a.key] = streets[a.key] || { key: a.key, label: a.street, nameKey: a.nameKey, buildings: {}, reviewCount: 0 };
+    st.reviewCount++;
+    const bk = a.number + '|' + a.dir;
+    const b = st.buildings[bk] = st.buildings[bk] || { number: a.number, dir: a.dir, reviews: [], names: {} };
+    b.reviews.push(r);
+    if (a.buildingName) b.names[a.buildingName] = (b.names[a.buildingName] || 0) + 1;
+  });
+
+  Object.values(streets).forEach(st => {
+    const blds = Object.values(st.buildings);
+    const known = CU_STREETS[st.nameKey];
+    st.orient = known ? known[1]
+      : blds.some(b => b.dir === 'E' || b.dir === 'W') ? 'ew'
+      : blds.some(b => b.dir === 'N' || b.dir === 'S') ? 'ns' : '';
+    // Position along the street: west to east (Champaign's E numbers rise toward Wright St, Urbana's W numbers fall
+    // past it), or north to south (N numbers fall toward the center, S numbers rise away from it).
+    const pos = b => st.orient === 'ns' ? (b.dir === 'N' ? -b.number : b.number) : (b.dir === 'W' ? 100000 - b.number : b.number);
+    st.list = blds.map(b => {
+      const n = b.reviews.length;
+      const rents = b.reviews.map(r => r.monthlyRent).filter(isValidRent);
+      const landlords = {};
+      b.reviews.forEach(r => {
+        const id = LANDLORD_ALIASES[r.landlordId] || r.landlordId;
+        const l = findLandlord(id);
+        const lname = l ? l.name : (r.landlordName && r.landlordName !== 'Unmatched' ? r.landlordName : '');
+        if (lname) landlords[lname] = (landlords[lname] || 0) + 1;
+      });
+      const topName = Object.entries(b.names).sort((x, y) => y[1] - x[1])[0];
+      return {
+        number: b.number, dir: b.dir, position: pos(b),
+        label: buildingLabelOf(b.number, b.dir, st.label),
+        buildingName: topName ? topName[0] : '',
+        reviews: b.reviews.slice().sort((x, y) => (y.createdAt || 0) - (x.createdAt || 0)),
+        count: n,
+        rating: b.reviews.reduce((s, r) => s + r.rating, 0) / n,
+        wouldRent: Math.round(b.reviews.filter(r => r.wouldRent).length / n * 100),
+        avgRent: rents.length ? Math.round(rents.reduce((s, v) => s + v, 0) / rents.length) : 0,
+        rentCount: rents.length,
+        landlords: Object.entries(landlords).sort((x, y) => y[1] - x[1]).map(x => x[0])
+      };
+    }).sort((x, y) => (x.position - y.position) || (x.number - y.number));
+    st.buildingCount = st.list.length;
+  });
+  const placeOf = new Map();
+  Object.values(streets).forEach(st => st.list.forEach(b => b.reviews.forEach(r => placeOf.set(r, { streetKey: st.key, streetLabel: st.label, label: b.label, buildingName: b.buildingName }))));
+  const idx = {
+    streets,
+    unplaced,
+    placeOf,
+    list: Object.values(streets).sort((a, b) => (b.reviewCount - a.reviewCount) || a.label.localeCompare(b.label))
+  };
+  _streetIndexCache = { src: dbReviews, n: revs.length, ul, idx };
+  return idx;
+}
+
+function toggleStreet(key) {
+  const cur = (S.streets || []).slice();
+  const i = cur.indexOf(key);
+  if (i === -1) cur.push(key); else cur.splice(i, 1);
+  trackEvent('street_toggle', { street: key, selected: i === -1, count: cur.length });
+  go({ page: 'streets', streets: cur });
+}
+
+// Filters the street buttons in place, so typing never loses focus to a re-render
+function filterStreetChips(value) {
+  S.streetSearch = value;
+  const q = (value || '').trim().toLowerCase();
+  const qq = ORDINAL_STREETS[q] ? ORDINAL_STREETS[q].toLowerCase() : q;
+  let matches = 0;
+  document.querySelectorAll('.street-chip').forEach(el => {
+    const match = !qq || el.getAttribute('data-search').indexOf(qq) !== -1;
+    el.hidden = !match && !el.classList.contains('on'); // picked streets stay visible
+    if (match) matches++;
+  });
+  const none = document.getElementById('street-none');
+  if (none) none.hidden = matches > 0;
+}
+
+function streetReviewHTML(r) {
+  const m = (r.text || '').match(/^\[Lease:\s*([^\]]+)\]\s*/);
+  const lease = m ? m[1] : '';
+  const body = m ? r.text.slice(m[0].length) : (r.text || '');
+  const meta = [
+    '<strong>' + r.rating.toFixed(1) + ' / 5</strong>',
+    esc(r.date || ''),
+    r.wouldRent ? '<span class="st-yes">Would rent again</span>' : '<span class="st-no">Would not rent again</span>',
+    isValidRent(r.monthlyRent) ? '$' + r.monthlyRent + '/mo' : '',
+    lease ? 'Lease: ' + esc(lease) : ''
+  ].filter(Boolean).join(' · ');
+  return '<div class="bldg-review"><div class="bldg-review-meta">' + meta + '</div><p>' + esc(body) + '</p></div>';
+}
+
+function streetBuildingHTML(b) {
+  const tone = b.count < MIN_LABEL_REVIEWS ? 'early' : qClass(b.rating);
+  const landlordLinks = b.landlords.length
+    ? b.landlords.map(n => '<a href="#landlord/' + slugify(n) + '">' + esc(n) + '</a>').join(', ')
+    : '<span>Landlord not given</span>';
+  const meta = [
+    b.count + ' review' + (b.count !== 1 ? 's' : ''),
+    b.wouldRent + '% would rent again',
+    b.avgRent ? '~$' + b.avgRent.toLocaleString() + '/mo' : ''
+  ].filter(Boolean).map(x => '<span>' + x + '</span>').join('');
+  return '<article class="bldg">' +
+    '<div class="bldg-score st-' + tone + '" title="' + (b.count < MIN_LABEL_REVIEWS ? 'Early read: fewer than ' + MIN_LABEL_REVIEWS + ' reviews' : 'Average of ' + b.count + ' reviews') + '">' +
+      '<div class="bldg-score-num">' + b.rating.toFixed(1) + '</div><div class="bldg-score-n">' + (b.count < MIN_LABEL_REVIEWS ? 'early read' : 'avg') + '</div></div>' +
+    '<div class="bldg-body">' +
+      '<div class="bldg-addr">' + esc(b.label) + (b.buildingName ? ' <span class="bldg-name">' + esc(b.buildingName) + '</span>' : '') + '</div>' +
+      '<div class="bldg-landlords">' + landlordLinks + '</div>' +
+      '<div class="bldg-meta">' + meta + '</div>' +
+      '<details class="bldg-reviews"><summary>' + (b.count === 1 ? 'Read the review' : 'Read all ' + b.count + ' reviews') + '</summary>' +
+        b.reviews.map(streetReviewHTML).join('') +
+      '</details>' +
+    '</div></article>';
+}
+
+function streetSectionHTML(st) {
+  const orientText = st.orient === 'ew' ? 'west to east' : st.orient === 'ns' ? 'north to south' : 'by street number';
+  let lastBlock = null;
+  const rows = st.list.map(b => {
+    const block = b.dir + '|' + Math.floor(b.number / 100);
+    let head = '';
+    if (block !== lastBlock) {
+      lastBlock = block;
+      const h = Math.floor(b.number / 100) * 100;
+      head = '<div class="street-block">' + (h === 0 ? 'Under 100' : h + ' block') + ' · ' + esc((b.dir ? b.dir + ' ' : '') + st.label) + '</div>';
+    }
+    return head + streetBuildingHTML(b);
+  }).join('');
+  return '<section class="street-section" aria-label="' + esc(st.label) + '">' +
+    '<div class="street-head"><h3>' + esc(st.label) + '</h3>' +
+      '<div class="street-head-meta">' + st.buildingCount + ' building' + (st.buildingCount !== 1 ? 's' : '') + ' · ' + st.reviewCount + ' review' + (st.reviewCount !== 1 ? 's' : '') + ' · listed ' + orientText + '</div>' +
+      '<button type="button" class="street-remove" onclick="toggleStreet(\'' + st.key + '\')" aria-label="Remove ' + esc(st.label) + '">Remove</button>' +
+    '</div>' + rows + '</section>';
+}
+
+function StreetsPage() {
+  const idx = buildStreetIndex();
+  const selected = (S.streets || []).filter(k => idx.streets[k]);
+  const q = (S.streetSearch || '').trim().toLowerCase();
+  const qq = ORDINAL_STREETS[q] ? ORDINAL_STREETS[q].toLowerCase() : q;
+  let shown = 0;
+  const chips = idx.list.map(st => {
+    const on = selected.indexOf(st.key) !== -1;
+    const alias = ORDINAL_NUMBERS[st.label.split(' ')[0]] || '';
+    const search = (st.label + ' ' + alias).toLowerCase();
+    const match = !qq || search.indexOf(qq) !== -1;
+    const hidden = !match && !on;
+    if (match) shown++;
+    return '<button type="button" class="street-chip' + (on ? ' on' : '') + '" data-search="' + esc(search) + '" aria-pressed="' + on + '" onclick="toggleStreet(\'' + st.key + '\')"' + (hidden ? ' hidden' : '') + '>' +
+      esc(st.label) + ' <span class="street-chip-n">' + st.reviewCount + '</span></button>';
+  }).join('');
+
+  let results;
+  if (!dbLoaded) results = '<p class="street-empty">Loading reviews…</p>';
+  else if (!idx.list.length) results = '<p class="street-empty">No reviews with a street address yet.</p>';
+  else if (!selected.length) results = '<div class="street-empty"><strong>Pick one or more streets above.</strong> Choose the streets your classes are on, plus the ones a block over. Every reviewed building on them shows up here, in order along the street.</div>';
+  else results = selected.map(k => streetSectionHTML(idx.streets[k])).join('');
+
+  return '<div style="background:var(--brand-navy);padding:48px 24px 40px;text-align:center">' +
+      '<h2 style="font-size:32px;font-weight:900;color:white;letter-spacing:-1px;margin-bottom:8px">Browse by Street</h2>' +
+      '<p style="color:rgba(255,255,255,0.7);font-size:15px;max-width:560px;margin:0 auto">Living near your classes matters. Pick the streets around your buildings to see every reviewed place on them.</p>' +
+    '</div>' +
+    '<div class="container" style="padding-top:28px">' +
+      '<div style="position:relative">' +
+        '<svg style="position:absolute;left:14px;top:50%;transform:translateY(-50%);pointer-events:none" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>' +
+        '<input type="search" class="landlord-search" aria-label="Find a street" placeholder="Find a street, e.g. Green, Wright, 4th" value="' + esc(S.streetSearch || '') + '" oninput="filterStreetChips(this.value)" autocomplete="off" />' +
+      '</div>' +
+      '<div class="street-chips" role="group" aria-label="Streets with reviews">' + chips + '</div>' +
+      '<p id="street-none" class="street-none"' + (shown ? ' hidden' : '') + '>No reviewed street matches that. Try part of the name, like "Stough".</p>' +
+      (selected.length > 1 ? '<p class="street-clear"><button type="button" onclick="go({streets:[]})">Clear all ' + selected.length + ' streets</button></p>' : '') +
+      results +
+      (dbLoaded ? '<div class="street-foot">' +
+        (idx.unplaced ? '<p>' + idx.unplaced + ' review' + (idx.unplaced !== 1 ? 's don\'t' : ' doesn\'t') + ' include a street number, so ' + (idx.unplaced !== 1 ? 'they show' : 'it shows') + ' only on landlord pages.</p>' : '') +
+        '<button type="button" class="write-btn" onclick="trackEvent(\'review_modal_open\',{source:\'streets\'});go({modal:true,stars:0,wouldRentChoice:null,posTags:[],negTags:[],formData:{}})">Lived on one of these streets? Rate your place</button>' +
+      '</div>' : '') +
+    '</div>';
+}
+
+// The address shown on a review card: the building as grouped on the Streets page, never the unit
+function reviewAddressLabel(r) {
+  const p = buildStreetIndex().placeOf.get(r);
+  if (p) return p.label + (p.buildingName ? ' (' + p.buildingName + ')' : '');
+  return displayAddress(r.property);
+}
+
 function Compare() {
   // Build comparison from actual review data — no hardcoded properties
   const revs = allReviews();
@@ -2515,9 +2962,10 @@ function Compare() {
   const addrMap = {};
   revs.forEach(r => {
     if (!r.property || r.property === 'Not specified') return;
-    if (!addrMap[r.property]) addrMap[r.property] = { name: r.property, landlordId: r.landlordId, landlordName: r.landlordName || '', hood: r.hoodName || '', reviews: [], rents: [] };
-    addrMap[r.property].reviews.push(r);
-    if (isValidRent(r.monthlyRent)) addrMap[r.property].rents.push(r.monthlyRent);
+    const place = reviewAddressLabel(r);
+    if (!addrMap[place]) addrMap[place] = { name: place, landlordId: r.landlordId, landlordName: r.landlordName || '', hood: r.hoodName || '', reviews: [], rents: [] };
+    addrMap[place].reviews.push(r);
+    if (isValidRent(r.monthlyRent)) addrMap[place].rents.push(r.monthlyRent);
   });
   let filtered = Object.values(addrMap).map(a => ({
     ...a,
@@ -2665,7 +3113,26 @@ function Modal() {
       </div>
 
       <div class="field">
-        <label>Rate Your Landlord (optional)</label>
+        <label for="rev-text">In a sentence or two, how was it?</label>
+        <textarea id="rev-text" class="rev-text-short" placeholder="e.g. Repairs were fast, but they kept $300 of our deposit for normal wear."></textarea>
+        <p class="field-hint">At least 20 characters. Specifics help the next person most.</p>
+      </div>
+
+      <div class="field">
+        <label for="rev-property-custom">Street address <span style="font-weight:400;color:var(--muted)">(optional)</span></label>
+        <input type="text" id="rev-property-custom" placeholder="e.g. 309 E Green St" oninput="onAddressInput(this)" autocomplete="off" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius: 2px;font-size:14px;font-family:inherit;outline:none;" />
+        <div id="addr-match-hint" style="display:none;margin-top:6px;padding:8px 12px;border-radius: 2px;font-size:12px"></div>
+        <p class="field-hint">Puts your review on Browse by Street for people choosing by location. Street and number only; unit numbers are dropped.</p>
+      </div>
+
+      <details class="rev-details" id="rev-details" ${S.revDetailsOpen ? 'open' : ''} ontoggle="S.revDetailsOpen = this.open">
+        <summary>
+          <span class="rev-details-title">Add details (optional)</span>
+          <span class="rev-details-hint">Area scores, rent, lease dates, tags, Verified Illini badge</span>
+        </summary>
+        <div class="rev-details-body">
+      <div class="field">
+        <label>Rate specific areas</label>
         <p style="font-size:12px;color:var(--muted);margin-bottom:8px">How'd they do in these areas?</p>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
           <div><label style="font-size:12px">Maintenance</label><select id="rev-score-maintenance"><option value="0">—</option>${[1,2,3,4,5].map(n=>`<option value="${n}">${n}/5${n===1?' (Terrible)':n===3?' (Average)':n===5?' (Excellent)':''}</option>`).join("")}</select></div>
@@ -2675,12 +3142,6 @@ function Modal() {
         </div>
       </div>
 
-      <div class="field">
-        <label>Property Address</label>
-        <input type="text" id="rev-property-custom" placeholder="e.g. 309 E Green St, Apt 4B" oninput="onAddressInput(this)" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius: 2px;font-size:14px;font-family:inherit;outline:none;" />
-        <div id="addr-match-hint" style="display:none;margin-top:6px;padding:8px 12px;border-radius: 2px;font-size:12px"></div>
-        <p style="font-size:11px;color:var(--muted);margin-top:4px">Street address where you lived. This helps other students find reviews for their building.</p>
-      </div>
       <div class="field">
         <label>Neighborhood</label>
         <select id="rev-hood-select">
@@ -2733,11 +3194,6 @@ function Modal() {
       </div>
 
       <div class="field">
-        <label>Your Experience</label>
-        <textarea id="rev-text" placeholder="Be specific: maintenance speed, communication, deposit fairness, overall condition..."></textarea>
-      </div>
-
-      <div class="field">
         <label>Tags — select all that apply</label>
         <div class="chip-group" id="pos-tags">
           ${["Great Location","Responsive","Fast Repairs","Modern","Quiet","Pet Friendly","Fair Deposit","Furnished","Good Amenities","Cheap Rent"].map(t=>
@@ -2759,6 +3215,9 @@ function Modal() {
         </div>
         <p id="verify-hint" style="font-size:11px;color:var(--muted);margin-top:4px">Use your @illinois.edu email to get a <strong style="color:#16A34A">Verified Illini</strong> badge on your review. Any email works, or leave blank.</p>
       </div>
+
+        </div>
+      </details>
 
       <div class="field" style="background:#FFF7ED;border:1px solid #FED7AA;border-radius: 2px;padding:12px 14px">
         <label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer;margin:0">
@@ -3060,14 +3519,14 @@ async function handlePdfUpload(file) {
     if (text && text.length > 50) {
       if (textarea) textarea.value = text;
       toast('PDF text extracted (' + text.length.toLocaleString() + ' characters). Ready to scan!');
-      trackScannerEvent('pdf_upload', { filename: file.name, chars: text.length });
+      trackScannerEvent('pdf_upload', { chars: text.length }); // no file names: they often contain a name or address
     } else {
       toast('Could not extract enough text from this PDF. It may be a scanned image. Try pasting the text manually.');
-      trackScannerEvent('pdf_upload_fail', { filename: file.name, reason: 'insufficient_text' });
+      trackScannerEvent('pdf_upload_fail', { reason: 'insufficient_text' });
     }
   } catch(err) {
     toast('Error reading PDF: ' + err.message);
-    trackScannerEvent('pdf_upload_fail', { filename: file.name, reason: err.message });
+    trackScannerEvent('pdf_upload_fail', { reason: err.message });
   }
   pdfExtracting = false;
   if (uploadZone) uploadZone.innerHTML = '<div class="upload-icon" style="font-size:24px;font-weight:700;color:rgba(255,255,255,0.3)">PDF</div><div class="upload-text"><strong>Click to upload</strong> or drag & drop your lease PDF<br>PDF files up to 20MB</div>';
@@ -3139,7 +3598,7 @@ async function submitInterest() {
     closeInterestPopup();
   } catch(e) {
     // Fallback — log even if table doesn't exist yet
-    trackScannerEvent('interest_submitted_fallback', { email: email });
+    trackScannerEvent('interest_submitted_fallback', { email_domain: email.split('@')[1] }); // never log the full email
     toast('Thanks! We\'ll be in touch.');
     closeInterestPopup();
   }
@@ -3619,6 +4078,7 @@ function MethodologyPage() {
   '<div style="background:var(--card-bg);border:1px solid var(--border);border-radius: 2px;padding:24px;margin-bottom:16px">' +
     '<h3 style="font-size:18px;font-weight:800;color:var(--orange);margin-bottom:10px">Overall Rating</h3>' +
     '<p style="font-size:14px;color:var(--text);line-height:1.7">Each reviewer gives a 1-5 star rating. The overall rating is the <strong>simple average</strong> of all star ratings for that landlord. A landlord with reviews of 5, 3, and 4 would have an overall rating of 4.0.</p>' +
+    '<p style="font-size:14px;color:var(--text);line-height:1.7;margin-top:10px"><strong>How the ranking works.</strong> When sorting by Highest Rated or Would Rent Again, landlords with at least 3 reviews are ranked first, and landlords with 1 or 2 reviews are listed after them as <strong>Early reads</strong>, with no verdict like Awesome or Awful. Within each group, every landlord starts with 3 "virtual" reviews at the site-wide average, so a single 5-star (or 1-star) review can\'t decide the order.</p>' +
   '</div>' +
 
   '<div style="background:var(--card-bg);border:1px solid var(--border);border-radius: 2px;padding:24px;margin-bottom:16px">' +
@@ -3633,7 +4093,7 @@ function MethodologyPage() {
 
   '<div style="background:var(--card-bg);border:1px solid var(--border);border-radius: 2px;padding:24px;margin-bottom:16px">' +
     '<h3 style="font-size:18px;font-weight:800;color:var(--orange);margin-bottom:10px">Rating Trend</h3>' +
-    '<p style="font-size:14px;color:var(--text);line-height:1.7">The sparkline chart shows how a landlord\'s ratings have changed over time. Each point is one review plotted chronologically. The trend arrow compares the average of the newest third of reviews to the oldest third. A green upward arrow means they\'re improving; red downward means they\'re slipping.</p>' +
+    '<p style="font-size:14px;color:var(--text);line-height:1.7">The sparkline chart shows how a landlord\'s ratings have changed over time. Each point is one review plotted chronologically. The trend arrow compares the average of the newer half of reviews to the older half. A green upward arrow means they\'re improving; red downward means they\'re slipping. Trends only appear once a landlord has at least 5 reviews; with fewer, one review swings the line too much to mean anything.</p>' +
   '</div>' +
 
   '<div style="background:var(--card-bg);border:1px solid var(--border);border-radius: 2px;padding:24px;margin-bottom:16px">' +
@@ -3675,6 +4135,7 @@ function Footer() {
         <h4>Browse</h4>
         <a onclick="go({page:'home',detail:null,hoodFilter:null})" style="cursor:pointer">All Landlords</a>
         <a onclick="go({page:'hoods'})" style="cursor:pointer">Neighborhoods</a>
+        <a onclick="go({page:'streets'})" style="cursor:pointer">Browse by Street</a>
         <a onclick="go({page:'compare'})" style="cursor:pointer">Compare Prices</a>
         <a onclick="go({page:'h2h'})" style="cursor:pointer">Head-to-Head</a>
         <a onclick="go({page:'insights'})" style="cursor:pointer">Insights</a>
@@ -3714,7 +4175,8 @@ async function loadUserSubmissions() {
   try {
     const { data: ld } = await db.from('user_landlords').select('*').order('name');
     if (ld) userLandlords = ld;
-    const { data: pp } = await db.from('user_properties').select('*').order('address');
+    let { data: pp, error: ppErr } = await db.from('user_properties_public').select('*').order('address');
+    if (dbObjectMissing(ppErr)) ({ data: pp } = await db.from('user_properties').select('*').order('address'));
     if (pp) userProperties = pp;
     render(); // re-render to include user-submitted landlords in UI
   } catch(e) { /* tables may not exist yet — silent fail */ }
@@ -3761,6 +4223,10 @@ function filterLandlordCards(query) {
 function closeModal() {
   go({modal:false, stars:0, wouldRentChoice:null});
 }
+// Escape closes the review form
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape' && S.modal) closeModal();
+});
 
 function updateVerifyHint(val) {
   var badge = document.getElementById('verify-badge-preview');
@@ -3974,8 +4440,7 @@ async function submitReview(landlordIdFromDetail) {
   if (S.wouldRentChoice === null) { toast('Please answer: would you rent from them again?'); return; }
   if (!document.getElementById('rev-certify')?.checked) { toast('Please certify that you are a real tenant, not a landlord or property manager.'); return; }
 
-  const propCustom = document.getElementById('rev-property-custom')?.value?.trim() || '';
-  if (!propCustom) { toast('Please type your property address.'); return; }
+  const propCustom = stripUnit(document.getElementById('rev-property-custom')?.value?.trim() || ''); // keep reviewers anonymous: no unit numbers
 
   // Soft mismatch warning — only warns if address is known to belong to a DIFFERENT landlord
   if (!isCustomLandlord && propCustom.length >= 4) {
@@ -3992,12 +4457,12 @@ async function submitReview(landlordIdFromDetail) {
   }
 
   const text = document.getElementById('rev-text')?.value?.trim();
-  if (!text || text.length < 20) { toast('Please write at least 20 characters about your experience.'); return; }
+  if (!text || text.length < 20) { toast('Please write at least a sentence (20+ characters) about your experience.'); document.getElementById('rev-text')?.focus(); return; }
   if (text.length > 5000) { toast('Review text is too long (max 5,000 characters).'); return; }
 
   const rentInput = document.getElementById('rev-rent')?.value;
   const monthlyRentVal = parseInt(rentInput) || 0;
-  if (rentInput && monthlyRentVal > 0 && !isValidRent(monthlyRentVal)) { toast('Monthly rent should be between $' + MIN_RENT + ' and $' + MAX_RENT.toLocaleString() + ' per person.'); return; }
+  if (rentInput && monthlyRentVal > 0 && !isValidRent(monthlyRentVal)) { const det = document.getElementById('rev-details'); if (det) { det.open = true; S.revDetailsOpen = true; } toast('Monthly rent should be between $' + MIN_RENT + ' and $' + MAX_RENT.toLocaleString() + ' per person.'); return; }
 
   const isCustomProperty = true;
   const property = propCustom || 'Not specified';
@@ -4115,7 +4580,8 @@ async function markHelpful(reviewId, btn, currentCount) {
     try {
       const existing = dbReviews.find(r => r.id === reviewId);
       if (existing && existing.helpful > 0) {
-        await db.from('reviews').update({ helpful_count: existing.helpful - 1 }).eq('id', reviewId);
+        const { error } = await db.rpc('adjust_helpful', { p_review_id: reviewId, p_delta: -1 });
+        if (dbObjectMissing(error)) await db.from('reviews').update({ helpful_count: existing.helpful - 1 }).eq('id', reviewId);
       }
     } catch(e) { /* silent */ }
     return;
@@ -4415,6 +4881,7 @@ function render() {
   else if (S.page === 'insights') html += InsightsPage();
   else if (S.page === 'detail' || S.detail) html += DetailPage();
   else if (S.page === 'hoods') html += Hoods();
+  else if (S.page === 'streets') html += StreetsPage();
   else if (S.page === 'compare') html += Compare();
   else if (S.page === 'h2h') html += HeadToHeadPage();
   else if (S.page === 'scanner') html += LeaseScanner();
@@ -4470,7 +4937,8 @@ window.addEventListener('hashchange', () => {
   if (hash.startsWith('landlord/')) {
     const slug = hash.split('/')[1];
     const found = findLandlordBySlug(slug);
-    if (found) go({page:'detail', detail:found.id});
+    if (found && hash.split('/')[2] === 'rate') go({page:'detail', detail:found.id, modal:true, stars:0, wouldRentChoice:null, posTags:[], negTags:[], formData:{}});
+    else if (found) go({page:'detail', detail:found.id});
     else go({page:'home', detail:null});
   }
   // Legacy support: #landlord-1
@@ -4484,6 +4952,7 @@ window.addEventListener('hashchange', () => {
     }
   }
   else if (hash === 'neighborhoods') go({page:'hoods', detail:null});
+  else if (hash === 'streets' || hash.startsWith('streets/')) go({page:'streets', detail:null, streets: hash.split('/')[1] ? hash.split('/')[1].split('+').filter(Boolean) : []});
   else if (hash === 'compare') go({page:'compare', detail:null});
   else if (hash === 'head-to-head' || hash === 'h2h') go({page:'h2h', detail:null});
   else if (hash === 'scanner') go({page:'scanner', detail:null});
@@ -4506,6 +4975,7 @@ window.addEventListener('hashchange', () => {
       var l = findLandlord(S.detail);
       if (l) newHash = 'landlord/' + slugify(l.name);
     } else if (S.page === 'hoods') newHash = 'neighborhoods';
+    else if (S.page === 'streets') newHash = 'streets' + ((S.streets && S.streets.length) ? '/' + S.streets.join('+') : '');
     else if (S.page === 'compare') newHash = 'compare';
     else if (S.page === 'h2h') newHash = 'head-to-head';
     else if (S.page === 'scanner') newHash = 'scanner';
@@ -4551,6 +5021,7 @@ function updatePageTitle() {
     }
   }
   if (S.page === 'hoods') document.title = 'UIUC Neighborhoods — Housing by Area | ' + base;
+  else if (S.page === 'streets') document.title = 'Browse UIUC Housing Reviews by Street | ' + base;
   else if (S.page === 'compare') document.title = 'Compare UIUC Landlord Prices | ' + base;
   else if (S.page === 'h2h') document.title = 'Head-to-Head Landlord Comparison | ' + base;
   else if (S.page === 'scanner') document.title = 'Free Illinois Lease Scanner | ' + base;
@@ -4578,6 +5049,7 @@ function updateMetaDescription() {
     }
   }
   if (S.page === 'hoods') meta.content = 'Browse UIUC off-campus housing by neighborhood — Campustown, Green St, Urbana, and more. See safety, walkability, and nightlife scores.';
+  else if (S.page === 'streets') meta.content = 'Pick the streets near your classes and see every reviewed building on them, with student ratings, rent, and reviews.';
   else if (S.page === 'scanner') meta.content = 'Free Illinois lease scanner. Upload your lease PDF and we\'ll flag clauses that may conflict with Illinois tenant law.';
   else meta.content = 'The honest guide to off-campus housing at UIUC. Search landlords, read real student reviews, and compare prices. By students, for students.';
 }
@@ -4626,11 +5098,16 @@ function updateStructuredData() {
   if (hash.startsWith('landlord/')) {
     var slug = hash.split('/')[1];
     var found = findLandlordBySlug(slug);
-    if (found) { S.page = 'detail'; S.detail = found.id; }
+    if (found) {
+      S.page = 'detail'; S.detail = found.id;
+      // #landlord/<slug>/rate opens the review form with this landlord picked (used by /landlord/<slug>/ pages and shared review links)
+      if (hash.split('/')[2] === 'rate') S.modal = true;
+    }
   } else if (hash.startsWith('landlord-')) {
     var id = parseInt(hash.split('-')[1]);
     if (id) { S.page = 'detail'; S.detail = id; }
   } else if (hash === 'neighborhoods') { S.page = 'hoods'; }
+  else if (hash === 'streets' || hash.startsWith('streets/')) { S.page = 'streets'; S.streets = hash.split('/')[1] ? hash.split('/')[1].split('+').filter(Boolean) : []; }
   else if (hash === 'compare') { S.page = 'compare'; }
   else if (hash === 'head-to-head' || hash === 'h2h') { S.page = 'h2h'; }
   else if (hash === 'scanner') { S.page = 'scanner'; }
