@@ -477,6 +477,38 @@
   /* ===== NEIGHBORHOODS ===== */
   /* ===== BROWSE BY STREET ===== */
   .street-chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 8px; }
+  /* Near your classes */
+  .near-classes { border: 1.5px solid var(--border); border-top: 4px solid var(--orange); background: var(--card-bg); padding: 20px 20px 16px; margin-bottom: 28px; }
+  .near-classes h3 { font-family: var(--font-display); font-size: 22px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.02em; margin-bottom: 14px; }
+  .near-classes h4 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 10px; }
+  .nc-form { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 16px; align-items: end; margin-bottom: 18px; }
+  .nc-field { min-width: 0; }
+  .nc-label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+  .nc-input { padding-left: 16px !important; }
+  .nc-nomatch { font-size: 13px; color: var(--red); margin-top: 6px; }
+  .nc-years { display: flex; flex-wrap: wrap; gap: 6px; }
+  .nc-year { min-height: 44px; padding: 8px 14px; border: 1.5px solid var(--border); border-radius: 2px; background: transparent; color: var(--text); font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }
+  .nc-year.on { background: var(--brand-navy); border-color: var(--brand-navy); color: #fff; }
+  [data-theme="dark"] .nc-year.on { background: var(--orange); border-color: var(--orange); }
+  .nc-note { color: var(--muted); font-size: 14px; line-height: 1.5; }
+  .nc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .nc-bldgs, .nc-streets { list-style: none; }
+  .nc-bldgs li { display: grid; grid-template-columns: minmax(0, 1fr) 72px 40px; gap: 10px; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
+  .nc-bname { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .nc-bar { height: 6px; background: var(--border); }
+  .nc-bar i { display: block; height: 100%; background: var(--orange); }
+  .nc-pct { font-family: 'IBM Plex Mono', monospace; font-size: 13px; text-align: right; font-variant-numeric: tabular-nums; }
+  .nc-courses { font-size: 12px; color: var(--muted); margin-top: 10px; line-height: 1.5; }
+  .nc-streets li + li { margin-top: 6px; }
+  .nc-street { width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 12px; min-height: 44px; padding: 8px 12px; border: 1.5px solid var(--border); border-radius: 2px; background: transparent; color: var(--text); font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; text-align: left; }
+  .nc-street.on { border-color: var(--orange); background: rgba(255,95,5,0.08); }
+  .nc-street:hover { border-color: var(--orange); }
+  .nc-min { font-family: 'IBM Plex Mono', monospace; font-size: 13px; font-weight: 400; color: var(--muted); white-space: nowrap; }
+  .nc-show { margin-top: 12px; min-height: 44px; padding: 10px 16px; border: none; border-radius: 2px; background: var(--orange); color: #fff; font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; }
+  .nc-foot { font-size: 12px; color: var(--muted); line-height: 1.5; margin-top: 16px; }
+  .nc-clear { background: none; border: none; padding: 0; font: inherit; color: var(--text); text-decoration: underline; cursor: pointer; }
+  .street-pick-title { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 10px; }
+  @media (max-width: 720px) { .nc-form, .nc-grid { grid-template-columns: 1fr; } .nc-year { flex: 1 1 calc(50% - 6px); } }
   .street-chip { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 8px 14px; border: 1.5px solid var(--border); border-radius: 2px; background: var(--card-bg); color: var(--text); font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; transition: border-color 0.15s, background 0.15s; }
   .street-chip:hover { border-color: var(--orange); }
   .street-chip:focus-visible, .street-remove:focus-visible, .street-clear button:focus-visible, .bldg-reviews summary:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
@@ -2874,7 +2906,8 @@ function streetBuildingHTML(b) {
   const meta = [
     b.count + ' review' + (b.count !== 1 ? 's' : ''),
     b.wouldRent + '% would rent again',
-    b.avgRent ? '~$' + b.avgRent.toLocaleString() + '/mo' : ''
+    b.avgRent ? '~$' + b.avgRent.toLocaleString() + '/mo' : '',
+    walkLabel(b)
   ].filter(Boolean).map(x => '<span>' + x + '</span>').join('');
   return '<article class="bldg">' +
     '<div class="bldg-score st-' + tone + '" title="' + (b.count < MIN_LABEL_REVIEWS ? 'Early read: fewer than ' + MIN_LABEL_REVIEWS + ' reviews' : 'Average of ' + b.count + ' reviews') + '">' +
@@ -2909,6 +2942,185 @@ function streetSectionHTML(st) {
     '</div>' + rows + '</section>';
 }
 
+// ===== NEAR YOUR CLASSES (major + class standing) =====
+// data/majors.json: where each major's classes meet, by year: the Academic Catalog's sample plan for the
+//   major, joined with the buildings those courses meet in (Course Explorer, Fall 2026 and Spring 2026).
+// data/places.json: map positions for campus buildings (OpenStreetMap) and reviewed addresses (US Census geocoder).
+// Both are static files built by tools/campus-data/; the major you pick stays in this browser.
+let campusData = null;
+let campusDataState = 'idle'; // idle | loading | ready | failed
+function loadCampusData() {
+  if (campusDataState !== 'idle') return;
+  campusDataState = 'loading';
+  Promise.all([fetch('/data/majors.json').then(r => r.json()), fetch('/data/places.json').then(r => r.json())])
+    .then(([majors, places]) => { campusData = { majors, places, bySlug: Object.fromEntries(majors.map(m => [m.slug, m])) }; campusDataState = 'ready'; })
+    .catch(() => { campusDataState = 'failed'; })
+    .finally(() => { if (S.page === 'streets' && !S.modal) render(); });
+}
+const YEAR_LABELS = ['', 'Freshman', 'Sophomore', 'Junior', 'Senior'];
+function loadMajorChoice() {
+  try { const v = JSON.parse(localStorage.getItem('rmc-major') || 'null'); if (v && v.slug) { S.major = v.slug; S.majorYear = v.year || 2; } } catch (e) {}
+}
+function setMajorChoice(slug, year) {
+  try { localStorage.setItem('rmc-major', JSON.stringify({ slug, year })); } catch (e) {}
+  trackEvent('major_pick', { major: slug, year });
+  go({ major: slug, majorYear: year });
+}
+// Exact match while typing (picking from the list); on Enter or leaving the box, "computer sci" is enough
+function findMajor(value, loose) {
+  const v = (value || '').trim().toLowerCase();
+  if (!campusData || v.length < 2) return null;
+  const exact = campusData.majors.find(x => x.name.toLowerCase() === v);
+  if (exact || !loose) return exact || null;
+  const base = x => x.name.split(',')[0].toLowerCase(); // "Finance, BS" -> "finance"
+  return campusData.majors.find(x => base(x) === v) || campusData.majors.find(x => x.name.toLowerCase().startsWith(v)) ||
+    campusData.majors.find(x => x.name.toLowerCase().indexOf(v) !== -1) || null;
+}
+function onMajorInput(el, loose) {
+  const m = findMajor(el.value, loose);
+  const none = document.getElementById('nc-nomatch');
+  if (none) none.hidden = !(loose && !m && el.value.trim());
+  if (m && m.slug !== S.major) setMajorChoice(m.slug, S.majorYear || 2);
+}
+function clearMajorChoice() {
+  try { localStorage.removeItem('rmc-major'); } catch (e) {}
+  go({ major: null });
+}
+
+// Walking time: straight-line distance stretched for the street grid, at about 3 mph
+function walkMinutes(a, b) {
+  const R = 6371000, rad = Math.PI / 180;
+  const dLat = (b[0] - a[0]) * rad, dLng = (b[1] - a[1]) * rad;
+  const h = Math.sin(dLat / 2) ** 2 + Math.cos(a[0] * rad) * Math.cos(b[0] * rad) * Math.sin(dLng / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(h)) * 1.3 / 80;
+}
+
+// Where the chosen major's classes are that year. Shares for walk times use only buildings we can place.
+function classSpots() {
+  if (!campusData || !S.major) return null;
+  const m = campusData.bySlug[S.major];
+  const y = m && m.years[S.majorYear || 2];
+  if (!y) return null;
+  const spots = y.buildings.map(([name, share]) => ({ name, share, pos: campusData.places.b[name] || null }));
+  const placed = spots.filter(s => s.pos);
+  const total = placed.reduce((t, s) => t + s.share, 0);
+  return { major: m, year: y, spots, placed: total ? placed.map(s => ({ ...s, w: s.share / total })) : [] };
+}
+function minutesToClasses(pos, cs) {
+  if (!pos || !cs || !cs.placed.length) return null;
+  return cs.placed.reduce((t, s) => t + s.w * walkMinutes(pos, s.pos), 0);
+}
+
+// Map position for each reviewed building: its geocoded address, else estimated from geocoded neighbours on the same street
+let _bldgPosCache = { idx: null, data: null, map: null };
+function buildingPositions(idx) {
+  if (!campusData) return null;
+  if (_bldgPosCache.idx === idx && _bldgPosCache.data === campusData) return _bldgPosCache.map;
+  const map = new Map(), A = campusData.places.a || {};
+  Object.values(idx.streets).forEach(st => {
+    const known = [];
+    st.list.forEach(b => {
+      const hit = b.reviews.map(r => A[(r.property || '').trim()]).find(Boolean);
+      if (hit) { map.set(b, hit); known.push({ p: b.position, pos: hit }); }
+    });
+    if (!known.length) return;
+    known.sort((x, y) => x.p - y.p);
+    st.list.forEach(b => {
+      if (map.has(b)) return;
+      let lo = null, hi = null;
+      known.forEach(k => { if (k.p <= b.position) lo = k; if (k.p >= b.position && !hi) hi = k; });
+      // Only between neighbours a few blocks apart: Champaign's E and Urbana's W numbers share street names
+      if (lo && hi && hi.p !== lo.p && hi.p - lo.p <= 800) {
+        const t = (b.position - lo.p) / (hi.p - lo.p);
+        map.set(b, [lo.pos[0] + t * (hi.pos[0] - lo.pos[0]), lo.pos[1] + t * (hi.pos[1] - lo.pos[1])]);
+      } else {
+        const near = [lo, hi].filter(Boolean).sort((x, y) => Math.abs(x.p - b.position) - Math.abs(y.p - b.position))[0];
+        if (near && Math.abs(near.p - b.position) <= 300) map.set(b, near.pos); // within ~3 blocks
+      }
+    });
+  });
+  _bldgPosCache = { idx, data: campusData, map };
+  return map;
+}
+
+// Streets ranked by the walk from their closest reviewed building to the chosen major's classes
+function closestStreets(idx, cs, limit) {
+  const pos = buildingPositions(idx);
+  if (!pos) return [];
+  return idx.list.map(st => {
+    const times = st.list.map(b => minutesToClasses(pos.get(b), cs)).filter(t => t != null);
+    return times.length ? { st, best: Math.min(...times) } : null;
+  }).filter(Boolean).sort((a, b) => a.best - b.best).slice(0, limit);
+}
+function showNearStreets() {
+  const cs = classSpots();
+  if (!cs) return;
+  const keys = closestStreets(buildStreetIndex(), cs, 3).map(x => x.st.key);
+  trackEvent('near_classes_show', { major: S.major, year: S.majorYear || 2 });
+  go({ page: 'streets', streets: keys });
+  setTimeout(() => { const el = document.querySelector('.street-section'); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 50);
+}
+function walkLabel(b) {
+  if (!_ncSpots) return '';
+  const pos = buildingPositions(buildStreetIndex());
+  const t = pos && minutesToClasses(pos.get(b), _ncSpots);
+  return t == null ? '' : '≈ ' + Math.max(1, Math.round(t)) + ' min walk to your classes';
+}
+
+let _ncSpots = null; // the chosen major's class spots, for walk times on building cards
+function NearClassesHTML(idx) {
+  loadCampusData();
+  _ncSpots = null;
+  if (campusDataState === 'failed') return '';
+  const loading = campusDataState !== 'ready';
+  const cs = loading ? null : classSpots();
+  const year = S.majorYear || 2;
+  const yearBtns = [1, 2, 3, 4].map(y =>
+    '<button type="button" class="nc-year' + (year === y ? ' on' : '') + '" aria-pressed="' + (year === y) + '" onclick="' +
+    (S.major ? 'setMajorChoice(' + jsArg(S.major) + ',' + y + ')' : 'go({majorYear:' + y + '})') + '">' + YEAR_LABELS[y] + '</button>').join('');
+  const picked = !loading && S.major && campusData.bySlug[S.major];
+  let body = '';
+  if (loading) body = '<p class="nc-note">Loading class locations…</p>';
+  else if (!S.major) body = '<p class="nc-note">Type your major, then pick what you’ll be next year. You’ll see where those classes meet and the closest reviewed streets.</p>';
+  else if (!cs) body = '<p class="nc-note">The catalog doesn’t list classes for that year of this major yet. Try another year.</p>';
+  else {
+    _ncSpots = cs;
+    const top = cs.spots.slice(0, 5);
+    const streets = closestStreets(idx, cs, 5);
+    body =
+      '<div class="nc-grid">' +
+        '<div><h4>Where your classes meet</h4><ol class="nc-bldgs">' +
+          top.map(s => '<li><span class="nc-bname">' + esc(s.name) + '</span><span class="nc-bar" aria-hidden="true"><i style="width:' + Math.round(s.share * 100) + '%"></i></span><span class="nc-pct">' + Math.round(s.share * 100) + '%</span></li>').join('') +
+        '</ol>' +
+        (cs.year.courses && cs.year.courses.length ? '<p class="nc-courses">From the sample plan: ' + cs.year.courses.map(esc).join(', ') + '</p>' : '') +
+        '</div>' +
+        '<div><h4>Closest reviewed streets</h4>' +
+          (streets.length ? '<ol class="nc-streets">' + streets.map(x => {
+            const on = (S.streets || []).indexOf(x.st.key) !== -1;
+            return '<li><button type="button" class="nc-street' + (on ? ' on' : '') + '" aria-pressed="' + on + '" onclick="toggleStreet(' + jsArg(x.st.key) + ')">' +
+              '<span class="nc-sname">' + esc(x.st.label) + '</span><span class="nc-min">' + Math.max(1, Math.round(x.best)) + ' min walk</span></button></li>';
+          }).join('') + '</ol>' +
+          (streets.length > 1 ? '<button type="button" class="nc-show" onclick="showNearStreets()">Show the closest ' + Math.min(3, streets.length) + ' streets</button>' : '')
+          : '<p class="nc-note">No reviewed buildings we can place on the map yet.</p>') +
+        '</div>' +
+      '</div>' +
+      '<p class="nc-foot">Based on the Academic Catalog’s sample plan for ' + esc(cs.major.name) + ' and the rooms those courses meet in (Fall 2026 and Spring 2026)' +
+        (cs.year.filled ? '. That year lists few required courses, so it also counts ' + esc(cs.year.filled) + ' ' + year + '00-level classes' : '') +
+        '. Electives and gen eds vary, so treat this as a starting point. Walk times are straight-line estimates. ' +
+        '<button type="button" class="nc-clear" onclick="clearMajorChoice()">Clear major</button></p>';
+  }
+  return '<section class="near-classes" aria-labelledby="nc-title">' +
+    '<h3 id="nc-title">Near your classes</h3>' +
+    '<div class="nc-form">' +
+      '<div class="nc-field"><label class="nc-label" for="nc-major">Major</label>' +
+      '<input id="nc-major" class="landlord-search nc-input" list="nc-majors" placeholder="e.g. Computer Science, Finance, Psychology" value="' + esc(picked ? picked.name : '') + '"' +
+        ' onchange="onMajorInput(this,true)" oninput="onMajorInput(this,false)" onkeydown="if(event.key===\'Enter\')onMajorInput(this,true)" autocomplete="off"' + (loading ? ' disabled' : '') + ' />' +
+      (campusData ? '<datalist id="nc-majors">' + campusData.majors.map(m => '<option value="' + esc(m.name) + '"></option>').join('') + '</datalist>' : '') +
+      '<p id="nc-nomatch" class="nc-nomatch" hidden>No major by that name. Pick one from the list as you type.</p></div>' +
+      '<div class="nc-field"><span class="nc-label" id="nc-year-label">Next year I’ll be a</span><div class="nc-years" role="group" aria-labelledby="nc-year-label">' + yearBtns + '</div></div>' +
+    '</div>' + body + '</section>';
+}
+
 function StreetsPage() {
   const idx = buildStreetIndex();
   const selected = (S.streets || []).filter(k => idx.streets[k]);
@@ -2937,6 +3149,8 @@ function StreetsPage() {
       '<p style="color:rgba(255,255,255,0.7);font-size:15px;max-width:560px;margin:0 auto">Living near your classes matters. Pick the streets around your buildings to see every reviewed place on them.</p>' +
     '</div>' +
     '<div class="container" style="padding-top:28px">' +
+      NearClassesHTML(idx) +
+      '<h3 class="street-pick-title">Or pick streets yourself</h3>' +
       '<div style="position:relative">' +
         '<svg style="position:absolute;left:14px;top:50%;transform:translateY(-50%);pointer-events:none" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>' +
         '<input type="search" class="landlord-search" aria-label="Find a street" placeholder="Find a street, e.g. Green, Wright, 4th" value="' + esc(S.streetSearch || '') + '" oninput="filterStreetChips(this.value)" autocomplete="off" />' +
@@ -5121,6 +5335,7 @@ function updateStructuredData() {
   else if (hash === 'rate') { S.page = 'home'; S.modal = true; }
 })();
 
+loadMajorChoice();
 render();
 updatePageTitle();
 updateMetaDescription();
