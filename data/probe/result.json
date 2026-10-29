@@ -1,18 +1,16 @@
 {
  "reviews_count": {
   "status": 200,
-  "range": "0-90/91",
+  "range": "0-91/92",
   "body": ""
  },
  "patch_reviews_public": {
-  "status": 204,
-  "range": "*/0",
-  "body": ""
+  "status": 401,
+  "body": "{\"code\":\"42501\",\"details\":null,\"hint\":null,\"message\":\"permission denied for view reviews_public\"}"
  },
  "delete_reviews_public": {
-  "status": 204,
-  "range": "*/0",
-  "body": ""
+  "status": 401,
+  "body": "{\"code\":\"42501\",\"details\":null,\"hint\":null,\"message\":\"permission denied for view reviews_public\"}"
  },
  "patch_user_properties_public": {
   "status": 400,
