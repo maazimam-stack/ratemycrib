@@ -33,8 +33,8 @@ props = sorted({r["property"].strip() for r in json.loads(urllib.request.urlopen
 results = []
 for p in props:
     street = re.sub(r"\s*\([^)]*\)", "", p).split(",")[0].strip()
-    hit = None
-    for city in ("Champaign", "Urbana"):
+    cands = []
+    for city in ("Champaign", "Urbana", "Savoy"):
         u = "https://geocoding.geo.census.gov/geocoder/locations/onelineaddress?" + urllib.parse.urlencode(
             {"address": f"{street}, {city}, IL", "benchmark": "Public_AR_Current", "format": "json"})
         try:
@@ -42,10 +42,9 @@ for p in props:
         except Exception as e:
             m = []
         time.sleep(0.25)
-        if m:
-            c = m[0]["coordinates"]
-            hit = {"input": p, "query": f"{street}, {city}, IL", "matched": m[0]["matchedAddress"], "lat": c["y"], "lng": c["x"]}
-            break
-    results.append(hit or {"input": p, "query": street, "matched": None})
+        for x in m[:3]:
+            cands.append({"city": city, "matched": x["matchedAddress"], "lat": x["coordinates"]["y"], "lng": x["coordinates"]["x"]})
+    # Every candidate is kept; tools/refresh_campus_data.py picks the one that fits (direction, distance to campus).
+    results.append({"input": p, "query": street, "candidates": cands})
 json.dump(results, open(f"{OUT}/addresses.json", "w"), indent=0)
-print(len(results), "addresses,", sum(1 for r in results if r.get("matched")), "matched")
+print(len(results), "addresses,", sum(1 for r in results if r["candidates"]), "with candidates")
