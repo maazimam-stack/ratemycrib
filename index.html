@@ -2,6 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<!-- Content Security Policy: the page may only run its own scripts and only send data to this site and the RateMyCrib database.
+     Even if bad code got onto the page, it could not post a pasted lease (or anything else) to another server. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob:; connect-src 'self' https://expfrmknhdcwnccqjwnq.supabase.co; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>RateMyCrib — Honest UIUC Housing Reviews by Students</title>
 <meta name="description" content="The honest guide to off-campus housing at UIUC. Search landlords, read real student reviews, and compare prices. By students, for students.">
@@ -889,9 +892,9 @@ try {
 <div id="app"></div>
 <div class="toast" id="toast"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-<script>if(window.pdfjsLib)pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';</script>
+<script src="/vendor/supabase-js-2.118.0.js"></script>
+<script src="/vendor/pdf-3.11.174.min.js"></script>
+<script>if(window.pdfjsLib)pdfjsLib.GlobalWorkerOptions.workerSrc='/vendor/pdf.worker-3.11.174.min.js';</script>
 <script>
 // ===== SUPABASE =====
 const SUPABASE_URL = 'https://expfrmknhdcwnccqjwnq.supabase.co';
@@ -1572,7 +1575,11 @@ const landlordQLabel = l => l.reviews === 0 ? "NEW" : l.reviews < MIN_LABEL_REVI
 const reviewCountText = n => n + ' student review' + (n !== 1 ? 's' : '');
 const valClass = (v, good, ok) => v >= good ? "val-good" : v >= ok ? "val-ok" : "val-bad";
 const scoreColor = s => s === 0 ? "#6B7280" : s >= 4.0 ? "#4ADE80" : s >= 2.5 ? "#D9A441" : "#F0554A";
-const esc = s => s.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const esc = s => String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+// A value placed inside an inline handler, e.g. onclick="go(${jsArg(name)})". esc() alone is not enough there:
+// the browser decodes &#39; back to ' before running the handler, so a landlord named  x');evil();//  would run.
+// JSON.stringify makes a safe JS string; esc() then keeps it inside the attribute.
+const jsArg = v => esc(JSON.stringify(String(v == null ? '' : v)));
 
 function toast(msg) {
   const el = document.getElementById('toast');
@@ -1798,6 +1805,8 @@ function HeadToHead() {
     return '<option value="' + l.id + '">' + esc(l.name) + ' (' + l.rating.toFixed(1) + ')</option>';
   }).join('');
 
+  var h2hShareText = (scoreA > scoreB ? a.name + ' beats ' + b.name : scoreB > scoreA ? b.name + ' beats ' + a.name : a.name + ' vs ' + b.name + ' — dead even') +
+    ' (' + scoreA + '-' + scoreB + ') on RateMyCrib. Compare your UIUC landlords: https://ratemycrib.net/#h2h';
   return '<div class="h2h-picker">' +
     '<select class="h2h-select" onchange="go({h2hA:parseInt(this.value)})" value="' + a.id + '">' + opts.replace('value="' + a.id + '"', 'value="' + a.id + '" selected') + '</select>' +
     '<span class="h2h-vs">VS</span>' +
@@ -1852,13 +1861,8 @@ function HeadToHead() {
     '</div>' +
     '<div style="font-size:11px;color:#555;margin-bottom:14px">ratemycrib.net — the honest guide to UIUC housing</div>' +
     '<div style="display:flex;gap:8px;justify-content:center">' +
-      '<button onclick="trackEvent(\'h2h_share\',{method:\'twitter\',a:\'' + esc(a.name) + '\',b:\'' + esc(b.name) + '\'});window.open(\'https://twitter.com/intent/tweet?text=' + encodeURIComponent(
-        (scoreA > scoreB ? a.name + ' beats ' + b.name : scoreB > scoreA ? b.name + ' beats ' + a.name : a.name + ' vs ' + b.name + ' — dead even') +
-        ' (' + scoreA + '-' + scoreB + ') on RateMyCrib. Compare your UIUC landlords: https://ratemycrib.net/#h2h'
-      ) + '\',\'_blank\')" style="padding:8px 16px;background:#222;color:#ccc;border:1px solid #333;border-radius: 2px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">Share on X</button>' +
-      '<button onclick="trackEvent(\'h2h_share\',{method:\'copy\',a:\'' + esc(a.name) + '\',b:\'' + esc(b.name) + '\'});navigator.clipboard.writeText(\'' +
-        (scoreA > scoreB ? esc(a.name) + ' beats ' + esc(b.name) : scoreB > scoreA ? esc(b.name) + ' beats ' + esc(a.name) : esc(a.name) + ' vs ' + esc(b.name) + ' — dead even') +
-        ' (' + scoreA + '-' + scoreB + ') on RateMyCrib. Compare your UIUC landlords: https://ratemycrib.net/#h2h\');this.textContent=\'Copied!\'" style="padding:8px 16px;background:#222;color:#ccc;border:1px solid #333;border-radius: 2px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">Copy Result</button>' +
+      '<button onclick="trackEvent(\'h2h_share\',{method:\'twitter\',a:' + jsArg(a.name) + ',b:' + jsArg(b.name) + '});window.open(' + jsArg('https://twitter.com/intent/tweet?text=' + encodeURIComponent(h2hShareText)) + ',\'_blank\')" style="padding:8px 16px;background:#222;color:#ccc;border:1px solid #333;border-radius: 2px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">Share on X</button>' +
+      '<button onclick="trackEvent(\'h2h_share\',{method:\'copy\',a:' + jsArg(a.name) + ',b:' + jsArg(b.name) + '});navigator.clipboard.writeText(' + jsArg(h2hShareText) + ');this.textContent=\'Copied!\'" style="padding:8px 16px;background:#222;color:#ccc;border:1px solid #333;border-radius: 2px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">Copy Result</button>' +
     '</div>' +
   '</div>';
 }
@@ -1909,7 +1913,7 @@ function MapView() {
     var coords = HOOD_COORDS[h.name] || { x: 50 + (Math.random() - 0.5) * 40, y: 40 + (Math.random() - 0.5) * 30 };
     var color = h.avgRating >= 3.5 ? '#16A34A' : h.avgRating >= 2.5 ? '#EAB308' : '#DC2626';
     var size = Math.max(26, Math.min(40, 20 + h.count * 2));
-    return '<div class="map-pin" style="left:' + coords.x + '%;top:' + coords.y + '%;width:' + size + 'px;height:' + size + 'px;background:' + color + '" onclick="go({page:\'home\',hoodFilter:\'' + esc(h.name) + '\'})">' +
+    return '<div class="map-pin" style="left:' + coords.x + '%;top:' + coords.y + '%;width:' + size + 'px;height:' + size + 'px;background:' + color + '" onclick="go({page:\'home\',hoodFilter:' + jsArg(h.name) + '})">' +
       h.avgRating.toFixed(1) +
       '<div class="map-tooltip">' +
         '<div style="font-size:14px;font-weight:800;margin-bottom:4px">' + esc(h.name) + '</div>' +
@@ -1990,11 +1994,11 @@ function showSharePromptEnhanced(landlordName, review) {
       '<p style="font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:20px">Your review is live. Help other Illini make better housing decisions.</p>' +
       comparisonHtml +
       '<div class="share-btn-row">' +
-        '<button class="share-opt" onclick="trackEvent(\'share_click\',{method:\'sms\'});window.open(\'sms:?&body=' + encodedText + '\',\'_blank\')"><div class="share-opt-icon" style="font-weight:700">SMS</div><div class="share-opt-label">iMessage</div></button>' +
-        '<button class="share-opt" onclick="trackEvent(\'share_click\',{method:\'twitter\'});window.open(\'https://twitter.com/intent/tweet?text=' + encodedText + '\',\'_blank\')"><div class="share-opt-icon" style="font-weight:700">X</div><div class="share-opt-label">Twitter</div></button>' +
+        '<button class="share-opt" onclick="trackEvent(\'share_click\',{method:\'sms\'});window.open(' + jsArg('sms:?&body=' + encodedText) + ',\'_blank\')"><div class="share-opt-icon" style="font-weight:700">SMS</div><div class="share-opt-label">iMessage</div></button>' +
+        '<button class="share-opt" onclick="trackEvent(\'share_click\',{method:\'twitter\'});window.open(' + jsArg('https://twitter.com/intent/tweet?text=' + encodedText) + ',\'_blank\')"><div class="share-opt-icon" style="font-weight:700">X</div><div class="share-opt-label">Twitter</div></button>' +
         '<button class="share-opt" onclick="trackEvent(\'share_click\',{method:\'copy_link\'});copyShareLink();this.querySelector(\'.share-opt-label\').textContent=\'Copied!\'"><div class="share-opt-icon" style="font-weight:700">Link</div><div class="share-opt-label">Copy Link</div></button>' +
       '</div>' +
-      (navigator.share ? '<button onclick="navigator.share({title:\'RateMyCrib\',text:\'' + shareText.replace(/'/g,"\\'") + '\',url:\'' + shareUrl + '\'}).catch(function(){});this.textContent=\'Shared!\'" style="width:100%;padding:14px;background:var(--orange);color:white;border:none;border-radius: 2px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:12px">Share via...</button>' : '') +
+      (navigator.share ? '<button onclick="navigator.share({title:\'RateMyCrib\',text:' + jsArg(shareText) + ',url:' + jsArg(shareUrl) + '}).catch(function(){});this.textContent=\'Shared!\'" style="width:100%;padding:14px;background:var(--orange);color:white;border:none;border-radius: 2px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:12px">Share via...</button>' : '') +
       '<button onclick="this.closest(\'div\').parentElement.remove()" style="width:100%;padding:12px;background:transparent;color:var(--muted);border:none;font-size:14px;cursor:pointer;font-family:inherit;font-weight:500;margin-top:6px">Maybe later</button>' +
     '</div>';
   overlay.onclick = function(e) { if (e.target === overlay) overlay.remove(); };
@@ -2602,7 +2606,7 @@ function DetailPage() {
       <div style="font-size:24px;margin-bottom:8px">🏠</div>
       <h3 style="font-size:17px;font-weight:800;margin:0 0 6px;color:var(--text)">${revs.length > 0 ? 'Rented from ' + esc(l.name) + '?' : 'Lived here?'}</h3>
       <p style="font-size:13.5px;color:var(--muted);margin:0 0 16px;line-height:1.5">Your review helps other students make better decisions. Takes 60 seconds.</p>
-      <button onclick="trackEvent('lived_here_cta',{landlord_id:${l.id},landlord:'${esc(l.name)}'});go({modal:true,stars:0,wouldRentChoice:null,posTags:[],negTags:[],formData:{}})" style="padding:12px 28px;background:var(--orange);color:white;border:none;border-radius: 2px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:transform 0.15s" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform=''">Leave a Review</button>
+      <button onclick="trackEvent('lived_here_cta',{landlord_id:${l.id},landlord:${jsArg(l.name)}});go({modal:true,stars:0,wouldRentChoice:null,posTags:[],negTags:[],formData:{}})" style="padding:12px 28px;background:var(--orange);color:white;border:none;border-radius: 2px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:transform 0.15s" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform=''">Leave a Review</button>
     </div>
 
     <div class="promo" style="margin-top:20px">
@@ -3480,7 +3484,7 @@ async function extractPdfText(file) {
     return null;
   }
   const arrayBuffer = await file.arrayBuffer();
-  const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+  const pdf = await pdfjsLib.getDocument({ data: arrayBuffer, isEvalSupported: false }).promise; // read locally; nothing is uploaded
   let fullText = '';
   const totalPages = pdf.numPages;
   const progressEl = document.getElementById('scanner-progress');
@@ -4371,7 +4375,7 @@ function onCustomLandlordInput(input) {
 
   suggestBox.innerHTML = '<div style="font-size:11px;color:#9CA3AF;padding:6px 12px">Did you mean one of these?</div>' +
     matches.map(m =>
-      `<div onclick="selectSuggestedLandlord('${m.value}','${esc(m.name)}')" style="padding:10px 12px;cursor:pointer;font-size:14px;border-top:1px solid var(--border);transition:background 0.1s" onmouseover="this.style.background='rgba(255,107,53,0.1)'" onmouseout="this.style.background=''">${esc(m.name)}</div>`
+      `<div onclick="selectSuggestedLandlord(${jsArg(m.value)},${jsArg(m.name)})" style="padding:10px 12px;cursor:pointer;font-size:14px;border-top:1px solid var(--border);transition:background 0.1s" onmouseover="this.style.background='rgba(255,107,53,0.1)'" onmouseout="this.style.background=''">${esc(m.name)}</div>`
     ).join('');
   suggestBox.style.display = 'block';
 }
