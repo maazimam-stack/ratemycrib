@@ -504,6 +504,7 @@
   .nc-input { padding-left: 16px !important; }
   .nc-nomatch { font-size: 13px; color: var(--red); margin-top: 6px; }
   .nc-years { display: flex; flex-wrap: wrap; gap: 6px; }
+  .nc-oneyear { font-size: 13px; color: var(--muted); margin: 0; min-height: 40px; display: flex; align-items: center; }
   .nc-year { min-height: 44px; padding: 8px 14px; border: 1.5px solid var(--border); border-radius: 2px; background: transparent; color: var(--text); font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }
   .nc-year.on { background: var(--brand-navy); border-color: var(--brand-navy); color: #fff; }
   [data-theme="dark"] .nc-year.on { background: var(--orange); border-color: var(--orange); }
@@ -3134,6 +3135,16 @@ function loadCampusData() {
     .finally(() => { if (S.page === 'streets' && !S.modal) render(); });
 }
 const YEAR_LABELS = ['', 'Freshman', 'Sophomore', 'Junior', 'Senior'];
+// Years a program has data for, and how to name them: undergrad (Freshman…), professional (1L…, 1st year…),
+// or one set of classes for every year (graduate programs).
+function majorYears(m) {
+  const keys = m ? Object.keys(m.years).map(Number).filter(Boolean).sort((a, b) => a - b) : [1, 2, 3, 4];
+  return keys.map(y => ({ y, label: (m && m.labels && m.labels[y]) || YEAR_LABELS[y] || 'Year ' + y }));
+}
+function majorYearFor(m) {
+  const ys = majorYears(m).map(x => x.y), want = S.majorYear || 2;
+  return ys.indexOf(want) !== -1 ? want : ys.indexOf(2) !== -1 ? 2 : ys[0];
+}
 function loadMajorChoice() {
   try { const v = JSON.parse(localStorage.getItem('rmc-major') || 'null'); if (v && v.slug) { S.major = v.slug; S.majorYear = v.year || 2; } } catch (e) {}
 }
@@ -3146,17 +3157,20 @@ function setMajorChoice(slug, year) {
 function findMajor(value, loose) {
   const v = (value || '').trim().toLowerCase();
   if (!campusData || v.length < 2) return null;
-  const exact = campusData.majors.find(x => x.name.toLowerCase() === v);
+  const all = campusData.majors;
+  // Exact name, or a common name for it ("medicine", "law school", "vet med", "mba")
+  const exact = all.find(x => x.name.toLowerCase() === v) || all.find(x => (x.aka || []).indexOf(v) !== -1);
   if (exact || !loose) return exact || null;
   const base = x => x.name.split(',')[0].toLowerCase(); // "Finance, BS" -> "finance"
-  return campusData.majors.find(x => base(x) === v) || campusData.majors.find(x => x.name.toLowerCase().startsWith(v)) ||
-    campusData.majors.find(x => x.name.toLowerCase().indexOf(v) !== -1) || null;
+  return all.find(x => base(x) === v) || all.find(x => x.name.toLowerCase().startsWith(v)) ||
+    all.find(x => (x.aka || []).some(a => a.startsWith(v))) || all.find(x => x.name.toLowerCase().indexOf(v) !== -1) || null;
 }
 function onMajorInput(el, loose) {
   const m = findMajor(el.value, loose);
   const none = document.getElementById('nc-nomatch');
   if (none) none.hidden = !(loose && !m && el.value.trim());
-  if (m && m.slug !== S.major) setMajorChoice(m.slug, S.majorYear || 2);
+  if (m && m.slug !== S.major) setMajorChoice(m.slug, majorYearFor(m));
+  else if (m && loose && el.value !== m.name) el.value = m.name; // already picked: show its full name
 }
 function clearMajorChoice() {
   try { localStorage.removeItem('rmc-major'); } catch (e) {}
@@ -3175,7 +3189,7 @@ function walkMinutes(a, b) {
 function classSpots() {
   if (!campusData || !S.major) return null;
   const m = campusData.bySlug[S.major];
-  const y = m && m.years[S.majorYear || 2];
+  const y = m && m.years[majorYearFor(m)];
   if (!y) return null;
   const spots = y.buildings.map(([name, share]) => ({ name, share, pos: campusData.places.b[name] || null }));
   const placed = spots.filter(s => s.pos);
@@ -3250,14 +3264,16 @@ function NearClassesHTML(idx) {
   if (campusDataState === 'failed') return '';
   const loading = campusDataState !== 'ready';
   const cs = loading ? null : classSpots();
-  const year = S.majorYear || 2;
-  const yearBtns = [1, 2, 3, 4].map(y =>
-    '<button type="button" class="nc-year' + (year === y ? ' on' : '') + '" aria-pressed="' + (year === y) + '" onclick="' +
-    (S.major ? 'setMajorChoice(' + jsArg(S.major) + ',' + y + ')' : 'go({majorYear:' + y + '})') + '">' + YEAR_LABELS[y] + '</button>').join('');
   const picked = !loading && S.major && campusData.bySlug[S.major];
+  const years = majorYears(picked || null);
+  const year = picked ? majorYearFor(picked) : (S.majorYear || 2);
+  const yearBtns = years.map(({ y, label }) =>
+    '<button type="button" class="nc-year' + (year === y ? ' on' : '') + '" aria-pressed="' + (year === y) + '" onclick="' +
+    (S.major ? 'setMajorChoice(' + jsArg(S.major) + ',' + y + ')' : 'go({majorYear:' + y + '})') + '">' + esc(label) + '</button>').join('');
+  const yearLabel = picked && picked.kind === 'pro' ? 'Next year I’ll be in my' : 'Next year I’ll be a';
   let body = '';
   if (loading) body = '<p class="nc-note">Loading class locations…</p>';
-  else if (!S.major) body = '<p class="nc-note">Type your major, then pick what you’ll be next year. You’ll see where those classes meet and the closest reviewed streets.</p>';
+  else if (!S.major) body = '<p class="nc-note">Type your major or graduate program (law, medicine and vet med too), then pick your year. You’ll see where those classes meet and the closest reviewed streets.</p>';
   else if (!cs) body = '<p class="nc-note">The catalog doesn’t list classes for that year of this major yet. Try another year.</p>';
   else {
     _ncSpots = cs;
@@ -3268,7 +3284,7 @@ function NearClassesHTML(idx) {
         '<div><h4>Where your classes meet</h4><ol class="nc-bldgs">' +
           top.map(s => '<li><span class="nc-bname">' + esc(s.name) + '</span><span class="nc-bar" aria-hidden="true"><i style="width:' + Math.round(s.share * 100) + '%"></i></span><span class="nc-pct">' + Math.round(s.share * 100) + '%</span></li>').join('') +
         '</ol>' +
-        (cs.year.courses && cs.year.courses.length ? '<p class="nc-courses">From the sample plan: ' + cs.year.courses.map(esc).join(', ') + '</p>' : '') +
+        (cs.year.courses && cs.year.courses.length ? '<p class="nc-courses">' + (cs.major.kind ? 'Courses counted: ' : 'From the sample plan: ') + cs.year.courses.map(esc).join(', ') + '</p>' : '') +
         '</div>' +
         '<div><h4>Closest reviewed streets</h4>' +
           (streets.length ? '<ol class="nc-streets">' + streets.map(x => {
@@ -3280,21 +3296,32 @@ function NearClassesHTML(idx) {
           : '<p class="nc-note">No reviewed buildings we can place on the map yet.</p>') +
         '</div>' +
       '</div>' +
-      '<p class="nc-foot">Based on the Academic Catalog’s sample plan for ' + esc(cs.major.name) + ' and the rooms those courses meet in (Fall 2026 and Spring 2026)' +
-        (cs.year.filled ? '. That year lists few required courses, so it also counts ' + esc(cs.year.filled) + ' ' + year + '00-level classes' : '') +
-        '. Electives and gen eds vary, so treat this as a starting point. Walk times are straight-line estimates. ' +
+      '<p class="nc-foot">' + nearClassesSource(cs, year) + ' Walk times are straight-line estimates. ' +
         '<button type="button" class="nc-clear" onclick="clearMajorChoice()">Clear major</button></p>';
   }
   return '<section class="near-classes" aria-labelledby="nc-title">' +
     '<h3 id="nc-title">Near your classes</h3>' +
     '<div class="nc-form">' +
-      '<div class="nc-field"><label class="nc-label" for="nc-major">Major</label>' +
-      '<input id="nc-major" class="landlord-search nc-input" list="nc-majors" placeholder="e.g. Computer Science, Finance, Psychology" value="' + esc(picked ? picked.name : '') + '"' +
+      '<div class="nc-field"><label class="nc-label" for="nc-major">Major or program</label>' +
+      '<input id="nc-major" class="landlord-search nc-input" list="nc-majors" placeholder="e.g. Computer Science, Finance, Law, Medicine" value="' + esc(picked ? picked.name : '') + '"' +
         ' onchange="onMajorInput(this,true)" oninput="onMajorInput(this,false)" onkeydown="if(event.key===\'Enter\')onMajorInput(this,true)" autocomplete="off"' + (loading ? ' disabled' : '') + ' />' +
       (campusData ? '<datalist id="nc-majors">' + campusData.majors.map(m => '<option value="' + esc(m.name) + '"></option>').join('') + '</datalist>' : '') +
-      '<p id="nc-nomatch" class="nc-nomatch" hidden>No major by that name. Pick one from the list as you type.</p></div>' +
-      '<div class="nc-field"><span class="nc-label" id="nc-year-label">Next year I’ll be a</span><div class="nc-years" role="group" aria-labelledby="nc-year-label">' + yearBtns + '</div></div>' +
+      '<p id="nc-nomatch" class="nc-nomatch" hidden>No program by that name. Pick one from the list as you type.</p></div>' +
+      (years.length > 1
+        ? '<div class="nc-field"><span class="nc-label" id="nc-year-label">' + yearLabel + '</span><div class="nc-years" role="group" aria-labelledby="nc-year-label">' + yearBtns + '</div></div>'
+        : '<div class="nc-field"><span class="nc-label">Year</span><p class="nc-oneyear">Graduate programs: one set of classes for every year</p></div>') +
     '</div>' + body + '</section>';
+}
+// Where the numbers come from, by kind of program
+function nearClassesSource(cs, year) {
+  const m = cs.major, y = cs.year;
+  if (m.kind === 'pro') return esc(m.note || '') + ' From where ' + esc(m.name) + ' courses meet in Fall 2026 and Spring 2026 (Course Explorer).';
+  if (m.kind === 'grad') return 'Based on the courses the Graduate Catalog lists for ' + esc(m.name) + ' and the rooms they meet in (Fall 2026 and Spring 2026)' +
+    (y.filled ? '. It lists few courses, so this also counts ' + esc(y.filled) + ' 400- and 500-level classes' : '') +
+    '. Graduate students choose many of their own courses, so treat this as a starting point.';
+  return 'Based on the Academic Catalog’s sample plan for ' + esc(m.name) + ' and the rooms those courses meet in (Fall 2026 and Spring 2026)' +
+    (y.filled ? '. That year lists few required courses, so it also counts ' + esc(y.filled) + ' ' + year + '00-level classes' : '') +
+    '. Electives and gen eds vary, so treat this as a starting point.';
 }
 
 function StreetsPage() {

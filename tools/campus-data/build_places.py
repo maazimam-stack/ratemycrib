@@ -43,6 +43,12 @@ ALIASES = {
     'Student Dining & Res Program': 'Student Dining and Residential Programs',
     'Wymer Hall': 'Steven S. Wymer Hall',
     'Architecture Annex': 'Architecture Building',
+  'Law Building': 'University of Illinois College of Law',
+  'Chemical and Life Sci Lab': 'Chemical & Life Sciences Building A',
+  'Coordinated Science Lab': 'Coordinated Science Laboratory',
+  'Nuclear Radiations Laboratory': 'Nuclear Radiation Laboratory',
+  'Early Child Development Lab': 'Early Child Development Laboratory',
+  'Vet Med Basic Sciences Bldg': 'Veterinary Medicine Basic Sciences Building',
 }
 # Not in OpenStreetMap by name: placed from neighbouring addresses on the same block
 FIXED = {
@@ -52,6 +58,13 @@ FIXED = {
     'Krannert Art Museum': (40.1021, -88.2302),
     'Pennsylvania Lounge Bld - PAR': (40.1010, -88.2195),
 }
+# Not named in OpenStreetMap: US Census geocodes of their street addresses (geo/extra.json, from tools/geo_extra.py)
+# Used only when OpenStreetMap has no match.
+EXTRA = {}
+try:
+    EXTRA = {k: (v[0]['lat'], v[0]['lng']) for k, v in json.load(open(f'{WORK}/geo/extra.json')).items() if v}
+except FileNotFoundError:
+    pass
 OFF_CAMPUS = {'Chicago IL', 'Washington DC', 'Illini Center'}   # dropped from shares
 UNPLACEABLE = {'South Farms', 'Richmond Studio', 'Storefront Studio'}  # kept in the list, no walk time
 
@@ -72,14 +85,15 @@ def building_pos(name):
         for suffix in ('street', 'avenue'):
             k = f"{m.group(1)} {DIRS[m.group(2)]} {m.group(3)} {suffix}".lower()
             if k in by_addr: return by_addr[k]
-    return None
+    return EXTRA.get(name)
 
-# 1. Majors: drop combined bachelor's + master's programs and off-campus "buildings"
+# 1. Majors: drop combined bachelor's + master's programs and off-campus "buildings".
+#    Graduate and professional programs (from build_grad.py) carry a "kind" and are kept.
 GRAD = re.compile(r'\b(MS|MA|MPH|MUP|MCS|MANSC|MAAE|MBA|MAcc|MSA|MHRIR|JD|MSW|MEng|MArch)\b|BS-M|BSLAS-M')
 majors = json.load(open(f'{WORK}/majors/majors.json'))
 out_majors, placed_names, missing = [], set(), set()
 for m in majors:
-    if GRAD.search(m['name']):
+    if GRAD.search(m['name']) and not m.get('kind'):
         continue
     years = {}
     for y, v in m['years'].items():
@@ -92,7 +106,8 @@ for m in majors:
             (placed_names if building_pos(b) else missing).add(b)
         years[y] = {'buildings': kept, 'courses': v.get('courses', [])[:6], 'filled': v.get('filled')}
     if years:
-        out_majors.append({'slug': m['slug'], 'name': m['name'], 'years': years})
+        out_majors.append({'slug': m['slug'], 'name': m['name'], 'years': years,
+                           **{k: m[k] for k in ('kind', 'aka', 'labels', 'note') if m.get(k)}})
 out_majors.sort(key=lambda m: m['name'].lower())
 
 # 2. Reviewed addresses: the candidate that keeps the typed direction and number, closest to campus
