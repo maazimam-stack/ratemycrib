@@ -21,27 +21,67 @@
    "{\"code\":\"42501\",\"details\":null,\"hint\":null,\"message\":\"permission denied for table reported_reviews\"}"
   ],
   "prospects": [
-   404,
-   "{\"code\":\"PGRST205\",\"details\":null,\"hint\":\"Perhaps you meant the table 'public.user_properties'\",\"message\":\"Could not find the table 'public.prospects' in the sc"
+   401,
+   "{\"code\":\"42501\",\"details\":null,\"hint\":null,\"message\":\"permission denied for table prospects\"}"
   ],
   "outreach_log": [
-   404,
-   "{\"code\":\"PGRST205\",\"details\":null,\"hint\":null,\"message\":\"Could not find the table 'public.outreach_log' in the schema cache\"}"
+   401,
+   "{\"code\":\"42501\",\"details\":null,\"hint\":null,\"message\":\"permission denied for table outreach_log\"}"
   ],
   "rpc_admin_dashboard": [
-   404,
-   "{\"code\":\"PGRST202\",\"details\":\"Searched for the function public.admin_dashboard with parameter p_days or with a single unnamed json/jsonb parameter, but no match"
+   401,
+   "{\"code\":\"42501\",\"details\":null,\"hint\":null,\"message\":\"permission denied for function admin_dashboard\"}"
   ],
   "rpc_admin_contacts": [
-   404,
-   "{\"code\":\"PGRST202\",\"details\":\"Searched for the function public.admin_contacts without parameters or with a single unnamed json/jsonb parameter, but no matches w"
+   401,
+   "{\"code\":\"42501\",\"details\":null,\"hint\":null,\"message\":\"permission denied for function admin_contacts\"}"
   ],
   "rpc_admin_held_reviews": [
+   401,
+   "{\"code\":\"42501\",\"details\":null,\"hint\":null,\"message\":\"permission denied for function admin_held_reviews\"}"
+  ],
+  "private_contacts": [
+   406,
+   "{\"code\":\"PGRST106\",\"details\":null,\"hint\":\"Only the following schemas are exposed: public, graphql_public\",\"message\":\"Invalid schema: private\"}"
+  ],
+  "private_admins": [
+   406,
+   "{\"code\":\"PGRST106\",\"details\":null,\"hint\":\"Only the following schemas are exposed: public, graphql_public\",\"message\":\"Invalid schema: private\"}"
+  ],
+  "private_review_marks": [
+   406,
+   "{\"code\":\"PGRST106\",\"details\":null,\"hint\":\"Only the following schemas are exposed: public, graphql_public\",\"message\":\"Invalid schema: private\"}"
+  ],
+  "private_mark_salt": [
+   406,
+   "{\"code\":\"PGRST106\",\"details\":null,\"hint\":\"Only the following schemas are exposed: public, graphql_public\",\"message\":\"Invalid schema: private\"}"
+  ],
+  "held_reason_via_view": [
+   400,
+   "{\"code\":\"42703\",\"details\":null,\"hint\":null,\"message\":\"column reviews_public.held_reason does not exist\"}"
+  ],
+  "rpc_private_lease_term": [
    404,
-   "{\"code\":\"PGRST202\",\"details\":\"Searched for the function public.admin_held_reviews without parameters or with a single unnamed json/jsonb parameter, but no match"
+   "{\"code\":\"PGRST202\",\"details\":\"Searched for the function public.lease_term with parameter p_text or with a single unnamed json/jsonb parameter, but no matches we"
   ]
  },
  "writes_should_fail": {
+  "rpc_admin_moderate_review": [
+   401,
+   "{\"code\":\"42501\",\"details\":null,\"hint\":null,\"message\":\"permission denied for function admin_moderate_review\"}"
+  ],
+  "rpc_admin_set_unsubscribed": [
+   401,
+   "{\"code\":\"42501\",\"details\":null,\"hint\":null,\"message\":\"permission denied for function admin_set_unsubscribed\"}"
+  ],
+  "rpc_rmc_save_contact": [
+   401,
+   "{\"code\":\"42501\",\"details\":null,\"hint\":null,\"message\":\"permission denied for function rmc_save_contact\"}"
+  ],
+  "insert_prospects": [
+   401,
+   "{\"code\":\"42501\",\"details\":null,\"hint\":null,\"message\":\"permission denied for table prospects\"}"
+  ],
   "patch_reviews": [
    401,
    "{\"code\":\"42501\",\"details\":null,\"hint\":null,\"message\":\"permission denied for table reviews\"}"
@@ -81,16 +121,16 @@
    "[{\"id\":\"2e1d2f96-83b1-4944-a367-d65504ba8c67\"}]"
   ],
   "growth_sql_ran__verified_column": [
-   400,
-   "{\"code\":\"42703\",\"details\":null,\"hint\":null,\"message\":\"column reviews_public.verified does not exist\"}"
+   200,
+   "[{\"verified\":false}]"
   ],
   "growth_sql_ran__rmc_is_admin": [
-   404,
-   "{\"code\":\"PGRST202\",\"details\":\"Searched for the function public.rmc_is_admin without parameters or with a single unnamed json/jsonb parameter, but no matches wer"
+   200,
+   "false"
   ],
   "contacts_fn_exists": [
-   404,
-   "{\"code\":\"PGRST202\",\"details\":\"Searched for the function public.rmc_add_contact with parameter p_email or with a single unnamed json/jsonb parameter, but no matc"
+   204,
+   ""
   ],
   "helpful_fn_noop": [
    204,
