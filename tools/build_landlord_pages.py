@@ -5,7 +5,8 @@ so to Google every landlord page is the homepage. This script writes a real page
 
   landlord/index.html            all reviewed landlords, A to Z
   landlord/<slug>/index.html     one landlord: summary, every public review, links into the app
-  sitemap.xml                    the static pages plus all of the above
+                                 (noindex until it has 3 reviews, the same "early read" rule the app uses)
+  sitemap.xml                    the static pages, the hub and every landlord page with 3+ reviews
 
 It reads only what the public site already shows (the reviews_public view, with the public key), so held
 reviews never appear and addresses come without unit numbers. Runs nightly in GitHub Actions
@@ -152,7 +153,7 @@ footer a{margin-right:14px}
 """
 
 
-def page(title, desc, path, body, jsonld):
+def page(title, desc, path, body, jsonld, index=True):
     ld = "".join('<script type="application/ld+json">' + json.dumps(x, ensure_ascii=False).replace("<", "\\u003c") + "</script>" for x in jsonld)
     return f"""<!DOCTYPE html>
 <html lang="en">
@@ -160,6 +161,7 @@ def page(title, desc, path, body, jsonld):
 <meta charset="UTF-8">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{"" if index else '<meta name="robots" content="noindex, follow">'}
 <title>{e(title)}</title>
 <meta name="description" content="{e(desc)}">
 <link rel="canonical" href="{SITE}{path}">
@@ -251,7 +253,10 @@ def landlord_page(lid, name, revs):
                        "description": f"Champaign-Urbana landlord reviewed by UIUC students on RateMyCrib",
                        "address": {"@type": "PostalAddress", "addressLocality": "Champaign", "addressRegion": "IL", "addressCountry": "US"},
                        "aggregateRating": {"@type": "AggregateRating", "ratingValue": rating, "bestRating": "5", "worstRating": "1", "reviewCount": str(s["n"])}})
-    return slug, path, s, page(title, desc, path, body, jsonld)
+    # Fewer than 3 reviews: the page exists and can be shared, but stays out of search results until there's a
+    # real sample. Keeps thin pages out of Google and avoids putting one or two unverified claims about a
+    # named landlord (sometimes a private person) at the top of a search for their name.
+    return slug, path, s, page(title, desc, path, body, jsonld, index=not early)
 
 
 def hub_page(entries, total_reviews):
@@ -278,7 +283,7 @@ def sitemap(entries):
     urls = [f"  <url><loc>{SITE}{p}</loc><lastmod>{today if p in ('/', '/landlord/') else '2026-10-29'}</lastmod><changefreq>{f}</changefreq><priority>{pr}</priority></url>"
             for p, f, pr in STATIC_PAGES]
     urls += [f"  <url><loc>{SITE}/landlord/{slug}/</loc><lastmod>{s['latest'] or today}</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>"
-             for name, slug, s in sorted(entries, key=lambda x: x[1])]
+             for name, slug, s in sorted(entries, key=lambda x: x[1]) if s["n"] >= MIN_VERDICT]
     return '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + "\n".join(urls) + "\n</urlset>\n"
 
 
