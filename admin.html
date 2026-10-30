@@ -434,19 +434,19 @@ function Contacts() {
   const c = A.contacts, live = c.filter(x => !x.unsubscribed);
   const shown = c.slice(0, A.showAllContacts ? c.length : 25);
   return '<h2>Student contacts (' + live.length + ')</h2>' +
-    '<p class="sub">Every student who verifies with their @illinois.edu address, as the review form and privacy policy now say. Treat this list as sensitive: keep the file somewhere private and never share it. Every email you send to it must include an unsubscribe link and your mailing address. If someone unsubscribes or asks to be removed, mark them here.</p>' +
+    '<p class="sub">Students who verified with their @illinois.edu address, plus emails typed into the optional "Email for updates" box (unverified: nobody proved they own them, so expect some typos and fakes; drop addresses that bounce). Treat this list as sensitive: keep the file somewhere private and never share it. Every email you send to it must include an unsubscribe link and your mailing address. If someone unsubscribes or asks to be removed, mark them here.</p>' +
     '<div class="row" style="margin-bottom:12px"><button class="btn primary" type="button" onclick="downloadContacts()"' + (live.length ? '' : ' disabled') + '>Download CSV (' + live.length + ' subscribed)</button></div>' +
-    '<div class="panel tbl-wrap"><table><thead><tr><th>Email</th><th>First verified</th><th>Status</th><th></th></tr></thead><tbody>' +
-      (c.length ? shown.map(x => '<tr><td class="num">' + esc(x.email) + '</td><td class="num" style="font-size:12px">' + esc(x.first_seen) + '</td>' +
+    '<div class="panel tbl-wrap"><table><thead><tr><th>Email</th><th>Source</th><th>First added</th><th>Status</th><th></th></tr></thead><tbody>' +
+      (c.length ? shown.map(x => '<tr><td class="num">' + esc(x.email) + '</td><td>' + (x.verified ? 'Verified Illini' : '<span class="muted">Review form (unverified)</span>') + '</td><td class="num" style="font-size:12px">' + esc(x.first_seen) + '</td>' +
         '<td>' + (x.unsubscribed ? '<span class="muted">Unsubscribed ' + esc(x.unsubscribed_on || '') + '</span>' : 'Subscribed') + '</td>' +
         '<td class="r"><button type="button" class="btn small" onclick="setUnsubscribed(' + jsArg(x.email) + ',' + (!x.unsubscribed) + ')">' + (x.unsubscribed ? 'Resubscribe' : 'Unsubscribe') + '</button></td></tr>').join('')
-        : '<tr><td colspan="4" class="empty">No contacts yet. They appear once students can get verification codes (connect an email sender in Supabase).</td></tr>') +
+        : '<tr><td colspan="5" class="empty">No contacts yet. They appear as students leave an email in the review form or verify.</td></tr>') +
     '</tbody></table></div>' +
     (c.length > 25 && !A.showAllContacts ? '<p style="margin-top:8px"><button class="btn small" type="button" onclick="A.showAllContacts=true;render()">Show all ' + c.length + '</button></p>' : '');
 }
 function downloadContacts() {
   const rows = A.contacts.filter(x => !x.unsubscribed);
-  const csv = 'email,first_verified\n' + rows.map(x => '"' + String(x.email).replace(/"/g, '""') + '",' + x.first_seen).join('\n') + '\n';
+  const csv = 'email,verified,first_added\n' + rows.map(x => '"' + String(x.email).replace(/"/g, '""') + '",' + (x.verified ? 'yes' : 'no') + ',' + x.first_seen).join('\n') + '\n';
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
   a.download = 'ratemycrib-contacts-' + new Date().toISOString().slice(0, 10) + '.csv';

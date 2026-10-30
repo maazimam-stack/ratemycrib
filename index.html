@@ -1573,7 +1573,7 @@ let go = u => {
 };
 
 function saveFormState() {
-  const ids = ['rev-landlord','rev-landlord-custom','rev-property-custom','rev-hood-select','rev-lease-start','rev-lease-end','rev-rent','rev-text','rev-verify-email','rev-verify-code','rev-certify','rev-hood-safety','rev-hood-walk','rev-hood-quiet','rev-hood-nightlife','rev-score-maintenance','rev-score-communication','rev-score-fairness','rev-score-moveout'];
+  const ids = ['rev-landlord','rev-landlord-custom','rev-property-custom','rev-hood-select','rev-lease-start','rev-lease-end','rev-rent','rev-text','rev-updates-email','rev-verify-email','rev-verify-code','rev-certify','rev-hood-safety','rev-hood-walk','rev-hood-quiet','rev-hood-nightlife','rev-score-maintenance','rev-score-communication','rev-score-fairness','rev-score-moveout'];
   const fd = {};
   ids.forEach(id => {
     const el = document.getElementById(id);
@@ -3489,6 +3489,8 @@ function Modal() {
         </div>
       </details>
 
+      ${UpdatesEmailHTML()}
+
       ${VerifyBlockHTML()}
 
       <div class="field" style="background:#FFF7ED;border:1px solid #FED7AA;border-radius: 2px;padding:12px 14px">
@@ -3499,7 +3501,7 @@ function Modal() {
       </div>
 
       <button class="submit-btn" onclick="submitReview(${l?l.id:'null'})" ${S.stars===0?'disabled':''}>Submit My Review</button>
-      <p class="note">Reviews are anonymous. If you verify, we keep your @illinois.edu email to send occasional RateMyCrib updates (unsubscribe anytime). It is never shown, never attached to your review, and never shared with landlords.</p>
+      <p class="note">Reviews are anonymous. An email you give us (to verify or for updates) is kept to send occasional RateMyCrib updates, with unsubscribe anytime. It is never shown, never stored with your review, and never shared with landlords.</p>
     </div>
   </div>`;
 }
@@ -4535,6 +4537,13 @@ function VerifyBlockHTML() {
     '<div class="verify-row"><input type="email" id="rev-verify-email" autocomplete="email" placeholder="netid@illinois.edu" value="' + esc(v.email || '') + '" onkeydown="if(event.key===\'Enter\'){event.preventDefault();sendVerifyCode()}" />' +
     '<button type="button" class="verify-btn" onclick="sendVerifyCode()"' + (v.busy ? ' disabled' : '') + '>' + (v.busy ? 'Sending…' : 'Send code') + '</button></div>' + msg + '</div>';
 }
+// Optional "Email for updates": no code, no badge. Hidden once the student has verified (that email is used).
+function UpdatesEmailHTML() {
+  if (S.verify && S.verify.stage === 'verified') return '';
+  return '<div class="field"><label for="rev-updates-email">Email for updates <span style="font-weight:400;color:var(--muted)">(optional)</span></label>' +
+    '<input type="email" id="rev-updates-email" autocomplete="email" placeholder="you@illinois.edu" maxlength="254" />' +
+    '<p class="verify-msg">Lease-season tips and new reviews near campus, a few times a semester. Unsubscribe anytime. Never shown or stored with your review.</p></div>';
+}
 function verifyRender(patch) {
   saveFormState();
   S.verify = Object.assign({}, S.verify || {}, patch);
@@ -4806,6 +4815,8 @@ async function submitReview(landlordIdFromDetail) {
 
   const rentInput = document.getElementById('rev-rent')?.value;
   const monthlyRentVal = parseInt(rentInput) || 0;
+  const updatesEmail = (document.getElementById('rev-updates-email')?.value || '').trim();
+  if (updatesEmail && !/^[^@\s]+@[^@\s]+\.[a-z]{2,}$/i.test(updatesEmail)) { toast('Check your email address, or leave it blank.'); document.getElementById('rev-updates-email')?.focus(); return; }
   if (rentInput && monthlyRentVal > 0 && !isValidRent(monthlyRentVal)) { const det = document.getElementById('rev-details'); if (det) { det.open = true; S.revDetailsOpen = true; } toast('Monthly rent should be between $' + MIN_RENT + ' and $' + MAX_RENT.toLocaleString() + ' per person.'); return; }
 
   const isCustomProperty = true;
@@ -4885,6 +4896,7 @@ async function submitReview(landlordIdFromDetail) {
   const wasVerified = !!(S.verify && S.verify.stage === 'verified');
   const success = await saveReviewToDb(review);
   if (success === true) {
+    if (updatesEmail && !wasVerified) { try { await db.rpc('rmc_add_contact', { p_email: updatesEmail }); } catch (e) {} } // own request, after the review
     if (wasVerified) { try { await db.auth.signOut(); } catch (e) {} }
     S.verify = null;
     go({modal:false, stars:0, wouldRentChoice:null});
@@ -5058,7 +5070,7 @@ function PrivacyPage() {
   <div class="container" style="max-width:720px;line-height:1.8;font-size:15px">
     <p style="margin-bottom:16px"><strong>1. What We Collect.</strong> When you submit a review, we collect: your review text, star rating, selected tags, property address, lease period, monthly rent and neighborhood ratings. We also collect a device fingerprint (a hash of browser properties) solely to prevent duplicate reviews. To count visits we log which pages are viewed, with a random visitor ID that resets every month, the kind of device (phone, tablet or computer) and the site that sent you (for example reddit.com). The visitor ID is never attached to a review.</p>
     <p style="margin-bottom:16px"><strong>2. What We Do NOT Collect.</strong> We do not use cookies for tracking. We do not sell your data. We do not collect your real name, IP address, or location. We do not use third-party analytics or advertising trackers.</p>
-    <p style="margin-bottom:16px"><strong>3. Email Verification.</strong> If you choose to verify, we email a one-time code to your @illinois.edu address through our database provider (Supabase). Your review is then marked verified and the sign-in account is deleted. We keep your email address, and the day you first verified, in a separate contact list to send occasional RateMyCrib updates; every email includes a way to unsubscribe, or write to us and we will remove you. The contact list holds no reviews, landlords or times, your email is never attached to or shown with your review, and reviews show only the date they were posted. We never sell your email or share it with landlords.</p>
+    <p style="margin-bottom:16px"><strong>3. Emails.</strong> There are two optional ways to give us an email in the review form. (1) Verification: we email a one-time code to your @illinois.edu address through our database provider (Supabase); your review is then marked verified and the sign-in account is deleted. (2) The "Email for updates" box. Either way, we keep the address, where it came from and the day we first got it in a separate contact list to send occasional RateMyCrib updates; every email includes a way to unsubscribe, or write to us and we will remove you. The contact list holds no reviews, landlords or times, your email is never stored with or shown alongside your review, and reviews show only the date they were posted. We never sell your email or share it with landlords.</p>
     <p style="margin-bottom:16px"><strong>4. Device Fingerprint.</strong> We generate a simple hash from your browser properties (canvas rendering, screen size, timezone) to limit one review per landlord per device. This fingerprint cannot identify you personally and is not shared with third parties.</p>
     <p style="margin-bottom:16px"><strong>5. Lease Scanner.</strong> Text you paste into the Lease Scanner is processed entirely in your browser. It is never sent to our servers, stored, or shared with anyone.</p>
     <p style="margin-bottom:16px"><strong>6. Data Storage.</strong> Review data is stored in a Supabase (PostgreSQL) database with Row Level Security enabled. Access is restricted to the minimum needed for the Site to function.</p>
