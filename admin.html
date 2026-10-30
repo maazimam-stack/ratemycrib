@@ -612,8 +612,9 @@ const STATUSES = ['new', 'contacted', 'replied', 'meeting', 'won', 'lost'];
 const SETTINGS_KEY = 'rmc-admin-sender';
 function senderSettings() {
   let s = {}; try { s = JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}'); } catch (e) {}
-  return Object.assign({ name: '', title: 'Founder', address: '', sponsor_price: '$150', insights_price: '$100', send_with: 'gmail' }, s);
+  return Object.assign({ name: '', title: 'Founder', address: '', sponsor_price: '$150', insights_price: '$100', send_with: 'proton' }, s);
 }
+const RMC_EMAIL = 'ratemycrib@proton.me'; // the one address for everything RateMyCrib
 function saveSettings() {
   const s = {}; ['name', 'title', 'address', 'sponsor_price', 'insights_price', 'send_with'].forEach(k => { const el = $('#set-' + k); if (el) s[k] = el.value.trim(); });
   try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(s)); } catch (e) {}
@@ -663,7 +664,7 @@ function Outreach() {
       '<div><label class="f" for="set-sponsor_price">Sponsor price</label><input class="i" id="set-sponsor_price" value="' + esc(s.sponsor_price) + '" /></div>' +
       '<div><label class="f" for="set-insights_price">Insights report price</label><input class="i" id="set-insights_price" value="' + esc(s.insights_price) + '" /></div>' +
       '<div class="wide"><label class="f" for="set-address">Mailing address (required by law in sales emails)</label><input class="i" id="set-address" value="' + esc(s.address) + '" placeholder="RateMyCrib LLC, street, city, state ZIP" /></div>' +
-      '<div><label class="f" for="set-send_with">Open emails in</label><select class="i" id="set-send_with"><option value="gmail"' + (s.send_with === 'gmail' ? ' selected' : '') + '>Gmail</option><option value="mailto"' + (s.send_with === 'mailto' ? ' selected' : '') + '>My mail app</option></select></div>' +
+      '<div><label class="f" for="set-send_with">Send from</label><select class="i" id="set-send_with"><option value="proton"' + (s.send_with === 'proton' || s.send_with === 'gmail' ? ' selected' : '') + '>' + RMC_EMAIL + ' (Proton Mail)</option><option value="mailto"' + (s.send_with === 'mailto' ? ' selected' : '') + '>My mail app (set to ' + RMC_EMAIL + ')</option></select></div>' +
     '</div><div class="row" style="margin-top:12px"><button class="btn" type="submit">Save</button></div></form>' +
     '<h2>Sent</h2>' +
     '<div class="panel tbl-wrap"><table><thead><tr><th>When</th><th>To</th><th>Subject</th><th>Template</th></tr></thead><tbody>' +
@@ -676,13 +677,13 @@ function Outreach() {
 const TEMPLATES = {
   sponsor: { label: 'Local business: sponsor spot', kinds: ['business', 'campus', 'other'],
     subject: 'Reaching UIUC renters while they pick next year\'s place',
-    body: 'Hi {first_name},\n\nI run RateMyCrib (ratemycrib.net), a free, student-run site where UIUC students read and write reviews of their landlords before signing a lease. In the last {days} days it had {visitors} visitors, {mobile_pct}% of them on phones.\n\nThe people on the site are about to move, so they\'re also looking for {need}. I\'m offering a few local businesses a clearly labeled sponsor spot: your name, a one-line offer and a link on the pages students use most. It never touches reviews or rankings.\n\n- {sponsor_price}/month, cancel anytime\n- A monthly count of how many people saw and clicked it\n\nWould a 10-minute call this week work? I can send a mockup of how it would look first.\n\n{sender_name}\n{sender_title}, RateMyCrib\n{mailing_address}\n\nIf you\'d rather not hear from me, reply "no thanks" and I won\'t email again.' },
+    body: 'Hi {first_name},\n\nI run RateMyCrib (ratemycrib.net), a free, student-run site where UIUC students read and write reviews of their landlords before signing a lease. In the last {days} days it had {visitors} visitors, {mobile_pct}% of them on phones.\n\nThe people on the site are about to move, so they\'re also looking for {need}. I\'m offering a few local businesses a clearly labeled sponsor spot: your name, a one-line offer and a link on the pages students use most. It never touches reviews or rankings.\n\n- {sponsor_price}/month, cancel anytime\n- A monthly count of how many people saw and clicked it\n\nWould a 10-minute call this week work? I can send a mockup of how it would look first.\n\n{sender_name}\n{sender_title}, RateMyCrib\nratemycrib@proton.me\n{mailing_address}\n\nIf you\'d rather not hear from me, reply "no thanks" and I won\'t email again.' },
   insights: { label: 'Landlord: monthly insights report', kinds: ['landlord'], landlordOnly: true,
     subject: 'What students saw about {landlord} on RateMyCrib',
-    body: 'Hi {first_name},\n\nI run RateMyCrib (ratemycrib.net), a student-run review site for Champaign-Urbana housing. In the last {days} days, {landlord}\'s page was viewed {views} times by {landlord_visitors} people. It has {reviews} reviews averaging {rating} out of 5, and {would_rent}% of reviewers would rent again.\n\nI put together a monthly insights report for property managers: page views, how you compare with similar landlords, and the most common praise and complaints in your reviews (anonymized). It\'s {insights_price}/month.\n\nTo be clear: paying never changes a rating, a ranking or which reviews appear. Every review stays up unless it breaks our posted rules.\n\nWould you like a free sample report for last month?\n\n{sender_name}\n{sender_title}, RateMyCrib\n{mailing_address}\n\nIf you\'d rather not hear from me, reply "no thanks" and I won\'t email again.' },
+    body: 'Hi {first_name},\n\nI run RateMyCrib (ratemycrib.net), a student-run review site for Champaign-Urbana housing. In the last {days} days, {landlord}\'s page was viewed {views} times by {landlord_visitors} people. It has {reviews} reviews averaging {rating} out of 5, and {would_rent}% of reviewers would rent again.\n\nI put together a monthly insights report for property managers: page views, how you compare with similar landlords, and the most common praise and complaints in your reviews (anonymized). It\'s {insights_price}/month.\n\nTo be clear: paying never changes a rating, a ranking or which reviews appear. Every review stays up unless it breaks our posted rules.\n\nWould you like a free sample report for last month?\n\n{sender_name}\n{sender_title}, RateMyCrib\nratemycrib@proton.me\n{mailing_address}\n\nIf you\'d rather not hear from me, reply "no thanks" and I won\'t email again.' },
   followup: { label: 'Follow-up (any)', kinds: ['business', 'landlord', 'campus', 'other'],
     subject: 'Following up: RateMyCrib',
-    body: 'Hi {first_name},\n\nFollowing up on my note last week in case it got buried. Since then, {visitors} people have used RateMyCrib in the last {days} days.\n\nIs this worth a quick call, or should I check back after lease season?\n\n{sender_name}\n{sender_title}, RateMyCrib\n{mailing_address}\n\nReply "no thanks" and I won\'t email again.' }
+    body: 'Hi {first_name},\n\nFollowing up on my note last week in case it got buried. Since then, {visitors} people have used RateMyCrib in the last {days} days.\n\nIs this worth a quick call, or should I check back after lease season?\n\n{sender_name}\n{sender_title}, RateMyCrib\nratemycrib@proton.me\n{mailing_address}\n\nReply "no thanks" and I won\'t email again.' }
 };
 function mergeValues(p) {
   const d = A.data, c = d.kpis.current || {}, s = senderSettings();
@@ -731,7 +732,7 @@ function Composer() {
       '<p class="muted" id="c-left" style="font-size:12px;margin-top:6px"></p>' +
       (missing.length ? '<p class="muted" style="font-size:12px;color:var(--bad)">Missing: ' + esc(missing.join(', ')) + '.</p>' : '') +
       '<div class="row" style="margin-top:12px">' +
-        '<button class="btn primary" type="button" onclick="sendEmail()"' + (missing.length ? ' disabled' : '') + '>Open in ' + (s.send_with === 'mailto' ? 'mail app' : 'Gmail') + '</button>' +
+        '<button class="btn primary" type="button" onclick="sendEmail()"' + (missing.length ? ' disabled' : '') + '>' + (s.send_with === 'mailto' ? 'Open in mail app' : 'Copy + open Proton Mail') + '</button>' +
         '<button class="btn" type="button" onclick="copyEmail()">Copy</button>' +
         '<button class="btn" type="button" onclick="markSent()">Mark as sent</button>' +
         '<button class="btn" type="button" onclick="A.compose=null;render()">Close</button>' +
@@ -750,10 +751,17 @@ function sendEmail() {
   const s = senderSettings();
   if (!s.name || !s.address) { toast('Add your name and mailing address first (required by law)'); return; }
   const to = encodeURIComponent(p.email), su = encodeURIComponent(A.compose.subject || ''), body = encodeURIComponent(A.compose.body || '');
-  const url = s.send_with === 'mailto' ? 'mailto:' + to + '?subject=' + su + '&body=' + body
-    : 'https://mail.google.com/mail/?view=cm&fs=1&to=' + to + '&su=' + su + '&body=' + body;
-  window.open(url, '_blank', 'noopener');
-  toast('Opened. Press "Mark as sent" after you send it.');
+  if (s.send_with === 'mailto') {
+    window.open('mailto:' + to + '?subject=' + su + '&body=' + body, '_blank', 'noopener');
+    toast('Opened. Send it from ' + RMC_EMAIL + ', then press "Mark as sent".');
+    return;
+  }
+  // Proton Mail has no pre-filled compose link: copy the email, open Proton, paste into a new message
+  const text = 'To: ' + p.email + '\nSubject: ' + (A.compose.subject || '') + '\n\n' + (A.compose.body || '');
+  (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject()).then(
+    () => toast('Copied. In Proton Mail: New message, paste, send from ' + RMC_EMAIL + ', then "Mark as sent".'),
+    () => toast('Copy blocked: use the Copy button, then paste into Proton Mail.'));
+  window.open('https://mail.proton.me/u/0/inbox', '_blank', 'noopener');
 }
 async function copyEmail() {
   try { await navigator.clipboard.writeText('Subject: ' + (A.compose.subject || '') + '\n\n' + (A.compose.body || '')); toast('Copied'); }
