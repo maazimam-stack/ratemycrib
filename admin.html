@@ -205,6 +205,7 @@
 <body>
 <div id="app"></div>
 <script src="/vendor/supabase-js-2.118.0.js"></script>
+<script src="/vendor/qrcode-generator-1.4.4.js"></script>
 <script>
 'use strict';
 // ===== RateMyCrib admin =====
@@ -430,6 +431,31 @@ function Overview() {
     '<div class="grid2">' + Pages(d.pages || []) + Features(d.features || {}) + '</div>' +
     '</section>';
 }
+// ===== Campaign links: one tracked link (and QR / flyer) per ambassador, group chat or flyer spot =====
+const cleanCode = v => String(v || '').toLowerCase().replace(/[^a-z0-9_.-]/g, '').slice(0, 40);
+function campaignLink(code, to) { return 'https://ratemycrib.net/?ref=' + encodeURIComponent(code) + (to === 'rate' ? '#rate' : ''); }
+function Campaigns() {
+  const c = A.campaign || { code: '', to: 'rate' };
+  const link = c.code ? campaignLink(c.code, c.to) : '';
+  let qrSvg = '';
+  if (link && window.qrcode) { const q = qrcode(0, 'M'); q.addData(link); q.make(); qrSvg = q.createSvgTag({ cellSize: 4, margin: 2, scalable: true }); }
+  const rows = (A.data.sources || []).filter(s => !['direct', 'google', 'reddit', 'instagram', 'facebook', 'x', 'tiktok', 'linkedin', 'other search', 'other site', 'illinois.edu', 'snapchat', 'discord', 'groupme'].includes(s.source) || /-/.test(s.source));
+  return '<h2>Campaign links</h2><p class="sub">Give every ambassador, group chat and flyer spot its own code. Visits and reviews from it show up below and under "Where visits come from".</p>' +
+    '<form class="panel pad" onsubmit="event.preventDefault();A.campaign={code:cleanCode(document.getElementById(\'cp-code\').value),to:document.getElementById(\'cp-to\').value};render()"><div class="form-grid">' +
+      '<div class="wide"><label class="f" for="cp-code">Code</label><input class="i" id="cp-code" maxlength="40" placeholder="e.g. amb-jordan, groupme-asa, flyer-ikenberry" value="' + esc(c.code) + '" /></div>' +
+      '<div><label class="f" for="cp-to">Opens</label><select class="i" id="cp-to"><option value="rate"' + (c.to === 'rate' ? ' selected' : '') + '>Review form</option><option value="home"' + (c.to === 'home' ? ' selected' : '') + '>Homepage</option></select></div>' +
+      '<div style="align-self:end"><button class="btn primary" type="submit">Make link</button></div>' +
+    '</div>' +
+    (link ? '<div class="row" style="margin-top:14px;align-items:flex-start;gap:16px"><div style="width:132px;height:132px;background:#fff;padding:4px">' + qrSvg + '</div><div style="min-width:0;flex:1">' +
+      '<p class="num" style="font-size:13px;overflow-wrap:anywhere;margin-bottom:10px">' + esc(link) + '</p>' +
+      '<div class="row"><button class="btn small" type="button" onclick="navigator.clipboard.writeText(' + jsArg(link) + ').then(()=>toast(\'Link copied\'))">Copy link</button>' +
+      '<a class="btn small" href="/flyer.html?ref=' + encodeURIComponent(c.code) + (c.to === 'home' ? '&to=home' : '') + '" target="_blank" rel="noopener">Printable flyer</a></div></div></div>' : '') +
+    '</form>' +
+    '<div class="panel tbl-wrap" style="margin-top:12px"><table><thead><tr><th>Code</th><th class="r">Visits</th><th class="r">Visitors</th><th class="r">Reviews</th><th class="r">Reviews per visit</th></tr></thead><tbody>' +
+      (rows.length ? rows.map(s => '<tr><td><strong>' + esc(s.source) + '</strong></td><td class="r num">' + fmt(s.sessions) + '</td><td class="r num">' + fmt(s.visitors) + '</td><td class="r num">' + fmt(s.reviews) + '</td><td class="r num">' + (s.sessions ? (s.reviews / s.sessions * 100).toFixed(0) + '%' : '—') + '</td></tr>').join('')
+        : '<tr><td colspan="5" class="empty">No campaign codes have brought visits in the last ' + A.days + ' days yet.</td></tr>') +
+    '</tbody></table></div>';
+}
 function Contacts() {
   const c = A.contacts, live = c.filter(x => !x.unsubscribed);
   const shown = c.slice(0, A.showAllContacts ? c.length : 25);
@@ -500,7 +526,7 @@ function Pages(rows) {
     rows.slice(0, 12).map(r => '<tr><td>' + esc(names[r.page] || r.page) + '</td><td class="num"><span class="inbar" style="width:' + Math.round(r.views / max * 140) + 'px"></span>' + fmt(r.views) + '</td></tr>').join('') + '</tbody></table></div>';
 }
 function Features(f) {
-  const names = { street_toggle: 'Picked a street', major_pick: 'Picked a major', near_classes_show: 'Opened streets near classes', rent_check: 'Ran a rent check', quiz_completed: 'Finished the match quiz', share_click: 'Shared a review', h2h_share: 'Shared a head-to-head', dark_mode_toggle: 'Switched dark mode', scanner_cta_click: 'Clicked a scanner promo' };
+  const names = { street_toggle: 'Picked a street', major_pick: 'Picked a major', near_classes_show: 'Opened streets near classes', rent_check: 'Ran a rent check', quiz_completed: 'Finished the match quiz', share_click: 'Shared a review', h2h_share: 'Shared a head-to-head', dark_mode_toggle: 'Switched dark mode', scanner_cta_click: 'Clicked a scanner promo', roommate_share: 'Sent a review link to roommates', second_review_click: 'Started a second review', almost_rated_click: 'Tapped an almost-rated landlord' };
   const rows = Object.keys(names).map(k => [names[k], f[k] || 0]).sort((a, b) => b[1] - a[1]);
   return '<div class="panel tbl-wrap"><table><thead><tr><th>Feature</th><th class="r">Uses</th></tr></thead><tbody>' +
     rows.map(([n, v]) => '<tr><td>' + esc(n) + '</td><td class="r num">' + fmt(v) + '</td></tr>').join('') + '</tbody></table></div>';
@@ -590,7 +616,7 @@ function Outreach() {
           '<button class="btn small danger" type="button" onclick="deleteProspect(' + p.id + ')">Delete</button></td></tr>').join('')
         : '<tr><td colspan="6" class="empty">No prospects yet. Add the businesses and people you want to pitch above, or press Pitch on the Landlords tab.</td></tr>') +
     '</tbody></table></div>' +
-    Contacts() +
+    Contacts() + Campaigns() +
     '<h2>Your sender details</h2><p class="sub">Filled into every email. Kept only in this browser.</p>' +
     '<form class="panel pad" onsubmit="event.preventDefault();saveSettings()"><div class="form-grid">' +
       '<div><label class="f" for="set-name">Your name</label><input class="i" id="set-name" value="' + esc(s.name) + '" /></div>' +

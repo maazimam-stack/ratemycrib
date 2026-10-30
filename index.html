@@ -697,7 +697,24 @@
   .hero-search button { min-height: 48px; padding: 0 18px; border: 2px solid #fff; border-radius: 0 2px 2px 0; background: #fff; color: #13294B; font: inherit; font-weight: 700; font-size: 15px; cursor: pointer; border-left: 1px solid #D6D2C8; }
   .hero-search button:hover { background: #F4F1EA; }
   .hero-proof { font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 13px !important; color: rgba(245,243,239,0.75) !important; margin: 0 0 22px !important; animation: fadeUp 0.6s ease 0.3s both; }
-  .second-review-btn { width: 100%; min-height: 48px; padding: 13px; margin-bottom: 18px; background: var(--orange); color: #fff; border: none; border-radius: 2px; font: inherit; font-size: 15px; font-weight: 700; cursor: pointer; }
+  .second-review-btn { width: 100%; min-height: 48px; padding: 12px; margin-bottom: 18px; background: transparent; color: var(--text); border: 1.5px solid var(--border); border-radius: 2px; font: inherit; font-size: 15px; font-weight: 700; cursor: pointer; }
+  .roommate-box { text-align: left; border: 1.5px solid var(--orange); border-radius: 2px; padding: 14px; margin-bottom: 12px; }
+  .roommate-box p { font-size: 14px; color: var(--text); line-height: 1.5; margin-bottom: 10px; }
+  .roommate-btn { width: 100%; min-height: 48px; padding: 12px; background: var(--orange); color: #fff; border: none; border-radius: 2px; font: inherit; font-size: 15px; font-weight: 700; cursor: pointer; }
+  .almost-rated { padding-top: 28px; }
+  .almost-rated h2 { font-family: var(--font-display); font-size: 20px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.02em; margin-bottom: 4px; }
+  .almost-rated p { font-size: 14px; color: var(--muted); margin-bottom: 12px; max-width: 65ch; }
+  .ar-list { display: flex; flex-wrap: wrap; gap: 8px; }
+  .ar-chip { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 8px 12px; border: 1.5px solid var(--border); border-radius: 2px; background: var(--card-bg); color: var(--text); font-size: 14px; font-weight: 600; }
+  .ar-chip:hover { border-color: var(--orange); }
+  .ar-chip small { font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; font-weight: 400; color: var(--orange-text, #C2410C); white-space: nowrap; }
+  [data-theme="dark"] .ar-chip small { color: #FF8A47; }
+  .rating-progress { display: flex; align-items: center; gap: 12px; margin: 0 0 14px; }
+  .rating-progress p { font-size: 14px; color: var(--muted); margin: 0; }
+  .rating-progress strong { color: var(--text); }
+  .rating-progress a { color: var(--text); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+  .rp-bar { flex: 0 0 72px; height: 8px; background: var(--border); }
+  .rp-bar i { display: block; height: 100%; background: var(--orange); }
   .elsewhere-cta { font-size: 14px; color: var(--muted); margin: 0 0 16px; }
   .elsewhere-cta a { color: var(--text); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
   .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
@@ -2047,6 +2064,14 @@ function MapView() {
 }
 
 // ===== ENHANCED SHARE FLOW =====
+function shareWithRoommates(name) {
+  var url = 'https://ratemycrib.net/?ref=roommate#landlord/' + slugify(name) + '/rate';
+  var text = 'I just reviewed ' + name + ' on RateMyCrib. You lived there too. Add your review (anonymous, about a minute):';
+  trackEvent('roommate_share', { method: navigator.share ? 'native' : 'copy' });
+  if (navigator.share) { navigator.share({ title: 'Review ' + name, text: text, url: url }).catch(function () {}); return; }
+  var full = text + ' ' + url;
+  try { navigator.clipboard.writeText(full).then(function () { toast('Copied. Paste it in your roommate group chat.'); }, function () { toast(full); }); } catch (e) { toast(full); }
+}
 function showSharePromptEnhanced(landlordName, review) {
   var lName = landlordName || '';
   var shareUrl = 'https://ratemycrib.net';
@@ -2088,13 +2113,26 @@ function showSharePromptEnhanced(landlordName, review) {
     }
   }
 
+  // Roommates shared the lease, so they can review the same landlord; ask while the reviewer is still here
+  var roommateHtml = '';
+  if (lName) {
+    var rl = review && review.landlordId ? findLandlord(review.landlordId) : null;
+    var have = rl ? getLandlordStats(rl).reviews : 0;
+    var need = Math.max(0, MIN_LABEL_REVIEWS - have);
+    roommateHtml =
+      '<div class="roommate-box"><p><strong>Lived with roommates?</strong> They can review ' + esc(lName) + ' too' +
+        (need ? ', and ' + need + ' more review' + (need !== 1 ? 's' : '') + ' gives it a full rating.' : '.') + '</p>' +
+      '<button class="roommate-btn" onclick="shareWithRoommates(' + jsArg(lName) + ')">Send this to my roommates</button></div>';
+  }
+
   var overlay = document.createElement('div');
   overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:300;animation:fadeIn 0.2s';
   overlay.innerHTML =
     '<div style="background:var(--card-bg,#fff);border-radius: 2px;padding:32px 28px;max-width:420px;width:92%;text-align:center;animation:slideDown 0.3s;box-shadow:0 20px 60px rgba(0,0,0,0.3);border:1px solid var(--border)">' +
       '<h3 style="font-size:22px;font-weight:900;margin-bottom:6px;letter-spacing:-0.3px;color:var(--text)">Thanks, that helps the next class.</h3>' +
-      '<p style="font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:20px">Your review is in. Rented somewhere else in Champaign-Urbana before? That landlord needs reviews too.</p>' +
-      '<button class="second-review-btn" onclick="trackEvent(\'second_review_click\');this.closest(\'div\').parentElement.remove();go({page:\'home\',detail:null,modal:true,stars:0,wouldRentChoice:null,posTags:[],negTags:[],formData:{}})">Review another place you rented</button>' +
+      '<p style="font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:16px">Your review is in.</p>' +
+      roommateHtml +
+      '<button class="second-review-btn" onclick="trackEvent(\'second_review_click\');this.closest(\'div\').parentElement.remove();go({page:\'home\',detail:null,modal:true,stars:0,wouldRentChoice:null,posTags:[],negTags:[],formData:{}})">Rented somewhere else before? Review that landlord</button>' +
       comparisonHtml +
       '<p style="font-size:13px;font-weight:700;color:var(--text);margin:4px 0 10px">Or send RateMyCrib to someone picking a place</p>' +
       '<div class="share-btn-row">' +
@@ -2454,6 +2492,25 @@ function heroSearch(value, jump) {
     const hq = document.getElementById('hero-q'); if (hq) hq.blur();
   }
 }
+// Landlords 1-2 reviews away from a full rating (MIN_LABEL_REVIEWS). A concrete, finishable ask.
+function AlmostRated() {
+  if (typeof dbLoaded === 'undefined' || !dbLoaded) return '';
+  const all = SEED_LANDLORDS.concat(userLandlords || []).map(x => findLandlord(x.id)).filter(Boolean);
+  const seen = {};
+  const close = all.map(getLandlordStats).filter(l => {
+    if (seen[l.id] || l.reviews < 1 || l.reviews >= MIN_LABEL_REVIEWS) return false;
+    return (seen[l.id] = true);
+  }).sort((a, b) => (b.reviews - a.reviews) || a.name.localeCompare(b.name));
+  if (!close.length) return '';
+  return '<section class="almost-rated container" aria-labelledby="ar-title">' +
+    '<h2 id="ar-title">Almost rated: ' + close.length + ' landlord' + (close.length !== 1 ? 's' : '') + ' need 1–2 more reviews</h2>' +
+    '<p>Rented from one of these? Your review, good or bad, gets them a full rating for everyone else.</p>' +
+    '<div class="ar-list">' + close.slice(0, 12).map(l => {
+      const need = MIN_LABEL_REVIEWS - l.reviews;
+      return '<a class="ar-chip" href="#landlord/' + slugify(l.name) + '/rate" onclick="trackEvent(\'almost_rated_click\',{landlord_id:' + (+l.id || 0) + '})">' +
+        '<span>' + esc(l.name) + '</span><small>' + need + ' more</small></a>';
+    }).join('') + '</div></section>';
+}
 function Hero() {
   return `<div class="hero">
     <div class="hero-inner">
@@ -2677,6 +2734,7 @@ function DetailPage() {
       ${revs.some(r => r.author === 'Verified Illini') ? `<button type="button" class="verified-filter${S.verifiedOnly ? ' on' : ''}" aria-pressed="${!!S.verifiedOnly}" onclick="trackEvent('verified_filter',{on:${!S.verifiedOnly}});go({verifiedOnly:${!S.verifiedOnly}})">Verified only (${revs.filter(r => r.author === 'Verified Illini').length})</button>` : ''}
       <button class="write-btn" onclick="trackEvent('review_modal_open',{landlord_id:S.detail});go({modal:true,stars:0,wouldRentChoice:null,posTags:[],negTags:[],formData:{}})">+ Review This Landlord</button>
     </div>
+    ${revs.length && revs.length < MIN_LABEL_REVIEWS ? `<div class="rating-progress"><div class="rp-bar" aria-hidden="true"><i style="width:${Math.round(revs.length / MIN_LABEL_REVIEWS * 100)}%"></i></div><p><strong>${revs.length} of ${MIN_LABEL_REVIEWS} reviews.</strong> ${MIN_LABEL_REVIEWS - revs.length} more and ${esc(l.name)} gets a full rating. Rented here? <a href="#landlord/${slugify(l.name)}/rate" onclick="trackEvent('review_modal_open',{landlord_id:${+l.id || 0},source:'progress'})">Add yours</a>, good or bad.</p></div>` : ''}
     ${revs.length ? `<p class="elsewhere-cta">Never rented from ${esc(l.name)}? <a href="#rate" onclick="event.preventDefault();trackEvent('review_modal_open',{source:'detail_elsewhere'});go({page:'home',detail:null,modal:true,stars:0,wouldRentChoice:null,posTags:[],negTags:[],formData:{}})">Rate the landlord you did rent from</a> and help the next class.</p>` : ''}
     ${revs.filter(r => !S.verifiedOnly || r.author === 'Verified Illini').map(r => {
       const rq = qClass(r.rating);
@@ -5276,7 +5334,7 @@ function render() {
 
   // Full render
   let html = Nav() + LandlordTicker();
-  if (S.page === 'home' && !S.detail) html += ShareBanner() + Hero() + ResultsList();
+  if (S.page === 'home' && !S.detail) html += ShareBanner() + Hero() + AlmostRated() + ResultsList();
   else if (S.page === 'insights') html += InsightsPage();
   else if (S.page === 'detail' || S.detail) html += DetailPage();
   else if (S.page === 'hoods') html += Hoods();

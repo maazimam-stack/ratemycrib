@@ -497,7 +497,7 @@ begin
   ),
   features as (
     select ev2.t as event, count(*) as n
-      from ev2 where ev2.cur and ev2.t in ('street_toggle', 'major_pick', 'near_classes_show', 'rent_check', 'quiz_completed', 'share_click', 'h2h_share', 'dark_mode_toggle', 'scanner_cta_click')
+      from ev2 where ev2.cur and ev2.t in ('street_toggle', 'major_pick', 'near_classes_show', 'rent_check', 'quiz_completed', 'share_click', 'h2h_share', 'dark_mode_toggle', 'scanner_cta_click', 'roommate_share', 'second_review_click', 'almost_rated_click')
      group by 1
   )
   select jsonb_build_object(
