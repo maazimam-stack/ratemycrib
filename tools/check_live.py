@@ -1,4 +1,4 @@
-"""Read-only check (after the Pages deploy) that ratemycrib.net serves the merged code. Writes data/probe/live.json."""
+"""Read-only check that ratemycrib.net serves the merged code (Oct 30: #7, #8, #9). Writes data/probe/live.json."""
 import json, os, time, urllib.request
 def get(path):
     req = urllib.request.Request("https://ratemycrib.net" + path + ("&" if "?" in path else "?") + "t=" + str(int(time.time())), headers={"User-Agent": "RateMyCrib deploy check", "Cache-Control": "no-cache"})
@@ -11,6 +11,9 @@ for attempt in range(12):
     s2, adm = get("/admin.html")
     s3, maj = get("/data/majors.json")
     s4, ven = get("/vendor/supabase-js-2.118.0.js")
+    s5, hub = get("/landlord/")
+    s6, jsm = get("/landlord/jsm-living/")
+    s7, sm = get("/sitemap.xml")
     out = {
       "index": s, "admin": s2, "majors": s3, "vendor_supabase": s4,
       "csp_meta": "Content-Security-Policy" in idx,
@@ -20,9 +23,13 @@ for attempt in range(12):
       "analytics_ids": "ANALYTICS" in idx and "globalPrivacyControl" in idx,
       "admin_page": "admin_dashboard" in adm and "noindex" in adm,
       "majors_count": len(json.loads(maj)) if s3 == 200 else 0,
+      "hero_search": "hero-search" in idx, "updates_email": "UpdatesEmailHTML" in idx, "new_title": "UIUC Landlord Reviews by Students" in idx,
+      "hub": s5, "hub_title": (hub.split("<title>")[1].split("</title>")[0] if "<title>" in hub else ""),
+      "jsm": s6, "jsm_title": (jsm.split("<title>")[1].split("</title>")[0] if "<title>" in jsm else ""),
+      "sitemap_landlord_urls": sm.count("/landlord/") if s7 == 200 else 0,
       "attempt": attempt + 1,
     }
-    if all(out[k] for k in ("csp_meta", "near_classes", "verified_code_flow", "admin_page")) and out["majors_count"]: break
+    if all(out[k] for k in ("hero_search", "updates_email", "new_title")) and out["hub"] == 200 and out["jsm"] == 200: break
     time.sleep(20)
 os.makedirs("data/probe", exist_ok=True)
 json.dump(out, open("data/probe/live.json", "w"), indent=1)
