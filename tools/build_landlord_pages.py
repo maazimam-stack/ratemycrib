@@ -236,7 +236,9 @@ def landlord_page(lid, name, revs):
             f"<div><b>{s['would']}%</b><span>would rent again</span></div>"
             f"<div><b>{s['n']}</b><span>review{'s' if s['n'] != 1 else ''}{(' · ' + str(s['verified']) + ' verified') if s['verified'] else ''}</span></div>"
             "</div>"
-            + (f'<p class="note">Fewer than {MIN_VERDICT} reviews, so treat this as an early read, not a verdict.</p>' if early else "")
+            + (f'<p class="note">Fewer than {MIN_VERDICT} reviews, so treat this as an early read, not a verdict. '
+               f'{MIN_VERDICT - s["n"]} more review{"s" if MIN_VERDICT - s["n"] != 1 else ""} and {e(name)} gets a full rating. '
+               f'Rented here? <a href="/?ref=landlord-page#landlord/{slug}/rate">Add yours</a>, good or bad.</p>' if early else "")
             + areas
             + (f'<p class="note">Average rent reported: ${s["rent"]:,}/month per person ({s["rent_n"]} review{"s" if s["rent_n"] != 1 else ""}).</p>' if s["rent"] else "")
             + '<div class="cta">'

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>RateMyCrib Flyer</title>
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700&family=Oswald:wght@600;700&family=IBM+Plex+Mono:wght@600&display=swap" rel="stylesheet">
+<style>
+  :root { --navy: #13294B; --orange: #FF5F05; --paper: #FFFFFF; --muted: #5B6578; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Public Sans', -apple-system, 'Segoe UI', sans-serif; background: #E9E6DE; color: var(--navy); }
+  .controls { max-width: 8.5in; margin: 16px auto; padding: 12px 16px; background: #fff; border: 1px solid #D6D2C8; display: flex; flex-wrap: wrap; gap: 10px; align-items: end; font-size: 13px; }
+  .controls label { display: block; font-weight: 700; color: var(--muted); margin-bottom: 4px; }
+  .controls input, .controls select { min-height: 40px; padding: 6px 10px; border: 1px solid #D6D2C8; border-radius: 2px; font: inherit; font-size: 14px; }
+  .controls button { min-height: 40px; padding: 8px 16px; border: 0; border-radius: 2px; background: var(--orange); color: #fff; font: inherit; font-weight: 700; cursor: pointer; }
+  .controls p { flex-basis: 100%; color: var(--muted); }
+  .sheet { width: 8.5in; min-height: 11in; margin: 0 auto 32px; background: var(--paper); display: flex; flex-direction: column; box-shadow: 0 4px 24px rgba(0,0,0,0.12); }
+  .band { background: var(--navy); color: #fff; padding: 0.45in 0.6in 0.4in; border-bottom: 8px solid var(--orange); }
+  .brand { font-family: Georgia, 'Source Serif 4', serif; font-weight: 700; font-size: 26pt; }
+  .brand em { font-style: normal; color: var(--orange); }
+  .tag { font-family: 'Oswald', 'Arial Narrow', sans-serif; text-transform: uppercase; letter-spacing: 0.14em; font-size: 11pt; color: #F8A81D; margin-top: 4px; }
+  .body { flex: 1; padding: 0.55in 0.6in 0.4in; display: flex; flex-direction: column; }
+  h1 { font-family: 'Oswald', 'Arial Narrow', sans-serif; font-weight: 700; text-transform: uppercase; font-size: 54pt; line-height: 0.98; letter-spacing: -0.01em; }
+  h1 em { font-style: normal; color: var(--orange); }
+  .sub { font-size: 17pt; line-height: 1.35; margin-top: 0.22in; max-width: 6.6in; }
+  .row { display: flex; gap: 0.45in; align-items: center; margin-top: auto; padding-top: 0.4in; }
+  .qr { width: 3.1in; height: 3.1in; flex: 0 0 3.1in; }
+  .qr svg { width: 100%; height: 100%; display: block; }
+  .points { list-style: none; font-size: 15pt; line-height: 1.4; }
+  .points li { padding: 0.08in 0; border-bottom: 2px solid #EEEAE0; }
+  .points li:last-child { border-bottom: 0; }
+  .points b { color: var(--orange); }
+  .url { font-family: 'IBM Plex Mono', ui-monospace, monospace; font-weight: 600; font-size: 16pt; margin-top: 0.18in; }
+  .foot { padding: 0.18in 0.6in 0.3in; font-size: 9pt; color: var(--muted); }
+  @media print {
+    @page { size: letter; margin: 0; }
+    body { background: #fff; }
+    .controls { display: none; }
+    .sheet { margin: 0; box-shadow: none; }
+  }
+  @media screen and (max-width: 8.6in) {
+    .sheet { transform-origin: top left; }
+  }
+</style>
+</head>
+<body>
+<form class="controls" onsubmit="event.preventDefault();draw()">
+  <div><label for="ref">Tracking code</label><input id="ref" maxlength="40" placeholder="e.g. flyer-ikenberry" /></div>
+  <div><label for="to">QR opens</label><select id="to"><option value="rate">The review form</option><option value="home">The homepage</option></select></div>
+  <button type="submit">Update</button>
+  <button type="button" onclick="window.print()">Print</button>
+  <p>Use one code per place you post it (for example flyer-ikenberry, flyer-grainger). Visits and reviews from each code show up under "Where visits come from" in admin.html.</p>
+</form>
+<div class="sheet">
+  <div class="band"><div class="brand">Rate<em>My</em>Crib</div><div class="tag">UIUC landlord reviews · by students</div></div>
+  <div class="body">
+    <h1>What's your landlord <em>really</em> like?</h1>
+    <p class="sub">Rate yours in a minute, anonymously. The next class reads it before they sign.</p>
+    <div class="row">
+      <div class="qr" id="qr" role="img" aria-label="QR code linking to RateMyCrib"></div>
+      <div>
+        <ul class="points">
+          <li><b>Anonymous.</b> Your name is never shown.</li>
+          <li><b>Good or bad,</b> every honest review counts.</li>
+          <li><b>Signing soon?</b> Read real student reviews first.</li>
+        </ul>
+        <div class="url" id="url">ratemycrib.net</div>
+      </div>
+    </div>
+  </div>
+  <div class="foot">Student-run. No landlord pays to change a rating. Scan with your phone camera.</div>
+</div>
+<script src="/vendor/qrcode-generator-1.4.4.js"></script>
+<script>
+  'use strict';
+  const clean = v => String(v || '').toLowerCase().replace(/[^a-z0-9_.-]/g, '').slice(0, 40);
+  const q = new URLSearchParams(location.search);
+  document.getElementById('ref').value = clean(q.get('ref') || 'flyer');
+  document.getElementById('to').value = q.get('to') === 'home' ? 'home' : 'rate';
+  function draw() {
+    const ref = clean(document.getElementById('ref').value) || 'flyer';
+    const to = document.getElementById('to').value;
+    document.getElementById('ref').value = ref;
+    const link = 'https://ratemycrib.net/?ref=' + encodeURIComponent(ref) + (to === 'rate' ? '#rate' : '');
+    const qr = qrcode(0, 'M');
+    qr.addData(link);
+    qr.make();
+    document.getElementById('qr').innerHTML = qr.createSvgTag({ cellSize: 8, margin: 0, scalable: true });
+    document.getElementById('qr').dataset.link = link;
+    history.replaceState(null, '', '?ref=' + encodeURIComponent(ref) + (to === 'home' ? '&to=home' : ''));
+  }
+  draw();
+</script>
+</body>
+</html>
