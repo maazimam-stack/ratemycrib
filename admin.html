@@ -200,6 +200,8 @@
     .brand small { display: none; }
   }
   @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+  .checklist { margin: 8px 0 0 18px; font-size: 13px; line-height: 1.55; }
+  .checklist li { margin-bottom: 6px; }
 </style>
 </head>
 <body>
@@ -456,34 +458,64 @@ function Campaigns() {
         : '<tr><td colspan="5" class="empty">No campaign codes have brought visits in the last ' + A.days + ' days yet.</td></tr>') +
     '</tbody></table></div>';
 }
+const SOURCE_LABELS = { verification: 'Verified Illini', review_form: 'Review form box', unlock: 'Unlock-reviews box', footer: 'Footer sign-up' };
+const UNSUB_BASE = 'https://ratemycrib.net/unsubscribe.html?t=';
 function Contacts() {
-  const c = A.contacts, live = c.filter(x => !x.unsubscribed);
+  const c = A.contacts, live = c.filter(x => !x.unsubscribed), s = senderSettings();
+  const tokens = c.length === 0 || c.every(x => x.unsub_token);
+  const blockers = [];
+  if (!s.address) blockers.push('save your mailing address under Outreach settings (the law requires it in every email)');
+  if (!tokens) blockers.push('run supabase/mailing.sql in Supabase (it adds each person\'s unsubscribe link)');
   const shown = c.slice(0, A.showAllContacts ? c.length : 25);
-  return '<h2>Student contacts (' + live.length + ')</h2>' +
-    '<p class="sub">Students who verified with their @illinois.edu address, plus emails typed into the optional "Email for updates" box (unverified: nobody proved they own them, so expect some typos and fakes; drop addresses that bounce). Treat this list as sensitive: keep the file somewhere private and never share it. Every email you send to it must include an unsubscribe link and your mailing address. If someone unsubscribes or asks to be removed, mark them here.</p>' +
-    '<div class="row" style="margin-bottom:12px"><button class="btn primary" type="button" onclick="downloadContacts()"' + (live.length ? '' : ' disabled') + '>Download CSV (' + live.length + ' subscribed)</button></div>' +
-    '<div class="panel tbl-wrap"><table><thead><tr><th>Email</th><th>Source</th><th>First added</th><th>Status</th><th></th></tr></thead><tbody>' +
-      (c.length ? shown.map(x => '<tr><td class="num">' + esc(x.email) + '</td><td>' + (x.verified ? 'Verified Illini' : '<span class="muted">Review form (unverified)</span>') + '</td><td class="num" style="font-size:12px">' + esc(x.first_seen) + '</td>' +
+  const bySource = Object.keys(SOURCE_LABELS).map(k => [k, live.filter(x => x.source === k).length]).filter(x => x[1]);
+  return '<h2>Mailing list (' + live.length + ' subscribed)</h2>' +
+    '<p class="sub">Everyone who verified with @illinois.edu or typed an email into one of the sign-up boxes. Each row keeps where they signed up, the exact wording they saw and the day, as proof of consent. Unverified addresses can have typos or fakes; remove ones that bounce. Keep this list private: never share, sell or rent it.</p>' +
+    (bySource.length ? '<p class="muted" style="font-size:13px;margin:-4px 0 12px">' + bySource.map(([k, n]) => esc(SOURCE_LABELS[k]) + ': ' + n).join(' · ') + '</p>' : '') +
+    '<div class="panel pad" style="margin-bottom:12px"><h3>Before every send</h3><ol class="checklist">' +
+      '<li><strong>Send through an email service</strong> (Brevo, Mailchimp, Buttondown or similar), not Gmail with BCC. Gmail caps you at about 500 a day, can\'t add the one-click unsubscribe Gmail and Yahoo require for bulk mail, and a spam complaint hurts your personal account.</li>' +
+      '<li><strong>Download a fresh CSV right before each send</strong>, so anyone who unsubscribed since last time is left out. Then import it into the email service.</li>' +
+      '<li><strong>Put the <code>unsubscribe_url</code> column in every email footer</strong> (as a merge field), or use the email service\'s own unsubscribe link and mark those people unsubscribed here before your next send. Never email someone after they opt out; the law gives you 10 business days, this page makes it instant.</li>' +
+      '<li><strong>Every email:</strong> "RateMyCrib" as the sender, a subject that matches what\'s inside, your mailing address (' + (s.address ? esc(s.address) : '<span style="color:var(--bad)">not set</span>') + ') and the unsubscribe link.</li>' +
+      '<li><strong>Keep it to what they signed up for:</strong> lease-season tips and new reviews near campus, a few times a semester. A sponsor\'s offer must be labeled as a sponsor.</li>' +
+      '<li><strong>Delete requests:</strong> if someone asks to be erased, use Delete below (not just Unsubscribe).</li>' +
+    '</ol></div>' +
+    '<div class="row" style="margin-bottom:12px"><button class="btn primary" type="button" onclick="downloadContacts()"' + (live.length && !blockers.length ? '' : ' disabled') + '>Download CSV (' + live.length + ' subscribed)</button></div>' +
+    (blockers.length && live.length ? '<p class="muted" style="font-size:12px;color:var(--bad);margin:-6px 0 12px">To download, first ' + esc(blockers.join(' and ')) + '.</p>' : '') +
+    '<div class="panel tbl-wrap"><table><thead><tr><th>Email</th><th>Signed up via</th><th>Since</th><th>Status</th><th></th></tr></thead><tbody>' +
+      (c.length ? shown.map(x => '<tr><td class="num">' + esc(x.email) + '</td><td' + (x.consent_text ? ' title="' + esc('They saw: ' + x.consent_text) + '"' : '') + '>' + esc(SOURCE_LABELS[x.source] || x.source || '') + (x.verified ? '' : ' <span class="muted">(unverified)</span>') + '</td><td class="num" style="font-size:12px">' + esc(x.first_seen) + '</td>' +
         '<td>' + (x.unsubscribed ? '<span class="muted">Unsubscribed ' + esc(x.unsubscribed_on || '') + '</span>' : 'Subscribed') + '</td>' +
-        '<td class="r"><button type="button" class="btn small" onclick="setUnsubscribed(' + jsArg(x.email) + ',' + (!x.unsubscribed) + ')">' + (x.unsubscribed ? 'Resubscribe' : 'Unsubscribe') + '</button></td></tr>').join('')
-        : '<tr><td colspan="5" class="empty">No contacts yet. They appear as students leave an email in the review form or verify.</td></tr>') +
+        '<td class="r" style="white-space:nowrap"><button type="button" class="btn small" onclick="setUnsubscribed(' + jsArg(x.email) + ',' + (!x.unsubscribed) + ')">' + (x.unsubscribed ? 'Resubscribe' : 'Unsubscribe') + '</button> ' +
+        '<button type="button" class="btn small danger" onclick="deleteContact(' + jsArg(x.email) + ')">Delete</button></td></tr>').join('')
+        : '<tr><td colspan="5" class="empty">No one yet. People appear here as they verify or use a sign-up box on the site.</td></tr>') +
     '</tbody></table></div>' +
     (c.length > 25 && !A.showAllContacts ? '<p style="margin-top:8px"><button class="btn small" type="button" onclick="A.showAllContacts=true;render()">Show all ' + c.length + '</button></p>' : '');
 }
+const csvCell = v => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
 function downloadContacts() {
+  const s = senderSettings();
   const rows = A.contacts.filter(x => !x.unsubscribed);
-  const csv = 'email,verified,first_added\n' + rows.map(x => '"' + String(x.email).replace(/"/g, '""') + '",' + (x.verified ? 'yes' : 'no') + ',' + x.first_seen).join('\n') + '\n';
+  if (!s.address || rows.some(x => !x.unsub_token)) { toast('Set your mailing address and run supabase/mailing.sql first'); return; }
+  const head = 'email,verified,signed_up_via,signed_up_on,unsubscribe_url,consent_wording,sender_postal_address';
+  const csv = head + '\n' + rows.map(x => [x.email, x.verified ? 'yes' : 'no', SOURCE_LABELS[x.source] || x.source, x.first_seen,
+    UNSUB_BASE + x.unsub_token, x.consent_text || '', s.address].map(csvCell).join(',')).join('\n') + '\n';
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
-  a.download = 'ratemycrib-contacts-' + new Date().toISOString().slice(0, 10) + '.csv';
+  a.download = 'ratemycrib-mailing-list-' + new Date().toISOString().slice(0, 10) + '.csv';
   document.body.appendChild(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-  toast('Downloaded ' + rows.length + ' contacts');
+  toast('Downloaded ' + rows.length + ' subscribed contacts');
 }
 async function setUnsubscribed(email, on) {
+  if (!on && !confirm('Resubscribe ' + email + '? Only do this if they asked you to, in writing.')) return;
   const { error } = await db.rpc('admin_set_unsubscribed', { p_email: email, p_unsubscribed: on });
   if (error) { toast('Could not save: ' + error.message); return; }
   toast(on ? 'Unsubscribed' : 'Resubscribed'); loadAll();
+}
+async function deleteContact(email) {
+  if (!confirm('Delete ' + email + ' from the list for good? Use this for "delete my data" requests. It can\'t be undone.')) return;
+  const { error } = await db.rpc('admin_delete_contact', { p_email: email });
+  if (error) { toast(/admin_delete_contact|PGRST202/.test(error.message + error.code) ? 'Run supabase/mailing.sql first' : 'Could not delete: ' + error.message); return; }
+  toast('Deleted'); loadAll();
 }
 const HELD_REASONS = {
   same_lease: 'Same lease: a verified review of this landlord and lease start already had this code. Usually the same student again; about 1 in 256 times it is a different student. Compare with the live reviews.',
@@ -699,7 +731,7 @@ function Composer() {
       '<p class="muted" id="c-left" style="font-size:12px;margin-top:6px"></p>' +
       (missing.length ? '<p class="muted" style="font-size:12px;color:var(--bad)">Missing: ' + esc(missing.join(', ')) + '.</p>' : '') +
       '<div class="row" style="margin-top:12px">' +
-        '<button class="btn primary" type="button" onclick="sendEmail()"' + (p.email ? '' : ' disabled') + '>Open in ' + (s.send_with === 'mailto' ? 'mail app' : 'Gmail') + '</button>' +
+        '<button class="btn primary" type="button" onclick="sendEmail()"' + (missing.length ? ' disabled' : '') + '>Open in ' + (s.send_with === 'mailto' ? 'mail app' : 'Gmail') + '</button>' +
         '<button class="btn" type="button" onclick="copyEmail()">Copy</button>' +
         '<button class="btn" type="button" onclick="markSent()">Mark as sent</button>' +
         '<button class="btn" type="button" onclick="A.compose=null;render()">Close</button>' +
@@ -716,6 +748,7 @@ function updatePreviewMeta() {
 function sendEmail() {
   const p = A.prospects.find(x => x.id === A.compose.id); if (!p || !p.email) return;
   const s = senderSettings();
+  if (!s.name || !s.address) { toast('Add your name and mailing address first (required by law)'); return; }
   const to = encodeURIComponent(p.email), su = encodeURIComponent(A.compose.subject || ''), body = encodeURIComponent(A.compose.body || '');
   const url = s.send_with === 'mailto' ? 'mailto:' + to + '?subject=' + su + '&body=' + body
     : 'https://mail.google.com/mail/?view=cm&fs=1&to=' + to + '&su=' + su + '&body=' + body;

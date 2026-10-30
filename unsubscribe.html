@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src https://expfrmknhdcwnccqjwnq.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<title>Unsubscribe | RateMyCrib</title>
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
+<style>
+  :root { --navy: #13294B; --orange: #FF5F05; --bg: #F7F5F0; --card: #fff; --text: #13294B; --muted: #5B6578; --border: #D6D2C8; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #0E1626; --card: #16213A; --text: #E8ECF3; --muted: #A3ADBF; --border: #2A3653; } }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px 16px; }
+  main { width: 100%; max-width: 440px; background: var(--card); border: 1px solid var(--border); border-radius: 2px; padding: 32px 24px; text-align: center; }
+  .brand { font-family: Georgia, serif; font-weight: 700; font-size: 22px; margin-bottom: 20px; }
+  .brand em { font-style: normal; color: var(--orange); }
+  h1 { font-size: 22px; margin-bottom: 10px; }
+  p { color: var(--muted); line-height: 1.55; font-size: 15px; margin-bottom: 18px; }
+  button { width: 100%; min-height: 48px; border: 0; border-radius: 2px; background: var(--orange); color: #fff; font: inherit; font-size: 16px; font-weight: 700; cursor: pointer; }
+  button:disabled { opacity: 0.6; cursor: default; }
+  a { color: var(--orange); }
+  .small { font-size: 13px; margin: 16px 0 0; }
+</style>
+</head>
+<body>
+<main>
+  <div class="brand">Rate<em>My</em>Crib</div>
+  <div id="box">
+    <h1>Unsubscribe from RateMyCrib emails</h1>
+    <p>You'll stop getting our lease-season tips and review updates. This takes effect right away.</p>
+    <button type="button" id="go">Unsubscribe</button>
+  </div>
+  <p class="small">Want your email deleted entirely? Write to <a href="mailto:ratemycrib@proton.me?subject=Delete%20my%20email">ratemycrib@proton.me</a>.</p>
+</main>
+<script>
+  'use strict';
+  // The link in each email carries a random token (?t=...). Unsubscribing is a button press, not the page load,
+  // so mail scanners that open links can't unsubscribe people by accident.
+  const URL_ = 'https://expfrmknhdcwnccqjwnq.supabase.co', KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV4cGZybWtuaGRjd25jY3Fqd25xIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwNTgyNjksImV4cCI6MjA4OTYzNDI2OX0.IDoYSa-Xpq_TAebacsl_TuI9u48ssia7imjG0ehB9Jg';
+  const token = (new URLSearchParams(location.search).get('t') || '').trim();
+  const box = document.getElementById('box'), btn = document.getElementById('go');
+  history.replaceState(null, '', location.pathname); // keep the token out of history and screenshots
+  if (!/^[0-9a-f-]{36}$/i.test(token)) {
+    box.innerHTML = '<h1>This link is incomplete</h1><p>Use the unsubscribe link at the bottom of any RateMyCrib email, or email <a href="mailto:ratemycrib@proton.me?subject=Unsubscribe">ratemycrib@proton.me</a> and we\'ll remove you.</p>';
+  } else {
+    btn.addEventListener('click', async () => {
+      btn.disabled = true; btn.textContent = 'Unsubscribing…';
+      try {
+        const r = await fetch(URL_ + '/rest/v1/rpc/rmc_unsubscribe', { method: 'POST', headers: { apikey: KEY, Authorization: 'Bearer ' + KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ p_token: token }) });
+        if (!r.ok) throw new Error(String(r.status));
+        box.innerHTML = '<h1>You\'re unsubscribed</h1><p>You won\'t get any more RateMyCrib emails. If one was already on its way, it may still arrive.</p>';
+      } catch (e) {
+        btn.disabled = false; btn.textContent = 'Try again';
+        box.querySelector('p').textContent = "That didn't go through. Try again, or email ratemycrib@proton.me and we'll remove you by hand.";
+      }
+    });
+  }
+</script>
+</body>
+</html>

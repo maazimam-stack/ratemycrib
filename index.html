@@ -430,6 +430,27 @@
   .rev-details[open] .rev-details-title::before { content: '\2212'; }
   .rev-details-hint { font-size: 12px; color: var(--muted); padding-left: 18px; }
   .lease-row { display: flex; gap: 8px; align-items: center; }
+  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+  .review-locked { filter: blur(5px); user-select: none; pointer-events: none; color: var(--muted); }
+  .unlock-panel { margin: 8px 0 24px; padding: 20px; border: 1.5px solid var(--orange); border-radius: 2px; background: var(--card-bg); }
+  .unlock-panel h3 { font-size: 18px; font-weight: 800; margin-bottom: 6px; color: var(--text); }
+  .unlock-panel > p { font-size: 14px; color: var(--muted); line-height: 1.5; margin-bottom: 12px; }
+  .unlock-rate { width: 100%; min-height: 48px; background: var(--orange); color: #fff; border: 0; border-radius: 2px; font: inherit; font-size: 15px; font-weight: 700; cursor: pointer; }
+  .unlock-email { margin-top: 16px; }
+  .unlock-email label { display: block; font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+  .ue-row, .fs-row { display: flex; gap: 8px; }
+  .ue-row input, .fs-row input { flex: 1; min-width: 0; min-height: 44px; padding: 8px 12px; border: 1.5px solid var(--border); border-radius: 2px; font: inherit; font-size: 15px; background: var(--card-bg); color: var(--text); }
+  .ue-row button, .fs-row button { min-height: 44px; padding: 8px 18px; border: 0; border-radius: 2px; background: var(--brand-navy, #13294B); color: #fff; font: inherit; font-weight: 700; cursor: pointer; }
+  .ue-fine { font-size: 12px; color: var(--muted); line-height: 1.5; margin-top: 6px; }
+  .ue-err { font-size: 13px; color: #DC2626; margin-top: 6px; }
+  .bldg-locked { font-size: 13px; color: var(--muted); margin: 8px 0 0; }
+  .footer-signup { max-width: 1100px; margin: 0 auto 28px; padding: 0 24px 24px; display: grid; grid-template-columns: 1fr minmax(0, 420px); gap: 8px 24px; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
+  .footer-signup h4 { margin-bottom: 4px; }
+  .footer-signup p { margin: 0; font-size: 13px; opacity: 0.75; }
+  .footer-signup .fs-msg { grid-column: 1 / -1; min-height: 1em; }
+  .footer-signup > * { min-width: 0; }
+  .footer-signup p { overflow-wrap: anywhere; white-space: normal; }
+  @media (max-width: 640px) { .footer-signup { grid-template-columns: minmax(0, 1fr); padding: 0 16px 20px; } }
   .lease-row select { flex: 1; min-width: 0; }
   .rev-details[open] > summary { border-bottom: 1px solid var(--border); }
   .rev-details-body { padding: 16px 16px 0; }
@@ -1481,6 +1502,67 @@ function leaseKey(landlordId, landlordName, term) {
 }
 function loadReviewedLeases() {
   try { const v = JSON.parse(localStorage.getItem('rmc_reviewed_leases') || '[]'); return Array.isArray(v) ? v : []; } catch (e) { return []; }
+}
+// Soft gate: everyone sees ratings, scores and the first 2 reviews of each landlord. The rest open for anyone who
+// has posted a review from this browser, or who joins the mailing list with the "unlock" box. Nothing here is a
+// security boundary (the crawlable /landlord/ pages stay fully open); it's a nudge to give back.
+const FREE_REVIEWS = 2;
+function reviewsUnlocked() {
+  try {
+    if (localStorage.getItem('rmc_unlocked') === '1' || loadReviewedLeases().length) return true;
+    return Object.keys(JSON.parse(localStorage.getItem('rmc_reviewed') || '{}')).length > 0;
+  } catch (e) { return true; } // storage blocked: don't lock anyone out
+}
+// Mailing list sign-up. The database records where they signed up and the exact wording shown (proof of consent),
+// never says whether the address was already listed, and never re-subscribes someone who unsubscribed.
+async function joinList(email, source) {
+  let res;
+  try { res = await db.rpc('rmc_join_list', { p_email: email, p_source: source }); } catch (e) { res = { error: e }; }
+  if (res && res.error && dbObjectMissing(res.error)) { // database not updated yet: older box
+    try { res = await db.rpc('rmc_add_contact', { p_email: email }); } catch (e) { res = { error: e }; }
+  }
+  return !(res && res.error);
+}
+const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[a-z]{2,}$/i;
+async function unlockWithEmail(form) {
+  const input = form.querySelector('input[type=email]'), err = form.querySelector('.ue-err'), btn = form.querySelector('button');
+  const v = (input.value || '').trim();
+  if (!EMAIL_RE.test(v)) { err.textContent = 'Check your email address.'; err.hidden = false; input.focus(); return; }
+  btn.disabled = true; err.hidden = true;
+  const ok = await joinList(v, 'unlock');
+  btn.disabled = false;
+  if (!ok) { err.textContent = "Couldn't save that right now. Try again in a minute."; err.hidden = false; return; }
+  try { localStorage.setItem('rmc_unlocked', '1'); } catch (e) {}
+  trackEvent('reviews_unlock', { method: 'email' });
+  toast('All reviews unlocked. Every email we send has an unsubscribe link.');
+  render();
+}
+async function footerJoin(form) {
+  const input = form.querySelector('input[type=email]'), msg = form.querySelector('.fs-msg'), btn = form.querySelector('button');
+  const v = (input.value || '').trim();
+  if (!EMAIL_RE.test(v)) { msg.textContent = 'Check your email address.'; input.focus(); return; }
+  btn.disabled = true;
+  const ok = await joinList(v, 'footer');
+  btn.disabled = false;
+  msg.textContent = ok ? "You're on the list. Every email has an unsubscribe link." : "Couldn't save that right now. Try again in a minute.";
+  if (ok) { input.value = ''; trackEvent('list_join', { source: 'footer' }); }
+}
+function UnlockPanelHTML(hiddenCount, name) {
+  return '<div class="unlock-panel">' +
+    '<h3>' + hiddenCount + ' more review' + (hiddenCount !== 1 ? 's' : '') + (name ? ' of ' + esc(name) : '') + '</h3>' +
+    '<p>Reviews open up for everyone who adds one. Rented anywhere in Champaign-Urbana? Rate that landlord, good or bad, and every review unlocks.</p>' +
+    '<button type="button" class="unlock-rate" onclick="trackEvent(\'unlock_click\',{method:\'review\'});go({page:\'home\',detail:null,modal:true,stars:0,wouldRentChoice:null,posTags:[],negTags:[],formData:{}})">Rate a landlord you rented from</button>' +
+    '<form class="unlock-email" onsubmit="event.preventDefault();unlockWithEmail(this)" novalidate>' +
+      '<label for="unlock-email">Haven’t rented here yet? Unlock every review with your email.</label>' +
+      '<div class="ue-row"><input type="email" id="unlock-email" maxlength="254" autocomplete="email" placeholder="you@illinois.edu" /><button type="submit">Unlock</button></div>' +
+      '<p class="ue-fine">We’ll send lease-season tips and new reviews near campus a few times a semester. Unsubscribe anytime. Never shown with reviews or shared with landlords.</p>' +
+      '<p class="ue-err" role="alert" hidden></p>' +
+    '</form></div>';
+}
+// Locked reviews keep their rating, date and would-rent line; the words are replaced (not just blurred) so they
+// aren't in the page at all.
+function lockedFiller(text) {
+  return String(text || '').replace(/^\[Lease:[^\]]*\]\s*/, '').slice(0, 220).replace(/[A-Za-z0-9]/g, 'x');
 }
 function markReviewedLease(key) {
   try { const v = loadReviewedLeases().filter(x => x !== key); v.push(key); localStorage.setItem('rmc_reviewed_leases', JSON.stringify(v.slice(-100))); } catch (e) {}
@@ -2755,9 +2837,11 @@ function DetailPage() {
     </div>
     ${revs.length && revs.length < MIN_LABEL_REVIEWS ? `<div class="rating-progress"><div class="rp-bar" aria-hidden="true"><i style="width:${Math.round(revs.length / MIN_LABEL_REVIEWS * 100)}%"></i></div><p><strong>${revs.length} of ${MIN_LABEL_REVIEWS} reviews.</strong> ${MIN_LABEL_REVIEWS - revs.length} more and ${esc(l.name)} gets a full rating. Rented here? <a href="#landlord/${slugify(l.name)}/rate" onclick="trackEvent('review_modal_open',{landlord_id:${+l.id || 0},source:'progress'})">Add yours</a>, good or bad.</p></div>` : ''}
     ${revs.length ? `<p class="elsewhere-cta">Never rented from ${esc(l.name)}? <a href="#rate" onclick="event.preventDefault();trackEvent('review_modal_open',{source:'detail_elsewhere'});go({page:'home',detail:null,modal:true,stars:0,wouldRentChoice:null,posTags:[],negTags:[],formData:{}})">Rate the landlord you did rent from</a> and help the next class.</p>` : ''}
-    ${revs.filter(r => !S.verifiedOnly || r.author === 'Verified Illini').map(r => {
+    ${(() => { const shown = revs.filter(r => !S.verifiedOnly || r.author === 'Verified Illini'), open = reviewsUnlocked();
+      return shown.map((r, i) => {
       const rq = qClass(r.rating);
       const isHelped = helped[r.id];
+      const locked = !open && i >= FREE_REVIEWS;
       return `<div class="review-item">
         <div class="review-top">
           <div class="review-score rs-${rq}">
@@ -2767,19 +2851,19 @@ function DetailPage() {
           <div class="review-content">
             <div class="review-meta"><strong>${esc(r.author)}</strong>${r.author === 'Verified Illini' ? ' <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style="display:inline-block;vertical-align:-2px;margin-left:2px"><circle cx="12" cy="12" r="12" fill="#1DA1F2"/><path d="M9.5 12.5l2 2 4-5" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>' : ''} · ${esc(r.date)} · ${r.wouldRent ? '<span style="color:#16A34A;font-weight:600">Would rent again</span>' : '<span style="color:#DC2626;font-weight:600">Would NOT rent again</span>'}${isValidRent(r.monthlyRent) ? ' · <span style="color:#2563EB;font-weight:600">$'+r.monthlyRent+'/mo</span>' : ''}</div>
             <div class="review-property">${esc(reviewAddressLabel(r))}</div>
-            <div class="review-text">${esc(r.text)}</div>
-            <div class="review-tags">
+            ${locked ? `<div class="review-text review-locked" aria-hidden="true">${esc(lockedFiller(r.text))}</div><p class="sr-only">Review text locked. Add a review or your email below to read it.</p>` : `<div class="review-text">${esc(r.text)}</div>`}
+            ${locked ? '' : `<div class="review-tags">
               ${(r.pos||[]).map(t=>`<span class="rtag rtag-pos">${esc(t)}</span>`).join("")}
               ${(r.neg||[]).map(t=>`<span class="rtag rtag-neg">${esc(t)}</span>`).join("")}
-            </div>
-            <div class="review-actions">
+            </div>`}
+            ${locked ? '' : `<div class="review-actions">
               <button ${isHelped?'style="border-color:#16A34A;color:#16A34A"':''} onclick="event.stopPropagation();markHelpful('${r.id}',this,${r.helpful||0})">${isHelped?'Helpful':'Helpful'} (${isHelped?(r.helpful||0)+1:r.helpful||0})</button>
               <button ${reported[r.id]?'style="border-color:#DC2626;color:#DC2626"':''} onclick="event.stopPropagation();toggleReport('${r.id}',this)">${reported[r.id]?'Reported':'Report'}</button>
-            </div>
+            </div>`}
           </div>
         </div>
-      </div>`;
-    }).join("")}
+      </div>` + (!open && i === FREE_REVIEWS - 1 && shown.length > FREE_REVIEWS ? UnlockPanelHTML(shown.length - FREE_REVIEWS, l.name) : '');
+    }).join(""); })()}
     ${revs.length===0?'<p style="text-align:center;color:var(--muted);padding:48px">No reviews yet. Be the first!</p>':''}
 
     ${(() => {
@@ -3061,7 +3145,8 @@ function filterStreetChips(value) {
   if (none) none.hidden = matches > 0;
 }
 
-function streetReviewHTML(r) {
+function streetReviewHTML(r, i) {
+  if (i >= FREE_REVIEWS && !reviewsUnlocked()) return '';
   const m = (r.text || '').match(/^\[Lease:\s*([^\]]+)\]\s*/);
   const lease = m ? m[1] : '';
   const body = m ? r.text.slice(m[0].length) : (r.text || '');
@@ -3095,6 +3180,8 @@ function streetBuildingHTML(b) {
       '<div class="bldg-meta">' + meta + '</div>' +
       '<details class="bldg-reviews"><summary>' + (b.count === 1 ? 'Read the review' : 'Read all ' + b.count + ' reviews') + '</summary>' +
         b.reviews.map(streetReviewHTML).join('') +
+        (b.reviews.length > FREE_REVIEWS && !reviewsUnlocked()
+          ? '<p class="bldg-locked">' + (b.reviews.length - FREE_REVIEWS) + ' more. <a href="#landlord/' + slugify(b.landlords[0] || '') + '">Unlock every review</a> by adding yours or your email.</p>' : '') +
       '</details>' +
     '</div></article>';
 }
@@ -4552,6 +4639,11 @@ function MethodologyPage() {
 
 function Footer() {
   return `<footer>
+    <form class="footer-signup" onsubmit="event.preventDefault();footerJoin(this)" novalidate>
+      <div class="fs-copy"><h4>Lease-season tips</h4><p>Get lease-season tips and new reviews near campus, a few times a semester. Unsubscribe anytime.</p></div>
+      <div class="fs-row"><label class="sr-only" for="footer-email">Email</label><input type="email" id="footer-email" maxlength="254" autocomplete="email" placeholder="you@illinois.edu" /><button type="submit">Sign up</button></div>
+      <p class="fs-msg" role="status"></p>
+    </form>
     <div class="footer-inner">
       <div class="footer-col">
         <h4 style="font-size:16px;letter-spacing:-0.3px;text-transform:none">Rate<span style="color:var(--orange)">My</span>Crib</h4>
@@ -5043,7 +5135,7 @@ async function submitReview(landlordIdFromDetail) {
   const wasVerified = !!(S.verify && S.verify.stage === 'verified');
   const success = await saveReviewToDb(review);
   if (success === true) {
-    if (updatesEmail && !wasVerified) { try { await db.rpc('rmc_add_contact', { p_email: updatesEmail }); } catch (e) {} } // own request, after the review
+    if (updatesEmail && !wasVerified) { await joinList(updatesEmail, 'review_form'); } // own request, after the review
     if (wasVerified) { try { await db.auth.signOut(); } catch (e) {} }
     S.verify = null;
     go({modal:false, stars:0, wouldRentChoice:null});
@@ -5217,7 +5309,7 @@ function PrivacyPage() {
   <div class="container" style="max-width:720px;line-height:1.8;font-size:15px">
     <p style="margin-bottom:16px"><strong>1. What We Collect.</strong> When you submit a review, we collect: your review text, star rating, selected tags, property address, lease period, monthly rent and neighborhood ratings. The lease start is required because we allow one review per lease: you can review the same landlord again for a different lease. To count visits we log which pages are viewed, with a random visitor ID that resets every month, the kind of device (phone, tablet or computer) and the site that sent you (for example reddit.com). The visitor ID is never attached to a review.</p>
     <p style="margin-bottom:16px"><strong>2. What We Do NOT Collect.</strong> We do not use cookies for tracking. We do not sell your data. We do not collect your real name, IP address, or location. We do not use third-party analytics or advertising trackers.</p>
-    <p style="margin-bottom:16px"><strong>3. Emails.</strong> There are two optional ways to give us an email in the review form. (1) Verification: we email a one-time code to your @illinois.edu address through our database provider (Supabase); your review is then marked verified and the sign-in account is deleted. (2) The "Email for updates" box. Either way, we keep the address, where it came from and the day we first got it in a separate contact list to send occasional RateMyCrib updates; every email includes a way to unsubscribe, or write to us and we will remove you. The contact list holds no reviews, landlords or times, your email is never stored with or shown alongside your review, and reviews show only the date they were posted. We never sell your email or share it with landlords.</p>
+    <p style="margin-bottom:16px"><strong>3. Emails and our mailing list.</strong> You can give us an email in four optional ways: (1) Verification: we email a one-time code to your @illinois.edu address through our database provider (Supabase); your review is then marked verified and the sign-in account is deleted. (2) The "Email for updates" box in the review form. (3) The "unlock every review" box. (4) The sign-up box at the bottom of each page. However you join, we keep the address, which box it came from, the wording that box showed you and the day we first got it, in a separate contact list used only to send occasional RateMyCrib emails (lease-season tips and new reviews near campus). Every email names RateMyCrib as the sender, includes our postal address and has a one-click unsubscribe link; unsubscribing takes effect right away and we never re-add you. To have your address deleted entirely, email us. The contact list holds no reviews, landlords or times, your email is never stored with or shown alongside your review, and reviews show only the date they were posted. We never sell your email or share it with landlords.</p>
     <p style="margin-bottom:16px"><strong>4. One Review Per Lease.</strong> After you post, your browser keeps a short scrambled code for that landlord and lease start, so the same browser can't post that lease twice. It stays on your device. For verified reviews, our database also keeps a 1-byte code made from your email, the landlord and the lease start; about 1 in 256 students share any given code, so the code alone can't single you out, and a review whose code was already used for that landlord and lease waits for a person to check it. Reviews posted before October 30, 2026 also stored a rough device hash (browser and screen properties); we no longer collect it.</p>
     <p style="margin-bottom:16px"><strong>5. Lease Scanner.</strong> Text you paste into the Lease Scanner is processed entirely in your browser. It is never sent to our servers, stored, or shared with anyone.</p>
     <p style="margin-bottom:16px"><strong>6. Data Storage.</strong> Review data is stored in a Supabase (PostgreSQL) database with Row Level Security enabled. Access is restricted to the minimum needed for the Site to function.</p>

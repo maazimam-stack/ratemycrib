@@ -184,3 +184,10 @@ Copyright (c) 2026 RateMyCrib. All rights reserved. This code, branding, and dat
 ## Contact
 
 Questions? Ideas? Email **ratemycrib@proton.me** or open an issue.
+
+
+## Mailing list (supabase/mailing.sql)
+
+Run `supabase/mailing.sql` after `growth.sql`. People join through four boxes: verification, "Email for updates" in the review form, "unlock every review" and the footer sign-up. Each contact keeps its source, the exact wording shown and the day (proof of consent) plus a random unsubscribe token. `ratemycrib.net/unsubscribe.html?t=<token>` unsubscribes with one button press (opening the link alone does nothing, so mail scanners can't unsubscribe people). admin.html exports subscribed contacts with their unsubscribe link and your postal address, and won't export until the address is saved. Send through an email service (not Gmail BCC), re-export before every send, and use Delete for erase requests.
+
+Soft review gate: ratings, scores and the first 2 reviews per landlord are open to everyone. The rest unlock after posting a review from that browser or joining the list with the unlock box. It's a nudge, not a lock: the crawlable /landlord/ pages stay fully open for Google.
