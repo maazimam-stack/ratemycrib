@@ -18,6 +18,15 @@
 --   5. Floods are held for review instead of going live: more than 40 unverified reviews an hour site-wide,
 --      more than 5 unverified or 5 verified reviews of one landlord in a day. Held reviews wait in admin.html
 --      for you to approve or delete. Above 400 an hour, new unverified reviews are refused outright.
+--   5b. One review per lease. A student may review the same landlord again for a different lease (the
+--      "[Lease: Fall 2025 ...]" start term the form puts at the front of the review), not twice for the same one.
+--      Verified reviews: the database keeps a 1-in-256 code per landlord + lease start, made from the email,
+--      a random salt and that lease (private.review_marks: no email, no review id, no time). If a new verified
+--      review lands on a code already used for that landlord and lease, it is held for you to check. Around 1 in
+--      256 other students share each code, so a match can be a different person: holding (not refusing) means
+--      nobody real is turned away. Unverified reviews have no identity to check; the form stops repeats from the
+--      same browser. Reviews whose words were already posted (copy-paste, bots) are held too.
+--      admin.html shows why each review was held (held_reason).
 --   6. Sign-in accounts left over from unused verifications are deleted every 15 minutes (needs pg_cron,
 --      which this file turns on if your project allows it; otherwise it tells you how).
 --   7. Student contacts (private.contacts) for RateMyCrib updates, as the review form and privacy policy say:
@@ -41,8 +50,9 @@ revoke all on schema private from public;
 create table if not exists private.admins (
   email text primary key check (email = lower(email))
 );
--- An earlier draft kept a keyed hash per NetID and landlord. Even without the email, anyone holding the
--- database could test candidate NetIDs against it, so it is gone.
+-- An earlier draft kept a full keyed hash per NetID and landlord. Anyone holding the database could test
+-- candidate NetIDs against it and get an exact answer, so it is gone. private.review_marks (below) keeps only
+-- 1 byte of such a hash: a match points at ~1 in 256 students, never at one person.
 drop table if exists private.verified_keys;
 drop table if exists private.secrets;
 
@@ -106,6 +116,46 @@ revoke all on function private.forget_unused_signins(interval) from public, anon
 -- 2. Reviews: the database decides the badge, and floods wait for a human
 alter table public.reviews add column if not exists verified boolean not null default false;
 alter table public.reviews add column if not exists held boolean not null default false;
+alter table public.reviews add column if not exists held_reason text;
+
+-- The lease a review is about: the start term the form writes as "[Lease: Fall 2025 – Summer 2026]" or
+-- "[Lease: from Fall 2025]". Reviews without one count as a single "unknown" lease.
+create or replace function private.lease_term(p_text text)
+returns text
+language sql
+immutable
+set search_path = ''
+as $$
+  select coalesce(lower(regexp_replace(
+           substring(coalesce(p_text, '') from '(?i)^\[lease:\s*(?:from\s+)?((?:spring|summer|fall)\s+\d{4}|earlier)'),
+           '\s+', ' ', 'g')), 'unknown')
+$$;
+revoke all on function private.lease_term(text) from public, anon, authenticated;
+
+-- The words of a review, for spotting copy-paste: no lease prefix, lower case, single spaces
+create or replace function private.review_body(p_text text)
+returns text
+language sql
+immutable
+set search_path = ''
+as $$
+  select btrim(regexp_replace(lower(regexp_replace(coalesce(p_text, ''), '^\s*\[lease:[^\]]*\]\s*', '', 'i')), '\s+', ' ', 'g'))
+$$;
+revoke all on function private.review_body(text) from public, anon, authenticated;
+
+-- One verified review per student, landlord and lease (see 5b above). The salt never leaves the database.
+create table if not exists private.mark_salt (
+  only_row boolean primary key default true check (only_row),
+  salt     text not null
+);
+insert into private.mark_salt (salt) values (gen_random_uuid()::text || gen_random_uuid()::text) on conflict do nothing;
+create table if not exists private.review_marks (
+  landlord text not null,
+  term     text not null,
+  bucket   smallint not null check (bucket between 0 and 255),
+  primary key (landlord, term, bucket)
+);
+revoke all on private.mark_salt, private.review_marks from public, anon, authenticated;
 
 create or replace function private.before_review_insert()
 returns trigger
@@ -114,23 +164,44 @@ security definer
 set search_path = ''
 as $$
 declare
-  v_email  text := private.confirmed_email();
-  v_uid    uuid := auth.uid();
-  v_recent integer;
+  v_email    text := private.confirmed_email();
+  v_uid      uuid := auth.uid();
+  v_recent   integer;
+  v_reason   text;
+  v_body     text := private.review_body(new.review_text);
+  v_landlord text := coalesce(new.landlord_id::text, '') || '|' || lower(btrim(coalesce(new.landlord_name, '')));
+  v_term     text := private.lease_term(new.review_text);
+  v_bucket   smallint;
 begin
   -- Never trust these from the browser
   new.verified      := false;
   new.held          := false;
+  new.held_reason   := null;
   new.author        := 'Anonymous Student';
   new.helpful_count := 0;
   new.created_at    := now();
 
+  -- The same words were already posted (any landlord): copy-paste or a script
+  if v_body <> '' and exists (select 1 from public.reviews r where private.review_body(r.review_text) = v_body) then
+    v_reason := 'same_text';
+  end if;
+
   if v_email like '%@illinois.edu' and private.signed_in_with_email_code() then
     new.verified := true;
     new.author   := 'Verified Illini';
+
+    -- Same student, same landlord, same lease? netid+anything@illinois.edu reaches the same inbox, so drop the +tag.
+    v_bucket := get_byte(sha256(convert_to(
+                  (select s.salt from private.mark_salt s) || '|' || regexp_replace(v_email, '\+[^@]*@', '@') || '|' || v_landlord || '|' || v_term,
+                  'UTF8')), 0);
+    if exists (select 1 from private.review_marks m where m.landlord = v_landlord and m.term = v_term and m.bucket = v_bucket) then
+      v_reason := coalesce(v_reason, 'same_lease');
+    end if;
+    insert into private.review_marks (landlord, term, bucket) values (v_landlord, v_term, v_bucket) on conflict do nothing;
+
     select count(*) into v_recent from public.reviews r
      where r.verified and r.landlord_id is not distinct from new.landlord_id and r.created_at > now() - interval '1 day';
-    if v_recent >= 5 then new.held := true; end if;
+    if v_recent >= 5 then v_reason := coalesce(v_reason, 'landlord_day'); end if;
 
     -- Forget who wrote it: delete the sign-in account (and its email) now that it has done its job,
     -- plus Supabase's in-database sign-in log for it if that is switched on.
@@ -148,10 +219,15 @@ begin
       raise exception 'Too many reviews are coming in right now. Try again in an hour, or verify with your @illinois.edu email.'
         using errcode = 'P0001', hint = 'rate_limited';
     end if;
-    if v_recent >= 40 then new.held := true; end if;
+    if v_recent >= 40 then v_reason := coalesce(v_reason, 'site_hour'); end if;
     select count(*) into v_recent from public.reviews r
      where not r.verified and r.landlord_id is not distinct from new.landlord_id and r.created_at > now() - interval '1 day';
-    if v_recent >= 5 then new.held := true; end if;
+    if v_recent >= 5 then v_reason := coalesce(v_reason, 'landlord_day'); end if;
+  end if;
+
+  if v_reason is not null then
+    new.held        := true;
+    new.held_reason := v_reason;
   end if;
   return new;
 end
@@ -207,7 +283,7 @@ language plpgsql
 security definer
 set search_path = ''
 as $$
-declare v_email text := private.confirmed_email();
+declare v_email text := regexp_replace(private.confirmed_email(), '\+[^@]*@', '@'); -- netid+x@ is netid@
 begin
   if v_email like '%@illinois.edu' and private.signed_in_with_email_code() then
     insert into private.contacts (email, source, verified) values (v_email, 'verification', true)
@@ -548,7 +624,8 @@ begin
   return (select coalesce(jsonb_agg(jsonb_build_object(
             'id', r.id, 'landlord_id', r.landlord_id, 'landlord_name', r.landlord_name,
             'property', public.rmc_strip_unit(r.property), 'rating', r.rating, 'would_rent', r.would_rent,
-            'review_text', r.review_text, 'verified', r.verified, 'created_at', r.created_at) order by r.created_at desc), '[]'::jsonb)
+            'review_text', r.review_text, 'verified', r.verified, 'held_reason', r.held_reason,
+            'created_at', r.created_at) order by r.created_at desc), '[]'::jsonb)
             from public.reviews r where r.held);
 end
 $$;

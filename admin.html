@@ -485,12 +485,19 @@ async function setUnsubscribed(email, on) {
   if (error) { toast('Could not save: ' + error.message); return; }
   toast(on ? 'Unsubscribed' : 'Resubscribed'); loadAll();
 }
+const HELD_REASONS = {
+  same_lease: 'Same lease: a verified review of this landlord and lease start already had this code. Usually the same student again; about 1 in 256 times it is a different student. Compare with the live reviews.',
+  same_text: 'Same words as an earlier review (copy-paste or a script).',
+  landlord_day: 'More than 5 reviews of this landlord today.',
+  site_hour: 'More than 40 reviews an hour site-wide.',
+};
 function Held() {
   if (!A.held.length) return '';
-  return '<h2>Held for review (' + A.held.length + ')</h2><p class="sub">These came in during a burst (more than 5 for one landlord in a day, or more than 40 an hour site-wide), so they stay hidden until you decide. Approve real ones; delete spam.</p>' +
+  return '<h2>Held for review (' + A.held.length + ')</h2><p class="sub">These stay hidden until you decide: a likely repeat of the same lease, words already posted, or a burst. Approve real ones; delete spam and repeats.</p>' +
     '<div class="panel tbl-wrap" style="margin-bottom:8px"><table><thead><tr><th>Landlord</th><th>Review</th><th class="r">Rating</th><th>Posted</th><th></th></tr></thead><tbody>' +
     A.held.map(r => '<tr><td><strong>' + esc(landlordName(r.landlord_id, r.landlord_name)) + '</strong>' + (r.verified ? '<br><span class="muted" style="font-size:12px">Verified Illini</span>' : '') +
-      (r.property ? '<br><span class="muted" style="font-size:12px">' + esc(r.property) + '</span>' : '') + '</td>' +
+      (r.property ? '<br><span class="muted" style="font-size:12px">' + esc(r.property) + '</span>' : '') +
+      '<br><span class="held-why" style="font-size:12px">Why held: ' + esc(HELD_REASONS[r.held_reason] || 'Came in during a burst.') + '</span></td>' +
       '<td style="max-width:520px">' + esc(r.review_text) + '</td><td class="r num">' + esc(r.rating) + '</td>' +
       '<td class="num" style="font-size:12px;white-space:nowrap">' + esc(new Date(r.created_at).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })) + '</td>' +
       '<td class="r" style="white-space:nowrap"><button type="button" class="btn small primary" onclick="moderate(' + jsArg(r.id) + ',true,this)">Approve</button> ' +
