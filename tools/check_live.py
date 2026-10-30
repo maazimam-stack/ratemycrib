@@ -1,4 +1,4 @@
-"""Read-only check that ratemycrib.net serves the merged code (Oct 30: #10 review drive). Writes data/probe/live.json."""
+"""Read-only check that ratemycrib.net serves the merged code (Oct 30: #11 hero count line removed). Writes data/probe/live.json."""
 import json, os, time, urllib.request
 def get(path):
     req = urllib.request.Request("https://ratemycrib.net" + path + ("&" if "?" in path else "?") + "t=" + str(int(time.time())), headers={"User-Agent": "RateMyCrib deploy check", "Cache-Control": "no-cache"})
@@ -30,11 +30,11 @@ for attempt in range(12):
       "hub": s5, "hub_title": (hub.split("<title>")[1].split("</title>")[0] if "<title>" in hub else ""),
       "jsm": s6, "jsm_title": (jsm.split("<title>")[1].split("</title>")[0] if "<title>" in jsm else ""),
       "sitemap_landlord_urls": sm.count("/landlord/") if s7 == 200 else 0,
-      "roommate_loop": "shareWithRoommates" in idx, "almost_rated": "AlmostRated" in idx,
+      "hero_proof_gone": "hero-proof" not in idx, "roommate_loop": "shareWithRoommates" in idx, "almost_rated": "AlmostRated" in idx,
       "flyer": s8, "qr_lib": s9, "early_read_nudge": "gets a full rating" in bank, "verification_file": get("/googlec133ef736155d1c3.html")[0],
       "attempt": attempt + 1,
     }
-    if out["roommate_loop"] and out["almost_rated"] and out["flyer"] == 200 and out["early_read_nudge"]: break
+    if out["hero_proof_gone"] and out["roommate_loop"]: break
     time.sleep(20)
 os.makedirs("data/probe", exist_ok=True)
 json.dump(out, open("data/probe/live.json", "w"), indent=1)
