@@ -10,5 +10,13 @@
  "analytics_ids": true,
  "admin_page": true,
  "majors_count": 154,
+ "hero_search": true,
+ "updates_email": true,
+ "new_title": true,
+ "hub": 200,
+ "hub_title": "UIUC Landlord Reviews: 27 Champaign-Urbana Landlords Rated by Students | RateMyCrib",
+ "jsm": 200,
+ "jsm_title": "JSM Living Reviews: 4.3/5 from 7 student reviews | RateMyCrib",
+ "sitemap_landlord_urls": 13,
  "attempt": 1
 }
