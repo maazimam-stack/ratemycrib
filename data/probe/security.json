@@ -1,0 +1,122 @@
+{
+ "reads_should_fail": {
+  "reviews": [
+   401,
+   "{\"code\":\"42501\",\"details\":null,\"hint\":null,\"message\":\"permission denied for table reviews\"}"
+  ],
+  "user_properties": [
+   401,
+   "{\"code\":\"42501\",\"details\":null,\"hint\":null,\"message\":\"permission denied for table user_properties\"}"
+  ],
+  "site_events": [
+   401,
+   "{\"code\":\"42501\",\"details\":null,\"hint\":null,\"message\":\"permission denied for table site_events\"}"
+  ],
+  "scanner_interest": [
+   401,
+   "{\"code\":\"42501\",\"details\":null,\"hint\":null,\"message\":\"permission denied for table scanner_interest\"}"
+  ],
+  "reported_reviews": [
+   401,
+   "{\"code\":\"42501\",\"details\":null,\"hint\":null,\"message\":\"permission denied for table reported_reviews\"}"
+  ],
+  "prospects": [
+   404,
+   "{\"code\":\"PGRST205\",\"details\":null,\"hint\":\"Perhaps you meant the table 'public.user_properties'\",\"message\":\"Could not find the table 'public.prospects' in the sc"
+  ],
+  "outreach_log": [
+   404,
+   "{\"code\":\"PGRST205\",\"details\":null,\"hint\":null,\"message\":\"Could not find the table 'public.outreach_log' in the schema cache\"}"
+  ],
+  "rpc_admin_dashboard": [
+   404,
+   "{\"code\":\"PGRST202\",\"details\":\"Searched for the function public.admin_dashboard with parameter p_days or with a single unnamed json/jsonb parameter, but no match"
+  ],
+  "rpc_admin_contacts": [
+   404,
+   "{\"code\":\"PGRST202\",\"details\":\"Searched for the function public.admin_contacts without parameters or with a single unnamed json/jsonb parameter, but no matches w"
+  ],
+  "rpc_admin_held_reviews": [
+   404,
+   "{\"code\":\"PGRST202\",\"details\":\"Searched for the function public.admin_held_reviews without parameters or with a single unnamed json/jsonb parameter, but no match"
+  ]
+ },
+ "writes_should_fail": {
+  "patch_reviews": [
+   401,
+   "{\"code\":\"42501\",\"details\":null,\"hint\":null,\"message\":\"permission denied for table reviews\"}"
+  ],
+  "delete_reviews": [
+   401,
+   "{\"code\":\"42501\",\"details\":null,\"hint\":null,\"message\":\"permission denied for table reviews\"}"
+  ],
+  "patch_reviews_public": [
+   401,
+   "{\"code\":\"42501\",\"details\":null,\"hint\":null,\"message\":\"permission denied for view reviews_public\"}"
+  ],
+  "delete_reviews_public": [
+   401,
+   "{\"code\":\"42501\",\"details\":null,\"hint\":null,\"message\":\"permission denied for view reviews_public\"}"
+  ],
+  "patch_user_properties_public": [
+   401,
+   "{\"code\":\"42501\",\"details\":null,\"hint\":null,\"message\":\"permission denied for view user_properties_public\"}"
+  ],
+  "patch_user_landlords": [
+   401,
+   "{\"code\":\"42501\",\"details\":null,\"hint\":null,\"message\":\"permission denied for table user_landlords\"}"
+  ],
+  "delete_user_landlords": [
+   401,
+   "{\"code\":\"42501\",\"details\":null,\"hint\":null,\"message\":\"permission denied for table user_landlords\"}"
+  ],
+  "patch_site_events": [
+   401,
+   "{\"code\":\"42501\",\"details\":null,\"hint\":null,\"message\":\"permission denied for table site_events\"}"
+  ]
+ },
+ "should_work": {
+  "read_reviews_public": [
+   200,
+   "[{\"id\":\"2e1d2f96-83b1-4944-a367-d65504ba8c67\"}]"
+  ],
+  "growth_sql_ran__verified_column": [
+   400,
+   "{\"code\":\"42703\",\"details\":null,\"hint\":null,\"message\":\"column reviews_public.verified does not exist\"}"
+  ],
+  "growth_sql_ran__rmc_is_admin": [
+   404,
+   "{\"code\":\"PGRST202\",\"details\":\"Searched for the function public.rmc_is_admin without parameters or with a single unnamed json/jsonb parameter, but no matches wer"
+  ],
+  "contacts_fn_exists": [
+   404,
+   "{\"code\":\"PGRST202\",\"details\":\"Searched for the function public.rmc_add_contact with parameter p_email or with a single unnamed json/jsonb parameter, but no matc"
+  ],
+  "helpful_fn_noop": [
+   204,
+   ""
+  ]
+ },
+ "web": {
+  "http://ratemycrib.net/": {
+   "status": 301,
+   "location": "https://ratemycrib.net/",
+   "hsts": null
+  },
+  "http://www.ratemycrib.net/": {
+   "status": 301,
+   "location": "https://ratemycrib.net/",
+   "hsts": null
+  },
+  "https://www.ratemycrib.net/": {
+   "status": 301,
+   "location": "https://ratemycrib.net/",
+   "hsts": null
+  },
+  "https://ratemycrib.net/": {
+   "status": 200,
+   "location": null,
+   "hsts": null
+  }
+ }
+}
