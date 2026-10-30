@@ -1,5 +1,6 @@
 {
  "index": 200,
+ "unsubscribe_page": false,
  "admin": 200,
  "majors": 200,
  "vendor_supabase": 200,
@@ -10,6 +11,8 @@
  "analytics_ids": true,
  "admin_page": true,
  "majors_count": 154,
+ "grad_programs_live": false,
+ "soft_gate_live": false,
  "lease_rule_live": true,
  "hero_search": true,
  "updates_email": true,
