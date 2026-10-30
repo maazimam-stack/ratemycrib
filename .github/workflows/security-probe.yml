@@ -1,0 +1,21 @@
+# One-off read-only security probe (data branch only). Writes target ids that can't exist.
+name: Security probe
+on:
+  push:
+    branches: [data/catalog-snapshot]
+    paths: [tools/security_probe.py, .github/workflows/security-probe.yml]
+permissions:
+  contents: write
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 tools/security_probe.py
+      - run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/probe
+          git commit -m "Security probe $(date -u +%H:%M)" || echo "nothing new"
+          git push
