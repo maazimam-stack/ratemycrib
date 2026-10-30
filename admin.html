@@ -215,7 +215,7 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 // Sign-in kept for this tab only, so nothing on the public site (same origin) can find a saved admin session later
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { storageKey: 'rmc-admin-auth', storage: window.sessionStorage } });
 
-const A = { user: null, tab: 'overview', days: 30, data: null, error: null, loading: false, names: {}, prospects: [], log: [], held: [],
+const A = { user: null, tab: 'overview', days: 30, data: null, error: null, loading: false, names: {}, prospects: [], log: [], held: [], contacts: [], showAllContacts: false,
   sort: { key: 'views', dir: -1 }, compose: null, editing: null };
 try { const t = sessionStorage.getItem('rmc-admin-tab'); if (t) A.tab = t; const d = +sessionStorage.getItem('rmc-admin-days'); if ([7, 30, 90].includes(d)) A.days = d; } catch (e) {}
 
@@ -255,13 +255,15 @@ const landlordName = (lid, fallback) => A.names[lid] || fallback || 'Landlord #'
 // ===== Data =====
 async function loadAll() {
   A.loading = true; render();
-  const [{ data, error }, p, l, h] = await Promise.all([
+  const [{ data, error }, p, l, h, ct] = await Promise.all([
     db.rpc('admin_dashboard', { p_days: A.days }),
     db.from('prospects').select('*').order('updated_at', { ascending: false }),
     db.from('outreach_log').select('*').order('sent_at', { ascending: false }).limit(50),
-    db.rpc('admin_held_reviews')
+    db.rpc('admin_held_reviews'),
+    db.rpc('admin_contacts')
   ]);
   A.held = h.error ? [] : h.data || [];
+  A.contacts = ct.error ? [] : ct.data || [];
   A.loading = false;
   if (error) { A.error = error; A.data = null; }
   else { A.error = null; A.data = data; }
@@ -408,7 +410,7 @@ function Overview() {
       '<div><dt>Booked per month</dt><dd><span class="v">' + money(t.won_monthly) + '</span></dd><p class="why">Deals marked won</p></div>' +
       '<div><dt>Booked one-time</dt><dd><span class="v">' + money(t.won_one_time) + '</span></dd></div>' +
       '<div><dt>Open pipeline</dt><dd><span class="v">' + money(t.pipeline_value) + '</span></dd><p class="why">Contacted, replied or meeting</p></div>' +
-      '<div><dt>Prospects</dt><dd><span class="v">' + fmt(t.prospects) + '</span></dd><p class="why">' + fmt(t.landlords_with_3plus) + ' landlords have 3+ reviews</p></div>' +
+      '<div><dt>Prospects</dt><dd><span class="v">' + fmt(t.prospects) + '</span></dd><p class="why">' + fmt(t.contacts) + ' student contacts · ' + fmt(t.landlords_with_3plus) + ' landlords with 3+ reviews</p></div>' +
     '</dl>' +
     '<h2>Every day</h2>' +
     '<div class="grid2">' +
@@ -427,6 +429,35 @@ function Overview() {
     '<h2>Pages and features</h2>' +
     '<div class="grid2">' + Pages(d.pages || []) + Features(d.features || {}) + '</div>' +
     '</section>';
+}
+function Contacts() {
+  const c = A.contacts, live = c.filter(x => !x.unsubscribed);
+  const shown = c.slice(0, A.showAllContacts ? c.length : 25);
+  return '<h2>Student contacts (' + live.length + ')</h2>' +
+    '<p class="sub">Every student who verifies with their @illinois.edu address, as the review form and privacy policy now say. Treat this list as sensitive: keep the file somewhere private and never share it. Every email you send to it must include an unsubscribe link and your mailing address. If someone unsubscribes or asks to be removed, mark them here.</p>' +
+    '<div class="row" style="margin-bottom:12px"><button class="btn primary" type="button" onclick="downloadContacts()"' + (live.length ? '' : ' disabled') + '>Download CSV (' + live.length + ' subscribed)</button></div>' +
+    '<div class="panel tbl-wrap"><table><thead><tr><th>Email</th><th>First verified</th><th>Status</th><th></th></tr></thead><tbody>' +
+      (c.length ? shown.map(x => '<tr><td class="num">' + esc(x.email) + '</td><td class="num" style="font-size:12px">' + esc(x.first_seen) + '</td>' +
+        '<td>' + (x.unsubscribed ? '<span class="muted">Unsubscribed ' + esc(x.unsubscribed_on || '') + '</span>' : 'Subscribed') + '</td>' +
+        '<td class="r"><button type="button" class="btn small" onclick="setUnsubscribed(' + jsArg(x.email) + ',' + (!x.unsubscribed) + ')">' + (x.unsubscribed ? 'Resubscribe' : 'Unsubscribe') + '</button></td></tr>').join('')
+        : '<tr><td colspan="4" class="empty">No contacts yet. They appear once students can get verification codes (connect an email sender in Supabase).</td></tr>') +
+    '</tbody></table></div>' +
+    (c.length > 25 && !A.showAllContacts ? '<p style="margin-top:8px"><button class="btn small" type="button" onclick="A.showAllContacts=true;render()">Show all ' + c.length + '</button></p>' : '');
+}
+function downloadContacts() {
+  const rows = A.contacts.filter(x => !x.unsubscribed);
+  const csv = 'email,first_verified\n' + rows.map(x => '"' + String(x.email).replace(/"/g, '""') + '",' + x.first_seen).join('\n') + '\n';
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+  a.download = 'ratemycrib-contacts-' + new Date().toISOString().slice(0, 10) + '.csv';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  toast('Downloaded ' + rows.length + ' contacts');
+}
+async function setUnsubscribed(email, on) {
+  const { error } = await db.rpc('admin_set_unsubscribed', { p_email: email, p_unsubscribed: on });
+  if (error) { toast('Could not save: ' + error.message); return; }
+  toast(on ? 'Unsubscribed' : 'Resubscribed'); loadAll();
 }
 function Held() {
   if (!A.held.length) return '';
@@ -559,6 +590,7 @@ function Outreach() {
           '<button class="btn small danger" type="button" onclick="deleteProspect(' + p.id + ')">Delete</button></td></tr>').join('')
         : '<tr><td colspan="6" class="empty">No prospects yet. Add the businesses and people you want to pitch above, or press Pitch on the Landlords tab.</td></tr>') +
     '</tbody></table></div>' +
+    Contacts() +
     '<h2>Your sender details</h2><p class="sub">Filled into every email. Kept only in this browser.</p>' +
     '<form class="panel pad" onsubmit="event.preventDefault();saveSettings()"><div class="form-grid">' +
       '<div><label class="f" for="set-name">Your name</label><input class="i" id="set-name" value="' + esc(s.name) + '" /></div>' +
