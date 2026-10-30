@@ -1,4 +1,4 @@
-"""Read-only check that ratemycrib.net serves the merged code (Oct 30: #7, #8, #9). Writes data/probe/live.json."""
+"""Read-only check that ratemycrib.net serves the merged code (Oct 30: #10 review drive). Writes data/probe/live.json."""
 import json, os, time, urllib.request
 def get(path):
     req = urllib.request.Request("https://ratemycrib.net" + path + ("&" if "?" in path else "?") + "t=" + str(int(time.time())), headers={"User-Agent": "RateMyCrib deploy check", "Cache-Control": "no-cache"})
@@ -14,6 +14,9 @@ for attempt in range(12):
     s5, hub = get("/landlord/")
     s6, jsm = get("/landlord/jsm-living/")
     s7, sm = get("/sitemap.xml")
+    s8, fly = get("/flyer.html")
+    s9, qrjs = get("/vendor/qrcode-generator-1.4.4.js")
+    s10, bank = get("/landlord/bankier-apartments/")
     out = {
       "index": s, "admin": s2, "majors": s3, "vendor_supabase": s4,
       "csp_meta": "Content-Security-Policy" in idx,
@@ -27,9 +30,11 @@ for attempt in range(12):
       "hub": s5, "hub_title": (hub.split("<title>")[1].split("</title>")[0] if "<title>" in hub else ""),
       "jsm": s6, "jsm_title": (jsm.split("<title>")[1].split("</title>")[0] if "<title>" in jsm else ""),
       "sitemap_landlord_urls": sm.count("/landlord/") if s7 == 200 else 0,
+      "roommate_loop": "shareWithRoommates" in idx, "almost_rated": "AlmostRated" in idx,
+      "flyer": s8, "qr_lib": s9, "early_read_nudge": "gets a full rating" in bank, "verification_file": get("/googlec133ef736155d1c3.html")[0],
       "attempt": attempt + 1,
     }
-    if all(out[k] for k in ("hero_search", "updates_email", "new_title")) and out["hub"] == 200 and out["jsm"] == 200: break
+    if out["roommate_loop"] and out["almost_rated"] and out["flyer"] == 200 and out["early_read_nudge"]: break
     time.sleep(20)
 os.makedirs("data/probe", exist_ok=True)
 json.dump(out, open("data/probe/live.json", "w"), indent=1)
