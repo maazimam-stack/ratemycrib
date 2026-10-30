@@ -429,6 +429,8 @@
   .rev-details-title::before { content: '+'; display: inline-block; width: 18px; font-weight: 800; color: var(--orange); }
   .rev-details[open] .rev-details-title::before { content: '\2212'; }
   .rev-details-hint { font-size: 12px; color: var(--muted); padding-left: 18px; }
+  .lease-row { display: flex; gap: 8px; align-items: center; }
+  .lease-row select { flex: 1; min-width: 0; }
   .rev-details[open] > summary { border-bottom: 1px solid var(--border); }
   .rev-details-body { padding: 16px 16px 0; }
   .star-row { display: flex; gap: 4px; }
@@ -1450,20 +1452,41 @@ async function loadDbReviews() {
   }
 }
 
-// Generate a simple device fingerprint for rate-limiting (not tracking)
-function getDeviceFingerprint() {
-  const canvas = document.createElement('canvas');
-  const ctx = canvas.getContext('2d');
-  ctx.textBaseline = 'top';
-  ctx.font = '14px Arial';
-  ctx.fillText('RateMyCrib', 2, 2);
-  const raw = canvas.toDataURL() + navigator.language + screen.width + screen.height + new Date().getTimezoneOffset();
-  let hash = 0;
-  for (let i = 0; i < raw.length; i++) { hash = ((hash << 5) - hash) + raw.charCodeAt(i); hash |= 0; }
-  return 'fp_' + Math.abs(hash).toString(36);
+// Lease terms for the review form, newest first: Jan–Apr starts Spring, May–Jul Summer, Aug–Dec Fall.
+// Starts run to the current term; ends run a year past it (a current lease ends later).
+const LEASE_SEASONS = ['Spring', 'Summer', 'Fall'];
+function leaseTermList(kind) {
+  const now = new Date(), m = now.getMonth();
+  let y = now.getFullYear(), s = m < 4 ? 0 : m < 7 ? 1 : 2;
+  if (kind === 'end') { s += 3; y += Math.floor(s / 3); s %= 3; }
+  const out = [];
+  while (y > 2014 || (y === 2014 && s === 2)) { out.push(LEASE_SEASONS[s] + ' ' + y); if (--s < 0) { s = 2; y--; } }
+  return out;
+}
+function leaseTermIndex(t) {
+  const m = /^(Spring|Summer|Fall) (\d{4})$/.exec(t || '');
+  return m ? Number(m[2]) * 3 + LEASE_SEASONS.indexOf(m[1]) : -1;
 }
 
-// Check if this device already reviewed this landlord
+// One review per lease from this browser. Stored as short scrambled codes (landlord + lease start), so a
+// glance at this browser's storage doesn't list the landlords you reviewed. The database checks verified
+// reviews on its own; anonymous ones have nothing else to check against.
+function leaseKey(landlordId, landlordName, term) {
+  const who = landlordId > 0 ? 'id:' + landlordId : 'name:' + String(landlordName || '').trim().toLowerCase();
+  const s = 'rmc-lease|' + who + '|' + String(term || '').toLowerCase();
+  let h = 0x811c9dc5;
+  for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; }
+  return h.toString(36);
+}
+function loadReviewedLeases() {
+  try { const v = JSON.parse(localStorage.getItem('rmc_reviewed_leases') || '[]'); return Array.isArray(v) ? v : []; } catch (e) { return []; }
+}
+function markReviewedLease(key) {
+  try { const v = loadReviewedLeases().filter(x => x !== key); v.push(key); localStorage.setItem('rmc_reviewed_leases', JSON.stringify(v.slice(-100))); } catch (e) {}
+}
+
+// Before Oct 30, 2026 the form allowed one review per landlord per browser (no lease). Those marks are read once:
+// the next review of that landlord asks whether it's a different lease, then the old mark is dropped.
 function hasReviewedLandlord(landlordId) {
   const key = 'rmc_reviewed';
   try {
@@ -1471,24 +1494,30 @@ function hasReviewedLandlord(landlordId) {
     return !!reviewed[landlordId];
   } catch { return false; }
 }
-function markReviewedLandlord(landlordId) {
+function forgetReviewedLandlord(landlordId) {
   const key = 'rmc_reviewed';
   try {
     const reviewed = JSON.parse(localStorage.getItem(key) || '{}');
-    reviewed[landlordId] = Date.now();
-    localStorage.setItem(key, JSON.stringify(reviewed));
+    if (!(landlordId in reviewed)) return;
+    delete reviewed[landlordId];
+    if (Object.keys(reviewed).length) localStorage.setItem(key, JSON.stringify(reviewed)); else localStorage.removeItem(key);
   } catch { /* ignore */ }
 }
 
 async function saveReviewToDb(review) {
-  // Rate limiting: one review per landlord per device
-  if (hasReviewedLandlord(review.landlordId)) {
-    toast('You have already reviewed this landlord. One review per landlord keeps things fair.');
-    return false;
+  // One review per lease: same landlord again is fine for a different lease start
+  const name = review.landlordName || 'this landlord';
+  const leaseK = leaseKey(review.landlordId, review.landlordName, review.leaseStart);
+  if (loadReviewedLeases().indexOf(leaseK) !== -1) {
+    toast('You already reviewed ' + name + ' for the lease that started ' + review.leaseStart + '. One review per lease: if you rented from them again, pick that lease.');
+    return 'shown';
+  }
+  if (hasReviewedLandlord(review.landlordId) &&
+      !confirm('You reviewed ' + name + ' from this browser before. Is this review about a different lease?\n\nOK to post it, or Cancel to go back.')) {
+    return 'shown';
   }
 
   try {
-    const fp = getDeviceFingerprint();
     const row = {
       landlord_id: review.landlordId,
       landlord_name: review.landlordName || '',
@@ -1500,7 +1529,6 @@ async function saveReviewToDb(review) {
       positive_tags: review.pos,
       negative_tags: review.neg,
       helpful_count: 0,
-      device_fingerprint: fp,
     };
     // Add new fields only if they have values (columns may not exist yet)
     if (review.monthlyRent > 0) row.monthly_rent = review.monthlyRent;
@@ -1516,7 +1544,8 @@ async function saveReviewToDb(review) {
     const { error } = await db.from('reviews').insert(row);
     if (error && (error.hint === 'already_reviewed' || error.hint === 'rate_limited')) { toast(error.message); return 'shown'; }
     if (error) throw error;
-    markReviewedLandlord(review.landlordId);
+    markReviewedLease(leaseK);
+    forgetReviewedLandlord(review.landlordId);
     await loadDbReviews(); // reload to get the new review with server-assigned id
     return true;
   } catch (e) {
@@ -3484,6 +3513,22 @@ function Modal() {
       </div>
 
       <div class="field">
+        <label for="rev-lease-start">When did this lease start?</label>
+        <div class="lease-row">
+          <select id="rev-lease-start" aria-describedby="lease-hint">
+            <option value="">Lease start...</option>
+            ${leaseTermList('start').map(t=>`<option value="${t}">${t}</option>`).join("")}
+          </select>
+          <span style="color:var(--muted)">to</span>
+          <select id="rev-lease-end" aria-label="Lease end (optional)">
+            <option value="">End (optional)</option>
+            ${leaseTermList('end').map(t=>`<option value="${t}">${t}</option>`).join("")}
+          </select>
+        </div>
+        <p class="field-hint" id="lease-hint">One review per lease. Rented from them more than once? Review each lease separately.</p>
+      </div>
+
+      <div class="field">
         <label for="rev-property-custom">Street address <span style="font-weight:400;color:var(--muted)">(optional)</span></label>
         <input type="text" id="rev-property-custom" placeholder="e.g. 309 E Green St" oninput="onAddressInput(this)" autocomplete="off" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius: 2px;font-size:14px;font-family:inherit;outline:none;" />
         <div id="addr-match-hint" style="display:none;margin-top:6px;padding:8px 12px;border-radius: 2px;font-size:12px"></div>
@@ -3493,7 +3538,7 @@ function Modal() {
       <details class="rev-details" id="rev-details" ${S.revDetailsOpen ? 'open' : ''} ontoggle="S.revDetailsOpen = this.open">
         <summary>
           <span class="rev-details-title">Add details (optional)</span>
-          <span class="rev-details-hint">Area scores, rent, lease dates, tags</span>
+          <span class="rev-details-hint">Area scores, rent, neighborhood, tags</span>
         </summary>
         <div class="rev-details-body">
       <div class="field">
@@ -3519,22 +3564,6 @@ function Modal() {
           <option value="Urbana">Urbana — East of Lincoln Ave / Race St into Urbana</option>
           <option value="__other__">Other / Not sure</option>
         </select>
-      </div>
-
-      <div class="field">
-        <label>Lease Period</label>
-        <div style="display:flex;gap:8px;align-items:center">
-          <select id="rev-lease-start" style="flex:1">
-            <option value="">Start...</option>
-            ${["Fall 2018","Spring 2019","Summer 2019","Fall 2019","Spring 2020","Summer 2020","Fall 2020","Spring 2021","Summer 2021","Fall 2021","Spring 2022","Summer 2022","Fall 2022","Spring 2023","Summer 2023","Fall 2023","Spring 2024","Summer 2024","Fall 2024","Spring 2025","Summer 2025","Fall 2025","Spring 2026","Summer 2026","Fall 2026"].map(t=>`<option value="${t}">${t}</option>`).join("")}
-          </select>
-          <span style="color:var(--muted)">to</span>
-          <select id="rev-lease-end" style="flex:1">
-            <option value="">End...</option>
-            ${["Spring 2019","Summer 2019","Fall 2019","Spring 2020","Summer 2020","Fall 2020","Spring 2021","Summer 2021","Fall 2021","Spring 2022","Summer 2022","Fall 2022","Spring 2023","Summer 2023","Fall 2023","Spring 2024","Summer 2024","Fall 2024","Spring 2025","Summer 2025","Fall 2025","Spring 2026","Summer 2026","Fall 2026","Spring 2027"].map(t=>`<option value="${t}">${t}</option>`).join("")}
-          </select>
-        </div>
-        <p style="font-size:11px;color:var(--muted);margin-top:4px">Helps verify reviews and lets you review the same landlord for different lease periods.</p>
       </div>
 
       <div class="field">
@@ -4899,7 +4928,15 @@ async function submitReview(landlordIdFromDetail) {
 
   const text = document.getElementById('rev-text')?.value?.trim();
   if (!text || text.length < 20) { toast('Please write at least a sentence (20+ characters) about your experience.'); document.getElementById('rev-text')?.focus(); return; }
-  if (text.length > 5000) { toast('Review text is too long (max 5,000 characters).'); return; }
+
+  // One review per lease, so the lease start is required; the end is optional
+  const leaseStart = document.getElementById('rev-lease-start')?.value || '';
+  const leaseEnd = document.getElementById('rev-lease-end')?.value || '';
+  if (leaseTermIndex(leaseStart) < 0) { toast('Pick when this lease started. You can review the same landlord again for a different lease.'); document.getElementById('rev-lease-start')?.focus(); return; }
+  if (leaseEnd && leaseTermIndex(leaseEnd) < leaseTermIndex(leaseStart)) { toast('The lease end is before the start. Check the dates.'); document.getElementById('rev-lease-end')?.focus(); return; }
+  const leasePeriod = leaseEnd ? leaseStart + ' – ' + leaseEnd : 'from ' + leaseStart;
+  const fullText = `[Lease: ${leasePeriod}] ${text}`;
+  if (fullText.length > 5000) { toast('Review text is too long (max ' + (5000 - fullText.length + text.length).toLocaleString() + ' characters).'); return; }
 
   const rentInput = document.getElementById('rev-rent')?.value;
   const monthlyRentVal = parseInt(rentInput) || 0;
@@ -4909,9 +4946,6 @@ async function submitReview(landlordIdFromDetail) {
 
   const isCustomProperty = true;
   const property = propCustom || 'Not specified';
-  const leaseStart = document.getElementById('rev-lease-start')?.value || '';
-  const leaseEnd = document.getElementById('rev-lease-end')?.value || '';
-  const leasePeriod = (leaseStart && leaseEnd) ? leaseStart + ' – ' + leaseEnd : '';
 
   // Collect rent + neighborhood ratings
   const monthlyRent = monthlyRentVal;
@@ -4927,9 +4961,6 @@ async function submitReview(landlordIdFromDetail) {
   // Collect selected tags from state
   const posTags = [...S.posTags];
   const negTags = [...S.negTags];
-
-  // Include lease period in review text if provided
-  const fullText = leasePeriod ? `[Lease: ${leasePeriod}] ${text}` : text;
 
   // Save new landlord to Supabase if custom
   if (isCustomLandlord && landlordName) {
@@ -4962,6 +4993,7 @@ async function submitReview(landlordIdFromDetail) {
     rating: S.stars,
     wouldRent: S.wouldRentChoice === true,
     text: fullText,
+    leaseStart: leaseStart,
     pos: posTags,
     neg: negTags,
     monthlyRent: monthlyRent,
@@ -5156,10 +5188,10 @@ function PrivacyPage() {
     <p style="color:rgba(255,255,255,0.5);font-size:15px">Last updated: October 29, 2026</p>
   </div>
   <div class="container" style="max-width:720px;line-height:1.8;font-size:15px">
-    <p style="margin-bottom:16px"><strong>1. What We Collect.</strong> When you submit a review, we collect: your review text, star rating, selected tags, property address, lease period, monthly rent and neighborhood ratings. We also collect a device fingerprint (a hash of browser properties) solely to prevent duplicate reviews. To count visits we log which pages are viewed, with a random visitor ID that resets every month, the kind of device (phone, tablet or computer) and the site that sent you (for example reddit.com). The visitor ID is never attached to a review.</p>
+    <p style="margin-bottom:16px"><strong>1. What We Collect.</strong> When you submit a review, we collect: your review text, star rating, selected tags, property address, lease period, monthly rent and neighborhood ratings. The lease start is required because we allow one review per lease: you can review the same landlord again for a different lease. To count visits we log which pages are viewed, with a random visitor ID that resets every month, the kind of device (phone, tablet or computer) and the site that sent you (for example reddit.com). The visitor ID is never attached to a review.</p>
     <p style="margin-bottom:16px"><strong>2. What We Do NOT Collect.</strong> We do not use cookies for tracking. We do not sell your data. We do not collect your real name, IP address, or location. We do not use third-party analytics or advertising trackers.</p>
     <p style="margin-bottom:16px"><strong>3. Emails.</strong> There are two optional ways to give us an email in the review form. (1) Verification: we email a one-time code to your @illinois.edu address through our database provider (Supabase); your review is then marked verified and the sign-in account is deleted. (2) The "Email for updates" box. Either way, we keep the address, where it came from and the day we first got it in a separate contact list to send occasional RateMyCrib updates; every email includes a way to unsubscribe, or write to us and we will remove you. The contact list holds no reviews, landlords or times, your email is never stored with or shown alongside your review, and reviews show only the date they were posted. We never sell your email or share it with landlords.</p>
-    <p style="margin-bottom:16px"><strong>4. Device Fingerprint.</strong> We generate a simple hash from your browser properties (canvas rendering, screen size, timezone) to limit one review per landlord per device. This fingerprint cannot identify you personally and is not shared with third parties.</p>
+    <p style="margin-bottom:16px"><strong>4. One Review Per Lease.</strong> After you post, your browser keeps a short scrambled code for that landlord and lease start, so the same browser can't post that lease twice. It stays on your device. For verified reviews, our database also keeps a 1-byte code made from your email, the landlord and the lease start; about 1 in 256 students share any given code, so the code alone can't single you out, and a review whose code was already used for that landlord and lease waits for a person to check it. Reviews posted before October 30, 2026 also stored a rough device hash (browser and screen properties); we no longer collect it.</p>
     <p style="margin-bottom:16px"><strong>5. Lease Scanner.</strong> Text you paste into the Lease Scanner is processed entirely in your browser. It is never sent to our servers, stored, or shared with anyone.</p>
     <p style="margin-bottom:16px"><strong>6. Data Storage.</strong> Review data is stored in a Supabase (PostgreSQL) database with Row Level Security enabled. Access is restricted to the minimum needed for the Site to function.</p>
     <p style="margin-bottom:16px"><strong>7. Data Retention.</strong> Reviews are retained indefinitely to maintain the usefulness of the platform. If you want a review removed, email us at <a href="mailto:ratemycrib@proton.me" style="color:var(--orange)">ratemycrib@proton.me</a> with details about the review you submitted.</p>
