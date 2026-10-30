@@ -1,4 +1,4 @@
-"""Read-only check that ratemycrib.net serves the merged code (Oct 30: #12 one review per lease). Writes data/probe/live.json."""
+"""Read-only check that ratemycrib.net serves the merged code (Oct 30: #13 grad programs, #14 soft gate + mailing list). Writes data/probe/live.json."""
 import json, os, time, urllib.request
 def get(path):
     req = urllib.request.Request("https://ratemycrib.net" + path + ("&" if "?" in path else "?") + "t=" + str(int(time.time())), headers={"User-Agent": "RateMyCrib deploy check", "Cache-Control": "no-cache"})
@@ -17,8 +17,9 @@ for attempt in range(12):
     s8, fly = get("/flyer.html")
     s9, qrjs = get("/vendor/qrcode-generator-1.4.4.js")
     s10, bank = get("/landlord/bankier-apartments/")
+    s11, unsub = get("/unsubscribe.html")
     out = {
-      "index": s, "admin": s2, "majors": s3, "vendor_supabase": s4,
+      "index": s, "unsubscribe_page": s11 == 200 and "rmc_unsubscribe" in unsub, "admin": s2, "majors": s3, "vendor_supabase": s4,
       "csp_meta": "Content-Security-Policy" in idx,
       "no_cdn_scripts": "cdn.jsdelivr.net" not in idx and "cdnjs.cloudflare.com" not in idx,
       "near_classes": "NearClassesHTML" in idx,
@@ -26,7 +27,7 @@ for attempt in range(12):
       "analytics_ids": "ANALYTICS" in idx and "globalPrivacyControl" in idx,
       "admin_page": "admin_dashboard" in adm and "noindex" in adm,
       "majors_count": len(json.loads(maj)) if s3 == 200 else 0,
-      "lease_rule_live": "When did this lease start?" in idx and "rmc_reviewed_leases" in idx and "device_fingerprint" not in idx, "hero_search": "hero-search" in idx, "updates_email": "UpdatesEmailHTML" in idx, "new_title": "UIUC Landlord Reviews by Students" in idx,
+      "grad_programs_live": "nearClassesSource" in idx, "soft_gate_live": "UnlockPanelHTML" in idx and "footer-signup" in idx, "lease_rule_live": "When did this lease start?" in idx and "rmc_reviewed_leases" in idx and "device_fingerprint" not in idx, "hero_search": "hero-search" in idx, "updates_email": "UpdatesEmailHTML" in idx, "new_title": "UIUC Landlord Reviews by Students" in idx,
       "hub": s5, "hub_title": (hub.split("<title>")[1].split("</title>")[0] if "<title>" in hub else ""),
       "jsm": s6, "jsm_title": (jsm.split("<title>")[1].split("</title>")[0] if "<title>" in jsm else ""),
       "sitemap_landlord_urls": sm.count("/landlord/") if s7 == 200 else 0,

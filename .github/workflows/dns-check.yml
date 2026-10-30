@@ -1,0 +1,29 @@
+# One-off read-only lookup: who runs ratemycrib.net's DNS and email (data branch only).
+name: DNS check
+on:
+  push:
+    branches: [data/catalog-snapshot]
+    paths: [.github/workflows/dns-check.yml]
+permissions:
+  contents: write
+jobs:
+  dns:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          sudo apt-get install -y -qq whois >/dev/null 2>&1 || true
+          mkdir -p data/probe
+          {
+            for t in NS MX TXT A; do echo "== $t"; dig +short ratemycrib.net $t; done
+            echo "== _dmarc"; dig +short _dmarc.ratemycrib.net TXT
+            echo "== proton"; dig +short ratemycrib.net TXT | grep -i proton || echo none
+            echo "== whois"; whois ratemycrib.net | grep -iE "^(registrar|registrar url|name server|creation date|registry expiry)" | head -12
+          } > data/probe/dns.txt
+          cat data/probe/dns.txt
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/probe/dns.txt
+          git commit -m "DNS check $(date -u +%H:%M)" || echo "nothing new"
+          for i in 1 2 3; do git pull --rebase -q && git push && break; sleep 5; done
