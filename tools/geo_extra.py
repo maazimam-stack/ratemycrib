@@ -6,6 +6,7 @@ ADDR = {
     "Law Building": "504 E Pennsylvania Ave, Champaign, IL 61820",
     "Medical Sciences Building": "506 S Mathews Ave, Urbana, IL 61801",
     "Vet Med Basic Sciences Bldg": "2001 S Lincoln Ave, Urbana, IL 61802",
+    "Inst Labor &  Industrial Rel": "504 E Armory Ave, Champaign, IL 61820",
 }
 out = {}
 for name, a in ADDR.items():
