@@ -10,6 +10,7 @@
  "analytics_ids": true,
  "admin_page": true,
  "majors_count": 154,
+ "lease_rule_live": true,
  "hero_search": true,
  "updates_email": true,
  "new_title": true,
