@@ -1,0 +1,31 @@
+{
+ "Veterinary Teaching Hospital": [
+  {
+   "matched": "1008 W HAZELWOOD DR, URBANA, IL, 61802",
+   "lat": 40.090974040466,
+   "lng": -88.223481125204
+  }
+ ],
+ "Carle Foundation Hospital": [
+  {
+   "matched": "611 W PARK ST, URBANA, IL, 61801",
+   "lat": 40.117328006818,
+   "lng": -88.214640798806
+  }
+ ],
+ "Law Building": [],
+ "Medical Sciences Building": [
+  {
+   "matched": "506 S MATHEWS AVE, URBANA, IL, 61801",
+   "lat": 40.108665347764,
+   "lng": -88.225478925342
+  }
+ ],
+ "Vet Med Basic Sciences Bldg": [
+  {
+   "matched": "2001 S LINCOLN AVE, URBANA, IL, 61802",
+   "lat": 40.090885057476,
+   "lng": -88.219039051651
+  }
+ ]
+}
