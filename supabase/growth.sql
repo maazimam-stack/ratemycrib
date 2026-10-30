@@ -20,9 +20,16 @@
 --      for you to approve or delete. Above 400 an hour, new unverified reviews are refused outright.
 --   6. Sign-in accounts left over from unused verifications are deleted every 15 minutes (needs pg_cron,
 --      which this file turns on if your project allows it; otherwise it tells you how).
+--   7. Student contacts (private.contacts) for RateMyCrib updates, as the review form and privacy policy say:
+--      the @illinois.edu address of everyone who verifies (verified = true), plus any email typed into the
+--      optional "Email for updates" field of the review form (verified = false: nobody proved they own it).
+--      It holds the email, where it came from and the day it was first seen: no review, landlord or time.
+--      Admins can export it from admin.html.
 --
--- Privacy note: the review row never holds an email or account id. Supabase still keeps its own short-lived
--- sign-in logs; under Authentication > Settings, keep "write audit logs to the database" off.
+-- Privacy note: the review row never holds an email or account id, and contacts are stored apart from
+-- reviews. Someone with full database access could still try to match the two by when rows were written,
+-- so treat private.contacts as sensitive. Supabase keeps its own short-lived sign-in logs; under
+-- Authentication > Settings, keep "write audit logs to the database" off.
 -- ----------------------------------------------------------------------------
 
 begin;
@@ -182,6 +189,86 @@ begin
 exception when others then
   raise notice 'Could not schedule the cleanup (%). Turn on pg_cron under Database > Extensions, then run this file again.', sqlerrm;
 end $$;
+
+-- 2b. Student contacts (see 7 above). Saved when the code is accepted, in its own request, never with a review.
+create table if not exists private.contacts (
+  email           text primary key check (email = lower(email)),
+  source          text not null default 'verification',
+  verified        boolean not null default false,
+  first_seen      date not null default current_date,
+  unsubscribed    boolean not null default false,
+  unsubscribed_on date
+);
+alter table private.contacts add column if not exists verified boolean not null default false;
+
+create or replace function public.rmc_save_contact()
+returns void
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare v_email text := private.confirmed_email();
+begin
+  if v_email like '%@illinois.edu' and private.signed_in_with_email_code() then
+    insert into private.contacts (email, source, verified) values (v_email, 'verification', true)
+      on conflict (email) do update set verified = true;
+  end if;
+end
+$$;
+revoke all on function public.rmc_save_contact() from public, anon;
+grant execute on function public.rmc_save_contact() to authenticated;
+
+-- The optional "Email for updates" field in the review form. Sent in its own request after the review posts.
+-- Unproven addresses: kept apart (verified = false), an unsubscribed address stays unsubscribed, and no more
+-- than 300 a day are accepted so a script can't bury the list in junk.
+create or replace function public.rmc_add_contact(p_email text)
+returns void
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare v text := lower(btrim(coalesce(p_email, '')));
+begin
+  if char_length(v) > 254 or v !~ '^[^@[:space:]]+@[^@[:space:]]+\.[a-z]{2,}$' then return; end if;
+  if (select count(*) from private.contacts c where c.source = 'review_form' and c.first_seen = current_date) >= 300 then return; end if;
+  insert into private.contacts (email, source, verified) values (v, 'review_form', false) on conflict (email) do nothing;
+end
+$$;
+revoke all on function public.rmc_add_contact(text) from public;
+grant execute on function public.rmc_add_contact(text) to anon, authenticated;
+
+create or replace function public.admin_contacts()
+returns jsonb
+language plpgsql
+stable
+security definer
+set search_path = ''
+as $$
+begin
+  if not public.rmc_is_admin() then raise exception 'Admins only' using errcode = '42501'; end if;
+  return (select coalesce(jsonb_agg(jsonb_build_object('email', c.email, 'first_seen', c.first_seen, 'verified', c.verified, 'source', c.source,
+            'unsubscribed', c.unsubscribed, 'unsubscribed_on', c.unsubscribed_on) order by c.first_seen desc, c.email), '[]'::jsonb)
+            from private.contacts c);
+end
+$$;
+revoke all on function public.admin_contacts() from public, anon;
+grant execute on function public.admin_contacts() to authenticated;
+
+create or replace function public.admin_set_unsubscribed(p_email text, p_unsubscribed boolean)
+returns void
+language plpgsql
+security definer
+set search_path = ''
+as $$
+begin
+  if not public.rmc_is_admin() then raise exception 'Admins only' using errcode = '42501'; end if;
+  update private.contacts
+     set unsubscribed = p_unsubscribed, unsubscribed_on = case when p_unsubscribed then current_date end
+   where email = lower(btrim(p_email));
+end
+$$;
+revoke all on function public.admin_set_unsubscribed(text, boolean) from public, anon;
+grant execute on function public.admin_set_unsubscribed(text, boolean) to authenticated;
 
 -- 3. Outreach: who you pitch and what you sent (admins only)
 create table if not exists public.prospects (
@@ -425,6 +512,7 @@ begin
                'reviews', (select count(*) from rv),
                'verified_reviews', (select count(*) from rv where rv.verified),
                'held_reviews', (select count(*) from public.reviews r where r.held),
+               'contacts', (select count(*) from private.contacts c where not c.unsubscribed),
                'landlords_reviewed', (select count(distinct rv.landlord_id) from rv),
                'landlords_with_3plus', (select count(*) from (select rv.landlord_id from rv group by 1 having count(*) >= 3) x),
                'prospects', (select count(*) from public.prospects),
