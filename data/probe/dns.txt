@@ -1,0 +1,33 @@
+== NS
+dns1.registrar-servers.com.
+dns2.registrar-servers.com.
+== MX
+10 eforward1.registrar-servers.com.
+10 eforward2.registrar-servers.com.
+10 eforward3.registrar-servers.com.
+15 eforward4.registrar-servers.com.
+20 eforward5.registrar-servers.com.
+== TXT
+"v=spf1 include:spf.efwd.registrar-servers.com ~all"
+"google-site-verification=sqjBhwkVshrt0GRXPpQi58GcSZNQ_9Cj8Cx01Qyjjhk"
+== A
+185.199.108.153
+185.199.110.153
+185.199.111.153
+185.199.109.153
+== _dmarc
+== proton
+none
+== whois
+registrar's sponsorship of the domain name registration in the registry is
+registrar.  Users may consult the sponsoring registrar's Whois database to
+Registrars.
+Registrar WHOIS Server: whois.namecheap.com
+Registrar URL: http://www.namecheap.com
+Creation Date: 2026-03-21T05:47:29.00Z
+Registrar Registration Expiration Date: 2027-03-21T05:47:29.00Z
+Registrar: NAMECHEAP INC
+Registrar IANA ID: 1068
+Registrar Abuse Contact Email: abuse@namecheap.com
+Registrar Abuse Contact Phone: +1.9854014545
+Name Server: dns1.registrar-servers.com
