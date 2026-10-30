@@ -18,5 +18,11 @@
  "jsm": 200,
  "jsm_title": "JSM Living Reviews: 4.3/5 from 7 student reviews | RateMyCrib",
  "sitemap_landlord_urls": 13,
+ "roommate_loop": true,
+ "almost_rated": true,
+ "flyer": 200,
+ "qr_lib": 200,
+ "early_read_nudge": true,
+ "verification_file": 200,
  "attempt": 1
 }
