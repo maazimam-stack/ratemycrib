@@ -6,7 +6,7 @@
      Even if bad code got onto the page, it could not post a pasted lease (or anything else) to another server. -->
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob:; connect-src 'self' https://expfrmknhdcwnccqjwnq.supabase.co; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>RateMyCrib — Honest UIUC Housing Reviews by Students</title>
+<title>UIUC Landlord Reviews by Students | RateMyCrib</title>
 <meta name="description" content="The honest guide to off-campus housing at UIUC. Search landlords, read real student reviews, and compare prices. By students, for students.">
 <meta property="og:title" content="RateMyCrib — Honest UIUC Housing Reviews">
 <meta property="og:description" content="Search landlords, read real student reviews, compare prices. No landlord money. No sponsored rankings.">
@@ -55,13 +55,12 @@
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "LocalBusiness",
+  "@type": "Organization",
   "name": "RateMyCrib",
   "description": "Honest landlord reviews for UIUC students. Search, compare, and rate off-campus housing.",
   "url": "https://ratemycrib.net",
   "email": "ratemycrib@proton.me",
-  "areaServed": "Champaign-Urbana, Illinois",
-  "priceRange": "Free"
+  "areaServed": "Champaign-Urbana, Illinois"
 }
 </script>
 <style>
@@ -4417,6 +4416,7 @@ function Footer() {
         <a onclick="go({page:'home',detail:null,hoodFilter:null})" style="cursor:pointer">All Landlords</a>
         <a onclick="go({page:'hoods'})" style="cursor:pointer">Neighborhoods</a>
         <a onclick="go({page:'streets'})" style="cursor:pointer">Browse by Street</a>
+        <a href="/landlord/">Landlord Reviews A–Z</a>
         <a onclick="go({page:'compare'})" style="cursor:pointer">Compare Prices</a>
         <a onclick="go({page:'h2h'})" style="cursor:pointer">Head-to-Head</a>
         <a onclick="go({page:'insights'})" style="cursor:pointer">Insights</a>
@@ -5373,7 +5373,7 @@ function updatePageTitle() {
   else if (S.page === 'insights') document.title = 'UIUC Housing Insights & Data | ' + base;
   else if (S.page === 'quiz') document.title = 'Find My Crib — Housing Match Quiz | ' + base;
   else if (S.page === 'rentcheck') document.title = 'Am I Overpaying? — Rent Check | ' + base;
-  else document.title = base + ' — Honest UIUC Housing Reviews by Students';
+  else document.title = 'UIUC Landlord Reviews by Students | ' + base;
 }
 
 function updateMetaDescription() {
@@ -5415,7 +5415,7 @@ function updateStructuredData() {
       "@type": "LocalBusiness",
       "name": l.name,
       "description": "UIUC landlord/management company reviewed by students on RateMyCrib",
-      "url": "https://ratemycrib.net/#landlord/" + slugify(l.name),
+      "url": "https://ratemycrib.net/landlord/" + slugify(l.name) + "/",
       "aggregateRating": {
         "@type": "AggregateRating",
         "ratingValue": stats.rating.toFixed(1),
