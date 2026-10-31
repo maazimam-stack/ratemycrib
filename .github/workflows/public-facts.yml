@@ -1,0 +1,21 @@
+# One-off read-only facts from the public API (data branch only).
+name: Public facts
+on:
+  push:
+    branches: [data/catalog-snapshot]
+    paths: [tools/public_facts.py, .github/workflows/public-facts.yml]
+permissions:
+  contents: write
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 tools/public_facts.py
+      - run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/probe/public_facts.json
+          git commit -m "Public facts $(date -u +%H:%M)" || echo "nothing new"
+          for i in 1 2 3; do git pull --rebase -q && git push && break; sleep 5; done
