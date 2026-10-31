@@ -1,0 +1,24 @@
+# Every 6 hours: is the site up, can visitors read reviews, are the database rules installed, is anything
+# waiting for you (held or reported reviews)? Opens or updates one issue ("RateMyCrib health check") when
+# something needs you, which GitHub emails you about, and closes it when all is well. Read-only: it uses the
+# public key, like any visitor.
+name: Health check
+on:
+  schedule:
+    - cron: "41 */6 * * *"
+  workflow_dispatch:
+permissions:
+  contents: read
+  issues: write
+concurrency:
+  group: health-check
+  cancel-in-progress: false
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 tools/health_check.py
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -2,8 +2,12 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Privacy Policy — RateMyCrib</title>
+<meta name="description" content="What RateMyCrib collects, why, how long we keep it, and how to get it deleted. Reviews are anonymous and never stored with an email address.">
+<link rel="canonical" href="https://ratemycrib.net/privacy.html">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #FBFAF7; color: #13294B; line-height: 1.7; }
@@ -12,68 +16,116 @@
   .nav-brand em { font-style: normal; color: #FF5F05; }
   .container { max-width: 720px; margin: 0 auto; padding: 48px 24px 80px; }
   h1 { font-size: 32px; font-weight: 800; margin-bottom: 8px; color: #13294B; }
-  .updated { font-size: 14px; color: #7C7C7C; margin-bottom: 40px; }
+  .updated { font-size: 14px; color: #5B6578; margin-bottom: 24px; }
+  .summary { background: #fff; border: 1px solid #D6D2C8; border-left: 4px solid #C2410C; padding: 16px 20px; margin-bottom: 32px; }
+  .summary p { margin-bottom: 8px; }
   h2 { font-size: 20px; font-weight: 700; margin-top: 36px; margin-bottom: 12px; color: #13294B; }
-  p { margin-bottom: 16px; font-size: 15px; }
-  footer { border-top: 1px solid #E8E8E8; padding: 24px 32px; text-align: center; font-size: 12px; color: #7C7C7C; }
+  h3 { font-size: 16px; font-weight: 700; margin-top: 20px; margin-bottom: 8px; }
+  p, li { font-size: 15px; }
+  p { margin-bottom: 16px; }
+  ul { margin: 0 0 16px 22px; }
+  li { margin-bottom: 6px; }
+  a { color: #C2410C; }
+  footer { border-top: 1px solid #E8E8E8; padding: 24px 32px; text-align: center; font-size: 12px; color: #5B6578; }
+  footer a { color: #5B6578; margin: 0 8px; }
+  @media (max-width: 480px) { .nav { padding: 0 16px; } .container { padding: 32px 16px 64px; } }
 </style>
 </head>
 <body>
-<div class="nav"><a class="nav-brand" href="index.html">Rate<em>My</em>Crib</a></div>
+<div class="nav"><a class="nav-brand" href="/">Rate<em>My</em>Crib</a></div>
 <div class="container">
 <h1>Privacy Policy</h1>
-<p class="updated">Last updated: October 29, 2026</p>
+<p class="updated">Last updated: October 30, 2026</p>
 
-<h2>1. Information We Collect</h2>
-<p>When you submit a review, we collect: the content of your review, your star ratings, tags you select, and the landlord and property you're reviewing. If you choose to verify your student status or give an email for updates, we keep that email address (see section 3).</p>
-<p>To understand how the site is used, we log page views and feature use (for example, searches and lease scans, never the text of a lease) with a random visitor ID that resets every calendar month, a random ID for each visit, the kind of device (phone, tablet or computer) and the website that sent you (for example reddit.com). The visitor ID is never attached to a review. If your browser sends Global Privacy Control or Do Not Track, we do not assign a visitor ID.</p>
-<p>We also automatically collect basic usage data through our hosting provider, which may include your IP address, browser type, device type, and pages visited. We do not use third-party tracking cookies or advertising pixels.</p>
-<p>To prevent fraudulent or duplicate reviews, we generate a device fingerprint — a non-identifying hash derived from your browser and device characteristics (such as screen resolution, timezone, and browser plugins). This fingerprint is used solely for anti-fraud purposes. It does not identify you personally and is not shared with third parties.</p>
-
-<h2>2. How We Use Your Information</h2>
-<p>We use the information we collect to: display reviews on the platform for other students to read, verify student status when an @illinois.edu email is provided, send occasional updates to people who gave us an email (you can unsubscribe anytime), improve the Service and user experience, and enforce our Terms of Service (e.g., removing fraudulent reviews).</p>
-
-<h2>3. Email Addresses</h2>
-<p>There are two optional ways to give us an email address in the review form. If you verify, we send a one-time code to your @illinois.edu address through our database provider, Supabase; when your review posts it is marked "Verified Illini" and the sign-in account is deleted. You can also type any address into the "Email for updates" box. Either way, we keep the address, where it came from and the day we first received it in a separate contact list so we can send occasional RateMyCrib updates. Every email includes a way to unsubscribe, and you can ask us to delete your address at any time by writing to ratemycrib@proton.me. The contact list holds no reviews, landlords or times; your email is never stored with or displayed alongside your review, and the site shows only the date a review was posted. We never sell your email or share it with landlords. Supabase keeps routine sign-in logs for a short time for security.</p>
-
-<h2>4. Data Storage</h2>
-<p>Review data is stored securely using Supabase, a cloud database provider, with servers located in the United States. We use industry-standard security measures to protect your data.</p>
-
-<h2>5. Data Sharing</h2>
-<p>We do not sell, trade, or rent your personal information to third parties. We may share anonymized, aggregated data (e.g., "average rent in Campustown") for research or reporting purposes. We may disclose information if required by law or to protect the rights and safety of RateMyCrib and its users.</p>
-
-<h2>6. Your Rights</h2>
-<p>You may request deletion of a review you submitted by emailing ratemycrib@proton.me with details identifying your review. Since reviews are anonymous, you may need to provide information that confirms you are the original author.</p>
-
-<h2>7. Cookies and Local Storage</h2>
-<p>We use browser localStorage to remember your "helpful" votes so you don't accidentally vote twice, your theme and major choices, and the monthly visitor ID described in section 1. We do not use tracking cookies, advertising cookies, or any third-party analytics that track you across websites.</p>
-
-<h2>8. State Privacy Rights</h2>
-<p>If you are a California resident, you have the right under the California Consumer Privacy Act (CCPA) to request disclosure of what personal information we collect, request deletion of your personal information, and opt out of the sale of your personal information. We do not sell personal information.</p>
-<p>If you are an Illinois resident, we do not collect biometric information. We comply with all applicable provisions of the Illinois Personal Information Protection Act.</p>
-<p>To exercise any state privacy rights, email ratemycrib@proton.me with your request. We will respond within 45 days.</p>
-
-<h2>9. Data Retention</h2>
-<p>We retain review data for as long as the Service is operational. If you request deletion of your review, we will remove it within 30 days of verifying your identity as the original author. Anonymized, aggregated data may be retained indefinitely.</p>
-
-<h2>10. Children's Privacy</h2>
-<p>The Service is intended for college students (ages 18+). We do not knowingly collect information from anyone under 18. If you believe we have collected information from a minor, contact us immediately and we will delete the information.</p>
-
-<h2>11. International Users</h2>
-<p>The Service is operated in the United States. If you access the Service from outside the US, you consent to the transfer of your information to the United States, which may have different data protection laws than your country.</p>
-
-<h2>12. Do Not Track</h2>
-<p>The Service does not use tracking cookies and does not respond to "Do Not Track" browser signals, because we do not track users across other websites in the first place.</p>
-
-<h2>13. Security</h2>
-<p>We implement reasonable technical and organizational measures to protect your data, including Row Level Security policies on our database, encrypted connections (HTTPS/TLS), and restricted database access. However, no method of transmission over the Internet or electronic storage is 100% secure, and we cannot guarantee absolute security.</p>
-
-<h2>14. Changes to This Policy</h2>
-<p>We may update this Privacy Policy from time to time. Changes will be posted on this page with an updated date. Your continued use of the Service after changes are posted constitutes acceptance of the updated policy.</p>
-
-<h2>15. Contact</h2>
-<p>Questions about your privacy? Email us at <a href="mailto:ratemycrib@proton.me" style="color:#FF5F05">ratemycrib@proton.me</a>.</p>
+<div class="summary">
+<p><strong>The short version.</strong> Reviews are anonymous: they're never stored with an email address, an account or anything that identifies your device. Giving us an email is always optional; it goes on a separate list, every email we send has an unsubscribe link, and we never sell it or share it with landlords. Leases you scan never leave your browser.</p>
+<p>The rest of this page is the detail. It applies to ratemycrib.net, including the review form, the landlord pages and the lease scanner. "We" means RateMyCrib, a student-run project in Champaign-Urbana. Questions: <a href="mailto:ratemycrib@proton.me">ratemycrib@proton.me</a>.</p>
 </div>
-<footer>&copy; 2026 RateMyCrib. All rights reserved.</footer>
+
+<h2>1. What we collect</h2>
+<h3>When you post a review</h3>
+<p>What you put in the form: the landlord, your star rating, whether you'd rent from them again, your review, when your lease started (and ended, if you say), and anything optional you add: the street address (we remove unit numbers before saving it), neighborhood, monthly rent, whether you got your security deposit back, area scores and tags. We also store when it was posted; the site shows only the date.</p>
+<p>A review is never stored with an email address, a sign-in account, an IP address or a device identifier. Reviews posted before October 30, 2026 also stored a "device fingerprint" (a code made from browser settings, used to catch duplicates). We no longer collect it, and it has never been shown on the site.</p>
+<p>If you add a landlord that isn't listed yet, we save its name so others can pick it. Student-added landlords get a page on Google only after we've checked them.</p>
+
+<h3>If you give us an email address (optional)</h3>
+<p>There are five places you can do this:</p>
+<ul>
+<li><strong>Verification</strong> in the review form: we email a one-time code to your @illinois.edu address through our database provider, Supabase. If you enter it, your review gets the "Verified Illini" badge, and the temporary sign-in account is deleted when the review posts (or within a couple of hours if you don't post). Verifying adds your address to our list for occasional updates, as the form says; "Undo" right after verifying takes it off again.</li>
+<li><strong>"Email for updates"</strong> in the review form.</li>
+<li><strong>"Unlock every review"</strong> on landlord pages and Browse by Street.</li>
+<li><strong>"Lease-season tips"</strong> at the bottom of each page.</li>
+<li><strong>Lease scanner early access</strong> (the "Smarter Lease Scanner" box).</li>
+</ul>
+<p>For each address we keep: the address, which box it came from, the exact wording that box showed you (as a record of what you agreed to), the day we first got it, whether you've unsubscribed, and a random code for your unsubscribe link. That list holds no reviews, landlords or times, and it's kept apart from reviews. Your email is never shown on the site.</p>
+
+<h3>When you use the site</h3>
+<p>To see what's working, we record pages viewed and features used: for example searches (the words you typed), the rent and landlord you enter in "Am I Overpaying?", the major and year you pick in "Near your classes", that a lease scan ran and how many clauses it flagged (never the lease itself), shares, and whether the review form was opened or closed. With each one we record:</p>
+<ul>
+<li>a random visitor ID that resets every calendar month, so we can count people rather than clicks. If your browser sends <strong>Global Privacy Control or Do Not Track</strong>, we don't create one;</li>
+<li>a random ID for the visit, which ends when you close the tab;</li>
+<li>the kind of device (phone, tablet or computer), screen size and the page;</li>
+<li>the website that sent you (just the site, like reddit.com, never the page) and any campaign code in the link (like ?ref=flyer).</li>
+</ul>
+<p>Events about posting a review or verifying carry no visitor or visit ID, no screen size, and only the hour, so they can't be tied to the rest of a visit or matched to a review by time.</p>
+
+<h3>When you report a review</h3>
+<p>Which review and the reason you picked. Nothing about you or your browser.</p>
+
+<h3>What our providers see</h3>
+<p>Our database doesn't store IP addresses. But like any website, the companies that run it receive your IP address and browser details when your browser connects to them, and keep their own short-term logs under their own privacy policies: GitHub Pages (hosts the site), Supabase (database and the verification sign-in) and Google Fonts (the site's fonts).</p>
+
+<h3>The lease scanner</h3>
+<p>The scanner reads your lease entirely in your browser. The lease is never uploaded, stored or seen by us or anyone else.</p>
+
+<h2>2. On your device</h2>
+<p>We don't use cookies, and nothing on the site tracks you across other websites. The site keeps a few small items in your browser's storage: your theme and major choices; which reviews you marked helpful or reported (just their ids); short scrambled codes for the leases you reviewed (so the same lease isn't reviewed twice from one browser); whether you've unlocked every review; the monthly visitor ID and visit ID described above; and a copy of the site's files so it opens offline. You can clear all of it in your browser settings at any time.</p>
+
+<h2>3. How we use it</h2>
+<p>To show reviews and the ratings and statistics calculated from them; to keep out fake, duplicate and spam reviews (some reviews wait for a person to check them before they appear); to understand which pages and features people use; to send the occasional emails you signed up for; to respond to messages, reports and legal requests; and to keep the site secure.</p>
+
+<h2>4. Sharing</h2>
+<ul>
+<li>We <strong>never sell</strong> personal information, and we never share email addresses with landlords.</li>
+<li><strong>Service providers</strong> that run the site for us: Supabase (database), GitHub (hosting), Google Fonts, Proton Mail (our email), and, once we start sending updates, an email delivery service. They may use the data only to provide their service.</li>
+<li><strong>Aggregate statistics</strong> that don't identify anyone, like "average rent on Green St" or a landlord's average rating, may be published or included in reports we offer to landlords, property managers or local businesses.</li>
+<li><strong>Legal requests.</strong> If the law requires it (for example a valid subpoena or court order), we may have to disclose information we hold. Because reviews aren't stored with emails, accounts or IP addresses, there is very little that could identify a reviewer.</li>
+</ul>
+
+<h2>5. How long we keep it</h2>
+<ul>
+<li>Reviews: while the site runs, unless removed. A removed review is deleted; we keep only a note that it was removed, when and why, never its text.</li>
+<li>Usage records: deleted after 25 months.</li>
+<li>Email addresses: until you ask us to delete them. If you unsubscribe, we keep the address marked "unsubscribed" so we never email it again.</li>
+<li>If you ask us to delete your address, we delete it and keep only a one-way scrambled fingerprint (a hash) of it, so it can never be added back to the list by anyone. The hash can't be turned back into your address.</li>
+<li>Verification sign-in accounts: deleted when the review posts, or within a couple of hours.</li>
+<li>Spam protection counts (how many reviews, reports, etc. arrived each hour, with nothing about who sent them): 2 days.</li>
+</ul>
+
+<h2>6. Your choices and rights</h2>
+<ul>
+<li><strong>Unsubscribe</strong> with the link in any email we send.</li>
+<li><strong>Delete your email, or ask what we hold</strong>: write to <a href="mailto:ratemycrib@proton.me">ratemycrib@proton.me</a>.</li>
+<li><strong>Remove a review you wrote</strong>: email us the landlord, the lease dates and roughly when you posted it, so we can find it. Because reviews are anonymous we can't look them up by your name or email, and we may ask a question only the author could answer.</li>
+<li><strong>Opt out of the visitor ID</strong>: turn on Global Privacy Control or Do Not Track in your browser.</li>
+</ul>
+<p>Depending on where you live (for example California), you may have rights to know, access, correct or delete personal information and to opt out of its sale or sharing for advertising. We don't sell or share personal information for advertising. Email us to use any of these rights; we'll respond within 30 days, and we won't treat you differently for asking.</p>
+
+<h2>7. Age</h2>
+<p>RateMyCrib is for college students and other renters. You must be 18 or older to post a review or give us your email. We don't knowingly collect personal information from anyone under 18; if you think we have, email us and we'll delete it.</p>
+
+<h2>8. Security</h2>
+<p>We use encrypted connections (HTTPS), database rules that keep the public from reading anything but published reviews, and limits on how fast anything can be submitted. Only RateMyCrib's administrators can see email addresses, and the review list and email list are kept separate. No system is perfectly secure; if we learn of a breach affecting your information, we'll tell you as the law requires.</p>
+
+<h2>9. Where your data is</h2>
+<p>RateMyCrib is run from Illinois, and our providers store data in the United States. If you use the site from elsewhere, your information is processed in the United States.</p>
+
+<h2>10. Changes</h2>
+<p>If we change this policy, we'll post the new version here with a new date. If a change affects how we use email addresses you already gave us, we'll tell you by email before it applies.</p>
+
+<h2>11. Contact</h2>
+<p>Email <a href="mailto:ratemycrib@proton.me">ratemycrib@proton.me</a>.</p>
+</div>
+<footer><a href="/">RateMyCrib</a><a href="/terms.html">Terms</a><a href="/landlords.html">For landlords</a><br>&copy; 2026 RateMyCrib</footer>
 </body>
 </html>

@@ -143,7 +143,9 @@ revoke select, update, delete, truncate on public.reported_reviews from anon, au
 grant insert on public.reviews, public.user_properties, public.user_landlords,
                 public.site_events, public.scanner_interest, public.reported_reviews to anon, authenticated;
 grant select on public.user_landlords to anon, authenticated;
-grant select on public.reviews_public, public.user_properties_public to anon, authenticated;
+grant select on public.reviews_public to anon, authenticated;
+-- user_properties_public is not granted to the public: the site never reads it, and it carries the time each
+-- address was typed (see supabase/hardening.sql). Admins read user_properties in the dashboard.
 
 revoke all on function public.adjust_helpful(text, integer) from public;
 grant execute on function public.adjust_helpful(text, integer) to anon, authenticated;

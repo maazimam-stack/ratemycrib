@@ -135,7 +135,19 @@ for g in grad:
 under = [m for m in json.load(open(f'{SP}/majors/majors.json')) if not m.get('kind')]
 names = {m['name'].lower() for m in under}
 uniq = [g for g in uniq if g['name'].lower() not in names]
+# The file name's last part repeats across degrees ("Food Science, MS" and "..., PhD" are both food-science), and
+# the site keeps only one entry per id. The last one keeps the plain id (what earlier builds resolved to, so a
+# saved choice still opens the same program); the others get their degree added.
+by_slug = {}
+for g in uniq: by_slug.setdefault(g['slug'], []).append(g)
+for slug, gs in by_slug.items():
+    for g in gs[:-1]:
+        deg = re.search(r',\s*([A-Za-z]+)(\s+Joint Degrees)?\s*$', g['name'])
+        g['slug'] = slug + '-' + (deg.group(1).lower() if deg else 'alt')
+        if g['slug'] == slug + '-' + slug.rsplit('-', 1)[-1]: g['slug'] = slug + '-only'
 out = under + PRO + uniq
+dups = [k for k, n in Counter(m['slug'] for m in out).items() if n > 1]
+if dups: raise SystemExit('Duplicate program ids: ' + ', '.join(dups))
 json.dump(out, open(f'{SP}/majors/majors.json', 'w'), separators=(',', ':'))
 print('NO LOCATION:', NOLOC)
 print(len(under), 'undergrad +', len(PRO), 'professional +', len(uniq), 'graduate programs;', dict(skipped))

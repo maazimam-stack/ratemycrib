@@ -11,7 +11,11 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&family=Oswald:wght@500;600&display=swap" rel="stylesheet">
+<style id="frame-guard">html { display: none !important; }</style>
 <script>
+  // Only ever shown as the top page, never inside another site's frame (clickjacking)
+  if (window.top === window.self) { var fg = document.getElementById('frame-guard'); if (fg) fg.parentNode.removeChild(fg); }
+  else { try { window.top.location = window.self.location.href; } catch (e) {} }
   // Same theme as the site: saved choice first, then the device setting
   (function () {
     var t = null; try { t = localStorage.getItem('rmc-theme'); } catch (e) {}
@@ -40,12 +44,13 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html { -webkit-text-size-adjust: 100%; }
   body { font-family: 'Public Sans', -apple-system, 'Segoe UI', sans-serif; background: var(--page); color: var(--text); font-size: 14px; line-height: 1.45; -webkit-font-smoothing: antialiased; }
-  ::selection { background: var(--orange); color: #fff; }
+  ::selection { background: #C2410C; color: #fff; }
   :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
   a { color: inherit; text-underline-offset: 3px; }
   button, input, select, textarea { font: inherit; color: inherit; }
   .num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
   [hidden] { display: none !important; }
+  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
 
   /* Top bar */
   .bar { background: var(--navy); color: #fff; }
@@ -136,7 +141,7 @@
   /* Buttons and forms */
   .btn { min-height: 40px; padding: 8px 14px; border-radius: 2px; border: 1px solid var(--line); background: var(--surface); font-weight: 700; font-size: 13px; cursor: pointer; }
   .btn:hover { border-color: var(--text); }
-  .btn.primary { background: var(--orange); border-color: var(--orange); color: #fff; }
+  .btn.primary { background: #C2410C; border-color: #C2410C; color: #fff; }
   .btn.primary:hover { background: #E85400; }
   .btn.small { min-height: 32px; padding: 4px 10px; font-size: 12px; }
   .btn.danger { color: var(--bad); }
@@ -206,8 +211,8 @@
 </head>
 <body>
 <div id="app"></div>
-<script src="/vendor/supabase-js-2.118.0.js"></script>
-<script src="/vendor/qrcode-generator-1.4.4.js"></script>
+<script src="/vendor/supabase-js-2.118.0.js" integrity="sha384-TcHRA3zBbn+Lexh5n+Oil4guNPOS3rjNDpGRAN46u/s/mB2IZ50ceC6TYDU2yvgK"></script>
+<script src="/vendor/qrcode-generator-1.4.4.js" integrity="sha384-8FWZA6BGMXhsfO+BLtrJK0We6gg5o1JyO8xQm6peWDEUs17ACA5ziE/NIAkl9z2k"></script>
 <script>
 'use strict';
 // ===== RateMyCrib admin =====
@@ -219,7 +224,8 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { storageKey: 'rmc-admin-auth', storage: window.sessionStorage } });
 
 const A = { user: null, tab: 'overview', days: 30, data: null, error: null, loading: false, names: {}, prospects: [], log: [], held: [], contacts: [], showAllContacts: false,
-  sort: { key: 'views', dir: -1 }, compose: null, editing: null };
+  sort: { key: 'views', dir: -1 }, compose: null, editing: null, reports: [], userLandlords: [], modLog: [], hardening: true, heldPick: {}, search: { q: '', rows: null },
+  mfa: { factors: [], enrolling: null, needCode: false, factorId: null } };
 try { const t = sessionStorage.getItem('rmc-admin-tab'); if (t) A.tab = t; const d = +sessionStorage.getItem('rmc-admin-days'); if ([7, 30, 90].includes(d)) A.days = d; } catch (e) {}
 
 const $ = sel => document.querySelector(sel);
@@ -258,15 +264,23 @@ const landlordName = (lid, fallback) => A.names[lid] || fallback || 'Landlord #'
 // ===== Data =====
 async function loadAll() {
   A.loading = true; render();
-  const [{ data, error }, p, l, h, ct] = await Promise.all([
+  const [{ data, error }, p, l, h, ct, rp, ul, ml] = await Promise.all([
     db.rpc('admin_dashboard', { p_days: A.days }),
     db.from('prospects').select('*').order('updated_at', { ascending: false }),
     db.from('outreach_log').select('*').order('sent_at', { ascending: false }).limit(50),
     db.rpc('admin_held_reviews'),
-    db.rpc('admin_contacts')
+    db.rpc('admin_contacts'),
+    db.rpc('admin_reports'),
+    db.rpc('admin_user_landlords'),
+    db.rpc('admin_moderation_log')
   ]);
   A.held = h.error ? [] : h.data || [];
   A.contacts = ct.error ? [] : ct.data || [];
+  A.hardening = !rp.error; // supabase/hardening.sql adds reports, takedowns and student-landlord tools
+  A.reports = rp.error ? [] : rp.data || [];
+  A.userLandlords = ul.error ? [] : ul.data || [];
+  A.modLog = ml.error ? [] : ml.data || [];
+  A.heldPick = {};
   A.loading = false;
   if (error) { A.error = error; A.data = null; }
   else { A.error = null; A.data = data; }
@@ -343,10 +357,11 @@ function wireChart(el, rows) {
 function render() {
   const app = $('#app');
   if (!A.user) { app.innerHTML = SignIn(); return; }
-  const tabs = [['overview', 'Overview'], ['landlords', 'Landlords & demand'], ['outreach', 'Outreach'], ['guide', 'What we track']];
+  const waiting = A.held.length + A.reports.length + A.userLandlords.filter(u => !u.approved).length;
+  const tabs = [['overview', 'Overview'], ['moderation', 'Reviews & reports' + (waiting ? ' (' + waiting + ')' : '')], ['landlords', 'Landlords & demand'], ['outreach', 'Outreach'], ['guide', 'What we track']];
   app.innerHTML =
     '<header class="bar"><div class="bar-in">' +
-      '<a class="brand" href="/">Rate<em>My</em>Crib<small>Admin</small></a>' +
+      '<a class="brand" href="/" target="_blank" rel="noopener">Rate<em>My</em>Crib<small>Admin</small></a>' +
       '<div class="bar-right">' +
         '<div class="seg" role="group" aria-label="Date range">' + [7, 30, 90].map(d => '<button type="button" aria-pressed="' + (A.days === d) + '" onclick="setDays(' + d + ')">' + d + ' days</button>').join('') + '</div>' +
         '<button type="button" class="ghost" onclick="loadAll()">Refresh</button>' +
@@ -363,12 +378,20 @@ function Body() {
   if (A.error) return SetupHelp(A.error);
   if (!A.data) return '<section><p class="empty">Loading…</p></section>';
   if (A.tab === 'landlords') return Landlords();
+  if (A.tab === 'moderation') return Moderation();
   if (A.tab === 'outreach') return Outreach();
   if (A.tab === 'guide') return Guide();
   return Overview();
 }
 
 function SignIn() {
+  if (A.mfa.needCode) return '<div class="signin"><div class="panel"><h1>Two-step sign-in</h1>' +
+    '<p>Enter the 6-digit code from your authenticator app.</p>' +
+    '<form onsubmit="event.preventDefault();verifyMfa()">' +
+      '<label class="f" for="mfa-code">Code</label><input class="i" id="mfa-code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" required />' +
+      '<button class="btn primary" style="width:100%;margin-top:16px" type="submit" id="mfa-go">Verify</button>' +
+      '<p class="err" id="mfa-err" role="alert" hidden></p>' +
+    '</form><p style="margin-top:12px"><button type="button" class="btn small" onclick="signOut()">Cancel</button></p></div></div>';
   return '<div class="signin"><div class="panel"><h1>RateMyCrib Admin</h1>' +
     '<p>Sign in with the admin account you created in Supabase (Authentication → Users). Only emails on the admin list can see any data.</p>' +
     '<form onsubmit="event.preventDefault();signIn()">' +
@@ -382,7 +405,7 @@ function SetupHelp(err) {
   const missing = ['PGRST202', '42883', 'PGRST205', '42P01'].includes(err.code);
   const notAdmin = err.code === '42501' || /admins only/i.test(err.message || '');
   return '<section><h2>Almost there</h2>' +
-    (missing ? '<div class="note"><strong>The dashboard functions aren\'t in the database yet.</strong> Open Supabase → SQL Editor → New query, paste all of <code>supabase/growth.sql</code> from the repo and press Run. Then refresh this page.</div>' : '') +
+    (missing ? '<div class="note"><strong>The dashboard functions aren\'t in the database yet.</strong> Open Supabase → SQL Editor → New query, paste all of <code>supabase/growth.sql</code> from the repo and press Run, then do the same with <code>supabase/mailing.sql</code> and <code>supabase/hardening.sql</code>, in that order. Then refresh this page.</div>' : '') +
     (notAdmin ? '<div class="note"><strong>You\'re signed in as ' + esc(A.user.email) + ', but that email isn\'t on the admin list.</strong> In Supabase → SQL Editor, run:<br><code>insert into private.admins (email) values (\'' + esc(A.user.email.toLowerCase()) + '\');</code><br>Then press Refresh.</div>' : '') +
     (!missing && !notAdmin ? '<div class="note"><strong>The database returned an error:</strong> ' + esc(err.message || String(err)) + '</div>' : '') +
     '<button class="btn" onclick="loadAll()">Try again</button></section>';
@@ -396,7 +419,19 @@ function Overview() {
   const mobile = pct(c.mobile_sessions, c.sessions);
   const daily = d.daily || [];
   const sumV = daily.reduce((s, r) => s + r.visitors, 0), sumR = daily.reduce((s, r) => s + r.reviews, 0);
-  return '<section>' + Held() +
+  const wk = daily.slice(-7).reduce((n, r) => n + (+r.reviews || 0), 0), wkPrev = daily.length >= 14 ? daily.slice(-14, -7).reduce((n, r) => n + (+r.reviews || 0), 0) : null;
+  const waitingNote = (A.held.length || A.reports.length || A.userLandlords.some(u => !u.approved))
+    ? '<div class="note"><strong>Waiting for you:</strong> ' + [A.held.length ? A.held.length + ' held review' + (A.held.length !== 1 ? 's' : '') : '', A.reports.length ? A.reports.length + ' reported review' + (A.reports.length !== 1 ? 's' : '') : '',
+        A.userLandlords.filter(u => !u.approved).length ? A.userLandlords.filter(u => !u.approved).length + ' new student-added landlord' + (A.userLandlords.filter(u => !u.approved).length !== 1 ? 's' : '') : ''].filter(Boolean).join(', ') +
+      '. <button type="button" class="btn small" onclick="setTab(\'moderation\')">Open Reviews &amp; reports</button></div>' : '';
+  return '<section>' + waitingNote +
+    '<h2>North star: reviews</h2><p class="sub">Every other number gets easier once landlords have 3+ reviews (that\'s when ratings, labels and Google pages switch on).</p>' +
+    '<dl class="score">' +
+      cell('Reviews in the last 7 days', wk, wkPrev, 'Compared with the 7 days before') +
+      '<div><dt>Landlords with 3+ reviews</dt><dd><span class="v">' + fmt(t.landlords_with_3plus) + '</span></dd><p class="why">' + fmt(t.landlords_reviewed) + ' landlords have at least one</p></div>' +
+      '<div><dt>Reviews, all time</dt><dd><span class="v">' + fmt(t.reviews) + '</span></dd><p class="why">' + fmt(t.verified_reviews) + ' verified · ' + fmt(t.held_reviews) + ' held</p></div>' +
+      '<div><dt>Deposit answers</dt><dd><span class="v">' + fmt(t.deposit_answers) + '</span></dd><p class="why">' + (t.deposit_answers ? fmt(t.deposit_full_pct) + '% got it all back' : 'The new "deposit back?" question') + '</p></div>' +
+    '</dl>' +
     '<h2>Last ' + A.days + ' days</h2><p class="sub">Change is against the ' + A.days + ' days before. Hover a number\'s change to see the earlier figure.</p>' +
     '<dl class="score">' +
       cell('Visitors', c.visitors, p.visitors, visitorsNote || 'Unique browsers, reset monthly') +
@@ -407,7 +442,11 @@ function Overview() {
       cell('Scanner waitlist sign-ups', c.waitlist, p.waitlist, 'People asking to pay later') +
       cell('Searches', c.searches, p.searches, 'See Landlords & demand') +
       cell('Shares', c.shares, p.shares, fmt(d.kpis.returning_visitors) + ' visitors came back on 2+ days') +
+      cell('Opened the review form', c.review_starts, p.review_starts, c.review_abandons != null ? fmt(c.review_abandons) + ' closed it without posting' : '') +
+      cell('Unlocked reviews with email', c.unlocks, p.unlocks, 'The soft gate at work') +
+      cell('Mailing-list sign-ups', c.list_joins, p.list_joins, fmt(t.contacts) + ' on the list now') +
     '</dl>' +
+    (t.db_mb != null ? '<p class="muted" style="font-size:12px;margin:-4px 0 16px">Database size: ' + esc(t.db_mb) + ' MB (Supabase\'s free plan allows 500 MB; old usage records are deleted after 25 months).</p>' : '') +
     '<h2>Revenue</h2><p class="sub">From the Outreach tab. Semester deals count as a quarter of their value per month.</p>' +
     '<dl class="score money">' +
       '<div><dt>Booked per month</dt><dd><span class="v">' + money(t.won_monthly) + '</span></dd><p class="why">Deals marked won</p></div>' +
@@ -458,7 +497,8 @@ function Campaigns() {
         : '<tr><td colspan="5" class="empty">No campaign codes have brought visits in the last ' + A.days + ' days yet.</td></tr>') +
     '</tbody></table></div>';
 }
-const SOURCE_LABELS = { verification: 'Verified Illini', review_form: 'Review form box', unlock: 'Unlock-reviews box', footer: 'Footer sign-up' };
+const SOURCE_LABELS = { verification: 'Verified Illini', review_form: 'Review form box', unlock: 'Unlock-reviews box', footer: 'Footer sign-up',
+  scanner: 'Lease scanner box', scanner_waitlist: 'Old scanner waitlist (scanner news only)' };
 const UNSUB_BASE = 'https://ratemycrib.net/unsubscribe.html?t=';
 function Contacts() {
   const c = A.contacts, live = c.filter(x => !x.unsubscribed), s = senderSettings();
@@ -476,7 +516,7 @@ function Contacts() {
       '<li><strong>Download a fresh CSV right before each send</strong>, so anyone who unsubscribed since last time is left out. Then import it into the email service.</li>' +
       '<li><strong>Put the <code>unsubscribe_url</code> column in every email footer</strong> (as a merge field), or use the email service\'s own unsubscribe link and mark those people unsubscribed here before your next send. Never email someone after they opt out; the law gives you 10 business days, this page makes it instant.</li>' +
       '<li><strong>Every email:</strong> "RateMyCrib" as the sender, a subject that matches what\'s inside, your mailing address (' + (s.address ? esc(s.address) : '<span style="color:var(--bad)">not set</span>') + ') and the unsubscribe link.</li>' +
-      '<li><strong>Keep it to what they signed up for:</strong> lease-season tips and new reviews near campus, a few times a semester. A sponsor\'s offer must be labeled as a sponsor.</li>' +
+      '<li><strong>Keep it to what they signed up for:</strong> lease-season tips and new reviews near campus, a few times a semester. A sponsor\'s offer must be labeled as a sponsor. People from the old scanner waitlist only asked for news about the scanner launch: the CSV marks them in the <code>may_receive</code> column.</li>' +
       '<li><strong>Delete requests:</strong> if someone asks to be erased, use Delete below (not just Unsubscribe).</li>' +
     '</ol></div>' +
     '<div class="row" style="margin-bottom:12px"><button class="btn primary" type="button" onclick="downloadContacts()"' + (live.length && !blockers.length ? '' : ' disabled') + '>Download CSV (' + live.length + ' subscribed)</button></div>' +
@@ -490,13 +530,15 @@ function Contacts() {
     '</tbody></table></div>' +
     (c.length > 25 && !A.showAllContacts ? '<p style="margin-top:8px"><button class="btn small" type="button" onclick="A.showAllContacts=true;render()">Show all ' + c.length + '</button></p>' : '');
 }
-const csvCell = v => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
+// A cell starting with = + - @ (or a tab/return) would run as a formula in Excel or Sheets: prefix it with '
+const csvCell = v => { let t = String(v == null ? '' : v); if (/^[=+\-@\t\r]/.test(t)) t = "'" + t; return '"' + t.replace(/"/g, '""') + '"'; };
 function downloadContacts() {
   const s = senderSettings();
   const rows = A.contacts.filter(x => !x.unsubscribed);
   if (!s.address || rows.some(x => !x.unsub_token)) { toast('Set your mailing address and run supabase/mailing.sql first'); return; }
-  const head = 'email,verified,signed_up_via,signed_up_on,unsubscribe_url,consent_wording,sender_postal_address';
-  const csv = head + '\n' + rows.map(x => [x.email, x.verified ? 'yes' : 'no', SOURCE_LABELS[x.source] || x.source, x.first_seen,
+  const head = 'email,verified,signed_up_via,may_receive,signed_up_on,unsubscribe_url,consent_wording,sender_postal_address';
+  const csv = head + '\n' + rows.map(x => [x.email, x.verified ? 'yes' : 'no', SOURCE_LABELS[x.source] || x.source,
+    x.source === 'scanner_waitlist' ? 'scanner launch news only' : 'lease-season tips and new reviews', x.first_seen,
     UNSUB_BASE + x.unsub_token, x.consent_text || '', s.address].map(csvCell).join(',')).join('\n') + '\n';
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
@@ -522,19 +564,40 @@ const HELD_REASONS = {
   same_text: 'Same words as an earlier review (copy-paste or a script).',
   landlord_day: 'More than 5 reviews of this landlord today.',
   site_hour: 'More than 40 reviews an hour site-wide.',
+  contact_info: 'Has an email address or phone number. Fine if it\'s the landlord\'s public office line; delete it (and ask the student to repost without it) if it\'s a person\'s own number or email.',
 };
+const heldWhy = r => HELD_REASONS[r.held_reason] || (/^admin: /.test(r.held_reason || '') ? 'You took it down: ' + r.held_reason.slice(7) + '. Approve to put it back.' : 'Came in during a burst.');
 function Held() {
-  if (!A.held.length) return '';
-  return '<h2>Held for review (' + A.held.length + ')</h2><p class="sub">These stay hidden until you decide: a likely repeat of the same lease, words already posted, or a burst. Approve real ones; delete spam and repeats.</p>' +
-    '<div class="panel tbl-wrap" style="margin-bottom:8px"><table><thead><tr><th>Landlord</th><th>Review</th><th class="r">Rating</th><th>Posted</th><th></th></tr></thead><tbody>' +
-    A.held.map(r => '<tr><td><strong>' + esc(landlordName(r.landlord_id, r.landlord_name)) + '</strong>' + (r.verified ? '<br><span class="muted" style="font-size:12px">Verified Illini</span>' : '') +
+  if (!A.held.length) return '<h2>Held for review</h2><div class="panel"><p class="empty">Nothing waiting. Reviews with contact details, repeats or bursts land here.</p></div>';
+  const picked = Object.keys(A.heldPick).filter(k => A.heldPick[k]).length;
+  return '<h2>Held for review (' + A.held.length + ')</h2><p class="sub">These stay hidden until you decide. Approve real ones; delete spam and repeats. A student who posted one sees "it will appear after a quick check", so try to get to these within a day or two.</p>' +
+    (A.hardening ? '<div class="row" style="margin-bottom:8px"><button type="button" class="btn small" onclick="pickAllHeld()">' + (picked === A.held.length ? 'Unselect all' : 'Select all') + '</button>' +
+      '<button type="button" class="btn small primary" onclick="moderateMany(true)"' + (picked ? '' : ' disabled') + '>Approve selected (' + picked + ')</button>' +
+      '<button type="button" class="btn small danger" id="del-many" onclick="moderateMany(false,this)"' + (picked ? '' : ' disabled') + '>Delete selected (' + picked + ')</button></div>' : '') +
+    '<div class="panel tbl-wrap" style="margin-bottom:8px"><table><thead><tr>' + (A.hardening ? '<th><span class="sr-only">Select</span></th>' : '') + '<th>Landlord</th><th>Review</th><th class="r">Rating</th><th>Posted</th><th></th></tr></thead><tbody>' +
+    A.held.map(r => '<tr>' + (A.hardening ? '<td><input type="checkbox" aria-label="Select this review" ' + (A.heldPick[r.id] ? 'checked ' : '') + 'onchange="A.heldPick[' + jsArg(r.id) + ']=this.checked;render()" /></td>' : '') +
+      '<td><strong>' + esc(landlordName(r.landlord_id, r.landlord_name)) + '</strong>' + (r.verified ? '<br><span class="muted" style="font-size:12px">Verified Illini</span>' : '') +
       (r.property ? '<br><span class="muted" style="font-size:12px">' + esc(r.property) + '</span>' : '') +
-      '<br><span class="held-why" style="font-size:12px">Why held: ' + esc(HELD_REASONS[r.held_reason] || 'Came in during a burst.') + '</span></td>' +
+      '<br><span class="held-why" style="font-size:12px">Why held: ' + esc(heldWhy(r)) + '</span></td>' +
       '<td style="max-width:520px">' + esc(r.review_text) + '</td><td class="r num">' + esc(r.rating) + '</td>' +
       '<td class="num" style="font-size:12px;white-space:nowrap">' + esc(new Date(r.created_at).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })) + '</td>' +
       '<td class="r" style="white-space:nowrap"><button type="button" class="btn small primary" onclick="moderate(' + jsArg(r.id) + ',true,this)">Approve</button> ' +
       '<button type="button" class="btn small danger" onclick="moderate(' + jsArg(r.id) + ',false,this)">Delete</button></td></tr>').join('') +
     '</tbody></table></div>';
+}
+function pickAllHeld() {
+  const all = A.held.length && A.held.every(r => A.heldPick[r.id]);
+  A.heldPick = {}; if (!all) A.held.forEach(r => { A.heldPick[r.id] = true; });
+  render();
+}
+async function moderateMany(approve, btn) {
+  const ids = Object.keys(A.heldPick).filter(k => A.heldPick[k]);
+  if (!ids.length) return;
+  if (!approve && btn && btn.dataset.armed !== '1') { btn.dataset.armed = '1'; btn.textContent = 'Confirm: delete ' + ids.length + ' for good'; setTimeout(() => { if (btn.isConnected) { btn.dataset.armed = ''; btn.textContent = 'Delete selected (' + ids.length + ')'; } }, 4000); return; }
+  const { data, error } = await db.rpc('admin_moderate_reviews', { p_review_ids: ids, p_approve: approve });
+  if (error) { toast('Could not save: ' + error.message); return; }
+  toast((approve ? 'Approved ' : 'Deleted ') + (data || 0) + ' review' + (data === 1 ? '' : 's'));
+  loadAll();
 }
 async function moderate(id, approve, btn) {
   if (!approve && btn && btn.dataset.armed !== '1') { btn.dataset.armed = '1'; btn.textContent = 'Confirm delete'; setTimeout(() => { if (btn.isConnected) { btn.dataset.armed = ''; btn.textContent = 'Delete'; } }, 4000); return; }
@@ -542,6 +605,98 @@ async function moderate(id, approve, btn) {
   if (error) { toast('Could not save: ' + error.message); return; }
   toast(approve ? 'Approved. It is live now.' : 'Deleted');
   loadAll();
+}
+// ===== Reviews & reports: takedowns, held queue, search, student-added landlords, decision log =====
+const shortText = (t, n) => { const x = String(t || '').replace(/^\s*\[Lease:[^\]]*\]\s*/i, ''); return x.length > n ? x.slice(0, n - 1) + '…' : x; };
+const when = d => d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
+function Moderation() {
+  if (!A.hardening) return '<section><h2>Reviews &amp; reports</h2><div class="note"><strong>One more database step.</strong> Run <code>supabase/hardening.sql</code> in Supabase (SQL Editor → New query → paste → Run, after growth.sql and mailing.sql). It adds reported reviews, taking down a published review, search, and approving student-added landlords.</div>' + Held() + Security() + '</section>';
+  return '<section>' + Reports() + Held() + FindReview() + StudentLandlords() + ModLog() + Security() + '</section>';
+}
+function Reports() {
+  const r = A.reports;
+  return '<h2>Reported reviews (' + r.length + ')</h2><p class="sub">Readers flagged these. They stay up until you act. <strong>Take down</strong> hides it right away and moves it to the held queue (restore or delete it there). <strong>Keep it</strong> closes the reports. Removed reviews leave the Google pages at the next nightly build (or run "Landlord pages" in GitHub Actions to do it now).</p>' +
+    (r.length ? '<div class="panel tbl-wrap"><table><thead><tr><th>Landlord</th><th>Review</th><th>Why</th><th class="r">Reports</th><th></th></tr></thead><tbody>' +
+      r.map(x => '<tr><td><strong>' + esc(landlordName(x.landlord_id, x.landlord_name)) + '</strong><br><span class="muted" style="font-size:12px">' + esc(x.rating) + '★ · ' + esc(when(x.created_at)) + (x.held ? ' · already held' : '') + '</span></td>' +
+        '<td style="max-width:460px">' + esc(shortText(x.review_text, 400)) + '</td>' +
+        '<td style="font-size:12px">' + (x.reasons || []).map(esc).join('<br>') + '<br><span class="muted">last ' + esc(when(x.last_reported)) + '</span></td>' +
+        '<td class="r num">' + fmt(x.reports) + '</td>' +
+        '<td class="r" style="white-space:nowrap">' + (x.held ? '' : '<button type="button" class="btn small danger" onclick="hideReview(' + jsArg(x.review_id) + ',' + jsArg((x.reasons || [])[0] || 'reported') + ',this)">Take down</button> ') +
+        '<button type="button" class="btn small" onclick="dismissReports(' + jsArg(x.review_id) + ')">Keep it</button></td></tr>').join('') +
+      '</tbody></table></div>' : '<div class="panel"><p class="empty">No open reports.</p></div>');
+}
+async function hideReview(id, reason, btn) {
+  if (btn && btn.dataset.armed !== '1') { btn.dataset.armed = '1'; btn.textContent = 'Confirm take down'; setTimeout(() => { if (btn.isConnected) { btn.dataset.armed = ''; btn.textContent = 'Take down'; } }, 4000); return; }
+  const { error } = await db.rpc('admin_hide_review', { p_review_id: id, p_reason: String(reason || 'reported').slice(0, 60) });
+  if (error) { toast('Could not take it down: ' + error.message); return; }
+  toast('Taken down. It is in the held queue now.');
+  if (A.search.rows) A.search.rows = A.search.rows.map(r => String(r.id) === String(id) ? { ...r, held: true } : r);
+  loadAll();
+}
+async function dismissReports(id) {
+  const { error } = await db.rpc('admin_dismiss_reports', { p_review_id: id });
+  if (error) { toast('Could not save: ' + error.message); return; }
+  toast('Reports closed. The review stays up.'); loadAll();
+}
+function FindReview() {
+  const rows = A.search.rows;
+  return '<h2>Find a review</h2><p class="sub">By words in it, the landlord, the address, or its id. Use this for a takedown request or a court order.</p>' +
+    '<form class="row" onsubmit="event.preventDefault();searchReviews()" style="margin-bottom:10px"><label class="sr-only" for="find-q">Search reviews</label>' +
+      '<input class="i" id="find-q" style="max-width:420px" value="' + esc(A.search.q) + '" placeholder="e.g. mold, 309 E Green, JSM" /><button class="btn" type="submit">Search</button></form>' +
+    (rows == null ? '' : rows.length ? '<div class="panel tbl-wrap"><table><thead><tr><th>Landlord</th><th>Review</th><th>Status</th><th></th></tr></thead><tbody>' +
+      rows.map(x => '<tr><td><strong>' + esc(landlordName(x.landlord_id, x.landlord_name)) + '</strong><br><span class="muted" style="font-size:12px">' + esc(x.rating) + '★ · ' + esc(when(x.created_at)) + (x.property ? ' · ' + esc(x.property) : '') + '</span></td>' +
+        '<td style="max-width:520px">' + esc(shortText(x.review_text, 500)) + '<br><span class="muted" style="font-size:11px">id ' + esc(x.id) + '</span></td>' +
+        '<td style="font-size:12px">' + (x.held ? 'Hidden (' + esc(x.held_reason || 'held') + ')' : 'Live') + (x.verified ? '<br>Verified' : '') + '</td>' +
+        '<td class="r">' + (x.held ? '' : '<button type="button" class="btn small danger" onclick="hideReview(' + jsArg(x.id) + ',\'takedown request\',this)">Take down</button>') + '</td></tr>').join('') +
+      '</tbody></table></div>' : '<div class="panel"><p class="empty">No review matches that.</p></div>');
+}
+async function searchReviews() {
+  const q = ($('#find-q').value || '').trim();
+  A.search.q = q;
+  if (q.length < 2) { A.search.rows = null; render(); return; }
+  const { data, error } = await db.rpc('admin_search_reviews', { p_query: q });
+  if (error) { toast('Search failed: ' + error.message); return; }
+  A.search.rows = data || []; render();
+}
+function StudentLandlords() {
+  const u = A.userLandlords;
+  const builtIn = new Set(Object.entries(A.names).filter(([id]) => +id < 10001).map(([, n]) => String(n).toLowerCase().replace(/[^a-z0-9]+/g, '')));
+  return '<h2>Student-added landlords (' + u.length + ')</h2><p class="sub">Students add landlords the site doesn\'t list. They show up in the review form right away, but get a Google page only after you approve them. Approve real landlords and companies; rename typos or offensive names; delete junk that has no reviews. A person\'s name is fine if they really rent out property.</p>' +
+    (u.length ? '<div class="panel tbl-wrap"><table><thead><tr><th>Name</th><th class="r">Reviews</th><th>Added</th><th>Status</th><th></th></tr></thead><tbody>' +
+      u.map(x => { const dupe = builtIn.has(String(x.name).toLowerCase().replace(/[^a-z0-9]+/g, ''));
+        return '<tr><td><strong>' + esc(x.name) + '</strong>' + (dupe ? '<br><span style="font-size:12px;color:var(--bad)">Same name as a built-in landlord: don\'t approve; ask a developer to move its reviews.</span>' : '') + '</td>' +
+        '<td class="r num">' + fmt(x.reviews) + (x.reviews !== x.live_reviews ? ' <span class="muted">(' + fmt(x.live_reviews) + ' live)</span>' : '') + '</td>' +
+        '<td class="num" style="font-size:12px">' + esc(when(x.created_at)) + '</td>' +
+        '<td>' + (x.approved ? 'Approved' : '<strong>Waiting</strong>') + '</td>' +
+        '<td class="r" style="white-space:nowrap">' + (x.approved || dupe ? '' : '<button type="button" class="btn small primary" onclick="updateLandlord(' + jsArg(x.id) + ',' + jsArg(x.name) + ',true)">Approve</button> ') +
+          '<button type="button" class="btn small" onclick="renameLandlord(' + jsArg(x.id) + ',' + jsArg(x.name) + ',' + (x.approved ? 'true' : 'false') + ')">Rename</button> ' +
+          (x.reviews ? '' : '<button type="button" class="btn small danger" onclick="deleteLandlord(' + jsArg(x.id) + ',' + jsArg(x.name) + ')">Delete</button>') + '</td></tr>'; }).join('') +
+      '</tbody></table></div>' : '<div class="panel"><p class="empty">None yet.</p></div>');
+}
+async function updateLandlord(id, name, approved) {
+  const { error } = await db.rpc('admin_update_user_landlord', { p_id: String(id), p_name: name, p_approved: approved });
+  if (error) { toast('Could not save: ' + error.message); return; }
+  toast(approved ? 'Approved. Its Google page appears at the next nightly build.' : 'Saved'); loadNames().then(loadAll);
+}
+function renameLandlord(id, name, approved) {
+  const v = prompt('New name for "' + name + '" (also updates its reviews):', name);
+  if (v == null || !v.trim() || v.trim() === name) return;
+  updateLandlord(id, v.trim(), approved);
+}
+async function deleteLandlord(id, name) {
+  if (!confirm('Delete "' + name + '"? It has no reviews. This can\'t be undone.')) return;
+  const { error } = await db.rpc('admin_delete_user_landlord', { p_id: String(id) });
+  if (error) { toast('Could not delete: ' + error.message); return; }
+  toast('Deleted'); loadAll();
+}
+const LOG_ACTIONS = { approve: 'Approved a held review', delete: 'Deleted a review', hide: 'Took down a review', dismiss_reports: 'Kept a reported review', update_landlord: 'Updated a student-added landlord', delete_landlord: 'Deleted a student-added landlord' };
+function ModLog() {
+  const l = A.modLog.slice(0, 50);
+  return '<h2>Your decisions</h2><p class="sub">A record that you acted on reports and requests: what, when and why. It never keeps the words of a deleted review.</p>' +
+    (l.length ? '<div class="panel tbl-wrap"><table><thead><tr><th>When</th><th>What</th><th>Details</th></tr></thead><tbody>' +
+      l.map(x => '<tr><td class="num" style="font-size:12px;white-space:nowrap">' + esc(new Date(x.at).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })) + '</td>' +
+        '<td>' + esc(LOG_ACTIONS[x.action] || x.action) + '</td><td style="font-size:12px">' + esc(x.details ? Object.entries(x.details).filter(([, v]) => v != null && v !== '').map(([k, v]) => k.replace(/_/g, ' ') + ': ' + v).join(' · ') : '') + '<br><span class="muted">' + esc(x.target) + '</span></td></tr>').join('') +
+      '</tbody></table></div>' : '<div class="panel"><p class="empty">Nothing yet.</p></div>');
 }
 function Sources(rows, total) {
   if (!rows.length) return '<div class="panel"><p class="empty">No visits in this range yet.</p></div>';
@@ -565,7 +720,8 @@ function Pages(rows) {
     rows.slice(0, 12).map(r => '<tr><td>' + esc(names[r.page] || r.page) + '</td><td class="num"><span class="inbar" style="width:' + Math.round(r.views / max * 140) + 'px"></span>' + fmt(r.views) + '</td></tr>').join('') + '</tbody></table></div>';
 }
 function Features(f) {
-  const names = { street_toggle: 'Picked a street', major_pick: 'Picked a major', near_classes_show: 'Opened streets near classes', rent_check: 'Ran a rent check', quiz_completed: 'Finished the match quiz', share_click: 'Shared a review', h2h_share: 'Shared a head-to-head', dark_mode_toggle: 'Switched dark mode', scanner_cta_click: 'Clicked a scanner promo', roommate_share: 'Sent a review link to roommates', second_review_click: 'Started a second review', almost_rated_click: 'Tapped an almost-rated landlord' };
+  const names = { street_toggle: 'Picked a street', major_pick: 'Picked a major', near_classes_show: 'Opened streets near classes', rent_check: 'Ran a rent check', quiz_completed: 'Finished the match quiz', share_click: 'Shared a review', h2h_share: 'Shared a head-to-head', dark_mode_toggle: 'Switched dark mode', scanner_cta_click: 'Clicked a scanner promo', roommate_share: 'Sent a review link to roommates', second_review_click: 'Started a second review', almost_rated_click: 'Tapped an almost-rated landlord',
+    unlock_click: 'Tapped "rate a landlord" to unlock', reviews_unlock: 'Unlocked reviews with email', list_join: 'Joined the list from the footer', lived_here_cta: 'Tapped "lived here?"', verified_filter: 'Used "verified only"', review_form_abandoned: 'Closed the review form without posting' };
   const rows = Object.keys(names).map(k => [names[k], f[k] || 0]).sort((a, b) => b[1] - a[1]);
   return '<div class="panel tbl-wrap"><table><thead><tr><th>Feature</th><th class="r">Uses</th></tr></thead><tbody>' +
     rows.map(([n, v]) => '<tr><td>' + esc(n) + '</td><td class="r num">' + fmt(v) + '</td></tr>').join('') + '</tbody></table></div>';
@@ -608,7 +764,7 @@ function SearchTable(title, rows, onlyMisses) {
 }
 
 // ===== Outreach =====
-const STATUSES = ['new', 'contacted', 'replied', 'meeting', 'won', 'lost'];
+const STATUSES = ['new', 'contacted', 'replied', 'meeting', 'won', 'lost', 'opted_out']; // opted_out: asked not to be emailed (needs growth.sql from Nov 2026)
 const SETTINGS_KEY = 'rmc-admin-sender';
 function senderSettings() {
   let s = {}; try { s = JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}'); } catch (e) {}
@@ -663,7 +819,7 @@ function Outreach() {
       '<div><label class="f" for="set-title">Your title</label><input class="i" id="set-title" value="' + esc(s.title) + '" /></div>' +
       '<div><label class="f" for="set-sponsor_price">Sponsor price</label><input class="i" id="set-sponsor_price" value="' + esc(s.sponsor_price) + '" /></div>' +
       '<div><label class="f" for="set-insights_price">Insights report price</label><input class="i" id="set-insights_price" value="' + esc(s.insights_price) + '" /></div>' +
-      '<div class="wide"><label class="f" for="set-address">Mailing address (required by law in sales emails)</label><input class="i" id="set-address" value="' + esc(s.address) + '" placeholder="RateMyCrib LLC, street, city, state ZIP" /></div>' +
+      '<div class="wide"><label class="f" for="set-address">Mailing address (required by law in sales emails)</label><input class="i" id="set-address" value="' + esc(s.address) + '" placeholder="RateMyCrib, PO Box or street, city, state ZIP" /></div>' +
       '<div><label class="f" for="set-send_with">Send from</label><select class="i" id="set-send_with"><option value="proton"' + (s.send_with === 'proton' || s.send_with === 'gmail' ? ' selected' : '') + '>' + RMC_EMAIL + ' (Proton Mail)</option><option value="mailto"' + (s.send_with === 'mailto' ? ' selected' : '') + '>My mail app (set to ' + RMC_EMAIL + ')</option></select></div>' +
     '</div><div class="row" style="margin-top:12px"><button class="btn" type="submit">Save</button></div></form>' +
     '<h2>Sent</h2>' +
@@ -704,6 +860,7 @@ const fill = (tpl, v) => tpl.replace(/\{(\w+)\}/g, (m, k) => v[k] != null ? v[k]
 function openComposer(id, template) {
   const p = A.prospects.find(x => x.id === id);
   if (!p) return;
+  if (p.status === 'opted_out') { toast(p.name + ' asked not to be emailed. The law (CAN-SPAM) says you must honor that.'); return; }
   const t = template || (p.kind === 'landlord' ? 'insights' : p.last_contacted_at ? 'followup' : 'sponsor');
   A.compose = { id, template: t, subject: null, body: null };
   A.tab = 'outreach'; render();
@@ -716,8 +873,8 @@ function Composer() {
   if (A.compose.subject == null) A.compose.subject = fill(t.subject, v);
   if (A.compose.body == null) A.compose.body = fill(t.body, v);
   const s = senderSettings();
-  const warn = t.landlordOnly ? '<div class="note"><strong>Before you send this to a landlord:</strong> the site currently promises "No landlord money" (link previews), "We are not sponsored by any landlord" (mission page) and "no paid premium listings" (landlords page). Selling landlords anything while those lines are up would be misleading. Update those pages first, keep paid features away from ratings and rankings, and say so publicly.</div>' : '';
-  const adsWarn = !t.landlordOnly && A.compose.template === 'sponsor' ? '<div class="note"><strong>Heads up:</strong> the mission page says "We don\'t run ads." Change it to describe clearly labeled local sponsors before the first sponsor goes live.</div>' : '';
+  const warn = t.landlordOnly ? '<div class="note"><strong>Selling to a landlord:</strong> the site promises that paying never changes a rating, the order of reviews or whether a review stays up, and that paying and non-paying landlords are treated the same. Don\'t offer, hint at or agree to anything about their reviews, and treat their reviews exactly like everyone else\'s.</div>' : '';
+  const adsWarn = !t.landlordOnly && A.compose.template === 'sponsor' ? '<div class="note"><strong>Sponsors:</strong> anything paid on the site must be labeled "Sponsored" where it appears, and a sponsor never gets a say in reviews or ratings.</div>' : '';
   const missing = [];
   if (!p.email) missing.push('this prospect has no email address');
   if (!s.name) missing.push('your name');
@@ -843,7 +1000,7 @@ function Guide() {
 }
 
 // ===== Actions =====
-function setTab(t) { A.tab = t; try { sessionStorage.setItem('rmc-admin-tab', t); } catch (e) {} render(); }
+function setTab(t) { A.tab = t; try { sessionStorage.setItem('rmc-admin-tab', t); } catch (e) {} render(); window.scrollTo(0, 0); }
 function setDays(d) { A.days = d; try { sessionStorage.setItem('rmc-admin-days', d); } catch (e) {} if (A.compose) { A.compose.subject = null; A.compose.body = null; } loadAll(); }
 function sortBy(k) { A.sort = A.sort.key === k ? { key: k, dir: -A.sort.dir } : { key: k, dir: k === 'name' ? 1 : -1 }; render(); }
 async function signIn() {
@@ -851,17 +1008,70 @@ async function signIn() {
   btn.disabled = true; btn.textContent = 'Signing in…'; err.hidden = true;
   const { data, error } = await db.auth.signInWithPassword({ email: $('#si-email').value.trim(), password: $('#si-pass').value });
   if (error) { btn.disabled = false; btn.textContent = 'Sign in'; err.textContent = error.message === 'Invalid login credentials' ? 'That email and password don\'t match an account.' : error.message; err.hidden = false; return; }
+  if (await needsMfaCode()) { render(); return; }
   A.user = data.user; await start();
 }
-async function signOut() { await db.auth.signOut(); A.user = null; A.data = null; A.prospects = []; render(); }
+// Two-step sign-in is on for this account but this session hasn't given the code yet
+async function needsMfaCode() {
+  try {
+    const { data } = await db.auth.mfa.getAuthenticatorAssuranceLevel();
+    if (data && data.nextLevel === 'aal2' && data.currentLevel !== 'aal2') {
+      const f = await db.auth.mfa.listFactors();
+      const totp = f.data && (f.data.totp || []).find(x => x.status === 'verified');
+      if (totp) { A.mfa.needCode = true; A.mfa.factorId = totp.id; return true; }
+    }
+  } catch (e) {}
+  A.mfa.needCode = false;
+  return false;
+}
+async function verifyMfa() {
+  const btn = $('#mfa-go'), err = $('#mfa-err'), code = ($('#mfa-code').value || '').replace(/\D/g, '');
+  btn.disabled = true; err.hidden = true;
+  const { error } = await db.auth.mfa.challengeAndVerify({ factorId: A.mfa.factorId, code });
+  if (error) { btn.disabled = false; err.textContent = 'That code didn\'t work. Use the current code from your app.'; err.hidden = false; return; }
+  A.mfa.needCode = false;
+  const { data } = await db.auth.getUser();
+  A.user = data && data.user; await start();
+}
+async function loadMfa() {
+  try { const f = await db.auth.mfa.listFactors(); A.mfa.factors = (f.data && f.data.totp) || []; } catch (e) { A.mfa.factors = []; }
+}
+async function startMfaEnroll() {
+  const { data, error } = await db.auth.mfa.enroll({ factorType: 'totp', friendlyName: 'RateMyCrib admin ' + new Date().toISOString().slice(0, 10) });
+  if (error) { toast('Could not start: ' + error.message + ' (Supabase → Authentication → Multi-Factor: turn on TOTP)'); return; }
+  A.mfa.enrolling = { id: data.id, qr: data.totp && data.totp.qr_code, secret: data.totp && data.totp.secret };
+  render();
+}
+async function finishMfaEnroll() {
+  const code = (($('#mfa-new-code') || {}).value || '').replace(/\D/g, '');
+  const { error } = await db.auth.mfa.challengeAndVerify({ factorId: A.mfa.enrolling.id, code });
+  if (error) { toast('That code didn\'t work. Try the current one.'); return; }
+  A.mfa.enrolling = null; await loadMfa(); toast('Two-step sign-in is on. Next time you sign in, you\'ll need the app code too.'); render();
+}
+function Security() {
+  const on = A.mfa.factors.some(f => f.status === 'verified');
+  if (on) return '<h2>Two-step sign-in</h2><div class="panel pad"><p><strong>On.</strong> Signing in here needs your password and a code from your authenticator app. The database also refuses admin requests from a session that skipped the code.</p></div>';
+  const e = A.mfa.enrolling;
+  return '<h2>Two-step sign-in</h2><div class="panel pad">' +
+    (e ? '<p>Scan this with an authenticator app (Google Authenticator, 1Password, Authy…), then type the 6-digit code it shows.</p>' +
+         (e.qr ? '<img src="' + esc(e.qr) + '" alt="QR code for your authenticator app" width="180" height="180" style="background:#fff;padding:8px;margin:8px 0" />' : '') +
+         '<p class="muted" style="font-size:12px">Can\'t scan? Enter this key: <code>' + esc(e.secret || '') + '</code></p>' +
+         '<div class="row"><label class="f" for="mfa-new-code" style="margin:0">Code</label><input class="i" id="mfa-new-code" inputmode="numeric" maxlength="6" style="max-width:140px" /><button class="btn primary" type="button" onclick="finishMfaEnroll()">Turn on</button></div>'
+       : '<p>This page shows every student email on the list. Protect it with a second step: a 6-digit code from an authenticator app on your phone, on top of your password.</p>' +
+         '<button class="btn primary" type="button" onclick="startMfaEnroll()">Turn on two-step sign-in</button>') +
+    '</div>';
+}
+async function signOut() { await db.auth.signOut(); A.user = null; A.data = null; A.prospects = []; A.mfa = { factors: [], enrolling: null, needCode: false, factorId: null }; render(); }
 async function start() {
   render();
-  await loadNames();
+  await Promise.all([loadNames(), loadMfa()]);
   await loadAll();
 }
 (async function boot() {
   const { data } = await db.auth.getSession();
-  A.user = data && data.session ? data.session.user : null;
+  const user = data && data.session ? data.session.user : null;
+  if (user && await needsMfaCode()) { render(); return; }
+  A.user = user;
   if (A.user) start(); else render();
 })();
 </script>

@@ -9,11 +9,13 @@ so to Google every landlord page is the homepage. This script writes a real page
   sitemap.xml                    the static pages, the hub and every landlord page with 3+ reviews
 
 It reads only what the public site already shows (the reviews_public view, with the public key), so held
-reviews never appear and addresses come without unit numbers. Runs nightly in GitHub Actions
+reviews never appear and addresses come without unit numbers. Landlords get a page only if they're in the
+built-in list in index.html or a student-added landlord an admin approved (user_landlords.approved, set in
+admin.html): a name typed into a review never becomes a page on its own. Runs nightly in GitHub Actions
 (.github/workflows/landlord-pages.yml). For a dry run without the database:
   python3 tools/build_landlord_pages.py --reviews sample.json --landlords sample_landlords.json
 """
-import argparse, datetime as dt, html, json, os, re, shutil, urllib.request
+import argparse, datetime as dt, html, json, os, re, shutil, urllib.error, urllib.request
 from collections import Counter
 
 SITE = "https://ratemycrib.net"
@@ -43,14 +45,39 @@ def seed_landlords():
     return {int(m.group(1)): json.loads('"' + m.group(2) + '"') for m in re.finditer(r'\{ id:(\d+), name:"((?:[^"\\]|\\.)*)"', block)}
 
 
-def supabase_get(path):
+def _api():
     src = open(os.path.join(ROOT, "index.html"), encoding="utf-8").read()
     url = re.search(r"const SUPABASE_URL = '([^']+)'", src).group(1)
     key = re.search(r"const SUPABASE_KEY = '([^']+)'", src).group(1)
-    req = urllib.request.Request(url + path, headers={"apikey": key, "Authorization": "Bearer " + key,
-                                                      "User-Agent": "RateMyCrib page builder"})
+    return url, key
+
+
+def supabase_get(path, extra=None):
+    url, key = _api()
+    headers = {"apikey": key, "Authorization": "Bearer " + key, "User-Agent": "RateMyCrib page builder"}
+    headers.update(extra or {})
+    req = urllib.request.Request(url + path, headers=headers)
     with urllib.request.urlopen(req, timeout=60) as r:
-        return json.loads(r.read().decode())
+        return json.loads(r.read().decode()), dict(r.headers)
+
+
+def supabase_get_all(path, page=1000):
+    """Every row: the API returns at most 1,000 per request. Stops the build if the count doesn't add up, so a
+    partial read can never replace good pages with wrong averages."""
+    rows, total = [], None
+    sep = "&" if "?" in path else "?"
+    while True:
+        chunk, hdr = supabase_get(f"{path}{sep}order=id.asc", {"Range-Unit": "items", "Range": f"{len(rows)}-{len(rows) + page - 1}",
+                                                              "Prefer": "count=exact"})
+        rng = hdr.get("Content-Range") or hdr.get("content-range") or ""
+        if "/" in rng and rng.split("/")[1].isdigit():
+            total = int(rng.split("/")[1])
+        rows.extend(chunk)
+        if len(chunk) < page or (total is not None and len(rows) >= total):
+            break
+    if total is not None and len(rows) != total:
+        raise SystemExit(f"Read {len(rows)} of {total} rows from {path}; refusing to publish partial pages.")
+    return rows
 
 
 def num(v):
@@ -75,7 +102,8 @@ def place_label(prop):
 
 
 def group_reviews(reviews, seeds, user_ll):
-    """landlord id -> (name, [reviews]); same matching as the app (seed list first, then student-added)."""
+    """landlord id -> (name, [reviews]); same matching as the app (seed list first, then approved student-added).
+    A review whose landlord isn't in either list is left out: the name typed into it is never used for a page."""
     out = {}
     for r in reviews:
         lid = r.get("landlord_id")
@@ -84,10 +112,27 @@ def group_reviews(reviews, seeds, user_ll):
         except (TypeError, ValueError):
             continue
         lid = ALIASES.get(lid, lid)
-        name = seeds.get(lid) or user_ll.get(lid) or (r.get("landlord_name") or "").strip()
-        if not name or name.lower() == "unmatched" or lid <= 0:
+        name = seeds.get(lid) or user_ll.get(lid)
+        if not name or lid <= 0:
             continue
         out.setdefault(lid, (name, []))[1].append(r)
+    return out
+
+
+def assign_slugs(seeds, user_ll):
+    """One URL name per landlord, the same rule as landlordSlugMaps() in index.html: built-in landlords first
+    (by id), then student-added (by id); a taken or empty name gets the id added."""
+    taken, out = set(), {}
+    for lid, name in sorted(seeds.items()) + sorted(user_ll.items()):
+        if lid in out or lid in ALIASES:
+            continue
+        sl = slugify(name) or f"landlord-{lid}"
+        if sl in taken:
+            sl = f"{sl}-{lid}"
+        if sl in taken:
+            continue
+        taken.add(sl)
+        out[lid] = sl
     return out
 
 
@@ -105,9 +150,13 @@ def stats(revs):
     tags = Counter(t for r in revs for t in (r.get("positive_tags") or []))
     neg = Counter(t for r in revs for t in (r.get("negative_tags") or []))
     latest = max((str(r.get("created_at") or "") for r in revs), default="")
+    dep = [r.get("deposit_back") for r in revs if r.get("deposit_back") in ("full", "partial", "none")]
     return {"n": n, "rating": rating, "would": would, "areas": areas, "verified": verified,
             "rent": round(sum(rents) / len(rents)) if rents else 0, "rent_n": len(rents),
-            "pos": tags.most_common(3), "neg": neg.most_common(3), "latest": latest[:10]}
+            "pos": tags.most_common(3), "neg": neg.most_common(3), "latest": latest[:10],
+            "dep_n": len(dep), "dep_full": round(100 * dep.count("full") / len(dep)) if dep else 0,
+            "dep_partial": round(100 * dep.count("partial") / len(dep)) if dep else 0,
+            "dep_none": round(100 * dep.count("none") / len(dep)) if dep else 0}
 
 
 CSS = """
@@ -134,7 +183,7 @@ h1{font-size:30px;line-height:1.15;letter-spacing:-0.02em;margin-bottom:8px}
 .note{font-size:13px;color:var(--muted);margin:-6px 0 16px}
 .cta{display:flex;flex-wrap:wrap;gap:8px;margin:20px 0 28px}
 .btn{display:inline-block;min-height:44px;padding:11px 18px;border-radius:2px;font-weight:700;font-size:15px;text-decoration:none;border:1.5px solid var(--line);background:var(--card)}
-.btn.primary{background:var(--orange);border-color:var(--orange);color:#fff}
+.btn.primary{background:#C2410C;border-color:#C2410C;color:#fff}
 h2{font-size:20px;margin:28px 0 12px}
 .review{background:var(--card);border:1px solid var(--line);padding:14px 16px;margin-bottom:10px}
 .meta{font-size:13px;color:var(--muted);margin-bottom:6px}
@@ -190,8 +239,7 @@ def page(title, desc, path, body, jsonld, index=True):
 """
 
 
-def landlord_page(lid, name, revs):
-    slug = slugify(name)
+def landlord_page(lid, name, revs, slug):
     path = f"/landlord/{slug}/"
     s = stats(revs)
     early = s["n"] < MIN_VERDICT
@@ -241,6 +289,7 @@ def landlord_page(lid, name, revs):
                f'Rented here? <a href="/?ref=landlord-page#landlord/{slug}/rate">Add yours</a>, good or bad.</p>' if early else "")
             + areas
             + (f'<p class="note">Average rent reported: ${s["rent"]:,}/month per person ({s["rent_n"]} review{"s" if s["rent_n"] != 1 else ""}).</p>' if s["rent"] else "")
+            + (f'<p class="note">Security deposit: {s["dep_full"]}% got all of it back, {s["dep_partial"]}% part of it, {s["dep_none"]}% none ({s["dep_n"]} answers from leases that ended).</p>' if s["dep_n"] >= MIN_VERDICT else "")
             + '<div class="cta">'
             f'<a class="btn primary" href="/#landlord/{slug}/rate">Rented from {e(name)}? Add your review</a>'
             f'<a class="btn" href="/#landlord/{slug}">Compare on RateMyCrib</a>'
@@ -294,22 +343,34 @@ def main():
     ap.add_argument("--reviews", help="JSON file instead of the live database (testing)")
     ap.add_argument("--landlords", help="JSON file of student-added landlords [{id,name}] (testing)")
     a = ap.parse_args()
-    reviews = json.load(open(a.reviews)) if a.reviews else supabase_get("/rest/v1/reviews_public?select=*")
-    user = json.load(open(a.landlords)) if a.landlords else supabase_get("/rest/v1/user_landlords?select=id,name")
+    reviews = json.load(open(a.reviews)) if a.reviews else supabase_get_all("/rest/v1/reviews_public?select=*")
+    if a.landlords:
+        user = json.load(open(a.landlords))
+    else:
+        try:
+            user = supabase_get_all("/rest/v1/user_landlords?select=id,name,approved")
+        except urllib.error.HTTPError as err:
+            # The approved column comes with supabase/hardening.sql. Until it has run, no student-added
+            # landlord gets a page (they can't have been approved yet).
+            print(f"user_landlords.approved not available ({err.code}); publishing built-in landlords only")
+            user = []
     seeds = seed_landlords()
-    user_ll = {int(x["id"]): x["name"] for x in user if x.get("id") is not None and x.get("name")}
+    user_ll = {int(x["id"]): x["name"] for x in user
+               if x.get("id") is not None and x.get("name") and x.get("approved") is True and int(x["id"]) not in seeds}
     if not reviews:
         raise SystemExit("No reviews returned; refusing to wipe the existing pages.")
     grouped = group_reviews(reviews, seeds, user_ll)
+    slugs = assign_slugs(seeds, user_ll)
 
     if os.path.isdir(OUT):
         shutil.rmtree(OUT)
     os.makedirs(OUT)
     entries, seen = [], set()
     for lid, (name, revs) in sorted(grouped.items()):
-        slug, path, s, doc = landlord_page(lid, name, revs)
+        slug = slugs.get(lid)
         if not slug or slug in seen:
             continue
+        slug, path, s, doc = landlord_page(lid, name, revs, slug)
         seen.add(slug)
         os.makedirs(os.path.join(OUT, slug))
         open(os.path.join(OUT, slug, "index.html"), "w", encoding="utf-8").write(doc)
