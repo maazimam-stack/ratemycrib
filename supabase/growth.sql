@@ -44,8 +44,10 @@
 --
 -- Privacy note: the review row never holds an email or account id, and contacts are stored apart from
 -- reviews (contacts keep only the day, reviews only the hour). Someone with full database access could still
--- try to match the two by when rows were written, so treat private.contacts as sensitive. Supabase keeps its own short-lived sign-in logs; under
--- Authentication > Settings, keep "write audit logs to the database" off.
+-- try to match the two by when rows were written, so treat private.contacts as sensitive. Supabase also logs
+-- each sign-in (email and IP address) in auth.audit_log_entries unless "Disable writing auth audit logs to
+-- project database" is on (Authentication > Audit Logs): turn it on. The cleanup in 6 deletes the entries of
+-- sign-ins that no longer exist either way.
 -- ----------------------------------------------------------------------------
 
 begin;
@@ -135,6 +137,14 @@ begin
      and (coalesce(u.encrypted_password, '') = '' or lower(u.email) like '%@illinois.edu')
      and not exists (select 1 from private.admins a where a.email = lower(u.email));
   get diagnostics n = row_count;
+  -- Supabase's in-database sign-in log (on unless switched off under Authentication > Audit Logs) keeps each
+  -- sign-in's email and IP address. Entries of sign-ins that no longer exist go too; admins' own entries stay.
+  begin
+    delete from auth.audit_log_entries e
+     where e.payload ->> 'actor_id' is not null
+       and not exists (select 1 from auth.users u where u.id::text = e.payload ->> 'actor_id');
+  exception when others then null; -- table missing or not ours to clean: nothing to do
+  end;
   return n;
 end
 $$;

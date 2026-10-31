@@ -174,6 +174,9 @@ The dashboard's verification funnel shows the reason `email_address_not_authoriz
    <h2>Your RateMyCrib code</h2><p>Enter this code to verify: <strong>{{ .Token }}</strong></p><p>It expires in 10 minutes. If you didn't ask for it, ignore this email.</p><p>Questions: ratemycrib@proton.me</p>
    ```
 4. **Authentication** → **Providers** → **Email** → **Email OTP Expiration**: 600 seconds.
+   Also **Authentication** → **Audit Logs**: turn on "Disable writing auth audit logs to project database", so
+   students' emails and IP addresses from verifying aren't kept in your database (the database also deletes
+   them every 15 minutes, but this stops them being written at all).
 5. **Authentication** → **Rate Limits**: emails per hour around 60 to start (raise for a review drive).
 6. Test: ratemycrib.net/#rate → type your @illinois.edu address → **Send code** → the email arrives with a
    6-digit code → enter it → "Verified as …" appears.
