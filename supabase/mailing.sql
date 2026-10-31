@@ -263,4 +263,15 @@ begin
   end if;
 end $$;
 
+-- Version of this file (see the same table in growth.sql). Change the date when you change this file, and the
+-- same entry in EXPECTED_SQL in tools/health_check.py and admin.html.
+create table if not exists private.file_versions (
+  file    text primary key,
+  version text not null,
+  ran_at  timestamptz not null default now()
+);
+revoke all on private.file_versions from public, anon, authenticated;
+insert into private.file_versions (file, version) values ('mailing', '2026-10-31')
+  on conflict (file) do update set version = excluded.version, ran_at = now();
+
 commit;

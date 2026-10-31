@@ -32,7 +32,7 @@ in one Supabase database. Nothing here needs a terminal.
 | 1 | `supabase/security.sql` | once (already done) | locks the tables, public views, "Helpful" votes |
 | 2 | `supabase/growth.sql` | after every change | dashboard, review rules (verified badge, one review per lease, holds) |
 | 3 | `supabase/mailing.sql` | after every change | mailing list, consent records, unsubscribe, deletion |
-| 4 | `supabase/hardening.sql` | after every change | limits on public writes, takedowns, reports, retention, health check |
+| 4 | `supabase/hardening.sql` | after every change | limits on public writes, takedowns, reports, retention, health check, the 15-minute privacy and size job |
 | – | `supabase/purge-old-data.sql` | only if you decide to | deletes old device fingerprints and stray emails in old usage records, for good |
 
 **Steps (for each file, in order)**
@@ -46,8 +46,8 @@ in one Supabase database. Nothing here needs a terminal.
 the file name into a message to whoever maintains the code. Don't run the later files until it's fixed.
 
 **Verify**
-- [ ] Open ratemycrib.net/admin.html → the Overview loads and the **Reviews & reports** tab shows lists, not a
-      "one more database step" note.
+- [ ] Open ratemycrib.net/admin.html → the Overview loads with no "database is behind" warning at the top, and
+      the **Reviews & reports** tab shows lists, not a "database updates needed" note.
 - [ ] GitHub → Actions → **Health check** → **Run workflow**. It should finish green and not open an issue.
 
 **Rollback:** re-run the previous version of the same file (GitHub → the file → History → open the older version → Raw).
@@ -91,7 +91,7 @@ Admin → **Reviews & reports** → **Held for review**. Each row says why it wa
 | Reason | What to do |
 |---|---|
 | Has an email address or phone number (text, address or landlord name) | Approve if it's the landlord's public office number; otherwise delete (the student can repost without it) |
-| Not attached to any listed landlord | Delete: an old copy of the page sent it, and approved it would show under no landlord |
+| Not attached to any listed landlord | Delete (there's no Approve button): an old copy of the page sent it and it would show nowhere. One whose landlord is already listed under a slightly different spelling is filed under that landlord automatically and never lands here |
 | Same words as an earlier review | Usually copy-paste or a bot: delete unless it's clearly a different real person |
 | Same lease (verified) | Usually the same student twice; compare with the live reviews of that landlord |
 | More than 5 of this landlord today / 40 an hour | A review drive (fine: approve) or a flood (delete) |
@@ -141,10 +141,22 @@ GitHub emails you when the health check opens or updates this issue. It closes i
 |---|---|---|
 | The site didn't load | GitHub Pages outage, or the domain lapsed | githubstatus.com; Namecheap → domain → check expiry and auto-renew |
 | Reviews couldn't be read | Supabase project paused or down | Supabase dashboard → project → **Restore**; status.supabase.com |
-| Review rules / write limits / mailing list missing | a SQL file wasn't run, or an older one was run after a newer one | Section 1, in order |
-| Fewer than 2 scheduled jobs | pg_cron off | Database → Extensions → enable **pg_cron**, then run growth.sql and hardening.sql again |
+| The database is older than the site / review rules, write limits or mailing list missing | a SQL file from this version wasn't run, or an older one was run after a newer one (admin.html shows the same warning at the top) | Section 1: all three files, in order |
+| Fewer than 3 scheduled jobs | pg_cron off | Database → Extensions → enable **pg_cron**, then run growth.sql and hardening.sql again |
+| Over 450 MB, usage events stopped | the database is nearly full | Reviews still work. Clear the cause (below), then the next 15-minute check turns events back on |
+| Many unverified reviews in a day | a flood (new unverified reviews stop at 1,000 a day) | Reviews & reports → Held → **Select all** → **Delete selected** for the junk |
 | Database over 300 MB (a heads-up) or 400 MB (needs you) | heavy traffic, or a flood of junk | Admin → Overview shows the size. Junk reviews: Reviews & reports → Held → **Select all** → **Delete selected**. Steady growth: usage records older than 25 months are deleted nightly; move to Supabase's paid plan before 500 MB |
 | Reviews waited over a day / reports waiting | you haven't been to admin lately | Section 3 |
+
+**A flood of junk usage events** (the database grows fast but no junk reviews are held): SQL Editor → find the
+event that's flooding:
+```sql
+select event_type, count(*) from public.site_events where created_at > now() - interval '2 days' group by 1 order by 2 desc limit 10;
+```
+then delete that one event type for the flood's days (check the name and dates before running it; it can't be undone):
+```sql
+delete from public.site_events where event_type = 'the_flooding_event' and created_at > now() - interval '2 days';
+```
 
 Write limits, in case real traffic outgrows them: usage events stop counting past 5,000 an hour or 30,000 a
 day (visitors notice nothing; the dashboard undercounts), and unverified reviews are refused past 400 an hour

@@ -262,9 +262,12 @@ async function loadNames() {
 const landlordName = (lid, fallback) => A.names[lid] || fallback || 'Landlord #' + lid;
 
 // ===== Data =====
+// The version each supabase/*.sql file records when it runs (its private.file_versions line). Change these
+// together with the files; tools/health_check.py has the same list.
+const EXPECTED_SQL = { growth: '2026-10-31', mailing: '2026-10-31', hardening: '2026-10-31' };
 async function loadAll() {
   A.loading = true; render();
-  const [{ data, error }, p, l, h, ct, rp, ul, ml] = await Promise.all([
+  const [{ data, error }, p, l, h, ct, rp, ul, ml, hl] = await Promise.all([
     db.rpc('admin_dashboard', { p_days: A.days }),
     db.from('prospects').select('*').order('updated_at', { ascending: false }),
     db.from('outreach_log').select('*').order('sent_at', { ascending: false }).limit(50),
@@ -272,8 +275,12 @@ async function loadAll() {
     db.rpc('admin_contacts'),
     db.rpc('admin_reports'),
     db.rpc('admin_user_landlords'),
-    db.rpc('admin_moderation_log')
+    db.rpc('admin_moderation_log'),
+    db.rpc('rmc_health')
   ]);
+  // Files not run in this version (all three when the health check itself is missing)
+  const files = (!hl.error && hl.data && hl.data.files) || {};
+  A.sqlBehind = Object.keys(EXPECTED_SQL).filter(k => files[k] !== EXPECTED_SQL[k]);
   A.held = h.error ? [] : h.data || [];
   A.contacts = ct.error ? [] : ct.data || [];
   A.hardening = !rp.error; // supabase/hardening.sql adds reports, takedowns and student-landlord tools
@@ -370,9 +377,14 @@ function render() {
       '</div></div></header>' +
     '<nav class="tabs" aria-label="Sections"><div class="tabs-in" role="tablist">' + tabs.map(([k, l]) =>
       '<button type="button" class="tab" role="tab" aria-selected="' + (A.tab === k) + '" onclick="setTab(\'' + k + '\')">' + l + '</button>').join('') + '</div></nav>' +
-    '<main class="' + (A.loading ? 'loading' : '') + '" aria-busy="' + A.loading + '">' + Body() + '</main>';
+    '<main class="' + (A.loading ? 'loading' : '') + '" aria-busy="' + A.loading + '">' + SqlBanner() + Body() + '</main>';
   if (A.data && A.tab === 'overview') { wireChart($('#ch-visitors'), A.data.daily); wireChart($('#ch-reviews'), A.data.daily); }
   if (A.tab === 'outreach' && A.compose) updatePreviewMeta();
+}
+function SqlBanner() {
+  if (!A.data || !A.sqlBehind || !A.sqlBehind.length) return '';
+  return '<section style="padding-bottom:0"><div class="note"><strong>The database is behind this version of the site</strong> (' +
+    A.sqlBehind.map(k => '<code>' + k + '.sql</code>').join(', ') + ' not run yet). In Supabase → SQL Editor, run <code>growth.sql</code>, then <code>mailing.sql</code>, then <code>hardening.sql</code>, each in a new query (runbook, section 1). Until then some protections on this page and on the site are off.</div></section>';
 }
 function Body() {
   if (A.error) return SetupHelp(A.error);
@@ -582,7 +594,7 @@ function Held() {
       '<br><span class="held-why" style="font-size:12px">Why held: ' + esc(heldWhy(r)) + '</span></td>' +
       '<td style="max-width:520px">' + esc(r.review_text) + '</td><td class="r num">' + esc(r.rating) + '</td>' +
       '<td class="num" style="font-size:12px;white-space:nowrap">' + esc(new Date(r.created_at).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })) + '</td>' +
-      '<td class="r" style="white-space:nowrap"><button type="button" class="btn small primary" onclick="moderate(' + jsArg(r.id) + ',true,this)">Approve</button> ' +
+      '<td class="r" style="white-space:nowrap">' + (r.held_reason === 'unknown_landlord' ? '' : '<button type="button" class="btn small primary" onclick="moderate(' + jsArg(r.id) + ',true,this)">Approve</button> ') +
       '<button type="button" class="btn small danger" onclick="moderate(' + jsArg(r.id) + ',false,this)">Delete</button></td></tr>').join('') +
     '</tbody></table></div>';
 }
@@ -597,7 +609,9 @@ async function moderateMany(approve, btn) {
   if (!approve && btn && btn.dataset.armed !== '1') { btn.dataset.armed = '1'; btn.textContent = 'Confirm: delete ' + ids.length + ' for good'; setTimeout(() => { if (btn.isConnected) { btn.dataset.armed = ''; btn.textContent = 'Delete selected (' + ids.length + ')'; } }, 4000); return; }
   const { data, error } = await db.rpc('admin_moderate_reviews', { p_review_ids: ids, p_approve: approve });
   if (error) { toast('Could not save: ' + error.message); return; }
-  toast((approve ? 'Approved ' : 'Deleted ') + (data || 0) + ' review' + (data === 1 ? '' : 's'));
+  const skipped = approve ? A.held.filter(r => A.heldPick[r.id] && r.held_reason === 'unknown_landlord').length : 0;
+  toast((approve ? 'Approved ' : 'Deleted ') + (data || 0) + ' review' + (data === 1 ? '' : 's') +
+    (skipped ? '. ' + skipped + ' not approved: attached to no landlord, so delete ' + (skipped === 1 ? 'it' : 'them') : ''));
   loadAll();
 }
 async function moderate(id, approve, btn) {
@@ -611,7 +625,7 @@ async function moderate(id, approve, btn) {
 const shortText = (t, n) => { const x = String(t || '').replace(/^\s*\[Lease:[^\]]*\]\s*/i, ''); return x.length > n ? x.slice(0, n - 1) + '…' : x; };
 const when = d => d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
 function Moderation() {
-  if (!A.hardening) return '<section><h2>Reviews &amp; reports</h2><div class="note"><strong>One more database step.</strong> Run <code>supabase/hardening.sql</code> in Supabase (SQL Editor → New query → paste → Run, after growth.sql and mailing.sql). It adds reported reviews, taking down a published review, search, and approving student-added landlords.</div>' + Held() + Security() + '</section>';
+  if (!A.hardening) return '<section><h2>Reviews &amp; reports</h2><div class="note"><strong>Database updates needed.</strong> In Supabase → SQL Editor, run <code>supabase/growth.sql</code>, then <code>supabase/mailing.sql</code>, then <code>supabase/hardening.sql</code>, each in a new query (runbook, section 1). They add reported reviews, taking down a published review, search, and approving student-added landlords.</div>' + Held() + Security() + '</section>';
   return '<section>' + Reports() + Held() + FindReview() + StudentLandlords() + ModLog() + Security() + '</section>';
 }
 function Reports() {
@@ -1052,7 +1066,7 @@ async function finishMfaEnroll() {
 function Security() {
   const on = A.mfa.factors.some(f => f.status === 'verified');
   if (on) return '<h2>Two-step sign-in</h2><div class="panel pad"><p><strong>On.</strong> Signing in here needs your password and a code from your authenticator app. ' +
-    (A.hardening ? 'The database also refuses admin requests from a session that skipped the code.' : 'Once the database updates are in (runbook, section 1), the database will also refuse admin requests from a session that skipped the code.') + '</p></div>';
+    (A.hardening && !(A.sqlBehind || []).length ? 'The database also refuses admin requests from a session that skipped the code.' : 'Once the database updates are in (runbook, section 1), the database will also refuse admin requests from a session that skipped the code.') + '</p></div>';
   const e = A.mfa.enrolling;
   return '<h2>Two-step sign-in</h2><div class="panel pad">' +
     (e ? '<p>Scan this with an authenticator app (Google Authenticator, 1Password, Authy…), then type the 6-digit code it shows.</p>' +

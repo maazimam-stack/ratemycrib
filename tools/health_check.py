@@ -13,6 +13,9 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SITE = "https://ratemycrib.net/"
 TITLE = "RateMyCrib health check"
 OWNER_MENTION = "@maazimam-stack"
+# The version each supabase/*.sql file in this repo records when it runs (the date in its private.file_versions
+# line). Change these together with the files; admin.html has the same list.
+EXPECTED_SQL = {"growth": "2026-10-31", "mailing": "2026-10-31", "hardening": "2026-10-31"}
 
 
 def http(url, data=None, headers=None, method=None, timeout=30):
@@ -64,8 +67,17 @@ def check():
             problems.append("The limits on public writes (supabase/hardening.sql) aren't all installed. Run hardening.sql.")
         if not f.get("mailing_list"):
             problems.append("The mailing-list functions (supabase/mailing.sql) are missing. Run mailing.sql.")
-        if (f.get("scheduled_jobs") or 0) < 2:
-            notices.append("Fewer than 2 scheduled clean-up jobs are running in the database. Turn on pg_cron (Database → Extensions), then run growth.sql and hardening.sql again.")
+        files = f.get("files") or {}
+        behind = [k for k, v in EXPECTED_SQL.items() if files.get(k) != v]
+        if behind:
+            problems.append("The database is older than the site: " + ", ".join(k + ".sql" for k in behind) +
+                            " not run in this version. Run growth.sql, then mailing.sql, then hardening.sql (docs/RUNBOOK.md, section 1).")
+        if (f.get("scheduled_jobs") or 0) < 3:
+            notices.append("Fewer than 3 scheduled jobs are running in the database. Turn on pg_cron (Database → Extensions), then run growth.sql and hardening.sql again.")
+        if f.get("events_stopped"):
+            problems.append("The database is over 450 MB, so usage events have stopped (reviews still work). See docs/RUNBOOK.md, section 5.")
+        if (f.get("unverified_24h") or 0) >= 800:
+            notices.append(f"{f['unverified_24h']} unverified reviews in the last day: new ones are refused at 1,000. Probably a flood: admin.html → Reviews & reports → Held.")
         if (f.get("db_mb") or 0) >= 400:
             problems.append(f"The database is {f.get('db_mb')} MB; Supabase's free plan stops at 500 MB.")
         elif (f.get("db_mb") or 0) >= 300:
@@ -77,7 +89,7 @@ def check():
             n = f["open_reports"]
             notices.append(f"{n} reported review{'s are' if n != 1 else ' is'} waiting. admin.html → Reviews & reports.")
     elif status == 404:
-        notices.append("rmc_health() isn't in the database yet: run supabase/hardening.sql to turn on the full check.")
+        notices.append("The database updates aren't in yet: run growth.sql, then mailing.sql, then hardening.sql (docs/RUNBOOK.md, section 1). This check then covers everything.")
     else:
         problems.append(f"The database health check failed (status {status or 'no response'}).")
     return problems, notices

@@ -30,7 +30,9 @@
 --      of held reviews, student-added landlords (approve, rename, delete), and a log of every decision.
 --   4. "Helpful": at most 30 changes per review per hour, only on published reviews.
 --   5. Retention (needs pg_cron, which growth.sql turns on): usage events older than 25 months and the
---      hourly counters older than 2 days are deleted nightly.
+--      hourly counters older than 2 days are deleted nightly. Every 15 minutes: the database size (usage
+--      events stop at 450 MB, so reviews always fit under 500 MB) and recent rows saved again in random order,
+--      so the order rows were saved in can't link a review, a verification or an email to a visit.
 --   6. rmc_health(): a few yes/no facts and counts (no personal data) for the uptime check in
 --      .github/workflows/health.yml.
 -- ----------------------------------------------------------------------------
@@ -104,6 +106,30 @@ $$;
 revoke all on function private.looks_like_contact(text) from public, anon, authenticated;
 
 -- 2a. site_events -----------------------------------------------------------
+-- Events about the review form, verifying and the email boxes: never stored with a visit or visitor ID, a screen
+-- size or the exact time (the site sends them that way; this also holds for older copies of the page).
+-- The same list is PRIVATE_EVENTS in index.html.
+create or replace function private.quiet_event_types()
+returns text[]
+language sql
+immutable
+set search_path = ''
+as $$
+  select array['review_modal_open', 'review_form_abandoned', 'review_submitted', 'second_review_click', 'share_click',
+               'roommate_share', 'lived_here_cta', 'almost_rated_click', 'unlock_click', 'verify_code_sent', 'verify_success',
+               'verify_failed', 'reviews_unlock', 'list_join', 'scanner_interest_submitted', 'scanner_interest_submitted_fallback']
+$$;
+revoke all on function private.quiet_event_types() from public, anon, authenticated;
+
+-- Database size, refreshed every 15 minutes (section 5). Usage events stop at 450 MB so reviews always fit
+-- under the free plan's 500 MB.
+create table if not exists private.db_size (
+  id integer primary key default 1 check (id = 1),
+  mb integer not null,
+  at timestamptz not null default now()
+);
+revoke all on private.db_size from public, anon, authenticated;
+
 create or replace function private.guard_site_event()
 returns trigger
 language plpgsql
@@ -116,10 +142,15 @@ declare
   v_ua   text := lower(coalesce(r ->> 'user_agent', ''));
   v_at   timestamptz;
   v_fix  jsonb := '{}'::jsonb;
+  v_quiet boolean := coalesce(r ->> 'event_type', '') = any(private.quiet_event_types());
 begin
+  -- The 15-minute job moving recent rows (section 5) re-inserts events exactly as they were
+  if current_setting('rmc.reshuffle', true) = 'on' then return new; end if;
   if coalesce(r ->> 'event_type', '') !~ '^[a-z0-9_]{1,60}$' then return null; end if;
-  -- Far above real traffic, low enough that a script can't fill the free 500 MB database (about 35 MB a day at
-  -- most). Past the limit, events are dropped quietly: the dashboard undercounts, nothing breaks for visitors.
+  if coalesce((select d.mb from private.db_size d where d.id = 1), 0) >= 450 then return null; end if;
+  -- Far above real traffic. At most about 35 MB a day (measured), so a script would need two weeks of nonstop
+  -- work to reach 450 MB, where events stop entirely (above); the health check warns at 300 and 400 MB.
+  -- Past a limit, events are dropped quietly: the dashboard undercounts, nothing breaks for visitors.
   if not private.under_cap('site_events', 5000) or not private.under_cap_day('site_events/day', 30000) then return null; end if;
 
   -- metadata: a JSON object (whatever the column type), at most 1 KB, never an email address
@@ -135,6 +166,7 @@ begin
     from jsonb_each(v_meta) e(k, v)
    where not (jsonb_typeof(e.v) = 'string' and (e.v #>> '{}') ~* '[a-z0-9._%+-]+@[a-z0-9-]+\.[a-z]{2,}');
   if octet_length(v_meta::text) > 1024 then v_meta := jsonb_build_object('_truncated', true); end if;
+  if v_quiet then v_meta := v_meta - '_s' - '_v'; end if;
   v_fix := v_fix || jsonb_build_object('metadata', v_meta);
 
   if r ? 'page' then v_fix := v_fix || jsonb_build_object('page', left(r ->> 'page', 40)); end if;
@@ -151,13 +183,13 @@ begin
   if r ? 'referrer' then
     v_fix := v_fix || jsonb_build_object('referrer', left(substring(r ->> 'referrer' from '^(https?://[^/?#\s]+)'), 200));
   end if;
-  if r ? 'screen' and coalesce(r ->> 'screen', '') !~ '^[0-9]{2,5}x[0-9]{2,5}$' then
+  if r ? 'screen' and (v_quiet or coalesce(r ->> 'screen', '') !~ '^[0-9]{2,5}x[0-9]{2,5}$') then
     v_fix := v_fix || jsonb_build_object('screen', null);
   end if;
   -- server time; the browser may round down to the hour on purpose (review events), so allow that much
   if r ? 'created_at' then
     begin v_at := (r ->> 'created_at')::timestamptz; exception when others then v_at := null; end;
-    if v_at is null or v_at > now() + interval '10 minutes' or v_at < now() - interval '2 hours' then
+    if v_quiet or v_at is null or v_at > now() + interval '10 minutes' or v_at < now() - interval '2 hours' then
       v_fix := v_fix || jsonb_build_object('created_at', date_trunc('hour', now()));
     end if;
   end if;
@@ -418,7 +450,9 @@ declare v_id text; v_n integer := 0;
 begin
   perform private.require_admin();
   foreach v_id in array coalesce(p_review_ids[1:200], '{}') loop
-    if exists (select 1 from public.reviews r where r.id::text = v_id and r.held) then
+    -- (a review attached to no landlord is never approved: it would show nowhere; delete it instead)
+    if exists (select 1 from public.reviews r where r.id::text = v_id and r.held
+                and (not p_approve or r.held_reason is distinct from 'unknown_landlord')) then
       perform public.admin_moderate_review(v_id, p_approve);
       v_n := v_n + 1;
     end if;
@@ -558,6 +592,52 @@ exception when others then
   raise notice 'Could not schedule the nightly cleanup (%). Turn on pg_cron under Database > Extensions, then run this file again.', sqlerrm;
 end $$;
 
+-- Every 15 minutes: the database size (for the 450 MB stop on usage events), and recent rows saved again in a
+-- random order. Postgres numbers and stamps rows in the order they're saved, so without this, someone with full
+-- database access could line up a review, a verification or an email address with the visit around it. After
+-- this runs, rows from the last few hours carry this job's stamp instead, in shuffled order:
+--   the mailing list (moved, under a lock, so an unsubscribe at that moment waits rather than being lost),
+--   reviews, student-added landlords and the verified-review codes (saved again in place),
+--   events recorded without a visit ID (moved, so they get new numbers).
+create or replace function private.quarter_hour()
+returns void
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare v_cols text;
+begin
+  insert into private.db_size as d (id, mb, at) values (1, round(pg_database_size(current_database()) / 1048576.0), now())
+    on conflict (id) do update set mb = excluded.mb, at = excluded.at;
+
+  lock table private.contacts in exclusive mode;
+  -- new addresses, and every verified one (an older address that verifies again today changes too)
+  with moved as (delete from private.contacts c where c.first_seen >= current_date - 1 or c.verified returning c.*)
+  insert into private.contacts select * from moved order by random();
+
+  update public.reviews set held = held where created_at >= now() - interval '3 hours';
+  update public.user_landlords set name = name where created_at >= current_date - 1;
+  update private.review_marks set bucket = bucket;
+
+  -- every column but the id, so the moved events are numbered afresh
+  select string_agg(quote_ident(c.column_name), ', ' order by c.ordinal_position) into v_cols
+    from information_schema.columns c
+   where c.table_schema = 'public' and c.table_name = 'site_events' and c.column_name <> 'id';
+  perform set_config('rmc.reshuffle', 'on', true);  -- this transaction only: the event guard lets these through as they are
+  execute format('with moved as (delete from public.site_events e where e.event_type = any(private.quiet_event_types()) '
+                 'and e.created_at >= now() - interval ''3 hours'' returning %1$s) '
+                 'insert into public.site_events (%1$s) select %1$s from moved order by random()', v_cols);
+  perform set_config('rmc.reshuffle', 'off', true);
+end
+$$;
+revoke all on function private.quarter_hour() from public, anon, authenticated;
+do $$
+begin
+  perform cron.schedule('rmc-quarter-hour', '7,22,37,52 * * * *', 'select private.quarter_hour()');
+exception when others then
+  raise notice 'Could not schedule the 15-minute job (%). Turn on pg_cron under Database > Extensions, then run this file again.', sqlerrm;
+end $$;
+
 -- 6. Health check (public: yes/no facts and counts only, nothing about any person) ---------------
 create or replace function public.rmc_health()
 returns jsonb
@@ -566,15 +646,18 @@ stable
 security definer
 set search_path = ''
 as $$
-declare v_cron integer;
+declare v_cron integer; v_files jsonb;
 begin
   begin
     select count(*) into v_cron from cron.job where jobname like 'rmc-%';
   exception when others then v_cron := 0;
   end;
+  -- which version of each SQL file ran (a file from before versions existed is simply missing)
+  select coalesce(jsonb_object_agg(f.file, f.version), '{}'::jsonb) into v_files from private.file_versions f;
   return jsonb_build_object(
     'ok', true,
-    'version', 'hardening-2026-11',
+    'version', 'hardening-2026-10-31',
+    'files', v_files,
     'review_rules', exists (select 1 from pg_trigger where tgname = 'rmc_before_review_insert' and not tgisinternal),
     'write_limits', (select count(*) from pg_trigger where tgname in ('rmc_guard_site_event', 'rmc_guard_user_landlord',
                        'rmc_guard_user_property', 'rmc_guard_report') and not tgisinternal) = 4,
@@ -583,10 +666,24 @@ begin
     'db_mb', round(pg_database_size(current_database()) / 1048576.0),
     'reviews_live', (select count(*) from public.reviews where not held),
     'held_over_a_day', (select count(*) from public.reviews where held and created_at < now() - interval '1 day'),
-    'open_reports', (select count(distinct review_id::text) from public.reported_reviews where resolved_at is null));
+    'open_reports', (select count(distinct review_id::text) from public.reported_reviews where resolved_at is null),
+    -- unverified reviews in the last day: new ones are refused at 1,000 (a flood can shut out real students)
+    'unverified_24h', (select count(*) from public.reviews where not verified and created_at >= date_trunc('hour', now()) - interval '1 day'),
+    'events_stopped', coalesce((select d.mb from private.db_size d where d.id = 1), 0) >= 450);
 end
 $$;
 revoke all on function public.rmc_health() from public;
 grant execute on function public.rmc_health() to anon, authenticated;
+
+-- Version of this file (see private.file_versions in growth.sql). Change the date when you change this file,
+-- and the same entry in EXPECTED_SQL in tools/health_check.py and admin.html.
+create table if not exists private.file_versions (
+  file    text primary key,
+  version text not null,
+  ran_at  timestamptz not null default now()
+);
+revoke all on private.file_versions from public, anon, authenticated;
+insert into private.file_versions (file, version) values ('hardening', '2026-10-31')
+  on conflict (file) do update set version = excluded.version, ran_at = now();
 
 commit;

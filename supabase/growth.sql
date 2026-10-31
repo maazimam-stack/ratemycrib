@@ -235,6 +235,10 @@ declare
   v_row      jsonb := to_jsonb(new);
   v_fix      jsonb := '{}'::jsonb;
   v_col      text;
+  v_lid      bigint;
+  -- Times are stored to the hour, so "the last hour" starts at the top of the previous hour (60-120 minutes,
+  -- never less) and "the last day" 24-25 hours back
+  v_hour     timestamptz := date_trunc('hour', now());
 begin
   -- Never trust these from the browser
   new.verified      := false;
@@ -293,6 +297,18 @@ begin
     new := jsonb_populate_record(new, v_fix);
   end if;
   new.landlord_name := left(btrim(coalesce(new.landlord_name, '')), 100);
+  -- An old copy of the page sends -1 when adding its landlord failed, often because the landlord is already
+  -- listed with slightly different spelling ("J.S.M. Rentals" for "JSM Rentals"): file it under that one
+  if (new.landlord_id is null or new.landlord_id < 1)
+     and regexp_replace(lower(new.landlord_name), '[^a-z0-9]+', '', 'g') <> '' then
+    select u.id into v_lid from public.user_landlords u
+     where regexp_replace(lower(u.name), '[^a-z0-9]+', '', 'g') = regexp_replace(lower(new.landlord_name), '[^a-z0-9]+', '', 'g')
+     order by u.id limit 1;
+    if v_lid is not null then
+      new.landlord_id := v_lid;
+      v_landlord := new.landlord_id::text || '|' || lower(new.landlord_name);
+    end if;
+  end if;
   new.property      := left(btrim(regexp_replace(coalesce(new.property, ''), '\s+', ' ', 'g')), 120);
   if new.property = '' or lower(new.property) in ('constructor', '__proto__', 'prototype', 'tostring', 'valueof',
                                                   'hasownproperty', 'isprototypeof', 'tolocalestring') then
@@ -333,7 +349,7 @@ begin
 
     -- Held reviews don't count toward the limits: junk that is already held can't push real reviews into the queue
     select count(*) into v_recent from public.reviews r
-     where r.verified and not r.held and r.landlord_id is not distinct from new.landlord_id and r.created_at > now() - interval '1 day';
+     where r.verified and not r.held and r.landlord_id is not distinct from new.landlord_id and r.created_at >= v_hour - interval '1 day';
     if v_recent >= 5 then v_reason := coalesce(v_reason, 'landlord_day'); end if;
 
     -- Forget who wrote it: delete the sign-in account (and its email) now that it has done its job,
@@ -348,22 +364,22 @@ begin
   else
     -- Hard stop counts everything (held too), so a flood can't fill the database
     select count(*) into v_recent from public.reviews r
-     where not r.verified and r.created_at > now() - interval '1 hour';
+     where not r.verified and r.created_at >= v_hour - interval '1 hour';
     if v_recent >= 400 then
       raise exception 'Too many reviews are coming in right now. Try again in an hour, or verify with your @illinois.edu email.'
         using errcode = 'P0001', hint = 'rate_limited';
     end if;
     select count(*) into v_recent from public.reviews r
-     where not r.verified and r.created_at > now() - interval '1 day';
+     where not r.verified and r.created_at >= v_hour - interval '1 day';
     if v_recent >= 1000 then
       raise exception 'Too many reviews came in today. Try again tomorrow, or verify with your @illinois.edu email.'
         using errcode = 'P0001', hint = 'rate_limited';
     end if;
     select count(*) into v_recent from public.reviews r
-     where not r.verified and not r.held and r.created_at > now() - interval '1 hour';
+     where not r.verified and not r.held and r.created_at >= v_hour - interval '1 hour';
     if v_recent >= 40 then v_reason := coalesce(v_reason, 'site_hour'); end if;
     select count(*) into v_recent from public.reviews r
-     where not r.verified and not r.held and r.landlord_id is not distinct from new.landlord_id and r.created_at > now() - interval '1 day';
+     where not r.verified and not r.held and r.landlord_id is not distinct from new.landlord_id and r.created_at >= v_hour - interval '1 day';
     if v_recent >= 5 then v_reason := coalesce(v_reason, 'landlord_day'); end if;
   end if;
 
@@ -785,6 +801,10 @@ begin
   if not public.rmc_is_admin() then raise exception 'Admins only' using errcode = '42501'; end if;
   select r.landlord_id::text, r.held_reason into v_landlord, v_reason from public.reviews r where r.id::text = p_review_id and r.held;
   if not found then return; end if;
+  if p_approve and v_reason = 'unknown_landlord' then
+    raise exception 'This review isn''t attached to any listed landlord, so it would show nowhere. Delete it instead.'
+      using errcode = 'P0001', hint = 'unknown_landlord';
+  end if;
   if p_approve then
     update public.reviews set held = false, held_reason = null where id::text = p_review_id and held;
   else
@@ -798,6 +818,18 @@ end
 $$;
 revoke all on function public.admin_moderate_review(text, boolean) from public, anon;
 grant execute on function public.admin_moderate_review(text, boolean) to authenticated;
+
+-- Which version of each supabase/*.sql file this database has (rmc_health() reports it; the health check and
+-- admin.html warn when the site expects a newer one). When you change this file, change the date here and the
+-- same entry in EXPECTED_SQL in tools/health_check.py and admin.html.
+create table if not exists private.file_versions (
+  file    text primary key,
+  version text not null,
+  ran_at  timestamptz not null default now()
+);
+revoke all on private.file_versions from public, anon, authenticated;
+insert into private.file_versions (file, version) values ('growth', '2026-10-31')
+  on conflict (file) do update set version = excluded.version, ran_at = now();
 
 commit;
 

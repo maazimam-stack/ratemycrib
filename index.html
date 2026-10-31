@@ -3292,7 +3292,10 @@ function streetReviewHTML(r, i) {
 function streetBuildingHTML(b) {
   const tone = b.count < MIN_LABEL_REVIEWS ? 'early' : qClass(b.rating);
   const landlordLinks = b.landlords.length
-    ? b.landlords.map(n => '<a href="#landlord/' + slugForName(n) + '">' + esc(n) + '</a>').join(', ')
+    ? b.landlords.map(n => { // a name that isn't a listed landlord has no page to link to
+        const k = String(n || '').trim().toLowerCase(), l = SEED_LANDLORDS.concat(userLandlords || []).find(x => String(x.name).trim().toLowerCase() === k);
+        return l ? '<a href="#landlord/' + landlordSlug(l) + '">' + esc(n) + '</a>' : '<span>' + esc(n) + '</span>';
+      }).join(', ')
     : '<span>Landlord not given</span>';
   const meta = [
     b.count + ' review' + (b.count !== 1 ? 's' : ''),
@@ -4108,15 +4111,16 @@ async function trackScannerEvent(eventType, metadata = {}) {
 
 // The review form from opening to the thank-you screen, verification, and every box that takes an email: no
 // visitor or visit ID and only the hour, so none of it can be joined to the rest of a visit (or to an email)
+// (Same list in supabase/hardening.sql, which enforces it for older copies of the page.)
 const PRIVATE_EVENTS = ['review_modal_open', 'review_form_abandoned', 'review_submitted', 'second_review_click', 'share_click',
-  'roommate_share', 'verify_code_sent', 'verify_success', 'verify_failed', 'reviews_unlock', 'list_join',
-  'scanner_interest_submitted', 'scanner_interest_submitted_fallback'];
-async function trackEvent(eventType, metadata = {}) {
+  'roommate_share', 'lived_here_cta', 'almost_rated_click', 'unlock_click', 'verify_code_sent', 'verify_success', 'verify_failed',
+  'reviews_unlock', 'list_join', 'scanner_interest_submitted', 'scanner_interest_submitted_fallback'];
+async function trackEvent(eventType, metadata = {}, quietThisOne) {
   if (eventType === 'review_modal_open') window._lastModalOpenAt = Date.now();
   try {
     // Review-form, verification and email events (PRIVATE_EVENTS) carry no visitor/visit ID, no screen size and
     // only the hour, so they can't be joined to the rest of a visit or matched to a review by its exact time.
-    const quiet = PRIVATE_EVENTS.indexOf(eventType) !== -1;
+    const quiet = quietThisOne === true || PRIVATE_EVENTS.indexOf(eventType) !== -1;
     const meta = Object.assign({}, metadata, { _src: ANALYTICS.src });
     if (!quiet) { meta._s = ANALYTICS.sid; if (ANALYTICS.vid) meta._v = ANALYTICS.vid; }
     const when = new Date(); if (quiet) when.setMinutes(0, 0, 0);
@@ -4856,20 +4860,24 @@ function Footer() {
 let userLandlords = []; // loaded from Supabase on init
 
 async function loadUserSubmissions() {
+  let loaded = false;
   try {
     const { data: ld } = await db.from('user_landlords').select('id,name').order('name').limit(1000);
-    if (ld) userLandlords = ld;
+    if (Array.isArray(ld)) { userLandlords = ld; loaded = true; }
     // (Addresses students typed aren't read back: nothing on the site uses them, and they're private now.)
     render(); // re-render to include user-submitted landlords in UI
-    // A link to a student-added landlord (/#landlord/<slug> or .../rate) opened before this list arrived
-    if (_pendingLandlordHash) {
-      const h = _pendingLandlordHash; _pendingLandlordHash = null;
-      const found = findLandlordBySlug(h.slug);
-      // The address bar already shows #landlord/<slug> (set at startup). A /rate link opened the form then:
-      // it stays open with whatever was typed, and closing it before now is respected.
-      if (found && S.page !== 'detail') go({ page: 'detail', detail: found.id });
-    }
   } catch(e) { /* tables may not exist yet — silent fail */ }
+  // A link to a student-added landlord (/#landlord/<slug> or .../rate) opened before this list arrived. The
+  // address bar already shows #landlord/<slug> (set at startup); a /rate link opened the form then, and it
+  // stays open with whatever was typed (closing it before now is respected).
+  if (_pendingLandlordHash) {
+    const h = _pendingLandlordHash; _pendingLandlordHash = null;
+    const found = loaded ? findLandlordBySlug(h.slug) : null;
+    const picked = S.modal && (document.getElementById('rev-landlord') || {}).value; // chosen while the list loaded
+    if (found && S.page !== 'detail' && !picked) go({ page: 'detail', detail: found.id });
+    // No such landlord (renamed, deleted, mistyped): drop it from the address so Back simply leaves
+    else if (!found && loaded) { try { history.replaceState(history.state, '', location.pathname + location.search); } catch (e) {} }
+  }
 }
 var _pendingLandlordHash = null;
 
@@ -5771,7 +5779,8 @@ function animateHeroCounts() {
 }
 
 // Handle browser back/forward
-window.addEventListener('hashchange', () => {
+var _hashRouting = false; // var: the go() wrapper reads it
+function routeHash() {
   const hash = location.hash.slice(1);
   // Support new SEO-friendly slug URLs: #landlord/green-street-realty
   if (hash.startsWith('landlord/')) {
@@ -5789,9 +5798,10 @@ window.addEventListener('hashchange', () => {
   else if (hash.startsWith('landlord-')) {
     const id = parseInt(hash.split('-')[1]);
     if (id) {
-      // Redirect old URL to new slug URL
+      // Old address: show the landlord under its new address, in place (setting location.hash here added a
+      // history entry that sent Back straight here again)
       const l = findLandlord(id);
-      if (l) { location.hash = '#landlord/' + landlordSlug(l); return; }
+      if (l) { history.replaceState(null, '', location.pathname + location.search + '#landlord/' + landlordSlug(l)); go({page:'detail', detail:l.id}); return; }
       go({page:'detail', detail:id});
     }
   }
@@ -5805,6 +5815,12 @@ window.addEventListener('hashchange', () => {
   else if (hash === 'rentcheck') go({page:'rentcheck', detail:null});
   else if (hash === 'rate') go({page:'home', modal:true, stars:0, wouldRentChoice:null, posTags:[], negTags:[], formData:{}});
   else go({page:'home', detail:null});
+}
+window.addEventListener('hashchange', () => {
+  // The browser already made the history entry for this address. Routing it (to home for a landlord that
+  // isn't listed, say) must not add another, or Back lands here again and again.
+  _hashRouting = true;
+  try { routeHash(); } finally { _hashRouting = false; }
 });
 
 // SEO: Update URL hash + document title + meta on every navigation
@@ -5843,7 +5859,7 @@ window.addEventListener('hashchange', () => {
       _skipHash = true;
       // Coming home from another page is a step Back can undo; a "#rate" link is just replaced
       var fromHash = location.hash.slice(1);
-      if (fromHash === 'rate' || /\/rate$/.test(fromHash)) history.replaceState(null, '', location.pathname);
+      if (_hashRouting || fromHash === 'rate' || /\/rate$/.test(fromHash)) history.replaceState(null, '', location.pathname);
       else history.pushState(null, '', location.pathname);
       setTimeout(function(){ _skipHash = false; }, 0);
     }
@@ -5978,7 +5994,11 @@ function updateStructuredData() {
     }
   } else if (hash.startsWith('landlord-')) {
     var id = parseInt(hash.split('-')[1]);
-    if (id) { S.page = 'detail'; S.detail = id; }
+    if (id) {
+      S.page = 'detail'; S.detail = id;
+      var legacy = findLandlord(id);
+      if (legacy) { try { history.replaceState(null, '', location.pathname + location.search + '#landlord/' + landlordSlug(legacy)); } catch (e) {} }
+    }
   } else if (hash === 'neighborhoods') { S.page = 'hoods'; }
   else if (hash === 'streets' || hash.startsWith('streets/')) { S.page = 'streets'; S.streets = hash.split('/')[1] ? hash.split('/')[1].split('+').filter(Boolean) : []; }
   else if (hash === 'compare') { S.page = 'compare'; }
@@ -6009,7 +6029,7 @@ if (ANALYTICS.isNew) {
 // The page someone landed on counts as a view (only later navigation was counted before), and a form opened by
 // a link (#rate, /landlord/<slug>/rate, flyers) counts as a form open
 _lastTrackedPage = (S.page || 'home') + (S.detail ? '_' + S.detail : '');
-trackEvent('page_view', { page: S.page || 'home', detail: S.detail || null });
+trackEvent('page_view', { page: S.page || 'home', detail: S.detail || null }, !!S.modal); // a link that opened the form: quiet
 if (S.modal) { trackEvent('review_modal_open', { source: 'link', landlord_id: S.detail || null }); syncFormHistory(); }
 loadUserSubmissions(); // Load student-added landlords from Supabase
 
