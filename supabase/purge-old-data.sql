@@ -18,10 +18,13 @@ begin;
 
 do $$
 declare
-  v_fp   integer := 0;
-  v_mail integer := 0;
-  r      record;
-  m      jsonb;
+  v_fp    integer := 0;
+  v_mail  integer := 0;
+  v_saved integer := 0;
+  v_n     integer;
+  v       text;
+  r       record;
+  m       jsonb;
 begin
   -- 1. Fingerprints
   if exists (select 1 from information_schema.columns
@@ -39,15 +42,22 @@ begin
       continue;
     end;
     if jsonb_typeof(m) = 'object' and m ? 'email' then
-      if jsonb_typeof(m -> 'email') = 'string' and (m ->> 'email') like '%@%' then
-        perform public.rmc_join_list(m ->> 'email', 'scanner_waitlist');
+      -- Straight onto the list (not through the sign-up box, whose daily limit would drop some), on the day they
+      -- asked; never someone who asked to be deleted. Anything that isn't an email address has nothing to save.
+      v := private.normalize_email(case when jsonb_typeof(m -> 'email') = 'string' then m ->> 'email' end);
+      if private.valid_email(v) and not exists (select 1 from private.suppressed x where x.email_hash = private.email_hash(v)) then
+        insert into private.contacts (email, source, verified, first_seen, consent_text)
+          values (v, 'scanner_waitlist', false, coalesce(r.created_at::date, current_date), private.consent_wording('scanner_waitlist'))
+          on conflict (email) do nothing;
+        get diagnostics v_n = row_count;
+        v_saved := v_saved + v_n;
       end if;
       update public.site_events set metadata = (m - 'email') where id = r.id;
       v_mail := v_mail + 1;
     end if;
   end loop;
 
-  raise notice 'Cleared % device fingerprint(s) and % email address(es) in usage events.', v_fp, v_mail;
+  raise notice 'Cleared % device fingerprint(s) and % email address(es) in usage events (% newly added to the mailing list).', v_fp, v_mail, v_saved;
 end $$;
 
 commit;

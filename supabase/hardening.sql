@@ -16,17 +16,19 @@
 -- What it does:
 --   1. Hourly caps per table (a count per table and hour: no IP addresses, no ids).
 --   2. Checks on every public write:
---        site_events      - event names like "page_view", metadata a JSON object under 2 KB with no email
+--        site_events      - event names like "page_view", metadata a JSON object under 1 KB with no email
 --                           addresses, device type only ("mobile"/"tablet"/"desktop"), referrer site only,
---                           server time (within the hour, as before) - at most 20,000 an hour
---        user_landlords   - 3-100 characters, a name (no links, emails or phone numbers), no duplicates
---                           ("JSM living" = "JSM Living"), at most 50 new an hour; new ones wait for your OK
---                           (approved) before they get a page on Google (tools/build_landlord_pages.py)
+--                           server time (within the hour, as before) - at most 5,000 an hour and 30,000 a
+--                           day (busy days drop the extra quietly; raise the numbers here if traffic grows)
+--        user_landlords   - 3-100 characters, a name in English letters (no links, emails or phone numbers),
+--                           no duplicates ("JSM living" = "JSM Living"), at most 50 new an hour, the day only;
+--                           new ones wait for your OK (approved) before they get a page on Google
+--                           (tools/build_landlord_pages.py)
 --        user_properties  - an address-like value up to 120 characters, the day only, at most 300 an hour
 --        reported_reviews - only real reviews, a short reason, no browser details, at most 200 an hour
 --   3. Takedown tools for admin.html: reported reviews, hide/restore any review, search, bulk approve/delete
 --      of held reviews, student-added landlords (approve, rename, delete), and a log of every decision.
---   4. "Helpful": at most 30 changes per review per hour, never on held reviews.
+--   4. "Helpful": at most 30 changes per review per hour, only on published reviews.
 --   5. Retention (needs pg_cron, which growth.sql turns on): usage events older than 25 months and the
 --      hourly counters older than 2 days are deleted nightly.
 --   6. rmc_health(): a few yes/no facts and counts (no personal data) for the uptime check in
@@ -72,6 +74,23 @@ end
 $$;
 revoke all on function private.under_cap(text, integer) from public, anon, authenticated;
 
+-- The same for a whole day (UTC), kept in the same table under the day's first hour
+create or replace function private.under_cap_day(p_bucket text, p_cap integer)
+returns boolean
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare v integer;
+begin
+  insert into private.insert_buckets as b (bucket, hour, n) values (p_bucket, date_trunc('day', now()), 1)
+    on conflict (bucket, hour) do update set n = b.n + 1
+    returning b.n into v;
+  return v <= p_cap;
+end
+$$;
+revoke all on function private.under_cap_day(text, integer) from public, anon, authenticated;
+
 -- Text that looks like a link, an email address or a phone number
 create or replace function private.looks_like_contact(p text)
 returns boolean
@@ -99,9 +118,11 @@ declare
   v_fix  jsonb := '{}'::jsonb;
 begin
   if coalesce(r ->> 'event_type', '') !~ '^[a-z0-9_]{1,60}$' then return null; end if;
-  if not private.under_cap('site_events', 20000) then return null; end if;
+  -- Far above real traffic, low enough that a script can't fill the free 500 MB database (about 35 MB a day at
+  -- most). Past the limit, events are dropped quietly: the dashboard undercounts, nothing breaks for visitors.
+  if not private.under_cap('site_events', 5000) or not private.under_cap_day('site_events/day', 30000) then return null; end if;
 
-  -- metadata: a JSON object (whatever the column type), at most 2 KB, never an email address
+  -- metadata: a JSON object (whatever the column type), at most 1 KB, never an email address
   begin
     v_meta := case jsonb_typeof(r -> 'metadata')
                 when 'object' then r -> 'metadata'
@@ -113,7 +134,7 @@ begin
   select coalesce(jsonb_object_agg(e.k, e.v), '{}'::jsonb) into v_meta
     from jsonb_each(v_meta) e(k, v)
    where not (jsonb_typeof(e.v) = 'string' and (e.v #>> '{}') ~* '[a-z0-9._%+-]+@[a-z0-9-]+\.[a-z]{2,}');
-  if octet_length(v_meta::text) > 2048 then v_meta := jsonb_build_object('_truncated', true); end if;
+  if octet_length(v_meta::text) > 1024 then v_meta := jsonb_build_object('_truncated', true); end if;
   v_fix := v_fix || jsonb_build_object('metadata', v_meta);
 
   if r ? 'page' then v_fix := v_fix || jsonb_build_object('page', left(r ->> 'page', 40)); end if;
@@ -178,8 +199,12 @@ as $$
 declare v_id text;
 begin
   new.name := btrim(regexp_replace(coalesce(new.name, ''), '\s+', ' ', 'g'));
-  if char_length(new.name) not between 3 and 100 or new.name !~ '[A-Za-z]' then
+  if char_length(new.name) not between 3 and 100 then
     raise exception 'Landlord name should be 3 to 100 characters.' using errcode = 'P0001', hint = 'landlord_name';
+  end if;
+  -- Duplicates are caught by comparing letters a-z and digits, so a name needs some
+  if new.name !~ '[A-Za-z]' then
+    raise exception 'Type the landlord''s name in English letters, as it appears on your lease.' using errcode = 'P0001', hint = 'landlord_name';
   end if;
   if private.looks_like_contact(new.name) then
     raise exception 'Type just the landlord or company name (no links, emails or phone numbers).'
@@ -194,7 +219,8 @@ begin
       using errcode = 'P0001', hint = 'rate_limited';
   end if;
   new.approved   := false;
-  new.created_at := now();
+  -- The day only: this list is public, and the exact time would give away when the review that added it was written
+  new.created_at := date_trunc('day', now());
   return new;
 end
 $$;
@@ -202,6 +228,7 @@ revoke all on function private.guard_user_landlord() from public, anon, authenti
 drop trigger if exists rmc_guard_user_landlord on public.user_landlords;
 create trigger rmc_guard_user_landlord before insert on public.user_landlords
   for each row execute function private.guard_user_landlord();
+update public.user_landlords set created_at = date_trunc('day', created_at) where created_at <> date_trunc('day', created_at);
 
 -- 2c. user_properties -------------------------------------------------------
 create or replace function private.guard_user_property()
@@ -280,6 +307,8 @@ set search_path = ''
 as $$
 begin
   if p_review_id is null or char_length(p_review_id) > 64 then return; end if;
+  -- Only a published review gets a counter (a made-up id must not add a row)
+  if not exists (select 1 from public.reviews rv where rv.id::text = p_review_id and not rv.held) then return; end if;
   if not private.under_cap('helpful:' || p_review_id, 30) then return; end if;
   update public.reviews
      set helpful_count = greatest(0, coalesce(helpful_count, 0) + case when p_delta > 0 then 1 else -1 end)

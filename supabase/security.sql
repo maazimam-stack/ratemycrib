@@ -71,17 +71,24 @@ end $$;
 revoke insert, update, delete, truncate, references, trigger
   on public.reviews_public, public.user_properties_public from anon, authenticated, public;
 
--- 3. "Helpful" votes: +1 or -1 only, never below 0, nothing else about the review can change
-create or replace function public.adjust_helpful(p_review_id text, p_delta integer)
-returns void
-language sql
-security definer
-set search_path = ''
-as $$
-  update public.reviews
-     set helpful_count = greatest(0, coalesce(helpful_count, 0) + case when p_delta > 0 then 1 else -1 end)
-   where id::text = p_review_id
-$$;
+-- 3. "Helpful" votes: +1 or -1 only, never below 0, nothing else about the review can change.
+-- Created only if missing: supabase/hardening.sql replaces it with a capped version, and running this file
+-- again must not undo that.
+do $$
+begin
+  if to_regprocedure('public.adjust_helpful(text,integer)') is null then
+    create function public.adjust_helpful(p_review_id text, p_delta integer)
+    returns void
+    language sql
+    security definer
+    set search_path = ''
+    as $f$
+      update public.reviews
+         set helpful_count = greatest(0, coalesce(helpful_count, 0) + case when p_delta > 0 then 1 else -1 end)
+       where id::text = p_review_id
+    $f$;
+  end if;
+end $$;
 
 -- 4. Row-level security on, and every existing policy on these tables replaced
 alter table public.reviews          enable row level security;

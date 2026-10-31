@@ -60,6 +60,20 @@ as $$
 $$;
 revoke all on function private.normalize_email(text) from public, anon, authenticated;
 
+-- A plain address (after normalize_email): letters, digits and . _ % + - ' before the @, a real-looking domain
+-- after it, 254 characters at most. No spaces, double quotes or "=", which keeps spreadsheet formulas out of
+-- the export.
+create or replace function private.valid_email(p_email text)
+returns boolean
+language sql
+immutable
+set search_path = ''
+as $$
+  select char_length(coalesce(p_email, '')) <= 254
+     and coalesce(p_email, '') ~ '^[a-z0-9._%+''-]+@[a-z0-9-]+(\.[a-z0-9-]+)*\.[a-z]{2,}$'
+$$;
+revoke all on function private.valid_email(text) from public, anon, authenticated;
+
 -- Addresses that asked to be deleted: only a one-way hash, so they can't be read back but can't be re-added
 create table if not exists private.suppressed (
   email_hash text primary key,
@@ -95,8 +109,7 @@ as $$
 declare v text := private.normalize_email(p_email);
 begin
   if p_source is null or p_source not in ('footer', 'unlock', 'review_form', 'scanner', 'scanner_waitlist') then return; end if;
-  -- Plain addresses only: no quotes, spaces or "=" (keeps spreadsheet formulas out of the export)
-  if char_length(v) > 254 or v !~ '^[a-z0-9._%+-]+@[a-z0-9-]+(\.[a-z0-9-]+)*\.[a-z]{2,}$' then return; end if;
+  if not private.valid_email(v) then return; end if;
   if exists (select 1 from private.suppressed x where x.email_hash = private.email_hash(v)) then return; end if;
   if (select count(*) from private.contacts c where c.verified = false and c.first_seen = current_date) >= 300 then return; end if;
   insert into private.contacts (email, source, verified, consent_text)
@@ -215,7 +228,7 @@ begin
       select distinct on (private.normalize_email(si.email)) private.normalize_email(si.email), 'scanner_waitlist', false,
              coalesce(si.created_at::date, current_date), private.consent_wording('scanner_waitlist')
         from public.scanner_interest si
-       where private.normalize_email(si.email) ~ '^[a-z0-9._%+-]+@[a-z0-9-]+(\.[a-z0-9-]+)*\.[a-z]{2,}$'
+       where private.valid_email(private.normalize_email(si.email))
          and not exists (select 1 from private.suppressed x where x.email_hash = private.email_hash(si.email))
        order by private.normalize_email(si.email), si.created_at
       on conflict (email) do nothing;

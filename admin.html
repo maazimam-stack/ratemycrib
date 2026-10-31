@@ -564,7 +564,8 @@ const HELD_REASONS = {
   same_text: 'Same words as an earlier review (copy-paste or a script).',
   landlord_day: 'More than 5 reviews of this landlord today.',
   site_hour: 'More than 40 reviews an hour site-wide.',
-  contact_info: 'Has an email address or phone number. Fine if it\'s the landlord\'s public office line; delete it (and ask the student to repost without it) if it\'s a person\'s own number or email.',
+  contact_info: 'Has an email address or phone number (in the text, address or landlord name). Fine if it\'s the landlord\'s public office line; delete it (and ask the student to repost without it) if it\'s a person\'s own number or email.',
+  unknown_landlord: 'Not attached to any listed landlord (sent by an old copy of the page). Approving it would show it under no landlord: delete it.',
 };
 const heldWhy = r => HELD_REASONS[r.held_reason] || (/^admin: /.test(r.held_reason || '') ? 'You took it down: ' + r.held_reason.slice(7) + '. Approve to put it back.' : 'Came in during a burst.');
 function Held() {
@@ -1050,7 +1051,8 @@ async function finishMfaEnroll() {
 }
 function Security() {
   const on = A.mfa.factors.some(f => f.status === 'verified');
-  if (on) return '<h2>Two-step sign-in</h2><div class="panel pad"><p><strong>On.</strong> Signing in here needs your password and a code from your authenticator app. The database also refuses admin requests from a session that skipped the code.</p></div>';
+  if (on) return '<h2>Two-step sign-in</h2><div class="panel pad"><p><strong>On.</strong> Signing in here needs your password and a code from your authenticator app. ' +
+    (A.hardening ? 'The database also refuses admin requests from a session that skipped the code.' : 'Once the database updates are in (runbook, section 1), the database will also refuse admin requests from a session that skipped the code.') + '</p></div>';
   const e = A.mfa.enrolling;
   return '<h2>Two-step sign-in</h2><div class="panel pad">' +
     (e ? '<p>Scan this with an authenticator app (Google Authenticator, 1Password, Authy…), then type the 6-digit code it shows.</p>' +

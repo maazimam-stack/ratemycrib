@@ -68,6 +68,8 @@ def check():
             notices.append("Fewer than 2 scheduled clean-up jobs are running in the database. Turn on pg_cron (Database → Extensions), then run growth.sql and hardening.sql again.")
         if (f.get("db_mb") or 0) >= 400:
             problems.append(f"The database is {f.get('db_mb')} MB; Supabase's free plan stops at 500 MB.")
+        elif (f.get("db_mb") or 0) >= 300:
+            notices.append(f"The database is {f.get('db_mb')} MB of the free plan's 500 MB: time to check why (admin.html → Overview) and plan for more room.")
         if (f.get("held_over_a_day") or 0) > 0:
             n = f["held_over_a_day"]
             notices.append(f"{n} review{'s have' if n != 1 else ' has'} waited more than a day for your approval. admin.html → Reviews & reports.")

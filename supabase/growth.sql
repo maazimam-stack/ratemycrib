@@ -17,7 +17,9 @@
 --      "Anonymous Student": that badge was never checked. Their stored author text is untouched (reversible).
 --   5. Floods are held for review instead of going live: more than 40 unverified reviews an hour site-wide,
 --      more than 5 unverified or 5 verified reviews of one landlord in a day. Held reviews wait in admin.html
---      for you to approve or delete. Above 400 an hour, new unverified reviews are refused outright.
+--      for you to approve or delete. Above 400 an hour or 1,000 a day, new unverified reviews are refused
+--      outright, and a review can't be longer than 5,000 characters (the form stops at 4,900), so a script
+--      can't fill the free 500 MB database.
 --   5b. One review per lease. A student may review the same landlord again for a different lease (the
 --      "[Lease: Fall 2025 ...]" start term the form puts at the front of the review), not twice for the same one.
 --      Verified reviews: the database keeps a 1-in-256 code per landlord + lease start, made from the email,
@@ -26,8 +28,10 @@
 --      256 other students share each code, so a match can be a different person: holding (not refusing) means
 --      nobody real is turned away. Unverified reviews have no identity to check; the form stops repeats from the
 --      same browser. Reviews whose words were already posted (copy-paste, bots) are held too, and so are
---      reviews containing an email address or phone number (someone's personal contact details).
---      admin.html shows why each review was held (held_reason).
+--      reviews with an email address or phone number in the text, address or landlord name (someone's
+--      personal contact details), and reviews attached to no listed landlord (an old copy of the page).
+--      admin.html shows why each review was held (held_reason). Reviews are stored with the hour they were
+--      posted, not the minute (the site shows only the date).
 --   5c. The optional "Did you get your deposit back?" answer (deposit_back: full, partial, none, not_yet).
 --   6. Sign-in accounts left over from unused verifications are deleted every 15 minutes (needs pg_cron,
 --      which this file turns on if your project allows it; otherwise it tells you how).
@@ -39,8 +43,8 @@
 --      (run that file right after this one).
 --
 -- Privacy note: the review row never holds an email or account id, and contacts are stored apart from
--- reviews. Someone with full database access could still try to match the two by when rows were written,
--- so treat private.contacts as sensitive. Supabase keeps its own short-lived sign-in logs; under
+-- reviews (contacts keep only the day, reviews only the hour). Someone with full database access could still
+-- try to match the two by when rows were written, so treat private.contacts as sensitive. Supabase keeps its own short-lived sign-in logs; under
 -- Authentication > Settings, keep "write audit logs to the database" off.
 -- ----------------------------------------------------------------------------
 
@@ -84,7 +88,8 @@ as $$
 $$;
 revoke all on function private.signed_in_with_email_code() from public, anon, authenticated;
 
--- Has the caller turned on two-step sign-in (an authenticator app)? Any problem reading it counts as "no".
+-- Has the caller turned on two-step sign-in (an authenticator app)? If the answer can't be read, assume yes:
+-- the code is then required, so a problem here can never quietly switch the second step off.
 create or replace function private.has_mfa()
 returns boolean
 language plpgsql
@@ -95,7 +100,7 @@ as $$
 begin
   return exists (select 1 from auth.mfa_factors f where f.user_id = auth.uid() and f.status::text = 'verified');
 exception when others then
-  return false;
+  return true;
 end
 $$;
 revoke all on function private.has_mfa() from public, anon, authenticated;
@@ -189,6 +194,19 @@ create table if not exists private.review_marks (
 );
 revoke all on private.mark_salt, private.review_marks from public, anon, authenticated;
 
+-- An email address or a phone number (someone's personal contact details)
+create or replace function private.has_contact_info(p text)
+returns boolean
+language sql
+immutable
+set search_path = ''
+as $$
+  select coalesce(p, '') ~* '[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}'
+      or coalesce(p, '') ~ '\(?[0-9]{3}\)?[-. ]?[0-9]{3}[-. ][0-9]{4}'
+      or coalesce(p, '') ~ '(^|[^0-9])[0-9]{10}([^0-9]|$)'
+$$;
+revoke all on function private.has_contact_info(text) from public, anon, authenticated;
+
 create or replace function private.before_review_insert()
 returns trigger
 language plpgsql
@@ -214,12 +232,19 @@ begin
   new.held_reason   := null;
   new.author        := 'Anonymous Student';
   new.helpful_count := 0;
-  new.created_at    := now();
+  -- The hour only: a review's time can't be matched to the exact moment someone used the site
+  new.created_at    := date_trunc('hour', now());
 
-  -- At least a sentence after the "[Lease: ...]" prefix (the form asks for 20+ characters)
+  -- At least a sentence after the "[Lease: ...]" prefix (the form asks for 20+ characters), and no more than
+  -- 5,000 characters (the form's box stops at 4,900; security.sql's insert policy refuses longer too, but with
+  -- an error the form can't explain)
   if char_length(v_body) < 20 then
     raise exception 'Please write at least a sentence (20+ characters) about your experience.'
       using errcode = 'P0001', hint = 'too_short';
+  end if;
+  if char_length(coalesce(new.review_text, '')) > 5000 then
+    raise exception 'Reviews can be up to 5,000 characters. Please shorten yours a little.'
+      using errcode = 'P0001', hint = 'too_long';
   end if;
 
   -- Only values the form can produce. Anything else (a script, an old copy of the page) is dropped rather than
@@ -269,10 +294,10 @@ begin
   if exists (select 1 from public.reviews r where r.body_md5 = new.body_md5) then
     v_reason := 'same_text';
   end if;
-  -- An email address or phone number in the text (someone's personal contact info) waits for a person to check
-  if v_reason is null and (v_body ~* '[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}'
-                           or v_body ~ '\(?[0-9]{3}\)?[-. ]?[0-9]{3}[-. ][0-9]{4}'
-                           or v_body ~ '(^|[^0-9])[0-9]{10}([^0-9]|$)') then
+  -- An email address or phone number (someone's personal contact info) waits for a person to check: in the
+  -- text, and in the address and landlord name too, since both are shown on the review
+  if v_reason is null and (private.has_contact_info(v_body) or private.has_contact_info(new.property)
+                           or private.has_contact_info(new.landlord_name)) then
     v_reason := 'contact_info';
   end if;
 
@@ -319,11 +344,25 @@ begin
         using errcode = 'P0001', hint = 'rate_limited';
     end if;
     select count(*) into v_recent from public.reviews r
+     where not r.verified and r.created_at > now() - interval '1 day';
+    if v_recent >= 1000 then
+      raise exception 'Too many reviews came in today. Try again tomorrow, or verify with your @illinois.edu email.'
+        using errcode = 'P0001', hint = 'rate_limited';
+    end if;
+    select count(*) into v_recent from public.reviews r
      where not r.verified and not r.held and r.created_at > now() - interval '1 hour';
     if v_recent >= 40 then v_reason := coalesce(v_reason, 'site_hour'); end if;
     select count(*) into v_recent from public.reviews r
      where not r.verified and not r.held and r.landlord_id is not distinct from new.landlord_id and r.created_at > now() - interval '1 day';
     if v_recent >= 5 then v_reason := coalesce(v_reason, 'landlord_day'); end if;
+  end if;
+
+  -- Not one of the built-in landlords (ids up to 10000) or a student-added one that exists: it would show under
+  -- no landlord at all (an old copy of the page sends -1 when adding the landlord failed). Wins over any other
+  -- reason, so it's never approved by mistake as, say, a landlord's office number.
+  if new.landlord_id is null or new.landlord_id < 1
+     or (new.landlord_id > 10000 and not exists (select 1 from public.user_landlords u where u.id = new.landlord_id)) then
+    v_reason := 'unknown_landlord';
   end if;
 
   if v_reason is not null then
@@ -345,6 +384,8 @@ drop trigger if exists rmc_before_review_insert on public.reviews;
 create trigger rmc_before_review_insert
   before insert on public.reviews
   for each row execute function private.before_review_insert();
+-- Reviews already in keep only the hour too, like new ones (the site has only ever shown the date)
+update public.reviews set created_at = date_trunc('hour', created_at) where created_at <> date_trunc('hour', created_at);
 
 -- Public view: the badge comes from the verified column; held reviews stay hidden; the time is the day only,
 -- so a review can't be matched to a sign-in by its exact second. Same columns as before, plus "verified".

@@ -90,7 +90,8 @@ Admin → **Reviews & reports** → **Held for review**. Each row says why it wa
 
 | Reason | What to do |
 |---|---|
-| Has an email address or phone number | Approve if it's the landlord's public office number; otherwise delete (the student can repost without it) |
+| Has an email address or phone number (text, address or landlord name) | Approve if it's the landlord's public office number; otherwise delete (the student can repost without it) |
+| Not attached to any listed landlord | Delete: an old copy of the page sent it, and approved it would show under no landlord |
 | Same words as an earlier review | Usually copy-paste or a bot: delete unless it's clearly a different real person |
 | Same lease (verified) | Usually the same student twice; compare with the live reviews of that landlord |
 | More than 5 of this landlord today / 40 an hour | A review drive (fine: approve) or a flood (delete) |
@@ -142,8 +143,12 @@ GitHub emails you when the health check opens or updates this issue. It closes i
 | Reviews couldn't be read | Supabase project paused or down | Supabase dashboard → project → **Restore**; status.supabase.com |
 | Review rules / write limits / mailing list missing | a SQL file wasn't run, or an older one was run after a newer one | Section 1, in order |
 | Fewer than 2 scheduled jobs | pg_cron off | Database → Extensions → enable **pg_cron**, then run growth.sql and hardening.sql again |
-| Database over 400 MB | heavy traffic or a flood | Admin → Overview shows the size; usage records older than 25 months are deleted nightly. Consider Supabase Pro before 500 MB |
+| Database over 300 MB (a heads-up) or 400 MB (needs you) | heavy traffic, or a flood of junk | Admin → Overview shows the size. Junk reviews: Reviews & reports → Held → **Select all** → **Delete selected**. Steady growth: usage records older than 25 months are deleted nightly; move to Supabase's paid plan before 500 MB |
 | Reviews waited over a day / reports waiting | you haven't been to admin lately | Section 3 |
+
+Write limits, in case real traffic outgrows them: usage events stop counting past 5,000 an hour or 30,000 a
+day (visitors notice nothing; the dashboard undercounts), and unverified reviews are refused past 400 an hour
+or 1,000 a day. The numbers are in `supabase/hardening.sql` and `supabase/growth.sql`.
 
 GitHub turns off scheduled workflows in a repository with no activity for 60 days; the nightly landlord-pages
 commits normally count. If the health check stops running, GitHub → Actions → Health check → **Enable workflow**.

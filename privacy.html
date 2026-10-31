@@ -44,7 +44,7 @@
 
 <h2>1. What we collect</h2>
 <h3>When you post a review</h3>
-<p>What you put in the form: the landlord, your star rating, whether you'd rent from them again, your review, when your lease started (and ended, if you say), and anything optional you add: the street address (we remove unit numbers before saving it), neighborhood, monthly rent, whether you got your security deposit back, area scores and tags. We also store when it was posted; the site shows only the date.</p>
+<p>What you put in the form: the landlord, your star rating, whether you'd rent from them again, your review, when your lease started (and ended, if you say), and anything optional you add: the street address (we remove unit numbers before saving it), neighborhood, monthly rent, whether you got your security deposit back, area scores and tags. We also store the hour it was posted (not the minute); the site shows only the date.</p>
 <p>A review is never stored with an email address, a sign-in account, an IP address or a device identifier. Reviews posted before October 30, 2026 also stored a "device fingerprint" (a code made from browser settings, used to catch duplicates). We no longer collect it, and it has never been shown on the site.</p>
 <p>If you add a landlord that isn't listed yet, we save its name so others can pick it. Student-added landlords get a page on Google only after we've checked them.</p>
 
@@ -60,20 +60,20 @@
 <p>For each address we keep: the address, which box it came from, the exact wording that box showed you (as a record of what you agreed to), the day we first got it, whether you've unsubscribed, and a random code for your unsubscribe link. That list holds no reviews, landlords or times, and it's kept apart from reviews. Your email is never shown on the site.</p>
 
 <h3>When you use the site</h3>
-<p>To see what's working, we record pages viewed and features used: for example searches (the words you typed), the rent and landlord you enter in "Am I Overpaying?", the major and year you pick in "Near your classes", that a lease scan ran and how many clauses it flagged (never the lease itself), shares, and whether the review form was opened or closed. With each one we record:</p>
+<p>To see what's working, we record pages viewed and features used: for example searches (the words you typed), the rent and landlord you enter in "Am I Overpaying?", the major and year you pick in "Near your classes", that a lease scan ran and how many clauses it flagged (never the lease itself), and shares. With each one we record:</p>
 <ul>
 <li>a random visitor ID that resets every calendar month, so we can count people rather than clicks. If your browser sends <strong>Global Privacy Control or Do Not Track</strong>, we don't create one;</li>
 <li>a random ID for the visit, which ends when you close the tab;</li>
 <li>the kind of device (phone, tablet or computer), screen size and the page;</li>
 <li>the website that sent you (just the site, like reddit.com, never the page) and any campaign code in the link (like ?ref=flyer).</li>
 </ul>
-<p>Events about posting a review or verifying carry no visitor or visit ID, no screen size, and only the hour, so they can't be tied to the rest of a visit or matched to a review by time.</p>
+<p>A few are recorded more coarsely: opening the review form, closing it without posting, posting, the thank-you screen after posting (sharing, starting another review), verifying, and giving us an email address. These carry no visitor or visit ID, no screen size and only the hour, so they can't be tied to the rest of a visit or to an email address, or matched to a review by its exact time.</p>
 
 <h3>When you report a review</h3>
 <p>Which review and the reason you picked. Nothing about you or your browser.</p>
 
 <h3>What our providers see</h3>
-<p>Our database doesn't store IP addresses. But like any website, the companies that run it receive your IP address and browser details when your browser connects to them, and keep their own short-term logs under their own privacy policies: GitHub Pages (hosts the site), Supabase (database and the verification sign-in) and Google Fonts (the site's fonts).</p>
+<p>Our database doesn't keep IP addresses. The one brief exception: while you verify, the temporary sign-in (run by Supabase) records the IP address and browser it came from, and that record is deleted with the sign-in. Like any website, the companies that run it receive your IP address and browser details when your browser connects to them, and keep their own short-term logs under their own privacy policies: GitHub Pages (hosts the site), Supabase (database and the verification sign-in) and Google Fonts (the site's fonts).</p>
 
 <h3>The lease scanner</h3>
 <p>The scanner reads your lease entirely in your browser. The lease is never uploaded, stored or seen by us or anyone else.</p>

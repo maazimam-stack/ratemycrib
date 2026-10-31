@@ -1709,7 +1709,7 @@ async function saveReviewToDb(review) {
       delete row.deposit_back;
       ({ error } = await db.from('reviews').insert(row));
     }
-    if (error && (error.hint === 'already_reviewed' || error.hint === 'rate_limited' || error.hint === 'too_short')) { toast(error.message); return 'shown'; }
+    if (error && (error.hint === 'already_reviewed' || error.hint === 'rate_limited' || error.hint === 'too_short' || error.hint === 'too_long')) { toast(error.message); return 'shown'; }
     if (error) throw error;
     markReviewedLease(leaseK);
     forgetReviewedLandlord(review.landlordId);
@@ -4106,12 +4106,16 @@ async function trackScannerEvent(eventType, metadata = {}) {
   trackEvent('scanner_' + eventType, metadata);
 }
 
-const PRIVATE_EVENTS = ['review_submitted', 'verify_code_sent', 'verify_success', 'verify_failed'];
+// The review form from opening to the thank-you screen, verification, and every box that takes an email: no
+// visitor or visit ID and only the hour, so none of it can be joined to the rest of a visit (or to an email)
+const PRIVATE_EVENTS = ['review_modal_open', 'review_form_abandoned', 'review_submitted', 'second_review_click', 'share_click',
+  'roommate_share', 'verify_code_sent', 'verify_success', 'verify_failed', 'reviews_unlock', 'list_join',
+  'scanner_interest_submitted', 'scanner_interest_submitted_fallback'];
 async function trackEvent(eventType, metadata = {}) {
   if (eventType === 'review_modal_open') window._lastModalOpenAt = Date.now();
   try {
-    // Review and verification events carry no visitor/visit ID, no screen size and only the hour, so they
-    // can't be joined to the rest of a visit or matched to a review by its exact time.
+    // Review-form, verification and email events (PRIVATE_EVENTS) carry no visitor/visit ID, no screen size and
+    // only the hour, so they can't be joined to the rest of a visit or matched to a review by its exact time.
     const quiet = PRIVATE_EVENTS.indexOf(eventType) !== -1;
     const meta = Object.assign({}, metadata, { _src: ANALYTICS.src });
     if (!quiet) { meta._s = ANALYTICS.sid; if (ANALYTICS.vid) meta._v = ANALYTICS.vid; }
@@ -4861,10 +4865,9 @@ async function loadUserSubmissions() {
     if (_pendingLandlordHash) {
       const h = _pendingLandlordHash; _pendingLandlordHash = null;
       const found = findLandlordBySlug(h.slug);
-      if (found && S.page !== 'detail') {
-        if (h.rate) history.replaceState(null, '', location.pathname + location.search + '#landlord/' + h.slug);
-        go(h.rate ? { page: 'detail', detail: found.id, modal: true, stars: 0, wouldRentChoice: null, posTags: [], negTags: [], formData: {} } : { page: 'detail', detail: found.id });
-      }
+      // The address bar already shows #landlord/<slug> (set at startup). A /rate link opened the form then:
+      // it stays open with whatever was typed, and closing it before now is respected.
+      if (found && S.page !== 'detail') go({ page: 'detail', detail: found.id });
     }
   } catch(e) { /* tables may not exist yet — silent fail */ }
 }
@@ -5023,8 +5026,9 @@ function toggleTag(type, tag) {
   document.querySelectorAll(selector).forEach(el => {
     const cls = type === 'pos' ? 'sel-pos' : 'sel-neg';
     const arr = type === 'pos' ? S.posTags : S.negTags;
-    if (arr.includes(el.dataset.tag)) el.classList.add(cls);
-    else el.classList.remove(cls);
+    const on = arr.includes(el.dataset.tag);
+    el.classList.toggle(cls, on);
+    el.setAttribute('aria-pressed', on ? 'true' : 'false'); // screen readers hear the new state
   });
 }
 
@@ -5170,8 +5174,11 @@ async function submitReview(landlordIdFromDetail) {
 const landlordKey = n => String(n || '').toLowerCase().replace(/[^a-z0-9]+/g, '');
 // A landlord that isn't listed yet: reuse a matching one, otherwise add it. Returns { id, name } or { message }.
 async function addUserLandlord(name) {
-  const k = landlordKey(name);
-  const same = SEED_LANDLORDS.find(x => landlordKey(x.name) === k) || (userLandlords || []).find(x => landlordKey(x.name) === k);
+  // Same landlord = same letters and digits ("J.S.M. Living" = "JSM living"). A name with no a-z or 0-9 at all
+  // (another alphabet) has nothing to compare that way, so only the exact name counts as the same.
+  const k = landlordKey(name), exact = String(name || '').trim().toLowerCase();
+  const isSame = x => k ? landlordKey(x.name) === k : String(x.name || '').trim().toLowerCase() === exact;
+  const same = SEED_LANDLORDS.find(isSame) || (userLandlords || []).find(isSame);
   if (same) return { id: same.id, name: same.name };
   let res;
   try { res = await db.from('user_landlords').insert({ name }).select('id,name'); } catch (e) { res = { error: e }; }
@@ -5805,6 +5812,10 @@ window.addEventListener('hashchange', () => {
   var _origGo = go;
   var _skipHash = false;
   go = function(u) {
+    // A link to a student-added landlord is waiting for the landlord list: going anywhere else cancels it, and
+    // until then the address bar keeps the link (so Back and the form's own history entry stay in order)
+    if (_pendingLandlordHash && u && ('page' in u || 'detail' in u)) _pendingLandlordHash = null;
+    var holdUrl = !!_pendingLandlordHash;
     _origGo(u);
     // Update hash based on current state
     var newHash = '';
@@ -5821,7 +5832,8 @@ window.addEventListener('hashchange', () => {
     else if (S.page === 'rentcheck') newHash = 'rentcheck';
 
     // Update hash without triggering hashchange
-    if (newHash) {
+    if (holdUrl) { /* keep the waiting link */ }
+    else if (newHash) {
       if (location.hash !== '#' + newHash) {
         _skipHash = true;
         location.hash = '#' + newHash;
@@ -5959,7 +5971,10 @@ function updateStructuredData() {
       }
     } else if (slug) {
       _pendingLandlordHash = { slug: slug, rate: wantsRate }; // maybe a student-added landlord: retried once they load
-      if (wantsRate) { S.modal = true; }                     // the form opens now; the landlord is filled in when found
+      if (wantsRate) {                                        // the form opens now; the landlord is filled in when found
+        S.modal = true;
+        try { history.replaceState(null, '', location.pathname + location.search + '#landlord/' + slug); } catch (e) {}
+      }
     }
   } else if (hash.startsWith('landlord-')) {
     var id = parseInt(hash.split('-')[1]);
@@ -5972,7 +5987,11 @@ function updateStructuredData() {
   else if (hash === 'insights') { S.page = 'insights'; }
   else if (hash === 'quiz') { S.page = 'quiz'; }
   else if (hash === 'rentcheck') { S.page = 'rentcheck'; }
-  else if (hash === 'rate') { S.page = 'home'; S.modal = true; }
+  else if (hash === 'rate') {
+    S.page = 'home'; S.modal = true;
+    // The form gets its own history entry next; without "#rate" underneath, Back leaves instead of reopening it
+    try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {}
+  }
 })();
 
 loadMajorChoice();
