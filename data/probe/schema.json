@@ -1,6 +1,186 @@
 {
- "error": [
-  401,
-  "{\"message\":\"Invalid API key\",\"hint\":\"Only the `service_role` API key can be used for this endpoint.\"}"
+ "reported_reviews.created_at": [
+  400,
+  "{\"code\":\"PGRST204\",\"details\":null,\"hint\":null,\"message\":\"Could not find the 'created_at' column of 'reported_reviews' in the schema cache\"}"
+ ],
+ "reported_reviews.id": [
+  201,
+  "ok"
+ ],
+ "reported_reviews.reason": [
+  201,
+  "ok"
+ ],
+ "reported_reviews.reported_at": [
+  201,
+  "ok"
+ ],
+ "reported_reviews.review_id": [
+  201,
+  "ok"
+ ],
+ "reported_reviews.user_agent": [
+  201,
+  "ok"
+ ],
+ "reviews.author": [
+  201,
+  "ok"
+ ],
+ "reviews.created_at": [
+  201,
+  "ok"
+ ],
+ "reviews.deposit_back": [
+  400,
+  "{\"code\":\"PGRST204\",\"details\":null,\"hint\":null,\"message\":\"Could not find the 'deposit_back' column of 'reviews' in the schema cache\"}"
+ ],
+ "reviews.device_fingerprint": [
+  201,
+  "ok"
+ ],
+ "reviews.held": [
+  201,
+  "ok"
+ ],
+ "reviews.held_reason": [
+  201,
+  "ok"
+ ],
+ "reviews.helpful_count": [
+  201,
+  "ok"
+ ],
+ "reviews.hood_name": [
+  201,
+  "ok"
+ ],
+ "reviews.hood_safety": [
+  201,
+  "ok"
+ ],
+ "reviews.id": [
+  201,
+  "ok"
+ ],
+ "reviews.landlord_id": [
+  201,
+  "ok"
+ ],
+ "reviews.landlord_name": [
+  201,
+  "ok"
+ ],
+ "reviews.monthly_rent": [
+  201,
+  "ok"
+ ],
+ "reviews.negative_tags": [
+  201,
+  "ok"
+ ],
+ "reviews.positive_tags": [
+  201,
+  "ok"
+ ],
+ "reviews.property": [
+  201,
+  "ok"
+ ],
+ "reviews.rating": [
+  201,
+  "ok"
+ ],
+ "reviews.review_text": [
+  201,
+  "ok"
+ ],
+ "reviews.verified": [
+  201,
+  "ok"
+ ],
+ "reviews.would_rent": [
+  201,
+  "ok"
+ ],
+ "scanner_interest.created_at": [
+  201,
+  "ok"
+ ],
+ "scanner_interest.email": [
+  201,
+  "ok"
+ ],
+ "scanner_interest.id": [
+  201,
+  "ok"
+ ],
+ "scanner_interest.source": [
+  201,
+  "ok"
+ ],
+ "site_events.created_at": [
+  201,
+  "ok"
+ ],
+ "site_events.event_type": [
+  201,
+  "ok"
+ ],
+ "site_events.metadata": [
+  201,
+  "ok"
+ ],
+ "site_events.page": [
+  201,
+  "ok"
+ ],
+ "site_events.referrer": [
+  201,
+  "ok"
+ ],
+ "site_events.screen": [
+  201,
+  "ok"
+ ],
+ "site_events.user_agent": [
+  201,
+  "ok"
+ ],
+ "site_events.zz_not_a_column": [
+  400,
+  "{\"code\":\"PGRST204\",\"details\":null,\"hint\":null,\"message\":\"Could not find the 'zz_not_a_column' column of 'site_events' in the schema cache\"}"
+ ],
+ "user_landlords.created_at": [
+  201,
+  "ok"
+ ],
+ "user_landlords.id": [
+  201,
+  "ok"
+ ],
+ "user_landlords.name": [
+  201,
+  "ok"
+ ],
+ "user_properties.address": [
+  201,
+  "ok"
+ ],
+ "user_properties.hood_name": [
+  201,
+  "ok"
+ ],
+ "user_properties.id": [
+  201,
+  "ok"
+ ],
+ "user_properties.landlord_name": [
+  201,
+  "ok"
+ ],
+ "user_properties.submitted_at": [
+  201,
+  "ok"
  ]
 }
