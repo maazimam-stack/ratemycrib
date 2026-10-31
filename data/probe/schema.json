@@ -1,0 +1,6 @@
+{
+ "error": [
+  401,
+  "{\"message\":\"Invalid API key\",\"hint\":\"Only the `service_role` API key can be used for this endpoint.\"}"
+ ]
+}
