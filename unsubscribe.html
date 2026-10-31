@@ -9,7 +9,7 @@
 <title>Unsubscribe | RateMyCrib</title>
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
 <style>
-  :root { --navy: #13294B; --orange: #FF5F05; --bg: #F7F5F0; --card: #fff; --text: #13294B; --muted: #5B6578; --border: #D6D2C8; }
+  :root { --navy: #13294B; --orange: #FF5F05; --ink: #C2410C; --bg: #F7F5F0; --card: #fff; --text: #13294B; --muted: #5B6578; --border: #D6D2C8; }
   @media (prefers-color-scheme: dark) { :root { --bg: #0E1626; --card: #16213A; --text: #E8ECF3; --muted: #A3ADBF; --border: #2A3653; } }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: -apple-system, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px 16px; }
@@ -18,9 +18,10 @@
   .brand em { font-style: normal; color: var(--orange); }
   h1 { font-size: 22px; margin-bottom: 10px; }
   p { color: var(--muted); line-height: 1.55; font-size: 15px; margin-bottom: 18px; }
-  button { width: 100%; min-height: 48px; border: 0; border-radius: 2px; background: var(--orange); color: #fff; font: inherit; font-size: 16px; font-weight: 700; cursor: pointer; }
+  button { width: 100%; min-height: 48px; border: 0; border-radius: 2px; background: var(--ink); color: #fff; font: inherit; font-size: 16px; font-weight: 700; cursor: pointer; }
   button:disabled { opacity: 0.6; cursor: default; }
-  a { color: var(--orange); }
+  a { color: var(--ink); }
+  @media (prefers-color-scheme: dark) { a { color: #FF8A47; } }
   .small { font-size: 13px; margin: 16px 0 0; }
 </style>
 </head>

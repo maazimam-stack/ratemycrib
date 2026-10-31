@@ -1,0 +1,26 @@
+# Weekly off-site copy of the public reviews (Supabase's free plan keeps no backups). Read-only: it uses the
+# public key, like any visitor, and saves the copy as a download on the workflow run (kept 35 days).
+# Restore steps: docs/RUNBOOK.md, section 10.
+name: Backup
+on:
+  schedule:
+    - cron: "23 10 * * 0"   # Sundays, ~5am Chicago
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: backup
+  cancel-in-progress: false
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 tools/backup_public_data.py --out backup
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ratemycrib-public-backup-${{ github.run_number }}
+          path: backup/
+          retention-days: 35
+          if-no-files-found: error

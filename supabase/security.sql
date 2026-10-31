@@ -71,17 +71,24 @@ end $$;
 revoke insert, update, delete, truncate, references, trigger
   on public.reviews_public, public.user_properties_public from anon, authenticated, public;
 
--- 3. "Helpful" votes: +1 or -1 only, never below 0, nothing else about the review can change
-create or replace function public.adjust_helpful(p_review_id text, p_delta integer)
-returns void
-language sql
-security definer
-set search_path = ''
-as $$
-  update public.reviews
-     set helpful_count = greatest(0, coalesce(helpful_count, 0) + case when p_delta > 0 then 1 else -1 end)
-   where id::text = p_review_id
-$$;
+-- 3. "Helpful" votes: +1 or -1 only, never below 0, nothing else about the review can change.
+-- Created only if missing: supabase/hardening.sql replaces it with a capped version, and running this file
+-- again must not undo that.
+do $$
+begin
+  if to_regprocedure('public.adjust_helpful(text,integer)') is null then
+    create function public.adjust_helpful(p_review_id text, p_delta integer)
+    returns void
+    language sql
+    security definer
+    set search_path = ''
+    as $f$
+      update public.reviews
+         set helpful_count = greatest(0, coalesce(helpful_count, 0) + case when p_delta > 0 then 1 else -1 end)
+       where id::text = p_review_id
+    $f$;
+  end if;
+end $$;
 
 -- 4. Row-level security on, and every existing policy on these tables replaced
 alter table public.reviews          enable row level security;
@@ -143,7 +150,9 @@ revoke select, update, delete, truncate on public.reported_reviews from anon, au
 grant insert on public.reviews, public.user_properties, public.user_landlords,
                 public.site_events, public.scanner_interest, public.reported_reviews to anon, authenticated;
 grant select on public.user_landlords to anon, authenticated;
-grant select on public.reviews_public, public.user_properties_public to anon, authenticated;
+grant select on public.reviews_public to anon, authenticated;
+-- user_properties_public is not granted to the public: the site never reads it, and it carries the time each
+-- address was typed (see supabase/hardening.sql). Admins read user_properties in the dashboard.
 
 revoke all on function public.adjust_helpful(text, integer) from public;
 grant execute on function public.adjust_helpful(text, integer) to anon, authenticated;
