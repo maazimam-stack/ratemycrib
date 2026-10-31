@@ -13,6 +13,7 @@ in one Supabase database. Nothing here needs a terminal.
 | `supabase/*.sql` | database rules and functions, pasted into Supabase's SQL Editor |
 | `.github/workflows/landlord-pages.yml` | nightly Google-friendly pages under /landlord/ |
 | `.github/workflows/health.yml` | the every-6-hours check that opens a GitHub issue if something's wrong |
+| `.github/workflows/backup.yml` | Sunday copy of the public reviews, kept 35 days (section 10) |
 
 ---
 
@@ -122,7 +123,8 @@ junk with no reviews. Don't approve one marked "same name as a built-in landlord
 2. Admin → **Find a review**: search by words, landlord or address; note the review id.
 3. Decide using the Terms (section 6): remove only if it breaks the rules (false statement of fact, personal
    information, threats, fake). Never edit a review's words. Money or a threat of a lawsuit is not a reason.
-4. If removing: **Take down**, then **Delete** in Held. Run the **Landlord pages** workflow.
+4. If removing: **Take down**, then **Delete** in Held. Run the **Landlord pages** workflow. (Copies in the
+   weekly backup downloads expire within 35 days; section 10 says how to delete them sooner if you must.)
 5. The **Your decisions** log keeps what you did, when and why (never the deleted text). That's your record.
 6. A **subpoena or court order** for reviewer information: don't ignore it, don't hand over more than it asks
    for, and talk to a lawyer first (UIUC Student Legal Service can point you to one). Reviews aren't stored
@@ -155,13 +157,16 @@ commits normally count. If the health check stops running, GitHub → Actions �
 The dashboard's verification funnel shows the reason `email_address_not_authorized`.
 
 1. Create an account with an email sending service that works with Supabase (Resend and Brevo both have free tiers),
-   and verify a sending domain or address you control (for example `no-reply@ratemycrib.net`).
+   verify ratemycrib.net with it (it gives you DNS records to add where the domain is managed) and send from an
+   address on it, for example `no-reply@ratemycrib.net`. The codes can't come from ratemycrib@proton.me: mail
+   another service sends in a proton.me address's name lands in spam. Questions still go to ratemycrib@proton.me
+   (the template below says so).
 2. Supabase → **Authentication** → **Emails** → **SMTP Settings**: turn on custom SMTP, paste the host, port,
    username and password the service gives you, sender name "RateMyCrib".
 3. **Authentication** → **Emails** → **Templates**: in **Magic Link** and in **Confirm signup**, make the email
    show the code, for example:
    ```html
-   <h2>Your RateMyCrib code</h2><p>Enter this code to verify: <strong>{{ .Token }}</strong></p><p>It expires in 10 minutes. If you didn't ask for it, ignore this email.</p>
+   <h2>Your RateMyCrib code</h2><p>Enter this code to verify: <strong>{{ .Token }}</strong></p><p>It expires in 10 minutes. If you didn't ask for it, ignore this email.</p><p>Questions: ratemycrib@proton.me</p>
    ```
 4. **Authentication** → **Providers** → **Email** → **Email OTP Expiration**: 600 seconds.
 5. **Authentication** → **Rate Limits**: emails per hour around 60 to start (raise for a review drive).
@@ -193,6 +198,40 @@ saved in Admin → Outreach → Your sender details.
 Merging a pull request deploys it. To undo: GitHub → the merged pull request → **Revert** → merge the revert
 pull request. Site files are back within a few minutes. Database changes aren't undone by a revert: re-run the
 older SQL file (section 1, Rollback).
+
+## 10. Backups and restoring
+
+Supabase's free plan keeps no backups, and deleting a project deletes everything in it for good.
+
+**What's backed up:** every Sunday, GitHub → Actions → **Backup** saves a copy of everything the site shows
+publicly (published reviews and student-added landlords) as a download on that run, kept 35 days. It uses the
+public key, like any visitor.
+**Not in it:** held reviews, the mailing list, outreach notes, usage records, admin data. For your own copy of
+the mailing list: Admin → Outreach → **Download CSV**, kept somewhere private (it's personal data: never in the
+repo or a shared folder).
+
+**Check it once after merging:** Actions → Backup → **Run workflow** → open the run → **Artifacts** → the zip
+holds `reviews_public.json`, `user_landlords.json`, `restore.sql` and `README.txt` (with the review count).
+
+**Restore (database lost or deleted)**
+1. Supabase → a new project (or the emptied one).
+2. Section 1: run the four SQL files in order.
+3. Actions → Backup → the latest green run → download the artifact → unzip.
+4. SQL Editor → New query → paste all of `restore.sql` → **Run**. Expected: one row with the number of reviews,
+   then COMMIT. It refuses to run before step 2, and running it twice adds nothing.
+5. A new project has a new address and public ("anon") key, both in its API settings. In one pull request,
+   replace the old address (`expfrmknhdcwnccqjwnq.supabase.co`) and the old public key everywhere they appear
+   in `index.html`, `admin.html` and `unsubscribe.html`, including the security line at the top of each page.
+   Then redo section 2 (admin) and section 6 (email codes).
+
+Restored reviews keep their text, ratings, badges and day; held reviews, reports and the mailing list are not
+in the backup.
+
+**Paused project:** Supabase pauses free projects after a quiet week and emails you first; the health check and
+the nightly pages keep it busy. If it's paused anyway: dashboard → the project → **Resume** (possible for 90 days).
+
+**A review that must be gone everywhere** (court order, lawyer): after deleting it (section 4), Actions →
+Backup → open each run from the last 35 days → delete its artifact.
 
 ## Escalation
 

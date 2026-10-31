@@ -19,6 +19,8 @@ never leaves the browser). Landlords can't pay to change a rating or remove a re
   night (`.github/workflows/landlord-pages.yml`).
 - **Health check:** `tools/health_check.py` every 6 hours (`.github/workflows/health.yml`) opens a GitHub issue
   if the site or database needs attention.
+- **Backup:** `tools/backup_public_data.py` every Sunday (`.github/workflows/backup.yml`) saves the published
+  reviews and a ready-to-run `restore.sql` as a download on the run, kept 35 days.
 - **Campus data:** `data/majors.json` and `data/places.json`, built by `tools/campus-data/` from the Academic
   Catalog, Course Explorer, OpenStreetMap and the US Census geocoder.
 
