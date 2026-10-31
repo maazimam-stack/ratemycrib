@@ -595,38 +595,87 @@ end $$;
 -- Every 15 minutes: the database size (for the 450 MB stop on usage events), and recent rows saved again in a
 -- random order. Postgres numbers and stamps rows in the order they're saved, so without this, someone with full
 -- database access could line up a review, a verification or an email address with the visit around it. After
--- this runs, rows from the last few hours carry this job's stamp instead, in shuffled order:
---   the mailing list (moved, under a lock, so an unsubscribe at that moment waits rather than being lost),
---   reviews, student-added landlords and the verified-review codes (saved again in place),
---   events recorded without a visit ID (moved, so they get new numbers).
+-- each run, rows from the last few hours sit in shuffled order under this job's stamp:
+--   moved (deleted and re-inserted in random order, under a lock, so a sign-up, unsubscribe, vote or approval
+--   at that moment waits and then applies): the mailing list (new and verified addresses), reviews, and every
+--   usage event of the last 3 hours (all of them, so the private ones leave no gaps);
+--   stamped again in place: student-added landlords, typed addresses, verified-review codes, hourly counters.
+-- A move only runs if the rules on that table let the job's rows through unchanged (a rolled-back growth.sql
+-- or hardening.sql wouldn't), and reviews only move if nothing else refers to them by key.
+create or replace function private.honours_reshuffle(p regprocedure)
+returns boolean
+language sql
+stable
+set search_path = ''
+as $$ select position('rmc.reshuffle' in pg_get_functiondef(p)) > 0 $$;
+revoke all on function private.honours_reshuffle(regprocedure) from public, anon, authenticated;
+
 create or replace function private.quarter_hour()
 returns void
 language plpgsql
 security definer
 set search_path = ''
 as $$
-declare v_cols text;
+declare
+  v_cols    text;
+  v_reviews boolean := coalesce(private.honours_reshuffle(to_regprocedure('private.before_review_insert()')), false)
+                       and not exists (select 1 from pg_constraint k where k.confrelid = 'public.reviews'::regclass and k.contype = 'f');
+  v_events  boolean := coalesce(private.honours_reshuffle(to_regprocedure('private.guard_site_event()')), false);
 begin
+  -- Always recorded, whatever happens to the steps below (each runs on its own: one failing undoes only itself)
   insert into private.db_size as d (id, mb, at) values (1, round(pg_database_size(current_database()) / 1048576.0), now())
     on conflict (id) do update set mb = excluded.mb, at = excluded.at;
+  perform set_config('rmc.reshuffle', 'on', true);  -- this transaction only: the insert rules let these rows through as they are
 
-  lock table private.contacts in exclusive mode;
-  -- new addresses, and every verified one (an older address that verifies again today changes too)
-  with moved as (delete from private.contacts c where c.first_seen >= current_date - 1 or c.verified returning c.*)
-  insert into private.contacts select * from moved order by random();
+  -- Locks are taken in this order: mailing list, then reviews
+  begin
+    lock table private.contacts in exclusive mode;
+    -- new addresses, and every verified one (an older address that verifies again today changes too)
+    with moved as (delete from private.contacts c where c.first_seen >= current_date - 1 or c.verified returning c.*)
+    insert into private.contacts select * from moved order by random();
+  exception when others then
+    raise notice 'quarter_hour: mailing list not moved (%)', sqlerrm;
+  end;
 
-  update public.reviews set held = held where created_at >= now() - interval '3 hours';
-  update public.user_landlords set name = name where created_at >= current_date - 1;
-  update private.review_marks set bucket = bucket;
+  begin
+    if v_reviews then
+      lock table public.reviews in exclusive mode;
+      select string_agg(quote_ident(c.column_name), ', ' order by c.ordinal_position) into v_cols
+        from information_schema.columns c
+       where c.table_schema = 'public' and c.table_name = 'reviews' and c.is_generated = 'NEVER';
+      execute format('with moved as (delete from public.reviews r where r.created_at >= now() - interval ''3 hours'' returning %1$s) '
+                     'insert into public.reviews (%1$s) overriding system value select %1$s from moved order by random()', v_cols);
+    else
+      update public.reviews set held = held where created_at >= now() - interval '3 hours';
+    end if;
+  exception when others then
+    raise notice 'quarter_hour: reviews not moved (%)', sqlerrm;
+  end;
 
-  -- every column but the id, so the moved events are numbered afresh
-  select string_agg(quote_ident(c.column_name), ', ' order by c.ordinal_position) into v_cols
-    from information_schema.columns c
-   where c.table_schema = 'public' and c.table_name = 'site_events' and c.column_name <> 'id';
-  perform set_config('rmc.reshuffle', 'on', true);  -- this transaction only: the event guard lets these through as they are
-  execute format('with moved as (delete from public.site_events e where e.event_type = any(private.quiet_event_types()) '
-                 'and e.created_at >= now() - interval ''3 hours'' returning %1$s) '
-                 'insert into public.site_events (%1$s) select %1$s from moved order by random()', v_cols);
+  begin
+    update public.user_landlords set name = name where created_at >= current_date - 1;
+    update private.review_marks set bucket = bucket;
+    update private.insert_buckets set n = n;
+    if exists (select 1 from information_schema.columns c
+                where c.table_schema = 'public' and c.table_name = 'user_properties' and c.column_name = 'submitted_at') then
+      update public.user_properties set address = address where submitted_at >= current_date - 1;
+    end if;
+  exception when others then
+    raise notice 'quarter_hour: rows not stamped again (%)', sqlerrm;
+  end;
+
+  begin
+    if v_events then
+      -- every column but the id (and any computed one), so the moved events are numbered afresh
+      select string_agg(quote_ident(c.column_name), ', ' order by c.ordinal_position) into v_cols
+        from information_schema.columns c
+       where c.table_schema = 'public' and c.table_name = 'site_events' and c.column_name <> 'id' and c.is_generated = 'NEVER';
+      execute format('with moved as (delete from public.site_events e where e.created_at >= now() - interval ''3 hours'' returning %1$s) '
+                     'insert into public.site_events (%1$s) select %1$s from moved order by random()', v_cols);
+    end if;
+  exception when others then
+    raise notice 'quarter_hour: events not moved (%)', sqlerrm;
+  end;
   perform set_config('rmc.reshuffle', 'off', true);
 end
 $$;
@@ -636,6 +685,31 @@ begin
   perform cron.schedule('rmc-quarter-hour', '7,22,37,52 * * * *', 'select private.quarter_hour()');
 exception when others then
   raise notice 'Could not schedule the 15-minute job (%). Turn on pg_cron under Database > Extensions, then run this file again.', sqlerrm;
+end $$;
+
+-- Events of the private kinds recorded before this version may still carry a visit or visitor ID, a screen size
+-- or the exact time: clear those once (a re-run finds nothing left to do)
+do $$
+declare r record; m jsonb;
+begin
+  for r in select e.id, e.metadata::text as meta from public.site_events e
+            where e.event_type = any(private.quiet_event_types())
+              and (e.metadata::text like '%"\_s"%' or e.metadata::text like '%"\_v"%' or e.created_at <> date_trunc('hour', e.created_at)) loop
+    begin
+      m := r.meta::jsonb;
+    exception when others then
+      m := null;
+    end;
+    if m is not null and jsonb_typeof(m) = 'object' then
+      update public.site_events set metadata = (m - '_s' - '_v'), created_at = date_trunc('hour', created_at) where id = r.id;
+    else
+      update public.site_events set created_at = date_trunc('hour', created_at) where id = r.id;
+    end if;
+  end loop;
+  if exists (select 1 from information_schema.columns c
+              where c.table_schema = 'public' and c.table_name = 'site_events' and c.column_name = 'screen') then
+    update public.site_events set screen = null where event_type = any(private.quiet_event_types()) and screen is not null;
+  end if;
 end $$;
 
 -- 6. Health check (public: yes/no facts and counts only, nothing about any person) ---------------

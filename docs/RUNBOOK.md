@@ -51,6 +51,8 @@ the file name into a message to whoever maintains the code. Don't run the later 
 - [ ] GitHub → Actions → **Health check** → **Run workflow**. It should finish green and not open an issue.
 
 **Rollback:** re-run the previous version of the same file (GitHub → the file → History → open the older version → Raw).
+Going back to a hardening.sql from before October 31, 2026: first stop its 15-minute job in a new query,
+`select cron.unschedule('rmc-quarter-hour');` (the job also stops moving rows by itself when the rules it needs are gone).
 
 ---
 

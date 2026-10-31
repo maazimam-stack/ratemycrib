@@ -4874,7 +4874,11 @@ async function loadUserSubmissions() {
     const h = _pendingLandlordHash; _pendingLandlordHash = null;
     const found = loaded ? findLandlordBySlug(h.slug) : null;
     const picked = S.modal && (document.getElementById('rev-landlord') || {}).value; // chosen while the list loaded
-    if (found && S.page !== 'detail' && !picked) go({ page: 'detail', detail: found.id });
+    if (found && S.page !== 'detail' && !picked) {
+      // The form this link opened is open over it: count the page as quietly as the form (no visit ID, the hour)
+      if (S.modal) { _lastTrackedPage = 'detail_' + found.id; trackEvent('page_view', { page: 'detail', detail: found.id }, true); }
+      go({ page: 'detail', detail: found.id });
+    }
     // No such landlord (renamed, deleted, mistyped): drop it from the address so Back simply leaves
     else if (!found && loaded) { try { history.replaceState(history.state, '', location.pathname + location.search); } catch (e) {} }
   }
@@ -5823,6 +5827,20 @@ window.addEventListener('hashchange', () => {
   try { routeHash(); } finally { _hashRouting = false; }
 });
 
+// The address of the page being shown (without "#"), or '' for home
+function pageHash() {
+  if (S.page === 'detail' && S.detail) { var l = findLandlord(S.detail); return l ? 'landlord/' + landlordSlug(l) : ''; }
+  if (S.page === 'hoods') return 'neighborhoods';
+  if (S.page === 'streets') return 'streets' + ((S.streets && S.streets.length) ? '/' + S.streets.join('+') : '');
+  if (S.page === 'compare') return 'compare';
+  if (S.page === 'h2h') return 'head-to-head';
+  if (S.page === 'scanner') return 'scanner';
+  if (S.page === 'insights') return 'insights';
+  if (S.page === 'quiz') return 'quiz';
+  if (S.page === 'rentcheck') return 'rentcheck';
+  return '';
+}
+
 // SEO: Update URL hash + document title + meta on every navigation
 (function() {
   var _origGo = go;
@@ -5833,27 +5851,19 @@ window.addEventListener('hashchange', () => {
     if (_pendingLandlordHash && u && ('page' in u || 'detail' in u)) _pendingLandlordHash = null;
     var holdUrl = !!_pendingLandlordHash;
     _origGo(u);
-    // Update hash based on current state
-    var newHash = '';
-    if (S.page === 'detail' && S.detail) {
-      var l = findLandlord(S.detail);
-      if (l) newHash = 'landlord/' + landlordSlug(l);
-    } else if (S.page === 'hoods') newHash = 'neighborhoods';
-    else if (S.page === 'streets') newHash = 'streets' + ((S.streets && S.streets.length) ? '/' + S.streets.join('+') : '');
-    else if (S.page === 'compare') newHash = 'compare';
-    else if (S.page === 'h2h') newHash = 'head-to-head';
-    else if (S.page === 'scanner') newHash = 'scanner';
-    else if (S.page === 'insights') newHash = 'insights';
-    else if (S.page === 'quiz') newHash = 'quiz';
-    else if (S.page === 'rentcheck') newHash = 'rentcheck';
+    var newHash = pageHash();
 
     // Update hash without triggering hashchange
     if (holdUrl) { /* keep the waiting link */ }
     else if (newHash) {
       if (location.hash !== '#' + newHash) {
-        _skipHash = true;
-        location.hash = '#' + newHash;
-        setTimeout(function(){ _skipHash = false; }, 0);
+        // Routing an address the browser already put in history (#h2h -> #head-to-head): rename it in place
+        if (_hashRouting) history.replaceState(null, '', location.pathname + location.search + '#' + newHash);
+        else {
+          _skipHash = true;
+          location.hash = '#' + newHash;
+          setTimeout(function(){ _skipHash = false; }, 0);
+        }
       }
     } else if (S.page === 'home' && !S.detail && location.hash) {
       _skipHash = true;
@@ -6015,6 +6025,10 @@ function updateStructuredData() {
 })();
 
 loadMajorChoice();
+(function() {
+  var h = pageHash(); // a link like #h2h shows #head-to-head: rename it in place, or Back would land on #h2h again
+  if (h && !S.modal && location.hash !== '#' + h) { try { history.replaceState(null, '', location.pathname + location.search + '#' + h); } catch (e) {} }
+})();
 render();
 updatePageTitle();
 updateMetaDescription();

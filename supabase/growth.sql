@@ -240,6 +240,8 @@ declare
   -- never less) and "the last day" 24-25 hours back
   v_hour     timestamptz := date_trunc('hour', now());
 begin
+  -- The 15-minute job in hardening.sql moves recent reviews (same rows, new storage order): let them through as they are
+  if current_setting('rmc.reshuffle', true) = 'on' then return new; end if;
   -- Never trust these from the browser
   new.verified      := false;
   new.held          := false;
