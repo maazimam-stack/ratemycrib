@@ -1,0 +1,21 @@
+# One-off read-only lookup of the public API schema (data branch only).
+name: Schema probe
+on:
+  push:
+    branches: [data/catalog-snapshot]
+    paths: [tools/schema_probe.py, .github/workflows/schema-probe.yml]
+permissions:
+  contents: write
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 tools/schema_probe.py
+      - run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/probe/schema.json
+          git commit -m "Schema probe $(date -u +%H:%M)" || echo "nothing new"
+          for i in 1 2 3; do git pull --rebase -q && git push && break; sleep 5; done
