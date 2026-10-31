@@ -618,9 +618,16 @@ set search_path = ''
 as $$
 declare
   v_cols    text;
+  -- A table is only moved when its insert rule lets the job's rows through and nothing else would react to the
+  -- move: no other trigger (a webhook, say) and, for reviews, nothing referring to them by key
+  v_contacts boolean := not exists (select 1 from pg_trigger t where t.tgrelid = 'private.contacts'::regclass and not t.tgisinternal);
   v_reviews boolean := coalesce(private.honours_reshuffle(to_regprocedure('private.before_review_insert()')), false)
-                       and not exists (select 1 from pg_constraint k where k.confrelid = 'public.reviews'::regclass and k.contype = 'f');
-  v_events  boolean := coalesce(private.honours_reshuffle(to_regprocedure('private.guard_site_event()')), false);
+                       and not exists (select 1 from pg_constraint k where k.confrelid = 'public.reviews'::regclass and k.contype = 'f')
+                       and not exists (select 1 from pg_trigger t where t.tgrelid = 'public.reviews'::regclass and not t.tgisinternal
+                                          and t.tgname <> 'rmc_before_review_insert');
+  v_events  boolean := coalesce(private.honours_reshuffle(to_regprocedure('private.guard_site_event()')), false)
+                       and not exists (select 1 from pg_trigger t where t.tgrelid = 'public.site_events'::regclass and not t.tgisinternal
+                                          and t.tgname <> 'rmc_guard_site_event');
 begin
   -- Always recorded, whatever happens to the steps below (each runs on its own: one failing undoes only itself)
   insert into private.db_size as d (id, mb, at) values (1, round(pg_database_size(current_database()) / 1048576.0), now())
@@ -631,8 +638,12 @@ begin
   begin
     lock table private.contacts in exclusive mode;
     -- new addresses, and every verified one (an older address that verifies again today changes too)
-    with moved as (delete from private.contacts c where c.first_seen >= current_date - 1 or c.verified returning c.*)
-    insert into private.contacts select * from moved order by random();
+    if v_contacts then
+      with moved as (delete from private.contacts c where c.first_seen >= current_date - 1 or c.verified returning c.*)
+      insert into private.contacts select * from moved order by random();
+    else
+      update private.contacts set verified = verified where first_seen >= current_date - 1 or verified;
+    end if;
   exception when others then
     raise notice 'quarter_hour: mailing list not moved (%)', sqlerrm;
   end;
@@ -672,6 +683,8 @@ begin
        where c.table_schema = 'public' and c.table_name = 'site_events' and c.column_name <> 'id' and c.is_generated = 'NEVER';
       execute format('with moved as (delete from public.site_events e where e.created_at >= now() - interval ''3 hours'' returning %1$s) '
                      'insert into public.site_events (%1$s) select %1$s from moved order by random()', v_cols);
+    else
+      update public.site_events set event_type = event_type where created_at >= now() - interval '3 hours';
     end if;
   exception when others then
     raise notice 'quarter_hour: events not moved (%)', sqlerrm;
